@@ -21,23 +21,20 @@ git diff --stat <previous-version-tag>..HEAD
 
 ## Standard Template
 
-The current validator requires the original Chinese heading strings. Keep the compatibility comments shown below while writing the visible notes in English.
+Use the English headings below. The validator also accepts legacy Chinese headings for older releases.
 
 ```md
 # vX.Y.Z - One sentence describing the benefit for users
 
 ## Release Scope
-<!-- Compatibility marker: ## 发版范围 -->
 
 This release covers all changes from `vA.B.C` to the release commit.
 
 ## Changes for Authors
-<!-- Compatibility marker: ## 给作者看的变化 -->
 
 - ...
 
 ## Do Existing Projects Need Changes?
-<!-- Compatibility marker: ## 是否需要改旧项目 -->
 
 - ...
 
@@ -50,12 +47,10 @@ This release covers all changes from `vA.B.C` to the release commit.
 - ...
 
 ## For Maintainers
-<!-- Compatibility marker: ## 给维护者 -->
 
 - ...
 
 ## Verification
-<!-- Compatibility marker: ## 验证 -->
 
 - ...
 ```
