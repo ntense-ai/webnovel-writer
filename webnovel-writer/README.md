@@ -38,18 +38,20 @@ The Claude Code package for the long-form webnovel writing plugin. See the repos
 
 ## Dependencies and Installation
 
-Install through the Claude Code Marketplace (recommended):
+Install the English `ntense` fork through its separate Claude Code Marketplace:
 
 ```bash
-claude plugin marketplace add lingfengQAQ/webnovel-writer --scope user
-claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
+claude plugin marketplace add "ezhomelabs/webnovel-writer#ntense" --scope user
+claude plugin install webnovel-writer@ntense-webnovel-writer --scope user
 ```
 
-Python dependencies:
+For Python dependencies, follow the [main Quick Start](../README.md#2-install-python-dependencies) to clone the `ntense` branch and activate a virtual environment. If already in this plugin source directory within that checkout, install both dependency sets:
 
 ```bash
-python -m pip install -r scripts/requirements.txt
+python -m pip install -r scripts/requirements.txt -r dashboard/requirements.txt
 ```
+
+Keep that environment active when starting Claude Code from your book workspace. The quoted branch ref is required; an unpinned fork URL can select the original-language default branch.
 
 Configure `.env` at the book project root for RAG retrieval. Without it, retrieval falls back to BM25 keyword search. See [RAG and configuration](../docs/guides/rag-and-config.md).
 

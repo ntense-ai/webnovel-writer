@@ -1,23 +1,23 @@
 {
-  "name": "webnovel-writer-marketplace",
-  "description": "Marketplace for the webnovel-writer Claude Code plugin.",
+  "name": "ntense-webnovel-writer",
+  "description": "Ntense English edition of the webnovel-writer Claude Code plugin.",
   "metadata": {
-    "description": "Marketplace for installing the webnovel-writer plugin."
+    "description": "Ntense English edition of the webnovel-writer Claude Code plugin."
   },
   "owner": {
-    "name": "lingfengQAQ"
+    "name": "ezhomelabs"
   },
   "plugins": [
     {
       "name": "webnovel-writer",
-      "description": "长篇网文创作系统（skills + agents + data chain + RAG）",
+      "description": "Long-form webnovel writing system (skills, agents, data pipeline, and RAG).",
       "version": "6.2.1",
       "author": {
         "name": "lingfengQAQ"
       },
       "source": "./webnovel-writer",
       "category": "productivity",
-      "homepage": "https://github.com/lingfengQAQ/webnovel-writer"
+      "homepage": "https://github.com/ezhomelabs/webnovel-writer/tree/ntense"
     }
   ]
 }

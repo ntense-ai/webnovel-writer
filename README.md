@@ -2,7 +2,7 @@
 
 **Using the DeepSeek Harness writing workspace (v8)? [🌐 Product website](https://lingfengqaq.github.io/webnovel-writer/) · [📖 Beginner tutorial](https://lingfengqaq.github.io/webnovel-writer/docs/beginner.html) · [Installation guide](https://lingfengqaq.github.io/webnovel-writer/docs/install.html)**
 
-This branch retains the Claude Code edition (v6). Its installation process differs from v8.
+This `ntense` branch is the English-documentation fork of the Claude Code edition (v6), maintained in `ezhomelabs/webnovel-writer`. Use the branch-pinned Quick Start below, not the upstream/default-branch installer. The v8 links above refer to the separate upstream product, not this fork.
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-6.2.1-brightgreen.svg)](.claude-plugin/marketplace.json)
@@ -22,7 +22,8 @@ In short, this is a consistency system for long-running serial fiction, not a on
 >
 > | Branch | Version | Status |
 > |---|---|---|
-> | `master` (this branch) | v6 · Claude Code plugin | Maintenance mode (critical bugs only); Claude Code users should use this edition |
+> | `ntense` (this fork) | v6 · English Claude Code plugin | English documentation and prompts, with fork-specific installation below |
+> | `master` (upstream) | v6 · Claude Code plugin | Maintenance mode (critical bugs only); Claude Code users should use this edition |
 > | `v7` | v7 · Multi-host CLI rewrite | Frozen and unreleased; retained as a development archive |
 > | [v8](https://github.com/lingfengQAQ/webnovel-writer/tree/v8) | v8 · Writing workspace based on [DeepSeek Harness](https://www.deepseek.com/harness/) | Stable release; [product website and tutorials](https://lingfengqaq.github.io/webnovel-writer/) |
 >
@@ -81,22 +82,34 @@ The default mainline in v6.0.0 is **Story System**. Its key components are:
 
 ### 1. Install the Plugin
 
-Install through the Claude Code Marketplace:
+Install this English fork through the Claude Code Marketplace (requires an existing Claude Code installation with branch-ref support):
 
 ```bash
-claude plugin marketplace add lingfengQAQ/webnovel-writer --scope user
-claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
+claude plugin marketplace add "ezhomelabs/webnovel-writer#ntense" --scope user
+claude plugin install webnovel-writer@ntense-webnovel-writer --scope user
 ```
 
-Replace `--scope user` with `--scope project` to install only for the current project.
+The quoted `#ntense` pins the marketplace to this branch; do not omit it. The distinct marketplace name avoids replacing the upstream catalog. If the upstream plugin is already enabled, disable that copy in `/plugin` before using this edition to avoid duplicate `webnovel-writer` commands.
+
+Replace `--scope user` with `--scope project` in both commands to install only for the current project.
+
+Verify the selected source with `claude plugin marketplace list --json`: it should show `ezhomelabs/webnovel-writer` and ref `ntense`.
 
 > For installation, enabling, and everyday management, see the official Claude Code documentation: [plugins](https://docs.claude.com/en/docs/claude-code/plugins) · [plugin marketplaces](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces).
 
 ### 2. Install Python Dependencies
 
 ```bash
-python -m pip install -r https://raw.githubusercontent.com/lingfengQAQ/webnovel-writer/HEAD/requirements.txt
+git clone --branch ntense --single-branch https://github.com/ezhomelabs/webnovel-writer.git webnovel-writer-ntense
+cd webnovel-writer-ntense
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
+
+Run these commands in a terminal with Python 3.10+ (macOS/Linux). On Windows PowerShell, create the environment with `py -3 -m venv .venv` and activate it with `.venv\Scripts\Activate.ps1`. The local requirements file includes the scripts and Dashboard requirements from the same `ntense` checkout; do not substitute an upstream `HEAD` URL.
+
+Keep the virtual environment active when launching `claude`, so the plugin hooks and scripts use these dependencies. Start Claude Code from your book workspace, outside the plugin source directory.
 
 ### 3. Initialize a Book
 
