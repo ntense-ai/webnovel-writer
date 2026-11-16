@@ -13,8 +13,8 @@
       "skill": "webnovel-init",
       "description": "/webnovel-init keeps the deep collection gate and avoids writing canon before confirmation.",
       "required": [
-        "未过充分性闸门，不执行 `webnovel.py init`",
-        "用户确认前不得写入",
+        "do not run `webnovel.py init` before passing the sufficiency gate",
+        "Before user confirmation, do not write",
         "python -X utf8"
       ]
     },
@@ -24,7 +24,7 @@
       "skill": "webnovel-plan",
       "description": "/webnovel-plan preserves outline blockers and Story System runtime contract refresh.",
       "required": [
-        "若发现总纲与设定冲突，先阻断",
+        "If the master outline conflicts with settings, block first",
         "placeholder-scan",
         "story-system"
       ]
@@ -57,7 +57,7 @@
       "skill": "webnovel-review",
       "description": "/webnovel-review relies on reviewer output and preserves blocking issue handling.",
       "required": [
-        "必须通过 `Agent` 工具调用 `reviewer`",
+        "Must call `reviewer` through the `Agent` tool",
         "review-pipeline",
         "blocking=true"
       ]
@@ -68,9 +68,9 @@
       "skill": "webnovel-query",
       "description": "/webnovel-query stays read-only and prioritizes Story System sources.",
       "required": [
-        "只读操作，不修改任何项目文件",
+        "Read-only operation; do not modify any project files",
         "memory-contract load-context",
-        "写前真源"
+        "pre-writing sources of truth"
       ]
     },
     {
@@ -80,8 +80,8 @@
       "description": "/webnovel-learn writes through the project-memory CLI instead of manual JSON edits.",
       "required": [
         "project-memory add-pattern",
-        "不删除旧记录，仅追加",
-        "禁止使用 `Write`"
+        "Append only; do not delete existing records",
+        "Do not use `Write`"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "skill": "webnovel-dashboard",
       "description": "/webnovel-dashboard remains read-only and exposes runtime health.",
       "required": [
-        "只读",
+        "read-only",
         "/api/story-runtime/health",
         "python -m dashboard.server"
       ]
@@ -101,7 +101,7 @@
       "skill": "webnovel-doctor",
       "description": "/webnovel-doctor stays read-only and uses project-status before detailed checks.",
       "required": [
-        "只读诊断",
+        "Read-only diagnosis",
         "project-status",
         "doctor --format text"
       ]

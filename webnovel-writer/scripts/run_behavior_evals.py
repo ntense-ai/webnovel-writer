@@ -133,8 +133,8 @@ def _eval_data_agent_boundary(root: Path, case: dict[str, Any]) -> dict[str, Any
     path = _plugin_root(root) / "agents" / "data-agent.md"
     text = _read(path)
     required = [
-        "产出三份 JSON 到 `.webnovel/tmp/`",
-        "不直接写 state/index/summaries/memory",
+        "Write three JSON files to `.webnovel/tmp/`",
+        "Do not directly write state/index/summaries/memory",
         "chapter-commit",
     ]
     missing = [item for item in required if item not in text]
@@ -164,12 +164,12 @@ def _eval_artifact_ownership(root: Path, case: dict[str, Any]) -> dict[str, Any]
     if "Write" not in data_tools:
         missing.append("data-agent 应持 Write（它是 tmp artifact 的唯一写入者）")
     for text, owner in ((write_text, "webnovel-write"), (review_text, "webnovel-review")):
-        if "主流程" not in text or ".webnovel/tmp/review_results.json" not in text:
+        if not re.search(r"main (?:workflow|flow)", text) or ".webnovel/tmp/review_results.json" not in text:
             missing.append(f"{owner}: 缺 reviewer→主流程落盘 review_results.json 的所有权说明")
     for item in (
-        "唯一写入者",
-        "主流程只检查文件存在与 schema",
-        "不直接写 state/index/summaries/memory/vectors/projection",
+        "sole writer",
+        "The main workflow checks only file existence and schema",
+        "do not write directly to state/index/summaries/memory/vectors/projection",
     ):
         if item not in write_text:
             missing.append(f"webnovel-write 缺写入所有权红线：{item}")

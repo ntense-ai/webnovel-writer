@@ -286,8 +286,8 @@ def test_active_skills_use_agent_tool_name_not_legacy_task():
         fm = _extract_frontmatter(text)
         allowed_tools = fm.get("allowed-tools", "")
         assert "Task" not in allowed_tools, f"{skill_file.parent.name}: allowed-tools 仍声明 Task"
-        assert "Task 调用" not in text, f"{skill_file.parent.name}: 仍使用软性的 Task 调用描述"
-        assert "必须通过 `Task`" not in text, f"{skill_file.parent.name}: 仍要求旧 Task 工具名"
+        assert "Task invocation" not in text, f"{skill_file.parent.name}: 仍使用软性的 Task 调用描述"
+        assert "Must call through `Task`" not in text, f"{skill_file.parent.name}: 仍要求旧 Task 工具名"
 
 
 def test_webnovel_write_skill_uses_explicit_agent_invocation_templates():
@@ -299,7 +299,7 @@ def test_webnovel_write_skill_uses_explicit_agent_invocation_templates():
     for subagent in ("context-agent", "reviewer", "data-agent"):
         assert f"webnovel-writer:{subagent}" in text, f"缺少 {subagent} 的注册名显式调用"
     assert "subagent_type:" not in text, "不应再使用伪函数 subagent_type 调用块"
-    assert "不得用主流程口头代替 subagent 输出" in text
+    assert "the main workflow must not verbally substitute for subagent output" in text
 
 
 @pytest.mark.parametrize("skill_name", AUTHOR_REPORT_SKILLS)
@@ -307,40 +307,40 @@ def test_main_skills_define_author_friendly_final_report_contract(skill_name: st
     """四个主 Skill 必须提供作者友好的总状态 + 三段式最终报告契约。"""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
 
-    assert "作者友好最终报告契约" in text
-    assert "总状态：已完成 / 部分完成 / 需要你处理 / 未完成" in text
+    assert "Author-friendly final report contract" in text
+    assert "Overall status: Completed / Partially completed / Needs your attention / Not completed" in text
     for section in (
-        "一、产生的文件与完成情况",
-        "二、过程中遇到的问题与异常耗时",
-        "三、下一步建议",
+        "1. Files produced and completion status",
+        "2. Issues and unusually long steps encountered",
+        "3. Recommended next steps",
     ):
         assert section in text, f"{skill_name}: 缺少最终报告段落 {section}"
-    for issue_type in ("已自动处理", "建议确认", "必须处理"):
+    for issue_type in ("Automatically handled", "Suggested for confirmation", "Must address"):
         assert issue_type in text, f"{skill_name}: 缺少异常分类 {issue_type}"
-    assert "任务化语言" in text
-    assert "可复制命令" in text
+    assert "task-oriented language" in text
+    assert "copyable commands" in text
     assert "/webnovel-doctor" in text
-    assert "不写 token 统计" in text
+    assert "Do not report token statistics" in text
 
 
 def test_write_skill_final_report_covers_commit_projection_and_backup():
     """写章最终报告必须覆盖正文、审查、data artifacts、commit、projection、backup。"""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     for required in (
-        "正文文件路径",
-        "审查报告路径",
+        "Chapter prose file path",
+        "Review report path",
         ".webnovel/tmp/review_results.json",
         ".webnovel/tmp/fulfillment_result.json",
         ".webnovel/tmp/disambiguation_result.json",
         ".webnovel/tmp/extraction_result.json",
         ".story-system/commits/chapter_{NNN}.commit.json",
-        "state / index / summary / memory / vector 更新状态",
-        "备份状态",
-        "是否可以继续写下一章",
+        "state / index / summary / memory / vector update status",
+        "Backup status",
+        "Whether writing can continue with the next chapter",
     ):
         assert required in text
     assert "chapter-commit rejected" in text
-    assert "最终状态不得写“已完成”" in text
+    assert "final status must not be “Completed”" in text
     assert "--fast" in text and "--minimal" in text
     assert "projection retry" in text
 
@@ -349,17 +349,17 @@ def test_review_skill_final_report_covers_metrics_and_blocking_decision():
     """审查最终报告必须覆盖报告、metrics、blocking 数与用户裁决状态。"""
     text = _read_text(SKILLS_DIR / "webnovel-review" / "SKILL.md")
     for required in (
-        "审查报告文件",
+        "review report file",
         ".webnovel/tmp/review_results.json",
         ".webnovel/tmp/review_metrics.json",
         "review_metrics",
-        "阻断问题数量",
-        "用户裁决状态",
-        "如果无阻断，明确可以继续写作",
+        "number of blocking issues",
+        "status of the user's decision",
+        "If there are no blockers, explicitly state that writing can continue",
     ):
         assert required in text
-    assert "有 blocking 问题且用户未选择处理策略" in text
-    assert "最终状态为“需要你处理”" in text
+    assert "If blocking issues exist and the user has not selected a handling strategy" in text
+    assert "final status is “Needs your attention”" in text
 
 
 def test_main_skills_record_subagent_run_summaries_for_agent_calls():
@@ -388,19 +388,19 @@ def test_agents_expose_subagent_run_summary_signals_without_changing_outputs(age
     """Agent prompt 必须暴露可汇总信号，但不得把 SubagentRun 写入原始产物。"""
     text = _read_text(AGENTS_DIR / agent_file_name)
 
-    assert "SubagentRun 可汇总信号" in text
+    assert "Aggregatable SubagentRun Signals" in text
     for field in ("`status`", "`problems`", "`auto_handled`", "`needs_user_action`", "`duration_ms`", "`outputs`"):
         assert field in text, f"{agent_file_name}: 缺少可汇总字段 {field}"
-    assert "主流程" in text and "记录" in text
+    assert "The main workflow records" in text
 
     if agent_file_name == "reviewer.md":
-        assert "不要把 `SubagentRun` 写进 reviewer JSON" in text
+        assert "Do not include `SubagentRun` in reviewer JSON" in text
     elif agent_file_name == "data-agent.md":
-        assert "不要把 `SubagentRun` 写进三份 artifact" in text
+        assert "Do not put `SubagentRun` in the three artifacts" in text
     elif agent_file_name == "deconstruction-agent.md":
-        assert "不要把 `SubagentRun` 写进 `init_reference_research` 顶层" in text
+        assert "Do not add `SubagentRun` to the `init_reference_research` top level" in text
     elif agent_file_name == "context-agent.md":
-        assert "不要把 `SubagentRun` JSON 写入任务书" in text
+        assert "Do not include `SubagentRun` JSON in the brief" in text
 
 
 @pytest.mark.parametrize("skill_name", AUTHOR_REPORT_SKILLS)
@@ -409,33 +409,33 @@ def test_main_skills_define_author_friendly_progress_and_recovery_contract(skill
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
 
     for required in (
-        "作者友好过程提示与恢复契约",
-        "过程提示",
-        "少打扰确认策略",
-        "有限选项",
-        "卡住时必须说明",
-        "卡点",
-        "已完成内容",
-        "恢复建议",
+        "Author-friendly progress and recovery contract",
+        "progress update",
+        "Minimize interruptions",
+        "finite choices",
+        "When stuck, explain",
+        "blocker",
+        "completed work",
+        "recovery advice",
         ".webnovel/logs/run_last.log",
         "run-log",
         "user-report",
     ):
-        assert required in text, f"{skill_name}: 缺少过程/恢复契约 {required}"
-    assert "不直接输出原始 JSON" in text or "不输出原始 JSON" in text
+        assert required.casefold() in text.casefold(), f"{skill_name}: 缺少过程/恢复契约 {required}"
+    assert "not raw JSON" in text or "do not output raw JSON" in text
 
 
 def test_write_skill_progress_nodes_are_author_friendly_and_limited():
     """写章过程节点必须压缩到不超过 6 个作者可理解阶段。"""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
-    marker = "写章过程节点（最多 6 个）"
+    marker = "Writing progress milestones (at most six)"
     assert marker in text
-    section = text[text.find(marker): text.find("## 充分性闸门")]
+    section = text[text.find(marker): text.find("## Sufficiency gate")]
     nodes = re.findall(r"^\d+\.\s+(.+)$", section, flags=re.MULTILINE)
     assert 1 <= len(nodes) <= 6
     for forbidden in ("write-gate", "chapter-commit", "projection_status", "artifact", "schema"):
         assert forbidden not in "\n".join(nodes)
-    for friendly in ("检查项目环境", "整理写作依据", "起草正文", "写作检查", "保存本章故事事实", "提交备份"):
+    for friendly in ("Check project environment", "Organize writing context", "Draft chapter prose", "Writing check", "Save this chapter's story facts", "Commit and back up"):
         assert any(friendly in node for node in nodes), f"缺少作者友好节点 {friendly}"
 
 
@@ -444,12 +444,12 @@ def test_write_skill_resume_contract_uses_runtime_ledger_and_confirmation_bounda
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     for required in (
         "run-ledger write-resume",
-        "可信断点",
-        "正文被手动改过",
-        "章纲更新晚于正文",
-        "本章已 accepted",
-        "沿用当前正文 / 重新起草 / 只查看状态",
-        "不得覆盖作者手改",
+        "trustworthy checkpoint",
+        "prose was manually edited",
+        "outline was updated after the prose",
+        "an accepted chapter is rerun",
+        "keep current prose / redraft / view status only",
+        "Never overwrite the author's manual edits",
     ):
         assert required in text
 
@@ -490,10 +490,10 @@ def test_context_agent_prefers_contract_and_latest_commit_mainline():
 
 def test_context_agent_loads_fixed_guides_and_outputs_writer_brief():
     text = (AGENTS_DIR / "context-agent.md").read_text(encoding="utf-8")
-    # core-constraints 和 anti-ai-guide 已内化为"写作铁律"段落
-    assert "写作铁律" in text or "Anti-AI" in text
-    assert "写作任务书" in text
-    assert "Step 2 直写提示词" not in text
+    # core-constraints 和 anti-ai-guide 已内化为"Writing Laws"段落
+    assert "Writing Laws" in text or "Anti-AI" in text
+    assert "writing brief" in text
+    assert "Step 2 direct-writing prompt" not in text
     assert "Context Contract" not in text
 
 
@@ -515,12 +515,12 @@ def test_data_agent_is_described_as_extraction_only_not_direct_write_mainline():
     assert "event_id" in text
     assert "event_type" in text
     assert "subject" in text
-    assert "直接写入 index.db 和 state.json" not in text
+    assert "directly write index.db and state.json" not in text
     for forbidden in (
-        "RAG 向量索引",
+        "RAG vector indexing",
         "observability",
-        "场景索引已写入",
-        "索引失败",
+        "scene index written",
+        "indexing failed",
     ):
         assert forbidden not in text, f"data-agent.md 不应保留 projection 写入语义: {forbidden}"
     # data-agent 不得携带可运行的 chapter-commit 命令（commit 是主流程的事实提交入口，data-agent 只产 artifact）
@@ -544,7 +544,7 @@ def test_dashboard_and_plan_skills_surface_story_runtime_mainline():
 
 def test_webnovel_write_skill_routes_step2_through_writing_brief():
     text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
-    assert "写作任务书" in text
+    assert "writing brief" in text
     assert "context-agent" in text
     assert "Step 0.5" not in text
     assert 'cat "${SKILL_ROOT}/../../references/shared/core-constraints.md"' not in text
@@ -555,11 +555,11 @@ def test_context_agent_and_write_skill_form_isolated_write_chain():
     context_text = (AGENTS_DIR / "context-agent.md").read_text(encoding="utf-8")
     skill_text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
 
-    assert "写作任务书" in context_text
-    assert "写作任务书" in skill_text
+    assert "writing brief" in context_text
+    assert "writing brief" in skill_text
     assert "context-agent" in skill_text
     assert "Context Contract" not in context_text
-    assert "Step 2 直写提示词" not in context_text
+    assert "Step 2 direct-writing prompt" not in context_text
 
 
 def test_no_direct_state_writes_in_write_skill():
@@ -586,19 +586,19 @@ def test_deconstruction_agent_preserves_init_handoff_and_boundaries():
 
     assert "init_reference_research" in text
     assert ".webnovel/tmp/reference_analyses/<safe-title>/" not in text
-    assert "不写任何文件" in text
-    assert "不得写 `_progress.md`" in text
+    assert "Write no files" in text
+    assert "must not write `_progress.md`" in text
     assert "resume_state" in text
     assert "tools: Read, Grep, Bash" in text
-    assert "快速模式" in text
-    assert "深度模式" in text
-    assert "黄金三章" in text
-    assert "情节点" in text
-    assert "质量门控" in text
-    assert "不得凭记忆" in text
-    assert "条件框架" in text
-    assert "情绪链条" in text
-    assert "核心梗边界" in text
+    assert "Quick mode" in text
+    assert "Deep mode" in text
+    assert "opening three chapters" in text
+    assert "plot points" in text
+    assert "quality gates" in text
+    assert "from memory/general knowledge" in text
+    assert "conditional framework" in text
+    assert "emotional chains" in text
+    assert "boundaries of the core premise" in text
 
     for field in (
         "reader_promise",
@@ -627,8 +627,8 @@ def test_deconstruction_agent_preserves_init_handoff_and_boundaries():
     ):
         assert forbidden_path in text
 
-    assert "不写 `idea_bank.json`" in text
-    assert "用户确认后" in text
+    assert "Do not write `idea_bank.json`" in text
+    assert "after user confirmation" in text
     assert "MIT License attribution" not in text
 
 
@@ -638,16 +638,16 @@ def test_webnovel_init_deconstruction_wiring_keeps_confirmation_gate():
 
     assert "Use the Agent tool to run `webnovel-writer:deconstruction-agent`" in text
     assert "subagent_type:" not in text
-    assert "Step 1.5：灵感来源询问" in text
-    assert "进入故事核采集前" in text
-    assert "不要默认拆书" in text
-    assert "你这本书的灵感来源想从哪里开始" in text
+    assert "Step 1.5: Ask about inspiration sources" in text
+    assert "Before collecting the story core" in text
+    assert "Do not deconstruct books by default" in text
+    assert "Where would you like to start with this book's inspiration" in text
     assert "init_reference_research" in text
-    assert "init_reference_research JSON 对象" in text
+    assert "init_reference_research JSON object" in text
     assert ".webnovel/tmp/reference_analyses/<safe-title>/" not in text
     assert "project_root=${PROJECT_ROOT" not in text
-    assert "不写任何文件" in text
-    assert "不得由 init 主流程口头替代拆解结果" in text
+    assert "Do not write files" in text
+    assert "The init main workflow must not substitute a verbal analysis for its results" in text
     assert "`quality`" in text
     assert "`quality.passed=false`" in text
     assert "`confidence < 0.85`" in text
@@ -675,9 +675,9 @@ def test_webnovel_init_deconstruction_wiring_keeps_confirmation_gate():
     ):
         assert forbidden_path in text
 
-    assert "用户确认前" in text
-    assert "Step 2-6 只能使用用户确认过、并已变形为本书差异化表达的模式" in text
-    assert "汇总 Step 1.5 已确认的灵感来源" in text
+    assert "before explicit user confirmation" in text
+    assert "Steps 2–6 may use only patterns the user has confirmed and that have been transformed into differentiated expressions for this book" in text
+    assert "Summarize confirmed inspiration sources from Step 1.5" in text
 
 
 # ---------------------------------------------------------------------------
@@ -839,12 +839,12 @@ def test_write_review_skills_state_artifact_ownership():
     write_text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     review_text = _read_text(SKILLS_DIR / "webnovel-review" / "SKILL.md")
     for name, text in (("webnovel-write", write_text), ("webnovel-review", review_text)):
-        assert "主流程" in text and ".webnovel/tmp/review_results.json" in text, (
+        assert re.search(r"main (?:workflow|flow)", text) and ".webnovel/tmp/review_results.json" in text, (
             f"{name}: 缺 reviewer→主流程落盘 review_results.json 的所有权说明"
         )
-    assert "唯一写入者" in write_text, "webnovel-write 缺 data-agent 唯一写入者说明"
-    assert "主流程只检查文件存在与 schema" in write_text
-    assert "不直接写 state/index/summaries/memory/vectors/projection" in write_text
+    assert "sole writer" in write_text, "webnovel-write 缺 data-agent 唯一写入者说明"
+    assert "The main workflow checks only file existence and schema" in write_text
+    assert "do not write directly to state/index/summaries/memory/vectors/projection" in write_text
 
 
 # §9.3/§12.3：reviewer 删除 ReAct/思维链 元叙述后的正向守护（审查只给输出合同，不教它怎么想）。
@@ -852,4 +852,4 @@ def test_reviewer_has_no_react_meta_narrative():
     """reviewer.md 不得保留 ReAct/思维链 元叙述。"""
     text = _read_text(AGENTS_DIR / "reviewer.md")
     assert "ReAct" not in text, "reviewer 不应出现 ReAct 字样"
-    assert "思维链" not in text, "reviewer 不应保留思维链元叙述"
+    assert "chain of thought" not in text.casefold(), "reviewer 不应保留思维链元叙述"
