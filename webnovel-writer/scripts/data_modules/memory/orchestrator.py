@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-长期记忆编排器。
-"""
+"Long-term memory orchestrator."
 from __future__ import annotations
 
 import json
@@ -75,7 +73,7 @@ class MemoryOrchestrator:
             "working_memory": working_items,
             "episodic_memory": episodic_items,
             "semantic_memory": semantic_payload,
-            # long_term_facts 保持对外 contract：仅包含可直接注入的长期语义事实。
+            # Preserve the public long_term_facts contract: include only long-term semantic facts ready for direct injection.
             "long_term_facts": semantic_payload,
             "active_constraints": active_constraints,
             "recent_changes": list(recent_changes),

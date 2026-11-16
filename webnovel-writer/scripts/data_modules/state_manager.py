@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-State Manager - 状态管理模块 (v5.4)
-
-管理 state.json 的读写操作：
-- 实体状态管理
-- 进度追踪
-- 关系记录
-
-v5.1 变更（v5.4 沿用）:
-- 集成 SQLStateManager，同步写入 SQLite (index.db)
-- state.json 保留精简数据，大数据自动迁移到 SQLite
-"""
+"State Manager v5.4 manages state.json entity state, progress, and relationships. Changes introduced in v5.1 and retained in v5.4 integrate SQLStateManager for synchronized SQLite writes to index.db; state.json retains compact data while large collections migrate automatically to SQLite."
 
 import json
 import logging
@@ -34,20 +23,20 @@ logger = logging.getLogger(__name__)
 
 
 try:
-    # 当 scripts 目录在 sys.path 中（常见：从 scripts/ 运行）
+    # When scripts is on sys.path, usually when running from scripts/
     from security_utils import atomic_write_json, read_json_safe
 except ImportError:  # pragma: no cover
-    # 当以 `python -m scripts.data_modules...` 从仓库根目录运行
+    # When running python -m scripts.data_modules... from the repository root
     from scripts.security_utils import atomic_write_json, read_json_safe
 
 
 @dataclass
 class EntityState:
-    """实体状态"""
+    "Entity state."
     id: str
     name: str
-    type: str  # 角色/地点/物品/势力
-    tier: str = "装饰"  # 核心/重要/次要/装饰
+    type: str  # Characters / locations / items / factions
+    tier: str = "decorative"  # Core / important / secondary / decorative
     aliases: List[str] = field(default_factory=list)
     attributes: Dict[str, Any] = field(default_factory=dict)
     first_appearance: int = 0
@@ -56,7 +45,7 @@ class EntityState:
 
 @dataclass
 class Relationship:
-    """实体关系"""
+    "Entity relationship."
     from_entity: str
     to_entity: str
     type: str
@@ -66,7 +55,7 @@ class Relationship:
 
 @dataclass
 class StateChange:
-    """状态变化记录"""
+    "State change record."
     entity_id: str
     field: str
     old_value: Any
@@ -78,11 +67,11 @@ class StateChange:
 
 @dataclass
 class _EntityPatch:
-    """待写入的实体增量补丁（用于锁内合并）"""
+    "Pending entity delta patch for merging under the lock."
     entity_type: str
     entity_id: str
     replace: bool = False
-    base_entity: Optional[Dict[str, Any]] = None  # 新建实体时的完整快照（用于填充缺失字段）
+    base_entity: Optional[Dict[str, Any]] = None  # Complete snapshot for a newly created entity, used to populate missing fields
     top_updates: Dict[str, Any] = field(default_factory=dict)
     current_updates: Dict[str, Any] = field(default_factory=dict)
     appearance_chapter: Optional[int] = None
@@ -104,29 +93,23 @@ def _unique_aliases(*groups: Any) -> List[str]:
 
 
 class StateManager:
-    """状态管理器（v5.1 entities_v3 格式 + SQLite 同步，v5.4 沿用）"""
+    "State manager using the v5.1 entities_v3 format and SQLite synchronization, retained in v5.4."
 
-    # v5.0 引入的实体类型
-    ENTITY_TYPES = ["角色", "地点", "物品", "势力", "招式"]
+    # Entity types introduced in v5.0
+    ENTITY_TYPES = ["character", "location", "item", "faction", "combat-move"]
 
-    # 章节状态机（单调递进）
+    # Chapter state machine with monotonic progression
     CHAPTER_STATUS_ORDER = ["chapter_drafted", "chapter_reviewed", "chapter_committed"]
     REJECTED_CHAPTER_STATUS = "chapter_rejected"
 
     def __init__(self, config=None, enable_sqlite_sync: bool = True):
-        """
-        初始化状态管理器
-
-        参数:
-        - config: 配置对象
-        - enable_sqlite_sync: 是否启用 SQLite 同步 (默认 True)
-        """
+        "Initialize the state manager. config supplies configuration; enable_sqlite_sync enables SQLite synchronization and defaults to True."
         self.config = config or get_config()
         self._state: Dict[str, Any] = {}
-        # 与 security_utils.atomic_write_json 保持一致：state.json.lock
+        # Match security_utils.atomic_write_json: state.json.lock
         self._lock_path = self.config.state_file.with_suffix(self.config.state_file.suffix + ".lock")
 
-        # v5.1 引入: SQLite 同步
+        # SQLite synchronization introduced in v5.1
         self._enable_sqlite_sync = enable_sqlite_sync
         self._sql_state_manager = None
         if enable_sqlite_sync:
@@ -134,9 +117,9 @@ class StateManager:
                 from .sql_state_manager import SQLStateManager
                 self._sql_state_manager = SQLStateManager(self.config)
             except ImportError:
-                pass  # SQLStateManager 不可用时静默降级
+                pass  # Silently fall back when SQLStateManager is unavailable
 
-        # 待写入的增量（锁内重读 + 合并 + 写入）
+        # Pending deltas: reread, merge, and write while holding the lock
         self._pending_entity_patches: Dict[tuple[str, str], _EntityPatch] = {}
         self._pending_alias_entries: Dict[str, List[Dict[str, str]]] = {}
         self._pending_state_changes: List[Dict[str, Any]] = []
@@ -148,7 +131,7 @@ class StateManager:
         self._pending_chapter_status: Dict[str, str] = {}
         self._pending_chapter_meta: Dict[str, Any] = {}
 
-        # v5.1 引入: 缓存待同步到 SQLite 的数据
+        # Cache data awaiting SQLite synchronization, introduced in v5.1
         self._pending_sqlite_data: Dict[str, Any] = {
             "entities_appeared": [],
             "entities_new": [],
@@ -163,7 +146,7 @@ class StateManager:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def _ensure_state_schema(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """确保 state.json 具备运行所需的关键字段（尽量不破坏既有数据）。"""
+        "Ensure state.json contains required runtime fields while preserving existing data where possible."
         if not isinstance(state, dict):
             state = {}
 
@@ -171,7 +154,7 @@ class StateManager:
         state.setdefault("progress", {})
         state.setdefault("protagonist_state", {})
 
-        # relationships: 旧版本可能是 list（实体关系），v5.0 运行态用 dict（人物关系/重要关系）
+        # relationships may be a legacy entity-relationship list; the v5.0 runtime uses a character/important-relationship dictionary.
         relationships = state.get("relationships")
         if isinstance(relationships, list):
             state.setdefault("structured_relationships", [])
@@ -198,8 +181,8 @@ class StateManager:
         )
 
         entities_v3 = state.get("entities_v3")
-        # v5.1 引入: entities_v3, alias_index, state_changes, structured_relationships 已迁移到 index.db
-        # 不再在 state.json 中初始化或维护这些字段
+        # entities_v3, alias_index, state_changes, and structured_relationships migrated to index.db in v5.1.
+        # Do not initialize or maintain these fields in state.json anymore.
 
         if not isinstance(state.get("disambiguation_warnings"), list):
             state["disambiguation_warnings"] = []
@@ -207,7 +190,7 @@ class StateManager:
         if not isinstance(state.get("disambiguation_pending"), list):
             state["disambiguation_pending"] = []
 
-        # progress 基础字段
+        # Basic progress fields
         progress = state["progress"]
         if not isinstance(progress, dict):
             progress = {}
@@ -219,7 +202,7 @@ class StateManager:
         return state
 
     def _load_state(self):
-        """加载状态文件"""
+        "Load the state file."
         if self.config.state_file.exists():
             self._state = read_json_safe(self.config.state_file, default={})
             self._state = self._ensure_state_schema(self._state)
@@ -227,16 +210,8 @@ class StateManager:
             self._state = self._ensure_state_schema({})
 
     def save_state(self) -> Dict[str, Any]:
-        """
-        保存状态文件（锁内重读 + 合并 + 原子写入）。
-
-        解决多 Agent 并行下的“读-改-写覆盖”风险：
-        - 获取锁
-        - 重新读取磁盘最新 state.json
-        - 仅合并本实例产生的增量（pending_*）
-        - 原子化写入
-        """
-        # 无增量时不写入，避免无意义覆盖
+        "Save state by rereading, merging, and atomically writing under the lock. Prevent concurrent agents' read-modify-write overwrites by acquiring the lock, rereading the latest state.json, merging only this instance's pending_* deltas, and writing atomically."
+        # Avoid unnecessary overwrites when there are no deltas.
         has_pending = any(
             [
                 self._pending_entity_patches,
@@ -262,7 +237,7 @@ class StateManager:
                 disk_state = read_json_safe(self.config.state_file, default={})
                 disk_state = self._ensure_state_schema(disk_state)
 
-                # progress（合并为 max(chapter) + words_delta 累加）
+                # Merge progress using max(chapter) and accumulated words_delta.
                 if self._pending_progress_chapter is not None or self._pending_progress_words_delta != 0:
                     progress = disk_state.get("progress", {})
                     if not isinstance(progress, dict):
@@ -313,14 +288,14 @@ class StateManager:
                         chapter_status[chapter] = pending_status
                     progress["last_updated"] = self._now_progress_timestamp()
 
-                # v5.1 引入: 强制使用 SQLite 模式，移除大数据字段
-                # 确保 state.json 中不存在这些膨胀字段
+                # Enforce SQLite mode and remove large data fields, introduced in v5.1.
+                # Ensure these oversized fields are absent from state.json.
                 for field in ["entities_v3", "alias_index", "state_changes", "structured_relationships"]:
                     disk_state.pop(field, None)
-                # 标记已迁移
+                # Mark as migrated
                 disk_state["_migrated_to_sqlite"] = True
 
-                # disambiguation_warnings（追加去重 + 截断）
+                # Append, deduplicate, and truncate disambiguation_warnings
                 if self._pending_disambiguation_warnings:
                     warnings_list = disk_state.get("disambiguation_warnings")
                     if not isinstance(warnings_list, list):
@@ -345,12 +320,12 @@ class StateManager:
                         warnings_list.append(w)
                         existing_keys.add(k)
 
-                    # 只保留最近 N 条，避免文件无限增长
+                    # Keep only the latest N entries to bound file growth.
                     max_keep = self.config.max_disambiguation_warnings
                     if len(warnings_list) > max_keep:
                         disk_state["disambiguation_warnings"] = warnings_list[-max_keep:]
 
-                # disambiguation_pending（追加去重 + 截断）
+                # Append, deduplicate, and truncate disambiguation_pending
                 if self._pending_disambiguation_pending:
                     pending_list = disk_state.get("disambiguation_pending")
                     if not isinstance(pending_list, list):
@@ -379,7 +354,7 @@ class StateManager:
                     if len(pending_list) > max_keep:
                         disk_state["disambiguation_pending"] = pending_list[-max_keep:]
 
-                # chapter_meta（新增：按章节号覆盖写入）
+                # chapter_meta: overwrite by chapter number
                 if self._pending_chapter_meta:
                     chapter_meta = disk_state.get("chapter_meta")
                     if not isinstance(chapter_meta, dict):
@@ -387,17 +362,17 @@ class StateManager:
                         disk_state["chapter_meta"] = chapter_meta
                     chapter_meta.update(self._pending_chapter_meta)
 
-                # 原子写入（锁已持有，不再二次加锁）
+                # Atomic write; the lock is already held, so do not acquire it again.
                 atomic_write_json(self.config.state_file, disk_state, use_lock=False, backup=True)
 
-                # v5.1 引入: 同步到 SQLite（失败时保留 pending 以便重试）
+                # Synchronize to SQLite; retain pending data on failure for retry (v5.1).
                 sqlite_pending_snapshot = self._snapshot_sqlite_pending()
                 sqlite_sync_ok = self._sync_to_sqlite()
 
-                # 同步内存为磁盘最新快照
+                # Refresh memory from the latest disk snapshot
                 self._state = disk_state
 
-                # state.json 侧 pending 已写盘，直接清空
+                # Clear state.json pending data after it has been persisted.
                 self._pending_disambiguation_warnings.clear()
                 self._pending_disambiguation_pending.clear()
                 self._pending_chapter_meta.clear()
@@ -405,7 +380,7 @@ class StateManager:
                 self._pending_progress_words_delta = 0
                 self._pending_chapter_status.clear()
 
-                # SQLite 侧 pending：成功后清空，失败则恢复快照（避免静默丢数据）
+                # Clear SQLite pending data on success; restore its snapshot on failure to avoid silent loss.
                 if sqlite_sync_ok:
                     self._pending_entity_patches.clear()
                     self._pending_alias_entries.clear()
@@ -421,15 +396,15 @@ class StateManager:
             raise RuntimeError("Cannot acquire the state.json lock; try again later")
 
     def _sync_to_sqlite(self) -> bool:
-        """同步待处理数据到 SQLite（v5.1 引入，v5.4 沿用）"""
+        "Synchronize pending data to SQLite; introduced in v5.1 and retained in v5.4."
         if not self._sql_state_manager:
             return True
 
-        # 方式1: 通过 process_chapter_result 收集的数据
+        # Method 1: data collected through process_chapter_result
         sqlite_data = self._pending_sqlite_data
         chapter = sqlite_data.get("chapter")
 
-        # 记录已处理的 (entity_id, chapter) 组合，避免重复写入 appearances
+        # Track processed (entity_id, chapter) pairs to avoid duplicate appearance writes.
         processed_appearances = set()
 
         if chapter is not None:
@@ -441,7 +416,7 @@ class StateManager:
                     state_changes=sqlite_data.get("state_changes", []),
                     relationships_new=sqlite_data.get("relationships_new", [])
                 )
-                # 标记已处理的出场记录
+                # Mark appearance records as processed
                 for entity in sqlite_data.get("entities_appeared", []):
                     if entity.get("id"):
                         processed_appearances.add((entity.get("id"), chapter))
@@ -453,8 +428,8 @@ class StateManager:
                 logger.warning("SQLite sync failed (process_chapter_entities): %s", exc)
                 return False
 
-        # 方式2: 使用 add_entity/update_entity 收集的增量数据。
-        # 数据缓存在 _pending_entity_patches 等变量中。
+        # Method 2: deltas collected through add_entity/update_entity
+        # Data is cached in _pending_entity_patches and related variables.
         try:
             return self._sync_pending_patches_to_sqlite(processed_appearances)
         except Exception as exc:
@@ -462,34 +437,29 @@ class StateManager:
             return False
 
     def _sync_pending_patches_to_sqlite(self, processed_appearances: set = None) -> bool:
-        """同步 _pending_entity_patches 等到 SQLite（v5.1 引入，v5.4 沿用）
-
-        Args:
-            processed_appearances: 已通过 process_chapter_entities 处理的 (entity_id, chapter) 集合，
-                                   用于避免重复写入 appearances 表（防止覆盖 mentions）
-        """
+        "Synchronize _pending_entity_patches and related data to SQLite (v5.1, retained in v5.4). processed_appearances contains (entity_id, chapter) pairs already handled by process_chapter_entities, preventing duplicate appearance writes from overwriting mentions."
         if not self._sql_state_manager:
             return True
 
         if processed_appearances is None:
             processed_appearances = set()
 
-        # 元数据字段（不应写入 current_json）
+        # Metadata fields must not be stored in current_json.
         METADATA_FIELDS = {"canonical_name", "tier", "desc", "is_protagonist", "is_archived"}
 
         try:
             from .sql_state_manager import EntityData
             from .index_manager import EntityMeta
 
-            # 同步实体补丁
+            # Synchronize entity patches
             for (entity_type, entity_id), patch in self._pending_entity_patches.items():
                 if patch.base_entity:
-                    # 新实体
+                    # New entity
                     entity_data = EntityData(
                         id=entity_id,
                         type=entity_type,
                         name=patch.base_entity.get("canonical_name", entity_id),
-                        tier=patch.base_entity.get("tier", "装饰"),
+                        tier=patch.base_entity.get("tier", "decorative"),
                         desc=patch.base_entity.get("desc", ""),
                         current=patch.base_entity.get("current", {}),
                         aliases=patch.base_entity.get("aliases", []),
@@ -499,7 +469,7 @@ class StateManager:
                     )
                     self._sql_state_manager.upsert_entity(entity_data)
 
-                    # 记录首次出场（跳过已处理的，避免覆盖 mentions）
+                    # Record the first appearance; skip processed entries to preserve mentions.
                     if patch.appearance_chapter is not None:
                         if (entity_id, patch.appearance_chapter) not in processed_appearances:
                             self._sql_state_manager._index_manager.record_appearance(
@@ -507,30 +477,30 @@ class StateManager:
                                 chapter=patch.appearance_chapter,
                                 mentions=[entity_data.name],
                                 confidence=1.0,
-                                skip_if_exists=True  # 关键：不覆盖已有记录
+                                skip_if_exists=True  # Important: do not overwrite existing records.
                             )
                 else:
-                    # 更新现有实体
+                    # Update an existing entity
                     has_metadata_updates = bool(patch.top_updates and
                                                  any(k in METADATA_FIELDS for k in patch.top_updates))
 
-                    # 非元数据的 top_updates 应该当作 current 更新
-                    # 例如：realm, layer, location 等状态字段
+                    # Treat non-metadata top_updates as current-state updates.
+                    # For example, realm, layer, location, and other state fields
                     non_metadata_top_updates = {
                         k: v for k, v in patch.top_updates.items()
                         if k not in METADATA_FIELDS
                     } if patch.top_updates else {}
 
-                    # 合并 current_updates 和非元数据的 top_updates
+                    # Merge current_updates with non-metadata top_updates
                     effective_current_updates = {**non_metadata_top_updates}
                     if patch.current_updates:
                         effective_current_updates.update(patch.current_updates)
 
                     if has_metadata_updates:
-                        # 有元数据更新：使用 upsert_entity(update_metadata=True)
+                        # For metadata changes, use upsert_entity(update_metadata=True).
                         existing = self._sql_state_manager.get_entity(entity_id)
                         if existing:
-                            # 合并 current
+                            # Merge current state
                             current = existing.get("current_json", {})
                             if isinstance(current, str):
                                 import json
@@ -545,7 +515,7 @@ class StateManager:
                                 id=entity_id,
                                 type=existing.get("type", entity_type),
                                 canonical_name=new_canonical_name or old_canonical_name,
-                                tier=patch.top_updates.get("tier", existing.get("tier", "装饰")),
+                                tier=patch.top_updates.get("tier", existing.get("tier", "decorative")),
                                 desc=patch.top_updates.get("desc", existing.get("desc", "")),
                                 current=current,
                                 first_appearance=existing.get("first_appearance", 0),
@@ -555,30 +525,30 @@ class StateManager:
                             )
                             self._sql_state_manager._index_manager.upsert_entity(entity_meta, update_metadata=True)
 
-                            # 如果 canonical_name 改名，自动注册新名字为 alias
+                            # Automatically register a new canonical_name as an alias when renamed.
                             if new_canonical_name and new_canonical_name != old_canonical_name:
                                 self._sql_state_manager.register_alias(
                                     new_canonical_name, entity_id, existing.get("type", entity_type)
                                 )
                     elif effective_current_updates:
-                        # 只有 current 更新（包括非元数据的 top_updates）
+                        # Only current-state updates, including non-metadata top_updates
                         self._sql_state_manager.update_entity_current(entity_id, effective_current_updates)
 
-                    # 更新 last_appearance 并记录出场
+                    # Update last_appearance and record the appearance
                     if patch.appearance_chapter is not None:
                         self._sql_state_manager._update_last_appearance(entity_id, patch.appearance_chapter)
-                        # 补充 appearances 记录
-                        # 使用 skip_if_exists=True 避免覆盖已有记录的 mentions
+                        # Add appearance records
+                        # Use skip_if_exists=True to preserve mentions in existing records.
                         if (entity_id, patch.appearance_chapter) not in processed_appearances:
                             self._sql_state_manager._index_manager.record_appearance(
                                 entity_id=entity_id,
                                 chapter=patch.appearance_chapter,
                                 mentions=[],
                                 confidence=1.0,
-                                skip_if_exists=True  # 关键：不覆盖已有记录
+                                skip_if_exists=True  # Important: do not overwrite existing records.
                             )
 
-            # 同步别名
+            # Synchronize aliases
             for alias, entries in self._pending_alias_entries.items():
                 for entry in entries:
                     entity_type = entry.get("type")
@@ -586,7 +556,7 @@ class StateManager:
                     if entity_type and entity_id:
                         self._sql_state_manager.register_alias(alias, entity_id, entity_type)
 
-            # 同步状态变化
+            # Synchronize state changes
             for change in self._pending_state_changes:
                 self._sql_state_manager.record_state_change(
                     entity_id=change.get("entity_id", ""),
@@ -597,12 +567,12 @@ class StateManager:
                     chapter=change.get("chapter", 0)
                 )
 
-            # 同步关系
+            # Synchronize relationships
             for rel in self._pending_structured_relationships:
                 self._sql_state_manager.upsert_relationship(
                     from_entity=rel.get("from_entity", ""),
                     to_entity=rel.get("to_entity", ""),
-                    type=rel.get("type", "相识"),
+                    type=rel.get("type", "acquaintance"),
                     description=rel.get("description", ""),
                     chapter=rel.get("chapter", 0)
                 )
@@ -610,12 +580,12 @@ class StateManager:
             return True
 
         except Exception as e:
-            # SQLite 同步失败时记录警告（不中断主流程）
+            # Warn on SQLite synchronization failure without interrupting the main workflow.
             logger.warning("SQLite sync failed: %s", e)
             return False
 
     def _snapshot_sqlite_pending(self) -> Dict[str, Any]:
-        """抓取 SQLite 侧 pending 快照，用于同步失败回滚内存队列。"""
+        "Snapshot pending SQLite data so the in-memory queue can be restored after synchronization failure."
         return {
             "entity_patches": deepcopy(self._pending_entity_patches),
             "alias_entries": deepcopy(self._pending_alias_entries),
@@ -625,7 +595,7 @@ class StateManager:
         }
 
     def _restore_sqlite_pending(self, snapshot: Dict[str, Any]) -> None:
-        """恢复 SQLite 侧 pending 快照，避免同步失败后数据静默丢失。"""
+        "Restore pending SQLite data to avoid silent data loss after synchronization failure."
         self._pending_entity_patches = snapshot.get("entity_patches", {})
         self._pending_alias_entries = snapshot.get("alias_entries", {})
         self._pending_state_changes = snapshot.get("state_changes", [])
@@ -639,7 +609,7 @@ class StateManager:
         })
 
     def _clear_pending_sqlite_data(self):
-        """清空待同步的 SQLite 数据"""
+        "Clear data pending SQLite synchronization."
         self._pending_sqlite_data = {
             "entities_appeared": [],
             "entities_new": [],
@@ -648,14 +618,14 @@ class StateManager:
             "chapter": None
         }
 
-    # ==================== 进度管理 ====================
+    # ==================== Progress management ====================
 
     def get_current_chapter(self) -> int:
-        """获取当前章节号"""
+        "Get the current chapter number."
         return self._state.get("progress", {}).get("current_chapter", 0)
 
     def update_progress(self, chapter: int, words: int = 0):
-        """更新进度"""
+        "Update progress."
         if "progress" not in self._state:
             self._state["progress"] = {}
         self._state["progress"]["current_chapter"] = chapter
@@ -663,7 +633,7 @@ class StateManager:
             total = self._state["progress"].get("total_words", 0)
             self._state["progress"]["total_words"] = total + words
 
-        # 记录增量：锁内合并时用 max(chapter) + words_delta 累加
+        # Record deltas; merge under the lock using max(chapter) and accumulated words_delta.
         if self._pending_progress_chapter is None:
             self._pending_progress_chapter = chapter
         else:
@@ -671,15 +641,15 @@ class StateManager:
         if words > 0:
             self._pending_progress_words_delta += int(words)
 
-    # ==================== 章节状态管理 ====================
+    # ==================== Chapter status management ====================
 
     def get_chapter_status(self, chapter: int) -> Optional[str]:
-        """查询章节状态。"""
+        "Query chapter status."
         statuses = self._state.get("progress", {}).get("chapter_status", {})
         return statuses.get(str(chapter))
 
     def set_chapter_status(self, chapter: int, status: str) -> None:
-        """设置章节状态（单调递进，不可回退）。"""
+        "Set chapter status monotonically; backward transitions are prohibited."
         valid_statuses = set(self.CHAPTER_STATUS_ORDER + [self.REJECTED_CHAPTER_STATUS])
         if status not in valid_statuses:
             raise ValueError(
@@ -695,7 +665,7 @@ class StateManager:
                     f"Chapter {chapter} status cannot move backward: {current} -> {status}"
                 )
             if new_idx == current_idx:
-                return  # 幂等
+                return  # Idempotent
 
         progress = self._state.setdefault("progress", {})
         chapter_status = progress.setdefault("chapter_status", {})
@@ -712,48 +682,48 @@ class StateManager:
             return -1
 
     def _save_state(self) -> None:
-        """直接持久化当前内存状态到 state.json（轻量写入，不走 pending 合并）。"""
+        "Persist the current in-memory state directly to state.json without pending-delta merging."
         self.config.ensure_dirs()
         atomic_write_json(self.config.state_file, self._state, backup=False)
 
-    # ==================== 实体管理 (v5.1 SQLite-first) ====================
+    # ==================== Entity management (v5.1 SQLite-first) ====================
 
     def get_entity(self, entity_id: str, entity_type: str = None) -> Optional[Dict]:
-        """获取实体（v5.1 引入：优先从 SQLite 读取）"""
-        # v5.1 引入: 优先从 SQLite 读取
+        "Get an entity, reading SQLite first as introduced in v5.1."
+        # Read from SQLite first, introduced in v5.1.
         if self._sql_state_manager:
             entity = self._sql_state_manager.get_entity(entity_id)
             if entity:
                 return entity
 
-        # 回退到内存 state (兼容未迁移场景)
+        # Fall back to in-memory state for projects not yet migrated.
         entities_v3 = self._state.get("entities_v3", {})
         if entity_type:
             return entities_v3.get(entity_type, {}).get(entity_id)
 
-        # 遍历所有类型查找
+        # Search across all entity types
         for type_name, entities in entities_v3.items():
             if entity_id in entities:
                 return entities[entity_id]
         return None
 
     def get_entity_type(self, entity_id: str) -> Optional[str]:
-        """获取实体所属类型"""
-        # v5.1 引入: 优先从 SQLite 读取
+        "Get an entity's type."
+        # Read from SQLite first, introduced in v5.1.
         if self._sql_state_manager:
             entity = self._sql_state_manager._index_manager.get_entity(entity_id)
             if entity:
                 return entity.get("type")
 
-        # 回退到内存 state
+        # Fall back to in-memory state
         for type_name, entities in self._state.get("entities_v3", {}).items():
             if entity_id in entities:
                 return type_name
         return None
 
     def get_all_entities(self) -> Dict[str, Dict]:
-        """获取所有实体（扁平化视图）"""
-        # v5.1 引入: 优先从 SQLite 读取
+        "Get all entities as a flattened view."
+        # Read from SQLite first, introduced in v5.1.
         if self._sql_state_manager:
             result = {}
             for entity_type in self.ENTITY_TYPES:
@@ -765,7 +735,7 @@ class StateManager:
             if result:
                 return result
 
-        # 回退到内存 state
+        # Fall back to in-memory state
         result = {}
         for type_name, entities in self._state.get("entities_v3", {}).items():
             for eid, e in entities.items():
@@ -773,19 +743,19 @@ class StateManager:
         return result
 
     def get_entities_by_type(self, entity_type: str) -> Dict[str, Dict]:
-        """按类型获取实体"""
-        # v5.1 引入: 优先从 SQLite 读取
+        "Get entities by type."
+        # Read from SQLite first, introduced in v5.1.
         if self._sql_state_manager:
             entities = self._sql_state_manager._index_manager.get_entities_by_type(entity_type)
             if entities:
                 return {e.get("id"): e for e in entities if e.get("id")}
 
-        # 回退到内存 state
+        # Fall back to in-memory state
         return self._state.get("entities_v3", {}).get(entity_type, {})
 
     def get_entities_by_tier(self, tier: str) -> Dict[str, Dict]:
-        """按层级获取实体"""
-        # v5.1 引入: 优先从 SQLite 读取
+        "Get entities by tier."
+        # Read from SQLite first, introduced in v5.1.
         if self._sql_state_manager:
             result = {}
             for entity_type in self.ENTITY_TYPES:
@@ -797,7 +767,7 @@ class StateManager:
             if result:
                 return result
 
-        # 回退到内存 state
+        # Fall back to in-memory state
         result = {}
         for type_name, entities in self._state.get("entities_v3", {}).items():
             for eid, e in entities.items():
@@ -806,10 +776,10 @@ class StateManager:
         return result
 
     def add_entity(self, entity: EntityState) -> bool:
-        """添加新实体（v5.0 entities_v3 格式，v5.4 沿用）"""
+        "Add an entity using the v5.0 entities_v3 format, retained in v5.4."
         entity_type = entity.type
         if entity_type not in self.ENTITY_TYPES:
-            entity_type = "角色"
+            entity_type = "character"
 
         if "entities_v3" not in self._state:
             self._state["entities_v3"] = {t: {} for t in self.ENTITY_TYPES}
@@ -817,11 +787,11 @@ class StateManager:
         if entity_type not in self._state["entities_v3"]:
             self._state["entities_v3"][entity_type] = {}
 
-        # 检查是否已存在
+        # Check whether the entity already exists
         if entity.id in self._state["entities_v3"][entity_type]:
             return False
 
-        # 转换为 v3 格式
+        # Convert to v3 format
         v3_entity = {
             "canonical_name": entity.name,
             "tier": entity.tier,
@@ -834,7 +804,7 @@ class StateManager:
         }
         self._state["entities_v3"][entity_type][entity.id] = v3_entity
 
-        # 记录实体补丁（新建：仅填充缺失字段，避免覆盖并发写入）
+        # Record a new-entity patch that fills only missing fields, preserving concurrent writes.
         patch = self._pending_entity_patches.get((entity_type, entity.id))
         if patch is None:
             patch = _EntityPatch(entity_type=entity_type, entity_id=entity.id)
@@ -842,7 +812,7 @@ class StateManager:
         patch.replace = True
         patch.base_entity = v3_entity
 
-        # v5.1 引入: 注册别名到 index.db (通过 SQLStateManager)
+        # Register aliases in index.db through SQLStateManager, introduced in v5.1.
         if self._sql_state_manager:
             self._sql_state_manager._index_manager.register_alias(entity.name, entity.id, entity_type)
             for alias in entity.aliases:
@@ -852,25 +822,25 @@ class StateManager:
         return True
 
     def _register_alias_internal(self, entity_id: str, entity_type: str, alias: str):
-        """内部方法：注册别名到 index.db（v5.1 引入）"""
+        "Register an alias in index.db internally; introduced in v5.1."
         if not alias:
             return
-        # v5.1 引入: 直接写入 SQLite
+        # Write directly to SQLite, introduced in v5.1.
         if self._sql_state_manager:
             self._sql_state_manager._index_manager.register_alias(alias, entity_id, entity_type)
 
     def update_entity(self, entity_id: str, updates: Dict[str, Any], entity_type: str = None) -> bool:
-        """更新实体属性（v5.0 引入，v5.4 沿用）"""
+        "Update entity attributes; introduced in v5.0 and retained in v5.4."
         # v5.1+ SQLite-first:
-        # - entity_type 可能来自 SQLite（entities 表），但 state.json 不再持久化 entities_v3。
-        # - 因此不能假设 self._state["entities_v3"][type][id] 一定存在（issues7 日志曾 KeyError）。
+        # entity_type may come from SQLite's entities table, while state.json no longer persists entities_v3.
+        # Do not assume self._state["entities_v3"][type][id] exists; the issues7 log previously recorded a KeyError here.
         resolved_type = entity_type or self.get_entity_type(entity_id)
         if not resolved_type:
             return False
         if resolved_type not in self.ENTITY_TYPES:
-            resolved_type = "角色"
+            resolved_type = "character"
 
-        # 仅在内存存在 v3 实体时才更新内存快照（不强行创建，避免 state.json 再膨胀）
+        # Update the in-memory snapshot only when a v3 entity exists; do not recreate it and inflate state.json.
         entities_v3 = self._state.get("entities_v3")
         entity = None
         if isinstance(entities_v3, dict):
@@ -878,7 +848,7 @@ class StateManager:
             if isinstance(bucket, dict):
                 entity = bucket.get(entity_id)
 
-        # SQLite 启用时，即使内存实体缺失，也要记录 patch，确保 current 能增量写回 index.db
+        # With SQLite enabled, record the patch even without an in-memory entity so current state reaches index.db incrementally.
         patch = None
         if self._sql_state_manager:
             patch = self._pending_entity_patches.get((resolved_type, entity_id))
@@ -917,7 +887,7 @@ class StateManager:
         return did_any
 
     def update_entity_appearance(self, entity_id: str, chapter: int, entity_type: str = None):
-        """更新实体出场章节"""
+        "Update an entity's appearance chapter."
         if not entity_type:
             entity_type = self.get_entity_type(entity_id)
         if not entity_type:
@@ -935,7 +905,7 @@ class StateManager:
                 entity["first_appearance"] = chapter
             entity["last_appearance"] = chapter
 
-            # 记录补丁：锁内应用 first=min(non-zero), last=max
+            # Apply the patch under the lock with first=min(non-zero) and last=max.
             patch = self._pending_entity_patches.get((entity_type, entity_id))
             if patch is None:
                 patch = _EntityPatch(entity_type=entity_type, entity_id=entity_id)
@@ -945,7 +915,7 @@ class StateManager:
             else:
                 patch.appearance_chapter = max(int(patch.appearance_chapter), int(chapter))
 
-    # ==================== 状态变化记录 ====================
+    # ==================== State change records ====================
 
     def record_state_change(
         self,
@@ -956,7 +926,7 @@ class StateManager:
         reason: str,
         chapter: int
     ):
-        """记录状态变化"""
+        "Record a state change."
         if "state_changes" not in self._state:
             self._state["state_changes"] = []
 
@@ -972,17 +942,17 @@ class StateManager:
         self._state["state_changes"].append(change_dict)
         self._pending_state_changes.append(change_dict)
 
-        # 同时更新实体属性
+        # Also update entity attributes
         self.update_entity(entity_id, {"attributes": {field: new_value}})
 
     def get_state_changes(self, entity_id: Optional[str] = None) -> List[Dict]:
-        """获取状态变化历史"""
+        "Get state-change history."
         changes = self._state.get("state_changes", [])
         if entity_id:
             changes = [c for c in changes if c.get("entity_id") == entity_id]
         return changes
 
-    # ==================== 关系管理 ====================
+    # ==================== Relationship management ====================
 
     def add_relationship(
         self,
@@ -992,7 +962,7 @@ class StateManager:
         description: str,
         chapter: int
     ):
-        """添加关系"""
+        "Add a relationship."
         rel = Relationship(
             from_entity=from_entity,
             to_entity=to_entity,
@@ -1001,7 +971,7 @@ class StateManager:
             chapter=chapter
         )
 
-        # v5.0 引入: 实体关系存入 structured_relationships，避免与 relationships(人物关系字典) 冲突
+        # Store entity relationships in structured_relationships to avoid conflicting with the character-relationship dictionary (v5.0).
         if "structured_relationships" not in self._state:
             self._state["structured_relationships"] = []
         rel_dict = asdict(rel)
@@ -1009,7 +979,7 @@ class StateManager:
         self._pending_structured_relationships.append(rel_dict)
 
     def get_relationships(self, entity_id: Optional[str] = None) -> List[Dict]:
-        """获取关系列表"""
+        "Get relationships."
         rels = self._state.get("structured_relationships", [])
         if entity_id:
             rels = [
@@ -1018,16 +988,10 @@ class StateManager:
             ]
         return rels
 
-    # ==================== 批量操作 ====================
+    # ==================== Batch operations ====================
 
     def _record_disambiguation(self, chapter: int, uncertain_items: Any) -> List[str]:
-        """
-        记录消歧反馈到 state.json，便于 Writer/Context Agent 感知风险。
-
-        约定：
-        - >= extraction_confidence_medium：写入 disambiguation_warnings（采用但警告）
-        - < extraction_confidence_medium：写入 disambiguation_pending（需人工确认）
-        """
+        "Record disambiguation feedback in state.json so Writer/Context agents can see risks. Confidence >= extraction_confidence_medium goes to disambiguation_warnings (accepted with warning); lower confidence goes to disambiguation_pending (requires human confirmation)."
         if not isinstance(uncertain_items, list) or not uncertain_items:
             return []
 
@@ -1048,7 +1012,7 @@ class StateManager:
             except (TypeError, ValueError):
                 confidence = 0.0
 
-            # 候选：支持 [{"type","id"}...] 或 ["id1","id2"] 两种形式
+            # Candidates support either [{"type", "id"}, ...] or ["id1", "id2"].
             candidates_raw = item.get("candidates", [])
             candidates: List[Dict[str, str]] = []
             if isinstance(candidates_raw, list):
@@ -1078,7 +1042,7 @@ class StateManager:
             elif adopted_raw is True:
                 chosen_id = suggested_id
             else:
-                # 兼容字段名：entity_id / chosen_id
+                # Compatible field names: entity_id / chosen_id
                 chosen_id = str(item.get("entity_id") or item.get("chosen_id") or "").strip() or suggested_id
 
             context = str(item.get("context", "") or "").strip()
@@ -1110,46 +1074,36 @@ class StateManager:
         return warnings
 
     def process_chapter_result(self, chapter: int, result: Dict) -> List[str]:
-        """
-        处理 Data Agent 的章节处理结果（v5.1 引入，v5.4 沿用）
-
-        输入格式:
-        - entities_appeared: 出场实体列表
-        - entities_new: 新实体列表
-        - state_changes: 状态变化列表
-        - relationships_new: 新关系列表
-
-        返回警告列表
-        """
+        "Process Data Agent chapter results (introduced in v5.1, retained in v5.4). Input fields are entities_appeared, entities_new, state_changes, and relationships_new, each containing its corresponding list. Return a list of warnings."
         warnings = []
 
-        # v5.1 引入: 记录章节号用于 SQLite 同步
+        # Record the chapter number for SQLite synchronization (v5.1).
         self._pending_sqlite_data["chapter"] = chapter
 
-        # 处理出场实体
+        # Process appearing entities
         for entity in result.get("entities_appeared", []):
             entity_id = entity.get("id")
             entity_type = entity.get("type")
             if entity_id:
                 self.update_entity_appearance(entity_id, chapter, entity_type)
-                resolved_type = entity_type or self.get_entity_type(entity_id) or "角色"
+                resolved_type = entity_type or self.get_entity_type(entity_id) or "character"
                 for alias in _unique_aliases(entity.get("mentions", [])):
                     entries = self._pending_alias_entries.setdefault(alias, [])
                     alias_entry = {"type": resolved_type, "id": entity_id}
                     if alias_entry not in entries:
                         entries.append(alias_entry)
-                # v5.1 引入: 缓存用于 SQLite 同步
+                # Cache for SQLite synchronization (v5.1).
                 self._pending_sqlite_data["entities_appeared"].append(entity)
 
-        # 处理新实体
+        # Process new entities
         for entity in result.get("entities_new", []):
             entity_id = entity.get("suggested_id") or entity.get("id")
             if entity_id and entity_id != "NEW":
                 new_entity = EntityState(
                     id=entity_id,
                     name=entity.get("name", ""),
-                    type=entity.get("type", "角色"),
-                    tier=entity.get("tier", "装饰"),
+                    type=entity.get("type", "character"),
+                    tier=entity.get("tier", "decorative"),
                     aliases=_unique_aliases(
                         entity.get("mentions", []), entity.get("aliases", [])
                     ),
@@ -1158,10 +1112,10 @@ class StateManager:
                 )
                 if not self.add_entity(new_entity):
                     warnings.append(f"Entity already exists: {entity_id}")
-                # v5.1 引入: 缓存用于 SQLite 同步
+                # Cache for SQLite synchronization (v5.1).
                 self._pending_sqlite_data["entities_new"].append(entity)
 
-        # 处理状态变化
+        # Process state changes
         for change in result.get("state_changes", []):
             self.record_state_change(
                 entity_id=change.get("entity_id", ""),
@@ -1171,10 +1125,10 @@ class StateManager:
                 reason=change.get("reason", ""),
                 chapter=chapter
             )
-            # v5.1 引入: 缓存用于 SQLite 同步
+            # Cache for SQLite synchronization (v5.1).
             self._pending_sqlite_data["state_changes"].append(change)
 
-        # 处理关系
+        # Process relationships
         for rel in result.get("relationships_new", []):
             self.add_relationship(
                 from_entity=rel.get("from", ""),
@@ -1183,27 +1137,27 @@ class StateManager:
                 description=rel.get("description", ""),
                 chapter=chapter
             )
-            # v5.1 引入: 缓存用于 SQLite 同步
+            # Cache for SQLite synchronization (v5.1).
             self._pending_sqlite_data["relationships_new"].append(rel)
 
-        # 处理消歧不确定项（不影响实体写入，但必须对 Writer 可见）
+        # Process uncertain disambiguations; they do not block entity writes but must be visible to the Writer.
         warnings.extend(self._record_disambiguation(chapter, result.get("uncertain", [])))
 
 
-        # 写入 chapter_meta（钩子/模式/结束状态）
+        # Write chapter_meta: hook, pattern, and ending state
         chapter_meta = result.get("chapter_meta")
         if isinstance(chapter_meta, dict):
             meta_key = f"{int(chapter):04d}"
             self._state.setdefault("chapter_meta", {})
             self._state["chapter_meta"][meta_key] = chapter_meta
             self._pending_chapter_meta[meta_key] = chapter_meta
-        # 更新进度
+        # Update progress
         self.update_progress(chapter)
 
-        # 同步主角状态（entities_v3 → protagonist_state）
+        # Synchronize protagonist state from entities_v3 to protagonist_state.
         self.sync_protagonist_from_entity()
 
-        # 长期记忆写入（best-effort，不阻断主流程）
+        # Write long-term memory on a best-effort basis without blocking the main workflow.
         try:
             from .memory.writer import MemoryWriter
 
@@ -1215,65 +1169,61 @@ class StateManager:
 
         return warnings
 
-    # ==================== 导出 ====================
+    # ==================== Export ====================
 
     def export_for_context(self) -> Dict:
-        """导出用于上下文的精简版状态（v5.0 引入，v5.4 沿用）"""
-        # 从 entities_v3 构建精简视图
+        "Export compact state for context; introduced in v5.0 and retained in v5.4."
+        # Build a compact view from entities_v3
         entities_flat = {}
         for type_name, entities in self._state.get("entities_v3", {}).items():
             for eid, e in entities.items():
                 entities_flat[eid] = {
                     "name": e.get("canonical_name", eid),
                     "type": type_name,
-                    "tier": e.get("tier", "装饰"),
+                    "tier": e.get("tier", "decorative"),
                     "current": e.get("current", {})
                 }
 
         return {
             "progress": self._state.get("progress", {}),
             "entities": entities_flat,
-            # v5.1 引入: alias_index 已迁移到 index.db，这里返回空（兼容性）
+            # alias_index moved to index.db in v5.1; return empty here for compatibility.
             "alias_index": {},
-            "recent_changes": [],  # v5.1 引入: 从 index.db 查询
+            "recent_changes": [],  # Query index.db, introduced in v5.1.
             "disambiguation": {
                 "warnings": self._state.get("disambiguation_warnings", [])[-self.config.export_disambiguation_slice:],
                 "pending": self._state.get("disambiguation_pending", [])[-self.config.export_disambiguation_slice:],
             },
         }
 
-    # ==================== 主角同步 ====================
+    # ==================== Protagonist synchronization ====================
 
     def get_protagonist_entity_id(self) -> Optional[str]:
-        """获取主角实体 ID（通过 is_protagonist 标记或 SQLite 查询）"""
-        # 方式1: 通过 SQLStateManager 查询 (v5.1)
+        "Get the protagonist entity ID from is_protagonist or a SQLite query."
+        # Method 1: query through SQLStateManager (v5.1)
         if self._sql_state_manager:
             protagonist = self._sql_state_manager.get_protagonist()
             if protagonist:
                 return protagonist.get("id")
 
-        # 方式2: 通过 protagonist_state.name 查找别名
+        # Method 2: look up aliases using protagonist_state.name
         protag_name = self._state.get("protagonist_state", {}).get("name")
         if protag_name and self._sql_state_manager:
             entities = self._sql_state_manager._index_manager.get_entities_by_alias(protag_name)
             for entry in entities:
-                if entry.get("type") == "角色":
+                if entry.get("type") == "character":
                     return entry.get("id")
 
         return None
 
     def sync_protagonist_from_entity(self, entity_id: str = None):
-        """
-        将主角实体的状态同步到 protagonist_state (v5.1: 从 SQLite 读取)
-
-        用于确保 consistency-checker 等依赖 protagonist_state 的组件获取最新数据
-        """
+        "Synchronize the protagonist entity into protagonist_state, reading SQLite in v5.1. This keeps consumers such as consistency-checker up to date."
         if entity_id is None:
             entity_id = self.get_protagonist_entity_id()
         if entity_id is None:
             return
 
-        entity = self.get_entity(entity_id, "角色")
+        entity = self.get_entity(entity_id, "character")
         if not entity:
             return
 
@@ -1289,14 +1239,14 @@ class StateManager:
             current = {}
         protag = self._state.setdefault("protagonist_state", {})
 
-        # 同步境界
+        # Synchronize cultivation realm
         if "realm" in current:
             power = protag.setdefault("power", {})
             power["realm"] = current["realm"]
             if "layer" in current:
                 power["layer"] = current["layer"]
 
-        # 同步位置
+        # Synchronize location
         if "location" in current:
             loc = protag.setdefault("location", {})
             loc["current"] = current["location"]
@@ -1304,11 +1254,7 @@ class StateManager:
                 loc["last_chapter"] = current["last_chapter"]
 
     def sync_protagonist_to_entity(self, entity_id: str = None):
-        """
-        将 protagonist_state 同步到 entities_v3 中的主角实体
-
-        用于初始化或手动编辑 protagonist_state 后保持一致性
-        """
+        "Synchronize protagonist_state into the protagonist entity in entities_v3 after initialization or manual editing."
         if entity_id is None:
             entity_id = self.get_protagonist_entity_id()
         if entity_id is None:
@@ -1320,23 +1266,23 @@ class StateManager:
 
         updates = {}
 
-        # 同步境界
+        # Synchronize cultivation realm
         power = protag.get("power", {})
         if power.get("realm"):
             updates["realm"] = power["realm"]
         if power.get("layer"):
             updates["layer"] = power["layer"]
 
-        # 同步位置
+        # Synchronize location
         loc = protag.get("location", {})
         if loc.get("current"):
             updates["location"] = loc["current"]
 
         if updates:
-            self.update_entity(entity_id, updates, "角色")
+            self.update_entity(entity_id, updates, "character")
 
 
-# ==================== CLI 接口 ====================
+# ==================== CLI ====================
 
 def main():
     import argparse
@@ -1352,28 +1298,28 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    # 读取进度
+    # Read progress
     subparsers.add_parser("get-progress")
 
-    # 获取实体
+    # Get an entity
     get_entity_parser = subparsers.add_parser("get-entity")
     get_entity_parser.add_argument("--id", required=True)
 
-    # 列出实体
+    # List entities
     list_parser = subparsers.add_parser("list-entities")
     list_parser.add_argument("--type", help="Filter by type")
     list_parser.add_argument("--tier", help="Filter by tier")
 
-    # 处理章节结果
+    # Process chapter results
     process_parser = subparsers.add_parser("process-chapter")
     process_parser.add_argument("--chapter", type=int, required=True, help="Chapter number")
     process_parser.add_argument("--data", required=True, help="Processing result as JSON")
 
-    # 查询章节状态
+    # Query chapter status
     status_get_parser = subparsers.add_parser("get-chapter-status")
     status_get_parser.add_argument("--chapter", type=int, required=True)
 
-    # 设置章节状态
+    # Set chapter status
     status_set_parser = subparsers.add_parser("set-chapter-status")
     status_set_parser.add_argument("--chapter", type=int, required=True)
     status_set_parser.add_argument("--status", required=True,
@@ -1383,10 +1329,10 @@ def main():
     args = parser.parse_args(argv)
     command_started_at = time.perf_counter()
 
-    # 初始化
+    # Initialize
     config = None
     if args.project_root:
-        # 允许传入“工作区根目录”，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+        # Accept a workspace root and resolve the actual book project_root, which must contain .webnovel/state.json.
         from project_locator import resolve_project_root
         from .config import DataModulesConfig
 

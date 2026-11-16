@@ -1,24 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-webnovel 统一入口（面向 skills / agents 的稳定 CLI）
-
-设计目标：
-- 只有一个入口命令，避免到处拼 `python -m data_modules.xxx ...` 导致参数位置/引号/路径炸裂。
-- 自动解析正确的 book project_root（包含 `.webnovel/state.json` 的目录）。
-- 所有写入类命令在解析到 project_root 后，统一前置 `--project-root` 传给具体模块。
-
-典型用法（推荐，不依赖 PYTHONPATH / 不要求 cd）：
-  python "<SCRIPTS_DIR>/webnovel.py" preflight
-  python "<SCRIPTS_DIR>/webnovel.py" where
-  python "<SCRIPTS_DIR>/webnovel.py" use "<PROJECT_ROOT>"
-  python "<SCRIPTS_DIR>/webnovel.py" --project-root "<PROJECT_ROOT>" index stats
-  python "<SCRIPTS_DIR>/webnovel.py" --project-root "<PROJECT_ROOT>" state process-chapter --chapter 100 --data @payload.json
-  python "<SCRIPTS_DIR>/webnovel.py" --project-root "<PROJECT_ROOT>" extract-context --chapter 100 --format json
-
-也支持（不推荐，容易踩 PYTHONPATH/cd/参数顺序坑）：
-  python -m data_modules.webnovel where
-"""
+"Stable unified webnovel CLI for skills and agents. Use one entry point to avoid argument-order, quoting, and path errors from assembling python -m data_modules.xxx commands. Resolve the book directory containing .webnovel/state.json automatically and prepend --project-root to downstream write commands. Recommended examples, independent of PYTHONPATH or working directory: python \"<SCRIPTS_DIR>/webnovel.py\" preflight; where; use \"<PROJECT_ROOT>\"; --project-root \"<PROJECT_ROOT>\" index stats; --project-root \"<PROJECT_ROOT>\" state process-chapter --chapter 100 --data @payload.json; --project-root \"<PROJECT_ROOT>\" extract-context --chapter 100 --format json. python -m data_modules.webnovel where is also supported but is more sensitive to PYTHONPATH, working directory, and argument order."
 
 from __future__ import annotations
 
@@ -46,7 +28,7 @@ def _scripts_dir() -> Path:
 
 
 def _resolve_root(explicit_project_root: Optional[str]) -> Path:
-    # 允许显式传入工作区根目录或书项目根目录
+    # Allow an explicit workspace root or book project root.
     raw = explicit_project_root
     if raw:
         return resolve_project_root(raw)
@@ -54,9 +36,7 @@ def _resolve_root(explicit_project_root: Optional[str]) -> Path:
 
 
 def _strip_project_root_args(argv: list[str]) -> list[str]:
-    """
-    下游工具统一由本入口注入 `--project-root`，避免重复传参导致 argparse 报错/歧义。
-    """
+    "Inject --project-root centrally for downstream tools, avoiding duplicate arguments and argparse errors or ambiguity."
     out: list[str] = []
     i = 0
     while i < len(argv):
@@ -130,11 +110,7 @@ def _run_data_module(module: str, argv: list[str]) -> int:
 
 
 def _run_script(script_name: str, argv: list[str]) -> int:
-    """
-    Run a script under `.claude/scripts/` via a subprocess.
-
-    用途：兼容没有 main() 的脚本。
-    """
+    "Run a script under .claude/scripts/ in a subprocess, supporting scripts without main()."
     script_path = _scripts_dir() / script_name
     if not script_path.is_file():
         raise FileNotFoundError(f"Script not found: {script_path}")
@@ -400,14 +376,14 @@ def cmd_use(args: argparse.Namespace) -> int:
             print(f"⚠️ path.resolve() failed ({workspace_root}): {exc}", file=sys.stderr)
             workspace_root = workspace_root
 
-    # 1) 写入工作区指针（若工作区内存在 `.claude/`）
+    # 1) Write a workspace pointer when the workspace contains .claude/.
     pointer_file = write_current_project_pointer(project_root, workspace_root=workspace_root)
     if pointer_file is not None:
         print(f"workspace pointer: {pointer_file}")
     else:
         print("workspace pointer: (skipped)")
 
-    # 2) 写入用户级 registry（保证全局安装/空上下文可恢复）
+    # 2) Write the user registry so global installations and empty contexts can recover the project.
     reg_path = update_global_registry_current_project(workspace_root=workspace_root, project_root=project_root)
     if reg_path is not None:
         print(f"global registry: {reg_path}")
@@ -590,13 +566,13 @@ def main() -> None:
     qr_parser.add_argument("--entity", required=True, help="Entity ID")
     qr_parser.add_argument("--at-chapter", type=int, required=True, help="Target chapter number")
 
-    # 兼容：允许 `--project-root` 出现在任意位置（减少 agents/skills 拼命令的出错率）
+    # Allow --project-root anywhere to reduce command-assembly errors in agents and skills.
     from .cli_args import normalize_global_project_root
 
     argv = normalize_global_project_root(sys.argv[1:])
     args, unknown_args = parser.parse_known_args(argv)
 
-    # where/use 直接执行
+    # Execute where/use directly
     if hasattr(args, "func"):
         if unknown_args:
             parser.error(f"unrecognized arguments: {' '.join(unknown_args)}")
@@ -608,16 +584,16 @@ def main() -> None:
         parser.error(f"unrecognized arguments: {' '.join(unknown_args)}")
 
     rest = _passthrough_tail(argv, tool) if tool in PASSTHROUGH_TOOLS else list(getattr(args, "args", []) or [])
-    # argparse.REMAINDER 可能以 `--` 开头占位，这里去掉
+    # Remove a leading -- placeholder from argparse.REMAINDER.
     if rest[:1] == ["--"]:
         rest = rest[1:]
     rest = _strip_project_root_args(rest)
 
-    # init 是创建项目，不应该依赖/注入已存在 project_root
+    # init creates a project and must not depend on or inject an existing project_root.
     if tool == "init":
         raise SystemExit(_run_script("init_project.py", rest))
 
-    # 其余工具：统一解析 project_root 后前置给下游
+    # For other tools, resolve project_root centrally and prepend it to downstream arguments.
     project_root = _resolve_root(args.project_root)
     forward_args = ["--project-root", str(project_root)]
 

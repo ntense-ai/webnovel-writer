@@ -150,7 +150,7 @@ class VectorProjectionWriter:
                 or payload.get("new_state")
                 or ""
             ).strip()
-            return f"第{chapter}章：{subject}突破至{new_val}" if new_val else ""
+            return f"Chapter {chapter}: {subject} advances to {new_val}" if new_val else ""
         elif event_type == "character_state_changed":
             field = str(
                 payload.get("field") or payload.get("field_path") or ""
@@ -164,16 +164,16 @@ class VectorProjectionWriter:
             ).strip()
             description = str(payload.get("description") or "").strip()
             if field and new_val:
-                return f"第{chapter}章：{subject}的{field}变为{new_val}"
+                return f"Chapter {chapter}: {subject}'s {field} becomes {new_val}"
             if new_val:
-                return f"第{chapter}章：{subject}变化为{new_val}"
+                return f"Chapter {chapter}: {subject} changes to {new_val}"
             if description:
-                return f"第{chapter}章：{subject}：{description}"
+                return f"Chapter {chapter}: {subject}: {description}"
             return ""
         elif event_type == "relationship_changed":
             to_entity = str(payload.get("to_entity") or payload.get("to") or "").strip()
             rel_type = str(payload.get("relationship_type") or payload.get("type") or "").strip()
-            return f"第{chapter}章：{subject}与{to_entity}关系变为{rel_type}" if to_entity else ""
+            return f"Chapter {chapter}: {subject} and {to_entity}: relationship changes to {rel_type}" if to_entity else ""
         elif event_type in ("world_rule_revealed", "world_rule_broken"):
             desc = str(
                 payload.get("description")
@@ -181,8 +181,8 @@ class VectorProjectionWriter:
                 or payload.get("rule_content")
                 or ""
             ).strip()
-            action = "揭示" if "revealed" in event_type else "打破"
-            return f"第{chapter}章：{action}世界规则——{desc}" if desc else ""
+            action = "reveal" if "revealed" in event_type else "break"
+            return f"Chapter {chapter}: {action} world rule: {desc}" if desc else ""
         elif event_type == "open_loop_created":
             description = str(
                 payload.get("description")
@@ -190,11 +190,11 @@ class VectorProjectionWriter:
                 or payload.get("content")
                 or ""
             ).strip()
-            return f"第{chapter}章：{subject}埋下悬念——{description}" if description else ""
+            return f"Chapter {chapter}: {subject} plants a mystery: {description}" if description else ""
         elif event_type == "artifact_obtained":
             name = str(payload.get("name") or subject or "").strip()
             owner = str(payload.get("owner") or payload.get("holder") or "").strip()
-            return f"第{chapter}章：{owner}获得{name}" if owner else f"第{chapter}章：获得{name}"
+            return f"Chapter {chapter}: {owner} obtains {name}" if owner else f"Chapter {chapter}: obtains {name}"
         return ""
 
     def _delta_to_text(self, delta: dict) -> str:
@@ -204,12 +204,12 @@ class VectorProjectionWriter:
         rel = str(delta.get("relationship_type") or "").strip()
 
         if from_e and to_e and rel:
-            return f"第{chapter}章：{from_e}与{to_e}关系变为{rel}"
+            return f"Chapter {chapter}: {from_e} and {to_e}: relationship changes to {rel}"
 
         entity_id = str(delta.get("entity_id") or "").strip()
         canonical = str(delta.get("canonical_name") or entity_id).strip()
         if entity_id:
-            return f"第{chapter}章：实体变更——{canonical}"
+            return f"Chapter {chapter}: entity change: {canonical}"
         return ""
 
     def _run_store_coro(self, coro: Coroutine[Any, Any, int]) -> int:

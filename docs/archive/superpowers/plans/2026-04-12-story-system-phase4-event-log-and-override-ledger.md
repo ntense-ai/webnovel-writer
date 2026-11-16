@@ -97,7 +97,7 @@ def test_story_event_supports_power_breakthrough():
             "chapter": 3,
             "event_type": "power_breakthrough",
             "subject": "xiaoyan",
-            "payload": {"from": "斗之气三段", "to": "斗者"},
+            "payload": {"from": "third-stage Dou Qi", "to": "Dou Zhe"},
         }
     )
     assert event.event_type == "power_breakthrough"
@@ -112,7 +112,7 @@ from data_modules.event_log_store import EventLogStore
 
 def test_event_log_store_writes_per_chapter_file_and_sqlite_mirror(tmp_path):
     store = EventLogStore(tmp_path)
-    store.write_events(3, [{"event_id": "evt-001", "event_type": "open_loop_created", "subject": "三年之约", "payload": {}}])
+    store.write_events(3, [{"event_id": "evt-001", "event_type": "open_loop_created", "subject": "three-year agreement", "payload": {}}])
     assert (tmp_path / ".story-system" / "events" / "chapter_003.events.json").is_file()
 
     conn = sqlite3.connect(tmp_path / ".webnovel" / "index.db")
@@ -342,8 +342,8 @@ def test_normalize_override_record_sets_record_type():
     row = normalize_override_record(
         record_type="contract_override",
         field="core_tone",
-        base_value="先压后爆",
-        override_value="当场爆发",
+        base_value="pressure before release",
+        override_value="immediate eruption",
         source_level="chapter",
     )
     assert row["record_type"] == "contract_override"
@@ -354,8 +354,8 @@ def test_normalize_override_record_supports_amend_proposal():
     row = normalize_override_record(
         record_type="amend_proposal",
         field="world_rule",
-        base_value="金手指每日一次",
-        override_value="金手指失控突破",
+        base_value="special power limited to once daily",
+        override_value="uncontrolled special-power breakthrough",
         source_level="master",
     )
     assert row["record_type"] == "amend_proposal"
@@ -369,8 +369,8 @@ def test_world_rule_broken_generates_amend_proposal():
             {
                 "event_id": "evt-001",
                 "event_type": "world_rule_broken",
-                "subject": "金手指",
-                "payload": {"field": "world_rule", "base_value": "每日一次", "proposed_value": "短时失控突破"},
+                "subject": "special power",
+                "payload": {"field": "world_rule", "base_value": "once daily", "proposed_value": "brief uncontrolled breakthrough"},
             }
         ],
     )
@@ -475,7 +475,7 @@ def persist_amend_proposals(conn, chapter: int, proposals: list[dict]) -> int:
                 row["source_level"],
                 proposal["reason_tag"],
                 "story_amend_proposal",
-                f"事件触发合同修订提案: {proposal['proposal_id']}",
+                f"eventtrigger a contract-amendment proposal: {proposal['proposal_id']}",
                 "pending",
             ),
         )
@@ -578,7 +578,7 @@ def test_story_events_cli_reads_chapter_file(tmp_path, monkeypatch, capsys):
     events_dir = tmp_path / ".story-system" / "events"
     events_dir.mkdir(parents=True, exist_ok=True)
     (events_dir / "chapter_003.events.json").write_text(
-        '[{"event_id":"evt-001","chapter":3,"event_type":"open_loop_created","subject":"三年之约","payload":{}}]',
+        '[{"event_id":"evt-001","chapter":3,"event_type":"open_loop_created","subject":"three-year agreement","payload":{}}]',
         encoding="utf-8",
     )
 
@@ -646,7 +646,7 @@ def main() -> None:
     print(json.dumps({"events": [dict(zip(columns, row)) for row in rows]}, ensure_ascii=False))
 
 # webnovel-writer/scripts/data_modules/webnovel.py
-p_story_events = sub.add_parser("story-events", help="转发到 story_events.py")
+p_story_events = sub.add_parser("story-events", help="forward to story_events.py")
 p_story_events.add_argument("args", nargs=argparse.REMAINDER)
 ```
 

@@ -185,7 +185,7 @@ class StateProjectionWriter:
 
     @staticmethod
     def _normalize_state_delta(delta: dict) -> dict:
-        """统一 state_delta 字段名：field/field_path → field, new/new_value → new."""
+        "Normalize state_delta field names: field/field_path to field, and new/new_value to new."
         result = dict(delta)
         if "field" not in result and "field_path" in result:
             result["field"] = result["field_path"]
@@ -197,7 +197,7 @@ class StateProjectionWriter:
 
     @staticmethod
     def _set_path(target: dict, path: str, value: Any) -> None:
-        """支持点号路径写入嵌套字典：'power.realm' → target['power']['realm']=value。"""
+        "Support dotted paths in nested dictionaries: power.realm assigns target['power']['realm'] = value."
         if not isinstance(target, dict) or not path:
             return
         if "." not in path:
@@ -214,14 +214,7 @@ class StateProjectionWriter:
         cursor[parts[-1]] = value
 
     def _collect_protagonist_ids(self, commit_payload: dict, state: dict) -> set[str]:
-        """聚合本次 commit + state.json 中已知的主角实体 ID。
-
-        识别信号（任一命中即视为主角）：
-        - entity_deltas 顶层或 payload 的 `is_protagonist: true`
-        - entity_deltas 顶层或 payload 的 `tier == "主角"`
-        - entity_deltas 的 canonical_name 与 state.protagonist_state.name 相同
-        - state.protagonist_state.entity_id 已经被显式设置过
-        """
+        "Collect protagonist IDs from this commit and state.json. Recognize any of these signals: is_protagonist: true at entity_deltas top level or in payload; a protagonist tier at either location; canonical_name matching state.protagonist_state.name; or an explicitly set state.protagonist_state.entity_id."
         ids: set[str] = set()
 
         protagonist_state = state.get("protagonist_state") or {}
@@ -246,18 +239,14 @@ class StateProjectionWriter:
             tier = str(metadata.get("tier") or "").strip()
             canonical = str(metadata.get("canonical_name") or "").strip()
             if (
-                tier == "主角"
+                tier == "protagonist"
                 or (protagonist_name and canonical == protagonist_name)
             ):
                 ids.add(eid)
         return ids
 
     def _apply_foreshadowing(self, state: dict, chapter: int, commit_payload: dict) -> int:
-        """把 open_loop 事件聚合进 plot_threads.foreshadowing（issue #130）。
-
-        幂等：created 按 content 去重；closed 对已 resolved 条目不重复改写，
-        因此 projections replay 重放任意章节不会产生重复或抖动。
-        """
+        "Aggregate open_loop events into plot_threads.foreshadowing (issue #130). Deduplicate created entries by content and do not rewrite already resolved closed entries, keeping arbitrary projection replays free of duplication or oscillation."
         if chapter <= 0:
             return 0
         loop_events = [

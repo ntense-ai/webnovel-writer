@@ -1,6 +1,6 @@
 # Webnovel Writer System Architecture Diagrams
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > Generated: 2026-04-15
 > Scope: read/write relationships across the complete init → plan → write pipeline
@@ -61,8 +61,8 @@ graph LR
 
     subgraph STORE_INIT["Output files"]
         S_STATE["state.json"]
-        S_SETTING["设定集/*.md"]
-        S_OUTLINE["大纲/总纲.md"]
+        S_SETTING["settings/*.md"]
+        S_OUTLINE["outlines/master-outline.md"]
         S_IDEA["idea_bank.json"]
         S_MASTER["MASTER_SETTING.json"]
         S_ANTI["anti_patterns.json"]
@@ -73,7 +73,7 @@ graph LR
         R_GENRE_PROFILE["genre-profiles.md"]
         R_WORLD["worldbuilding/*.md"]
         R_CREATIVE["creativity/*.md"]
-        R_CSV_NAME["命名规则.csv"]
+        R_CSV_NAME["naming.csv"]
     end
 
     R_GENRE_TROPES -->|"Read"| I1
@@ -96,8 +96,8 @@ graph LR
     I4 -->|"Write"| S_ANTI
 
     subgraph CSV_ENGINE["story-system engine"]
-        CSV_ROUTE["题材与调性推理.csv (routing)"]
-        CSV_REASON["裁决规则.csv (adjudication)"]
+        CSV_ROUTE["genre-routing.csv (routing)"]
+        CSV_REASON["adjudication.csv (adjudication)"]
         CSV_BASE["5 base tables (naming/characters/techniques/settings/scenes)"]
         CSV_DYN["2 dynamic tables (plot beats/payoffs)"]
     end
@@ -124,8 +124,8 @@ graph LR
 
     subgraph READ_PLAN["Inputs"]
         R_STATE2["state.json"]
-        R_OUTLINE2["大纲/总纲.md"]
-        R_SETTING2["设定集/*.md"]
+        R_OUTLINE2["outlines/master-outline.md"]
+        R_SETTING2["settings/*.md"]
         R_IDEA2["idea_bank.json"]
         R_SUMMARY["summaries/ (between volumes)"]
         R_KNOWLEDGE["knowledge query (between volumes)"]
@@ -134,10 +134,10 @@ graph LR
     end
 
     subgraph WRITE_PLAN["Outputs"]
-        W_BEAT["大纲/第X卷-节拍表.md"]
-        W_TIMELINE["大纲/第X卷-时间线.md"]
-        W_DETAIL["大纲/第X卷-详细大纲.md"]
-        W_SETTING2["设定集/*.md (incremental)"]
+        W_BEAT["outlines/Volume X-beattable.md"]
+        W_TIMELINE["outlines/Volume X-timeline.md"]
+        W_DETAIL["outlines/Volume X-detailedoutlines.md"]
+        W_SETTING2["settings/*.md (incremental)"]
         W_VOLUME["volumes/volume_NNN.json"]
         W_CHAP_CONTRACT["chapters/chapter_NNN.json"]
         W_REVIEW_CONTRACT["reviews/chapter_NNN.review.json"]
@@ -232,7 +232,7 @@ graph TB
         ST_MEMORY["memory_scratchpad.json (memory)"]
         ST_VECTOR["vector_db (vector index)"]
         ST_COMMIT["commits/chapter_NNN.commit.json (post-writing source of truth)"]
-        ST_CHAPTER["正文/第NNNN章.md"]
+        ST_CHAPTER["chapters/chapter-NNNN.md"]
         ST_TMP["tmp/*.json (intermediate artifacts)"]
     end
 
@@ -245,12 +245,12 @@ graph TB
     end
 
     subgraph OUTLINE["Outline"]
-        OL_DETAIL["大纲/第X卷-详细大纲.md"]
+        OL_DETAIL["outlines/Volume X-detailedoutlines.md"]
     end
 
     subgraph CSV["CSV knowledge layer"]
-        CSV_R["题材与调性推理.csv (routing)"]
-        CSV_J["裁决规则.csv (adjudication)"]
+        CSV_R["genre-routing.csv (routing)"]
+        CSV_J["adjudication.csv (adjudication)"]
         CSV_ALL["7 base + dynamic tables"]
     end
 
@@ -328,8 +328,8 @@ graph TB
     end
 
     subgraph L2["Layer 2: Reasoning"]
-        ROUTE["题材与调性推理.csv → _route()"]
-        REASON["裁决规则.csv → _load_reasoning()"]
+        ROUTE["genre-routing.csv → _route()"]
+        REASON["adjudication.csv → _load_reasoning()"]
         APPLY["_apply_reasoning() + _rank_anti_patterns()"]
     end
 
@@ -406,16 +406,16 @@ graph TB
 
 ```mermaid
 graph LR
-    INIT_USER["User selects a genre (e.g. '修仙', cultivation)"]
-    STATE_GENRE["state.json<br/>project.genre='修仙'<br/> (init configuration snapshot / read-model)"]
+    INIT_USER["User selects a genre (e.g. 'cultivation', cultivation)"]
+    STATE_GENRE["state.json<br/>project.genre='cultivation'<br/> (init configuration snapshot / read-model)"]
     
-    STORY_CLI["story-system CLI<br/>--genre '修仙'"]
+    STORY_CLI["story-system CLI<br/>--genre 'cultivation'"]
     
-    ROUTE_TABLE["题材与调性推理.csv<br/>_route(): fallback"]
-    REASON_TABLE["裁决规则.csv<br/>_load_reasoning('修仙')<br/>alias match → 东方仙侠 (Eastern xianxia)"]
+    ROUTE_TABLE["genre-routing.csv<br/>_route(): fallback"]
+    REASON_TABLE["adjudication.csv<br/>_load_reasoning('cultivation')<br/>alias match → Easternxianxia (Eastern xianxia)"]
     
     MASTER_OUT["MASTER_SETTING.json<br/>route.primary_genre"]
-    CHAPTER_OUT["chapter_NNN.json<br/>reasoning.genre='东方仙侠'<br/>reasoning.style_priority<br/>reasoning.pacing_strategy"]
+    CHAPTER_OUT["chapter_NNN.json<br/>reasoning.genre='Easternxianxia'<br/>reasoning.style_priority<br/>reasoning.pacing_strategy"]
     
     CTX_AGENT["context-agent<br/>Read reasoning fields<br/>from load-context"]
     

@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-记忆契约类型与 Protocol 定义。
-
-上层消费者（context-agent、data-agent、reviewer）只依赖本模块的类型和协议，
-不直接依赖 StateManager / IndexManager / ScratchpadManager 等具体实现。
-
-具体实现见 memory_contract_adapter.py。
-"""
+'Memory contract types and Protocol definitions. Consumers such as context-agent, data-agent, and reviewer depend only on these types and protocols, not concrete StateManager, IndexManager, or ScratchpadManager implementations. See memory_contract_adapter.py for the implementation.'
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -15,12 +8,12 @@ from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
 
 
 # ---------------------------------------------------------------------------
-# 契约返回类型
+# Contract return types
 # ---------------------------------------------------------------------------
 
 @dataclass
 class CommitResult:
-    """commit_chapter 的返回值。"""
+    'Return value of commit_chapter.'
     chapter: int
     entities_added: int = 0
     entities_updated: int = 0
@@ -36,11 +29,11 @@ class CommitResult:
 
 @dataclass
 class EntitySnapshot:
-    """query_entity 的返回值。"""
+    'Return value of query_entity.'
     id: str
     name: str
-    type: str = "角色"
-    tier: str = "核心"
+    type: str = "character"
+    tier: str = "core"
     aliases: List[str] = field(default_factory=list)
     attributes: Dict[str, Any] = field(default_factory=dict)
     first_appearance: int = 0
@@ -53,7 +46,7 @@ class EntitySnapshot:
 
 @dataclass
 class Rule:
-    """query_rules 的返回值项。"""
+    'An item returned by query_rules.'
     id: str
     subject: str
     field: str
@@ -67,7 +60,7 @@ class Rule:
 
 @dataclass
 class OpenLoop:
-    """get_open_loops 的返回值项。"""
+    'An item returned by get_open_loops.'
     id: str
     content: str
     status: str = "active"
@@ -81,7 +74,7 @@ class OpenLoop:
 
 @dataclass
 class TimelineEvent:
-    """get_timeline 的返回值项。"""
+    'An item returned by get_timeline.'
     event: str
     chapter: int = 0
     time_hint: str = ""
@@ -93,7 +86,7 @@ class TimelineEvent:
 
 @dataclass
 class ContextPack:
-    """load_context 的返回值。sections 由调用者解释具体结构。"""
+    'Return value of load_context. Callers interpret the structure of sections.'
     chapter: int
     sections: Dict[str, Any] = field(default_factory=dict)
     budget_used_tokens: int = 0
@@ -103,40 +96,37 @@ class ContextPack:
 
 
 # ---------------------------------------------------------------------------
-# 契约 Protocol
+# Contract Protocol
 # ---------------------------------------------------------------------------
 
 @runtime_checkable
 class MemoryContract(Protocol):
-    """记忆模块统一契约。
-
-    上层消费者依赖此 Protocol，不依赖具体实现类。
-    """
+    'Unified memory-module contract. Higher-level consumers depend on this Protocol rather than concrete implementation classes.'
 
     def commit_chapter(self, chapter: int, result: dict) -> CommitResult:
-        """写后提交：将章节处理结果写入所有存储。"""
+        'Post-writing commit: write chapter-processing results to every store.'
         ...
 
     def load_context(self, chapter: int, budget_tokens: int = 4000) -> ContextPack:
-        """写前读取：加载章节上下文包。"""
+        'Pre-writing read: load the chapter context package.'
         ...
 
     def query_entity(self, entity_id: str) -> Optional[EntitySnapshot]:
-        """查询单个实体快照。"""
+        'Query a single entity snapshot.'
         ...
 
     def query_rules(self, domain: str = "") -> List[Rule]:
-        """查询世界规则，可按 domain 过滤。"""
+        'Query world rules, optionally filtered by domain.'
         ...
 
     def read_summary(self, chapter: int) -> str:
-        """读取章节摘要文本。"""
+        'Read chapter-summary text.'
         ...
 
     def get_open_loops(self, status: str = "active") -> List[OpenLoop]:
-        """查询未闭合伏笔/悬念。"""
+        'Query unresolved foreshadowing and suspense threads.'
         ...
 
     def get_timeline(self, from_ch: int, to_ch: int) -> List[TimelineEvent]:
-        """查询章节范围内的时间线事件。"""
+        'Query timeline events within a chapter range.'
         ...

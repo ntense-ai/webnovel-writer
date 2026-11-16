@@ -11,7 +11,7 @@ argument-hint: "[chapter number] [--fast|--minimal]"
 
 Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+New projects use English-only paths, filenames, schema keys, and enum identifiers. Use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Resolve paths with `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"`; resolve individual files with `--path outlines/master-outline.md` or the corresponding English relative path. Pass resolved paths to subagents. This branch targets newly created projects and does not migrate or support old project layouts or schemas. Do not rename, overwrite, or merge existing book content automatically. Story prose and names may contain Unicode characters; that does not change the English project schema.
 
 ## Goal
 
@@ -40,10 +40,10 @@ User requirements > state-machine hard gates > project constraints (master outli
 ## CSV search (Step 2, on demand)
 
 ```bash
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill write --table {表名} --query "{关键词}" --genre {题材}
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill write --table {tablename} --query "{keywords}" --genre {genre}
 ```
 
-Triggers and exact table identifiers: new character → `命名规则` (naming rules), combat → `场景写法` (scene techniques), multi-character dialogue → `写作技法` (writing techniques), emotional description → `写作技法`, frequently used plot situations → `场景写法`.
+Triggers and exact table identifiers: new character → `naming` (naming rules), combat → `scenes` (scene techniques), multi-character dialogue → `techniques` (writing techniques), emotional description → `techniques`, frequently used plot situations → `scenes`.
 
 ## Procedure
 

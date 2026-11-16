@@ -1,0 +1,246 @@
+# Wartime Resistance and Espionage Template
+
+> Runtime preset identifier: `wartime-espionage` (English taxonomy and initialization preset).
+
+> **Core appeal**: Identity contests + information warfare + survival under pressure. Walk a knife-edge behind enemy lines, defending convictions with intelligence and courage.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack M10
+- General overlay: Pack U02
+
+## 1. Core Subgenres
+
+### Deep Cover
+- **Features**: Long-term infiltration of enemy organizations to obtain intelligence.
+- **Core payoffs**: Managing identities, risky victories, crucial intelligence.
+- **Representative works**: *Lurk*, *Kite*, *The Disguiser*, *Cliff*.
+
+### Resistance Behind Enemy Lines
+- **Features**: Guerrilla resistance and attacks on the enemy.
+- **Core payoffs**: Tactical superiority, defeating greater numbers, national solidarity.
+- **Representative works**: *Drawing Sword*, *Snow Leopard*, *My Chief and My Regiment*.
+
+### Intelligence Warfare
+- **Features**: Contests between intelligence organizations.
+- **Core payoffs**: Intellectual duels, codebreaking, counterespionage schemes.
+- **Representative works**: *Plot Against*, *Decoded*, *The Message*.
+
+### Agent Operations
+- **Features**: Carry out special missions.
+- **Core payoffs**: Thrills and accomplishing seemingly impossible missions.
+- **Representative works**: *Sparrow*, *Rookie Agent Rouge*, *Qipao*.
+
+---
+
+## 2. Worldbuilding: Espionage Society
+
+### Faction Landscape
+| Faction | Features | Goal |
+|------|------|------|
+| Protagonist's side | Underground Communist Party/Juntong | Resist Japan and save the country |
+| Japanese side | Intelligence agencies | Suppress resistance |
+| Wang collaborationist regime | Puppet government | Maintain its rule |
+| Middle factions | Waiting and watching | Self-preservation |
+
+### Intelligence Organizations
+| Organization | Alignment | Features |
+|------|------|------|
+| Underground Chinese Communist Party | Protagonist's side | Firm convictions |
+| Juntong | Nationalist Party | Ruthless methods |
+| Japanese Special Higher Police | Enemy | Cruel and cunning |
+| No. 76 | Wang regime | Collaborators and defectors |
+
+### Cover Levels
+| Position | Features | Risk |
+|------|------|------|
+| Senior infiltrator | High-value intelligence | Extreme |
+| Mid-level infiltrator | Executes missions | High |
+| Peripheral personnel | Transmits intelligence | Medium |
+| Courier | Liaison | Medium-high |
+
+---
+
+## 3. Espionage System Design
+
+### Intelligence Work
+```
+Collection:
+- Personal infiltration.
+- Technical theft.
+- Recruiting defectors.
+
+Transmission:
+- Coded telegrams.
+- Dead drops.
+- Couriers.
+
+Analysis:
+- Codebreaking.
+- Assessing authenticity.
+- Strategic judgment.
+```
+
+### Identity Management
+| Element | Description | Risk |
+|------|------|--------|
+| Public identity | Cover role | Investigation |
+| Social ties | Personal network | Guilt by association |
+| Habits | Everyday behavior | Revealing inconsistencies |
+| Emotional ties | Romance/family | Exploitation |
+
+### Counter-Surveillance Elements
+```
+Everyday precautions:
+- Check for surveillance.
+- Remove traces.
+- Establish recognition signals.
+
+Emergency responses:
+- Evacuate urgently.
+- Destroy evidence.
+- Activate a backup identity.
+```
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Victory in Danger
+- **Scene**: Cover is about to be exposed; escape seems impossible.
+- **Payoff**: A thrilling escape from danger.
+- **Key**: Provide a plausible way out.
+
+### Outsmarting Enemy Agents
+- **Scene**: A contest of wits and courage against hostile operatives.
+- **Payoff**: Superior intelligence defeats the opponent.
+- **Key**: Both sides must be intelligent.
+
+### Crucial Intelligence
+- **Scene**: Obtain information capable of changing the war.
+- **Payoff**: Enormous intelligence value and far-reaching effects.
+- **Example**: Obtain enemy operational plans.
+
+### Successful Defection
+- **Scene**: Persuade an enemy operative to switch sides.
+- **Payoff**: Turn an enemy into an ally and expand gains.
+- **Key**: Make the persuasion process believable.
+
+---
+
+## 5. Outline Structure (Standard: 1 Million Chinese Characters)
+
+### Volume One: Infiltration (Chapters 1-60)
+- **Core**: Establish an identity and foothold.
+- **Status**: Peripheral personnel.
+- **Climax**: First important mission.
+
+### Volume Two: Taking Root (Chapters 61-150)
+- **Core**: Penetrate deeper and gain trust.
+- **Status**: Core personnel.
+- **Climax**: Obtain important intelligence.
+
+### Volume Three: Crisis (Chapters 151-250)
+- **Core**: The protagonist's identity comes under suspicion.
+- **Status**: Under investigation.
+- **Climax**: Resolve the crisis.
+
+### Volume Four: Counterattack (Chapters 251-350)
+- **Core**: Take the initiative and strike the enemy.
+- **Status**: Crucial operative.
+- **Climax**: A major operation succeeds.
+
+### Volume Five: Victory (Chapters 351-400)
+- **Core**: Victory arrives and the true identity is revealed.
+- **Status**: Hero.
+- **Climax**: Satisfying resolution.
+
+---
+
+## 6. Character Design
+
+### Protagonist Types
+| Type | Features | Advantage |
+|------|------|------|
+| Calm and restrained | Composed | Reveals no inconsistencies |
+| Quick-witted and flexible | Adapts instantly | Resolves crises |
+| Firm believer | Strong will | Cannot be shaken |
+| Double life | Excellent actor | Perfect disguise |
+
+### Core Supporting Cast
+| Role | Function | Relationship to protagonist |
+|------|------|-----------|
+| Handler | Command | Trust/tests |
+| Comrade | Coordination | Shared life and death |
+| Enemy agent | Opponent | Contest of wits and courage |
+| Lover | Emotional thread | Attachment/cover |
+
+### Antagonist Design
+| Type | Features | Threat |
+|------|------|------|
+| Cunning agent | Experienced | Hard to deceive |
+| Traitor | Knows inside information | Lethal danger |
+| Fanatical officer | Cruel methods | Threat to life |
+
+---
+
+## 7. Period Atmosphere
+
+### Historical Background
+| Period | Features | Central conflict |
+|------|------|----------|
+| Early resistance war | Full-scale war | National survival |
+| Middle war | Stalemate | Struggle behind enemy lines |
+| Late war | Victory approaches | Competing over the fruits of victory |
+
+### Scene Design
+```
+Everyday scenes:
+- Dance halls/cafes.
+- Government offices.
+- Streets and alleys.
+
+Tense scenes:
+- Interrogation rooms.
+- Secret meetings.
+- Pursuit and escape.
+
+Climactic scenes:
+- Intelligence handover.
+- Identity revelation.
+- Life-or-death choices.
+```
+
+### Detail Elements
+- Period clothing: qipao and Zhongshan suits.
+- Communication: telegrams and coded signals.
+- Transport: rickshaws and cars.
+- Social settings: foreign concessions and occupied areas.
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ Excessive sentimentality that undermines realism.
+- ❌ Making antagonists stupid.
+- ❌ Excessive plot armor.
+- ❌ Errors in basic historical knowledge.
+
+### Recommended Practices
+- ✅ Restrained but powerful emotion.
+- ✅ Intelligent antagonists.
+- ✅ Real crises and costs for the protagonist.
+- ✅ Accurate historical details.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="identity" name="Identity name" desc="Cover occupation" tier="level" cover="Public identity" real="True identity" risk="Exposure risk"/>
+<entity type="intelligence" name="Intelligence content" desc="Value" tier="level" source="Source" destination="Destination"/>
+<entity type="mission" name="Mission name" desc="Goal" tier="level" difficulty="Difficulty" deadline="Time limit"/>
+<entity type="relationship" name="personA-personB" desc="Apparent relationship" tier="level" truth="Actual relationship" trust="Trust level"/>
+```

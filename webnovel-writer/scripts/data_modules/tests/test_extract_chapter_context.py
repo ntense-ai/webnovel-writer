@@ -16,9 +16,9 @@ def test_extract_state_summary_accepts_dominant_key(tmp_path):
     state = {
         "progress": {"current_chapter": 12, "total_words": 12345},
         "protagonist_state": {
-            "power": {"realm": "筑基", "layer": 2},
-            "location": "宗门",
-            "golden_finger": {"name": "系统", "level": 1},
+            "power": {"realm": "foundation-establishment", "layer": 2},
+            "location": "sect",
+            "golden_finger": {"name": "System", "level": 1},
         },
         "strand_tracker": {
             "history": [
@@ -44,13 +44,13 @@ def test_extract_chapter_outline_supports_hyphen_filename(tmp_path):
 
     from extract_chapter_context import extract_chapter_outline
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷-详细大纲.md").write_text("### 第1章：测试标题\n测试大纲", encoding="utf-8")
+    (outline_dir / "volume-1-outline.md").write_text("### Chapter 1: Test title\nTest outline", encoding="utf-8")
 
     outline = extract_chapter_outline(tmp_path, 1)
-    assert "### 第1章：测试标题" in outline
-    assert "测试大纲" in outline
+    assert "### Chapter 1: Test title" in outline
+    assert "Test outline" in outline
 
 
 def test_extract_chapter_outline_prefers_state_volume_mapping(tmp_path):
@@ -72,13 +72,13 @@ def test_extract_chapter_outline_prefers_state_volume_mapping(tmp_path):
     }
     (webnovel_dir / "state.json").write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第2卷-详细大纲.md").write_text("### 第12章：V2标题\nV2大纲", encoding="utf-8")
+    (outline_dir / "volume-2-outline.md").write_text("### Chapter 12: V2Title\nV2outlines", encoding="utf-8")
 
     outline = extract_chapter_outline(tmp_path, 12)
-    assert "### 第12章：V2标题" in outline
-    assert "V2大纲" in outline
+    assert "### Chapter 12: V2Title" in outline
+    assert "V2outlines" in outline
 
 
 def test_extract_chapter_outline_falls_back_when_state_has_no_match(tmp_path):
@@ -93,13 +93,13 @@ def test_extract_chapter_outline_falls_back_when_state_has_no_match(tmp_path):
     state = {"progress": {"volumes_planned": [{"volume": 1, "chapters_range": "1-10"}]}}
     (webnovel_dir / "state.json").write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第2卷-详细大纲.md").write_text("### 第60章：V2标题\nV2大纲", encoding="utf-8")
+    (outline_dir / "volume-2-outline.md").write_text("### Chapter 60: V2Title\nV2outlines", encoding="utf-8")
 
     outline = extract_chapter_outline(tmp_path, 60)
-    assert "### 第60章：V2标题" in outline
-    assert "V2大纲" in outline
+    assert "### Chapter 60: V2Title" in outline
+    assert "V2outlines" in outline
 
 
 def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
@@ -118,9 +118,9 @@ def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
         "project": {"genre": "xuanhuan"},
         "progress": {"current_chapter": 3, "total_words": 9000},
         "protagonist_state": {
-            "power": {"realm": "筑基", "layer": 2},
-            "location": "宗门",
-            "golden_finger": {"name": "系统", "level": 1},
+            "power": {"realm": "foundation-establishment", "layer": 2},
+            "location": "sect",
+            "golden_finger": {"name": "System", "level": 1},
         },
         "strand_tracker": {"history": [{"chapter": 2, "dominant": "quest"}]},
         "chapter_meta": {},
@@ -131,20 +131,20 @@ def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
 
     summaries_dir = cfg.webnovel_dir / "summaries"
     summaries_dir.mkdir(parents=True, exist_ok=True)
-    (summaries_dir / "ch0002.md").write_text("## 剧情摘要\n上一章总结", encoding="utf-8")
+    (summaries_dir / "ch0002.md").write_text("## Plot Summary\nPrevious chapter summary", encoding="utf-8")
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷 详细大纲.md").write_text("### 第3章：测试标题\n测试大纲", encoding="utf-8")
+    (outline_dir / "volume-1-outline.md").write_text("### Chapter 3: Test title\nTest outline", encoding="utf-8")
 
     refs_dir = tmp_path / ".claude" / "references"
     refs_dir.mkdir(parents=True, exist_ok=True)
-    (refs_dir / "genre-profiles.md").write_text("## xuanhuan\n- 升级线清晰", encoding="utf-8")
-    (refs_dir / "reading-power-taxonomy.md").write_text("## xuanhuan\n- 悬念钩优先", encoding="utf-8")
+    (refs_dir / "genre-profiles.md").write_text("## xuanhuan\n- Clear progression arc", encoding="utf-8")
+    (refs_dir / "reading-power-taxonomy.md").write_text("## xuanhuan\n- Prioritize suspense hooks", encoding="utf-8")
 
     idx = IndexManager(cfg)
     idx.save_chapter_reading_power(
-        ChapterReadingPowerMeta(chapter=2, hook_type="悬念钩", hook_strength="strong", coolpoint_patterns=["身份掉马"])
+        ChapterReadingPowerMeta(chapter=2, hook_type="mystery", hook_strength="strong", coolpoint_patterns=["Identity revelation"])
     )
     idx.save_review_metrics(
         ReviewMetrics(start_chapter=1, end_chapter=2, overall_score=71, dimension_scores={"plot": 71})
@@ -169,7 +169,7 @@ def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "VOLUME_BRIEF"},
-                "volume_goal": {"summary": "卷一目标"},
+                "volume_goal": {"summary": "Volume One goal"},
             },
             ensure_ascii=False,
         ),
@@ -179,7 +179,7 @@ def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "CHAPTER_BRIEF", "chapter": 3},
-                "override_allowed": {"chapter_focus": "测试标题"},
+                "override_allowed": {"chapter_focus": "Test title"},
             },
             ensure_ascii=False,
         ),
@@ -189,7 +189,7 @@ def test_build_chapter_context_payload_includes_contract_sections(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "REVIEW_CONTRACT", "chapter": 3},
-                "blocking_rules": ["不可提前摊牌"],
+                "blocking_rules": ["Do not reveal the hand early"],
             },
             ensure_ascii=False,
         ),
@@ -235,9 +235,9 @@ def test_build_chapter_context_payload_exposes_latest_rejected_commit(tmp_path):
     cfg.state_file.write_text(
         json.dumps(
             {
-                "project": {"genre": "修仙"},
+                "project": {"genre": "cultivation"},
                 "progress": {"current_chapter": 2},
-                "protagonist_state": {"name": "韩立"},
+                "protagonist_state": {"name": "Han Li"},
                 "chapter_meta": {},
                 "disambiguation_warnings": [],
                 "disambiguation_pending": [],
@@ -247,9 +247,9 @@ def test_build_chapter_context_payload_exposes_latest_rejected_commit(tmp_path):
         encoding="utf-8",
     )
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷-详细大纲.md").write_text("### 第3章：测试标题\n测试大纲", encoding="utf-8")
+    (outline_dir / "volume-1-outline.md").write_text("### Chapter 3: Test title\nTest outline", encoding="utf-8")
 
     story_root = tmp_path / ".story-system"
     (story_root / "chapters").mkdir(parents=True, exist_ok=True)
@@ -259,7 +259,7 @@ def test_build_chapter_context_payload_exposes_latest_rejected_commit(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "修仙"},
+                "route": {"primary_genre": "cultivation"},
             },
             ensure_ascii=False,
         ),
@@ -312,28 +312,28 @@ def test_render_text_contains_writing_guidance_section(tmp_path):
 
     payload = {
         "chapter": 10,
-        "outline": "测试大纲",
-        "previous_summaries": ["### 第9章摘要\n上一章"],
-        "state_summary": "状态",
+        "outline": "Test outline",
+        "previous_summaries": ["### Chapter 9 summary\nprevious chapter"],
+        "state_summary": "State",
         "context_contract_version": "v2",
         "context_weight_stage": "early",
         "reader_signal": {"review_trend": {"overall_avg": 72}, "low_score_ranges": [{"start_chapter": 8, "end_chapter": 9}]},
         "genre_profile": {
             "genre": "xuanhuan",
             "genres": ["xuanhuan", "realistic"],
-            "composite_hints": ["以玄幻主线推进，同时保留现实议题表达"],
-            "reference_hints": ["升级线清晰"],
+            "composite_hints": ["Advance the xuanhuan main plot，retain commentary on real-world issues"],
+            "reference_hints": ["Clear progression arc"],
         },
         "writing_guidance": {
-            "guidance_items": ["先修低分", "钩子差异化"],
+            "guidance_items": ["Fix low scores first", "Hook differentiation"],
             "checklist": [
                 {
                     "id": "fix_low_score_range",
-                    "label": "修复低分区间问题",
+                    "label": "Fix issues in the low-scoring range",
                     "weight": 1.4,
                     "required": True,
                     "source": "reader_signal.low_score_ranges",
-                    "verify_hint": "至少完成1处冲突升级",
+                    "verify_hint": "Complete at least1conflict escalations",
                 }
             ],
             "checklist_score": {
@@ -360,10 +360,10 @@ def test_render_text_contains_writing_guidance_section(tmp_path):
     text = _render_text(payload)
     parsed = json.loads(text)
     assert "writing_guidance" in parsed
-    assert parsed["writing_guidance"]["guidance_items"][0] == "先修低分"
+    assert parsed["writing_guidance"]["guidance_items"][0] == "Fix low scores first"
     assert parsed["context_contract_version"] == "v2"
     assert parsed["context_weight_stage"] == "early"
-    assert parsed["writing_guidance"]["checklist"][0]["label"] == "修复低分区间问题"
+    assert parsed["writing_guidance"]["checklist"][0]["label"] == "Fix issues in the low-scoring range"
     assert parsed["writing_guidance"]["checklist_score"]["score"] == 81.5
     assert parsed["genre_profile"]["genres"] == ["xuanhuan", "realistic"]
     assert parsed["writing_guidance"]["methodology"]["enabled"] is True
@@ -379,9 +379,9 @@ def test_render_text_contains_rag_assist_section_when_hits_exist(tmp_path):
 
     payload = {
         "chapter": 12,
-        "outline": "测试大纲",
+        "outline": "Test outline",
         "previous_summaries": [],
-        "state_summary": "状态",
+        "state_summary": "State",
         "context_contract_version": "v2",
         "reader_signal": {},
         "genre_profile": {},
@@ -390,14 +390,14 @@ def test_render_text_contains_rag_assist_section_when_hits_exist(tmp_path):
             "invoked": True,
             "mode": "auto",
             "intent": "relationship",
-            "query": "第12章 人物关系与动机：萧炎与药老发生冲突",
+            "query": "Chapter 12 Character relationships and motivation: Xiao Yan and Yao Lao clash",
             "hits": [
                 {
                     "chapter": 9,
                     "scene_index": 2,
                     "source": "graph_hybrid",
                     "score": 0.91,
-                    "content": "萧炎与药老在修炼方向上发生分歧。",
+                    "content": "Xiao Yan and Yao Lao disagree about cultivation。",
                 }
             ],
         },
@@ -408,7 +408,7 @@ def test_render_text_contains_rag_assist_section_when_hits_exist(tmp_path):
     assert parsed["rag_assist"]["invoked"] is True
     assert parsed["rag_assist"]["mode"] == "auto"
     assert parsed["rag_assist"]["hits"][0]["source"] == "graph_hybrid"
-    assert "萧炎与药老" in parsed["rag_assist"]["hits"][0]["content"]
+    assert "Xiao Yan and Yao Lao" in parsed["rag_assist"]["hits"][0]["content"]
 
 
 def test_build_chapter_context_payload_includes_plot_structure(tmp_path):
@@ -430,28 +430,28 @@ def test_build_chapter_context_payload_includes_plot_structure(tmp_path):
     }
     (webnovel_dir / "state.json").write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
 
-    outline_dir = tmp_path / "大纲"
+    outline_dir = tmp_path / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷-详细大纲.md").write_text(
-        """### 第5章：试炼开局
-CBN：萧炎抵达外院试炼场
-CPNs：
-- 导师宣布试炼规则
-- 萧炎发现规则被人做了手脚
-CEN：萧炎决定先隐忍观察
-必须覆盖节点：规则异常暴露、决定隐忍
-本章禁区：不能直接揭穿黑手
+    (outline_dir / "volume-1-outline.md").write_text(
+        """### Chapter 5: Trial Opening
+CBN: Xiao Yan reaches the outer-court trial grounds
+CPNs:
+- The mentor announces the trial rules
+- Xiao Yan discovers someone tampered with the rules
+CEN: Xiao Yan decides to endure and observe
+Must-cover nodes: expose abnormal rules、Decides to endure
+Chapter prohibitions: Do not expose the mastermind directly
 """,
         encoding="utf-8",
     )
 
     payload = build_chapter_context_payload(tmp_path, 5)
     plot_structure = payload.get("plot_structure") or {}
-    assert plot_structure.get("cbn") == "萧炎抵达外院试炼场"
-    assert plot_structure.get("cpns") == ["导师宣布试炼规则", "萧炎发现规则被人做了手脚"]
-    assert plot_structure.get("cen") == "萧炎决定先隐忍观察"
-    assert plot_structure.get("mandatory_nodes") == ["规则异常暴露", "决定隐忍"]
-    assert plot_structure.get("prohibitions") == ["不能直接揭穿黑手"]
+    assert plot_structure.get("cbn") == "Xiao Yan reaches the outer-court trial grounds"
+    assert plot_structure.get("cpns") == ["The mentor announces the trial rules", "Xiao Yan discovers someone tampered with the rules"]
+    assert plot_structure.get("cen") == "Xiao Yan decides to endure and observe"
+    assert plot_structure.get("mandatory_nodes") == ["expose abnormal rules", "Decides to endure"]
+    assert plot_structure.get("prohibitions") == ["Do not expose the mastermind directly"]
 
 
 def test_render_text_contains_plot_structure_section(tmp_path):
@@ -463,16 +463,16 @@ def test_render_text_contains_plot_structure_section(tmp_path):
 
     payload = {
         "chapter": 8,
-        "outline": "测试大纲",
+        "outline": "Test outline",
         "previous_summaries": [],
-        "state_summary": "状态",
+        "state_summary": "State",
         "context_contract_version": "v2",
         "plot_structure": {
-            "cbn": "主角进入遗迹",
-            "cpns": ["发现石碑异常", "与守卫短暂交锋"],
-            "cen": "决定深入遗迹核心",
-            "mandatory_nodes": ["发现石碑异常"],
-            "prohibitions": ["不能提前拿到终极传承"],
+            "cbn": "The protagonist enters the ruins",
+            "cpns": ["discover an anomaly in the stone tablet", "brief clash with the guard"],
+            "cen": "decides to enter the heart of the ruins",
+            "mandatory_nodes": ["discover an anomaly in the stone tablet"],
+            "prohibitions": ["Do not obtain the ultimate inheritance early"],
         },
         "reader_signal": {},
         "genre_profile": {},
@@ -482,10 +482,10 @@ def test_render_text_contains_plot_structure_section(tmp_path):
 
     text = _render_text(payload)
     parsed = json.loads(text)
-    assert parsed["plot_structure"]["cbn"] == "主角进入遗迹"
-    assert parsed["plot_structure"]["cpns"] == ["发现石碑异常", "与守卫短暂交锋"]
-    assert parsed["plot_structure"]["cen"] == "决定深入遗迹核心"
-    assert "不能提前拿到终极传承" in parsed["plot_structure"]["prohibitions"]
+    assert parsed["plot_structure"]["cbn"] == "The protagonist enters the ruins"
+    assert parsed["plot_structure"]["cpns"] == ["discover an anomaly in the stone tablet", "brief clash with the guard"]
+    assert parsed["plot_structure"]["cen"] == "decides to enter the heart of the ruins"
+    assert "Do not obtain the ultimate inheritance early" in parsed["plot_structure"]["prohibitions"]
 
 
 def test_render_text_contains_contract_first_runtime_section(tmp_path):
@@ -497,20 +497,20 @@ def test_render_text_contains_contract_first_runtime_section(tmp_path):
 
     payload = {
         "chapter": 12,
-        "outline": "测试大纲",
+        "outline": "Test outline",
         "previous_summaries": [],
-        "state_summary": "状态",
+        "state_summary": "State",
         "context_contract_version": "v2",
         "context_weight_stage": "mid",
         "story_contract": {
             "review_contract": {
-                "blocking_rules": ["不可提前摊牌", "不能让配角代替主角兑现"],
+                "blocking_rules": ["Do not reveal the hand early", "Do not let a supporting character deliver the protagonist's payoff"],
             }
         },
         "prewrite_validation": {
             "blocking": False,
-            "forbidden_zones": ["不可提前摊牌"],
-            "fulfillment_seed": {"planned_nodes": ["发现陷阱", "决定隐忍"]},
+            "forbidden_zones": ["Do not reveal the hand early"],
+            "fulfillment_seed": {"planned_nodes": ["Discover the trap", "Decides to endure"]},
         },
         "plot_structure": {},
         "reader_signal": {},
@@ -535,9 +535,9 @@ def test_render_text_contains_runtime_status_section(tmp_path):
     text = _render_text(
         {
             "chapter": 3,
-            "outline": "测试大纲",
+            "outline": "Test outline",
             "previous_summaries": [],
-            "state_summary": "旧状态摘要",
+            "state_summary": "old state summary",
             "context_contract_version": "v2",
             "reader_signal": {},
             "genre_profile": {},

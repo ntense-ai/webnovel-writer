@@ -95,7 +95,7 @@ def test_accepted_event_model_rejects_blank_subject_and_unknown_type():
                 {
                     "event_type": "open_loop_created",
                     "subject": "   ",
-                    "payload": {"content": "三年之约提及"},
+                    "payload": {"content": "mention of the three-year challenge"},
                 }
             ],
         )

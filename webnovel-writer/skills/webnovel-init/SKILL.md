@@ -11,7 +11,7 @@ argument-hint: "[book title or inspiration (optional)]"
 
 Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+New projects use English-only paths, filenames, schema keys, and enum identifiers. Use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Resolve paths with `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"`; resolve individual files with `--path outlines/master-outline.md` or the corresponding English relative path. Pass resolved paths to subagents. This branch targets newly created projects and does not migrate or support old project layouts or schemas. Do not rename, overwrite, or merge existing book content automatically. Story prose and names may contain Unicode characters; that does not change the English project schema.
 
 ## Goals
 
@@ -23,7 +23,7 @@ New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples be
 
 1. Collect first, then generate; do not run `webnovel.py init` before passing the sufficiency gate.
 2. Ask in waves, requesting only information that is currently missing and blocks the next step. Do not repeat questions the user has answered; let the user resolve conflicts.
-3. Reference-book deconstruction returns structured results only. Before user confirmation, do not write to `idea_bank.json`, `.story-system`, `设定集`, `大纲`, `正文`, `.webnovel/state.json`, or any canon/read-model file.
+3. Reference-book deconstruction returns structured results only. Before user confirmation, do not write to `idea_bank.json`, `.story-system`, `settings`, `outlines`, `chapters`, `.webnovel/state.json`, or any canon/read-model file.
 
 ## Reference loading strategy
 
@@ -36,7 +36,7 @@ Paths: `references/` means `skills/webnovel-init/references/`; `../../references
 | Character development stalled | Flat characters | `references/worldbuilding/character-design.md` |
 | Worldbuilding/power | On demand | `references/worldbuilding/faction-systems.md`, `references/worldbuilding/power-systems.md`, `references/worldbuilding/world-rules.md`, `references/worldbuilding/setting-consistency.md` |
 | Creative constraints | Step 6 | `references/creativity/creativity-constraints.md` (during collection read `## I. Idea Package Schema`, `## VI. Hard Constraints`, and `## VIII. Scoring System`; for score presentation read `### 8.1 Five Dimensions`), `references/creativity/selling-points.md` (`## 9. Design Templates` skeleton; supplement with `### 1.3 Core Formulas` and `## 7. Practical Checklists`, as needed); for hybrid genres read `creative-combination.md`; when stuck read `inspiration-collection.md`; load matching `anti-trope-*.md` for the genre |
-| Naming | Start naming | `python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill init --table 命名规则 --query "{命名对象} {题材}" --genre {题材}` |
+| Naming | Start naming | `python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill init --table naming --query "{naming_target} {genre}" --genre {genre}` |
 
 Read these long-form guides (creative constraints, anti-trope libraries, worldbuilding guides, selling-point templates) on demand; do not inline their entries.
 
@@ -88,7 +88,7 @@ When the user chooses reference-work deconstruction and provides a text path or 
 ```text
 Use the Agent tool to run `webnovel-writer:deconstruction-agent`.
 
-Prompt: reference_title={reference_title}; reference_source={reference_source}; reference_text_path={reference_text_path}; reference_text_excerpt={reference_text_excerpt}; analysis_mode={quick|deep|auto}; init_goal={当前初始化故事方向或空}; target_genre={题材或空}. Return only an init_reference_research JSON object. Do not write files, create directories, or write .story-system, .webnovel, 设定集, 大纲, 正文, idea_bank.json, state.json, or any canon/read-model files.
+Prompt: reference_title={reference_title}; reference_source={reference_source}; reference_text_path={reference_text_path}; reference_text_excerpt={reference_text_excerpt}; analysis_mode={quick|deep|auto}; init_goal={current initialization direction or empty}; target_genre={genre or empty}. Return only an init_reference_research JSON object. Do not write files, create directories, or write .story-system, .webnovel, settings, outlines, chapters, idea_bank.json, state.json, or any canon/read-model files.
 ```
 
 After the call, the main workflow must record a `SubagentRun` summary (for the final report only; do not write it into canon):
@@ -119,9 +119,9 @@ Handling rules:
 
 Required: title, genre (A+B hybrids supported), target scale (total word count or chapters), one-sentence story, core conflict, target readers/platform.
 
-Canonical genre set (written to `project_info.genre`): 都市, 玄幻, 仙侠, 奇幻, 科幻, 历史, 悬疑, 游戏, 古言, 现言, 幻言, 年代, 种田, 快穿, 衍生. These are runtime identifiers for urban, xuanhuan, xianxia, fantasy, science fiction, historical, mystery, gaming, historical romance, contemporary romance, fantasy romance, period fiction, farming, quick transmigration, and derivative fiction.
+Canonical genre set (written to `project_info.genre`): urban, xuanhuan, xianxia, fantasy, sci-fi, historical, mystery, game-lit, historical-romance, contemporary-romance, fantasy-romance, period-fiction, farming, quick-transmigration, fanfiction. These are runtime identifiers for urban, xuanhuan, xianxia, fantasy, science fiction, historical, mystery, gaming, historical romance, contemporary romance, fantasy romance, period fiction, farming, quick transmigration, and derivative fiction.
 
-Users may freely enter subgenre presets / tropes / formats; the initialization script maps them to canonical genres and loads templates according to the taxonomy (examples: 修仙, 系统流, 规则怪谈, 宫斗宅斗, 电竞, 末世: cultivation, system fiction, rules horror, palace/household intrigue, esports, apocalypse). Prefer free-form user descriptions followed by structured confirmation; offer 2–4 candidate directions when they are stuck.
+Users may freely enter subgenre presets / tropes / formats; the initialization script maps them to canonical genres and loads templates according to the taxonomy (examples: cultivation, system-fiction, rules-horror, palace-household-intrigue, esports, apocalypse: cultivation, system fiction, rules horror, palace/household intrigue, esports, apocalypse). Prefer free-form user descriptions followed by structured confirmation; offer 2–4 candidate directions when they are stuck.
 
 ### Step 3: Character skeleton and relationship conflicts
 
@@ -241,8 +241,8 @@ test "$(basename "${PROJECT_ROOT}")" = "${PROJECT_SLUG}"
 
 Success criteria:
 - `state.json` exists and title/genre/target_words/target_chapters are nonempty.
-- Core setting files exist: `worldbuilding.md`, `power-system.md`, `protagonist.md`; do not generate `protagonist-team.md` for a single protagonist or `heroine.md` when `heroine_config=无女主`.
-- By default, do not generate `金手指设计.md`, `复合题材-融合逻辑.md`, `爽点规划.md`, or empty directories; their sources of truth are the protagonist sheet, worldbuilding, and volume outline.
+- Core setting files exist: `worldbuilding.md`, `power-system.md`, `protagonist.md`; do not generate `protagonist-team.md` for a single protagonist or `heroine.md` when `heroine_config=none`.
+- By default, do not generate `special-power-design.md`, `hybrid-genre.md`, `payoff-plan.md`, or empty directories; their sources of truth are the protagonist sheet, worldbuilding, and volume outline.
 - `master-outline.md` has its core plot and constraint fields filled; `idea_bank.json` is written and matches the final selected plan.
 - `.story-system/MASTER_SETTING.json` exists and `route.primary_genre` is nonempty.
 

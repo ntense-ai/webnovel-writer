@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-长期记忆 schema 定义。
-"""
+"Long-term memory schema definitions."
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -36,7 +34,7 @@ CATEGORY_KEY_RULES: Dict[str, tuple[str, ...]] = {
 
 
 def memory_item_key(item: "MemoryItem") -> tuple:
-    """根据 category 规则计算 MemoryItem 的去重 key。供 store/compactor 共用。"""
+    "Compute a MemoryItem deduplication key using category rules, shared by the store and compactor."
     fields = CATEGORY_KEY_RULES.get(item.category)
     if not fields:
         return (item.id,)

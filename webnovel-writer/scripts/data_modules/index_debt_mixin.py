@@ -13,23 +13,12 @@ from typing import Any, Dict, List, Optional
 
 class IndexDebtMixin:
     def create_override_contract(self, contract: OverrideContractMeta) -> int:
-        """
-        创建或更新 Override Contract
-
-        使用 SQLite 的 INSERT ... ON CONFLICT ... DO UPDATE 实现原子 UPSERT：
-        - 并发安全，无需显式锁
-        - 保持 id 不变，避免 chase_debt.override_contract_id 悬挂
-        - 完全冻结终态：已 fulfilled/cancelled 的合约所有字段都不会被修改
-
-        兼容性：支持 SQLite 3.24+（ON CONFLICT 语法），不依赖 RETURNING（3.35+）
-
-        返回合约 ID
-        """
+        'Create or update an Override Contract using SQLite INSERT ... ON CONFLICT ... DO UPDATE for an atomic UPSERT. Safe under concurrency without explicit locks; preserves the ID so chase_debt.override_contract_id cannot dangle; freezes all fields once fulfilled or cancelled. Requires SQLite 3.24+ for ON CONFLICT and does not depend on RETURNING (3.35+). Return the contract ID.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 使用 ON CONFLICT 实现原子 UPSERT（SQLite 3.24+）
-            # 终态完全冻结：fulfilled/cancelled 状态下所有字段都保持不变
+            # Use ON CONFLICT for an atomic UPSERT (SQLite 3.24+).
+            # Freeze terminal states completely: preserve every field when fulfilled or cancelled.
             cursor.execute(
                 """
                 INSERT INTO override_contracts
@@ -75,7 +64,7 @@ class IndexDebtMixin:
                 ),
             )
 
-            # 不使用 RETURNING（需要 SQLite 3.35+），改用查询获取 id
+            # Query the ID rather than use RETURNING, which requires SQLite 3.35+.
             cursor.execute(
                 """
                 SELECT id FROM override_contracts
@@ -85,7 +74,7 @@ class IndexDebtMixin:
             )
             row = cursor.fetchone()
             if not row:
-                # UPSERT 后查不到记录是异常情况，不应发生
+                # A missing record after UPSERT is an unexpected error.
                 raise RuntimeError(
                     f"Cannot retrieve ID after override contract UPSERT: "
                     f"chapter={contract.chapter}, type={contract.constraint_type}, "
@@ -97,7 +86,7 @@ class IndexDebtMixin:
             return contract_id
 
     def get_pending_overrides(self, before_chapter: int = None) -> List[Dict]:
-        """获取待偿还的Override Contracts"""
+        'Get Override Contracts awaiting repayment.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             if before_chapter:
@@ -118,7 +107,7 @@ class IndexDebtMixin:
             return [dict(row) for row in cursor.fetchall()]
 
     def get_overdue_overrides(self, current_chapter: int) -> List[Dict]:
-        """获取已逾期的Override Contracts"""
+        'Get overdue Override Contracts.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -132,7 +121,7 @@ class IndexDebtMixin:
             return [dict(row) for row in cursor.fetchall()]
 
     def fulfill_override(self, contract_id: int) -> bool:
-        """标记Override Contract为已偿还"""
+        'Mark an Override Contract fulfilled.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -148,7 +137,7 @@ class IndexDebtMixin:
             return cursor.rowcount > 0
 
     def get_chapter_overrides(self, chapter: int) -> List[Dict]:
-        """获取某章创建的Override Contracts"""
+        'Get Override Contracts created in a chapter.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -159,14 +148,10 @@ class IndexDebtMixin:
             )
             return [dict(row) for row in cursor.fetchall()]
 
-    # ==================== v5.3 追读力债务操作 ====================
+    # ==================== v5.3 Reader-engagement debt operations ====================
 
     def create_debt(self, debt: ChaseDebtMeta) -> int:
-        """
-        创建追读力债务
-
-        返回债务 ID
-        """
+        'Create reader-engagement debt and return its ID.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -190,20 +175,20 @@ class IndexDebtMixin:
             conn.commit()
             debt_id = cursor.lastrowid
 
-            # 记录创建事件
+            # Record the creation event.
             self._record_debt_event(
                 cursor,
                 debt_id,
                 "created",
                 debt.original_amount,
                 debt.source_chapter,
-                f"创建债务: {debt.debt_type}",
+                f"Create debt: {debt.debt_type}",
             )
             conn.commit()
             return debt_id
 
     def get_active_debts(self) -> List[Dict]:
-        """获取所有活跃债务"""
+        'Get all active debts.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -214,7 +199,7 @@ class IndexDebtMixin:
             return [dict(row) for row in cursor.fetchall()]
 
     def get_overdue_debts(self, current_chapter: int) -> List[Dict]:
-        """获取已逾期的债务（包括 active 但已过期的，以及已标记为 overdue 的）"""
+        'Get overdue debts, including expired active debts and those already marked overdue.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -229,7 +214,7 @@ class IndexDebtMixin:
             return [dict(row) for row in cursor.fetchall()]
 
     def get_total_debt_balance(self) -> float:
-        """获取总债务余额（包括 active 和 overdue）"""
+        'Get the total outstanding balance, including active and overdue debts.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -239,15 +224,7 @@ class IndexDebtMixin:
             return cursor.fetchone()[0]
 
     def accrue_interest(self, current_chapter: int) -> Dict[str, Any]:
-        """
-        计算利息（每章调用一次）
-
-        - 对 active 和 overdue 债务都计息（逾期债务继续累积利息）
-        - 使用 debt_events 表防止同一章重复计息
-        - 检查逾期并更新状态
-
-        返回: {debts_processed, total_interest, new_overdues, skipped_already_processed}
-        """
+        'Accrue interest once per chapter. Both active and overdue debts accrue interest. Use debt_events to prevent duplicate accrual for the same chapter, and check and update overdue status. Return {debts_processed, total_interest, new_overdues, skipped_already_processed}.'
         result = {
             "debts_processed": 0,
             "total_interest": 0.0,
@@ -258,7 +235,7 @@ class IndexDebtMixin:
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 获取所有未偿还债务（active + overdue 都继续计息）
+            # Get all outstanding debts; both active and overdue balances continue accruing interest.
             cursor.execute("""
                 SELECT * FROM chase_debt WHERE status IN ('active', 'overdue')
             """)
@@ -271,7 +248,7 @@ class IndexDebtMixin:
                 due_chapter = debt["due_chapter"]
                 debt_status = debt["status"]
 
-                # 检查本章是否已计息（防止重复调用）
+                # Check whether this chapter has already accrued interest to prevent duplicate calls.
                 cursor.execute(
                     """
                     SELECT 1 FROM debt_events
@@ -283,11 +260,11 @@ class IndexDebtMixin:
                     result["skipped_already_processed"] += 1
                     continue
 
-                # 计算利息
+                # Calculate interest.
                 interest = current_amount * interest_rate
                 new_amount = current_amount + interest
 
-                # 更新债务
+                # Update the debt.
                 cursor.execute(
                     """
                     UPDATE chase_debt SET
@@ -298,20 +275,20 @@ class IndexDebtMixin:
                     (new_amount, debt_id),
                 )
 
-                # 记录利息事件
+                # Record the interest event.
                 self._record_debt_event(
                     cursor,
                     debt_id,
                     "interest_accrued",
                     interest,
                     current_chapter,
-                    f"利息: {interest:.2f} (利率: {interest_rate * 100:.0f}%)",
+                    f"Interest: {interest:.2f} (Rate: {interest_rate * 100:.0f}%)",
                 )
 
                 result["debts_processed"] += 1
                 result["total_interest"] += interest
 
-                # 检查是否逾期（仅对 active 状态的债务）
+                # Check for overdue status, for active debts only.
                 if debt_status == "active" and current_chapter > due_chapter:
                     cursor.execute(
                         """
@@ -328,7 +305,7 @@ class IndexDebtMixin:
                             "overdue",
                             new_amount,
                             current_chapter,
-                            f"债务逾期 (截止: 第{due_chapter}章)",
+                            f"Debt overdue (Deadline: Chapter {due_chapter})",
                         )
 
             conn.commit()
@@ -336,21 +313,13 @@ class IndexDebtMixin:
         return result
 
     def pay_debt(self, debt_id: int, amount: float, chapter: int) -> Dict[str, Any]:
-        """
-        偿还债务
-
-        - 校验 amount > 0
-        - 完全偿还时，使用原子 UPDATE 检查并标记关联 Override 为 fulfilled
-          （并发安全：用 NOT EXISTS 子查询确保所有债务都已清零）
-
-        返回: {remaining, fully_paid, override_fulfilled}
-        """
-        # 校验偿还金额
+        'Repay debt. Validate amount > 0. On full repayment, atomically check and mark the associated Override fulfilled, using a NOT EXISTS subquery to ensure all debts are cleared under concurrency. Return {remaining, fully_paid, override_fulfilled}.'
+        # Validate the repayment amount.
         if amount <= 0:
             return {
                 "remaining": 0,
                 "fully_paid": False,
-                "error": "偿还金额必须大于0",
+                "error": "Repayment amount must be greater than0",
             }
 
         with self._get_conn() as conn:
@@ -362,7 +331,7 @@ class IndexDebtMixin:
             )
             row = cursor.fetchone()
             if not row:
-                return {"remaining": 0, "fully_paid": False, "error": "债务不存在"}
+                return {"remaining": 0, "fully_paid": False, "error": "Debt does not exist"}
 
             current = row["current_amount"]
             override_contract_id = row["override_contract_id"]
@@ -370,7 +339,7 @@ class IndexDebtMixin:
             override_fulfilled = False
 
             if remaining == 0:
-                # 完全偿还
+                # Full repayment
                 cursor.execute(
                     """
                     UPDATE chase_debt SET
@@ -382,11 +351,11 @@ class IndexDebtMixin:
                     (debt_id,),
                 )
                 self._record_debt_event(
-                    cursor, debt_id, "full_payment", amount, chapter, "债务已完全偿还"
+                    cursor, debt_id, "full_payment", amount, chapter, "Debt fully repaid"
                 )
 
-                # 原子检查并标记 Override 为 fulfilled
-                # 使用 NOT EXISTS 子查询确保并发安全：只有当确实没有未清债务时才更新
+                # Atomically check and mark the Override fulfilled.
+                # Use NOT EXISTS for concurrency safety: update only when no outstanding debts remain.
                 if override_contract_id:
                     cursor.execute(
                         """
@@ -406,7 +375,7 @@ class IndexDebtMixin:
                     if cursor.rowcount > 0:
                         override_fulfilled = True
             else:
-                # 部分偿还
+                # Partial repayment
                 cursor.execute(
                     """
                     UPDATE chase_debt SET
@@ -422,7 +391,7 @@ class IndexDebtMixin:
                     "partial_payment",
                     amount,
                     chapter,
-                    f"部分偿还，剩余: {remaining:.2f}",
+                    f"Partial repayment; remaining: {remaining:.2f}",
                 )
 
             conn.commit()
@@ -441,7 +410,7 @@ class IndexDebtMixin:
         chapter: int,
         note: str = "",
     ):
-        """记录债务事件（内部方法）"""
+        'Record a debt event; internal helper.'
         cursor.execute(
             """
             INSERT INTO debt_events (debt_id, event_type, amount, chapter, note)
@@ -451,7 +420,7 @@ class IndexDebtMixin:
         )
 
     def get_debt_history(self, debt_id: int) -> List[Dict]:
-        """获取债务的事件历史"""
+        "Get a debt's event history."
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -464,28 +433,28 @@ class IndexDebtMixin:
             )
             return [dict(row) for row in cursor.fetchall()]
 
-    # ==================== v5.3 章节追读力元数据操作 ====================
+    # ==================== v5.3 Chapter reader-engagement metadata ====================
 
     def get_debt_summary(self) -> Dict[str, Any]:
-        """获取债务汇总信息"""
+        'Get debt summary information.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 活跃债务
+            # Active debts
             cursor.execute("""
                 SELECT COUNT(*) as count, COALESCE(SUM(current_amount), 0) as total
                 FROM chase_debt WHERE status = 'active'
             """)
             active = cursor.fetchone()
 
-            # 逾期债务
+            # Overdue debts
             cursor.execute("""
                 SELECT COUNT(*) as count, COALESCE(SUM(current_amount), 0) as total
                 FROM chase_debt WHERE status = 'overdue'
             """)
             overdue = cursor.fetchone()
 
-            # 待偿还Override
+            # Overrides awaiting repayment
             cursor.execute("""
                 SELECT COUNT(*) FROM override_contracts WHERE status = 'pending'
             """)
@@ -500,5 +469,5 @@ class IndexDebtMixin:
                 "total_balance": active["total"] + overdue["total"],
             }
 
-    # ==================== 批量操作 ====================
+    # ==================== Batch operations ====================
 

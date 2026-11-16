@@ -472,7 +472,7 @@ def is_checklist_item_completed(item: Dict[str, Any], reader_signal: Dict[str, A
         return True
 
     if source.startswith("methodology."):
-        # 方法论条目当前作为软提示，仅做观察与引导，不参与扣分。
+        # Methodology entries are currently soft guidance for observation only and do not deduct points.
         return True
 
     return False

@@ -25,33 +25,33 @@ def test_story_contract_paths_resolve_expected_locations(tmp_path):
 def test_merge_contract_layers_preserves_locked_and_merges_append_only():
     merged = merge_contract_layers(
         {
-            "locked": {"core_tone": "先压后爆"},
-            "append_only": {"anti_patterns": ["配角连续抢戏超过 300 字"]},
-            "override_allowed": {"scene_focus": "退婚当场反杀"},
+            "locked": {"core_tone": "pressure before payoff"},
+            "append_only": {"anti_patterns": ["supporting character steals focus for more than 300 words"]},
+            "override_allowed": {"scene_focus": "immediate counterattack at the broken engagement"},
         },
         {
-            "append_only": {"anti_patterns": ["本章禁止解释性旁白"]},
-            "override_allowed": {"chapter_focus": "退婚当场反杀"},
+            "append_only": {"anti_patterns": ["no explanatory narration in this chapter"]},
+            "override_allowed": {"chapter_focus": "immediate counterattack at the broken engagement"},
         },
     )
 
-    assert merged["locked"]["core_tone"] == "先压后爆"
+    assert merged["locked"]["core_tone"] == "pressure before payoff"
     assert merged["append_only"]["anti_patterns"] == [
-        "配角连续抢戏超过 300 字",
-        "本章禁止解释性旁白",
+        "supporting character steals focus for more than 300 words",
+        "no explanatory narration in this chapter",
     ]
-    assert merged["override_allowed"]["scene_focus"] == "退婚当场反杀"
-    assert merged["override_allowed"]["chapter_focus"] == "退婚当场反杀"
+    assert merged["override_allowed"]["scene_focus"] == "immediate counterattack at the broken engagement"
+    assert merged["override_allowed"]["chapter_focus"] == "immediate counterattack at the broken engagement"
 
 
 def test_merge_anti_patterns_deduplicates_by_text():
     rows = merge_anti_patterns(
-        [{"text": "打脸节奏不能缺补刀", "source_table": "题材与调性推理", "source_id": "GR-001"}],
-        [{"text": "打脸节奏不能缺补刀", "source_table": "爽点与节奏", "source_id": "PA-002"}],
+        [{"text": "vindication requires an extra payoff beat", "source_table": "genre-routing", "source_id": "GR-001"}],
+        [{"text": "vindication requires an extra payoff beat", "source_table": "pacing", "source_id": "PA-002"}],
     )
 
-    assert [item["text"] for item in rows] == ["打脸节奏不能缺补刀"]
-    assert rows[0]["source_table"] == "题材与调性推理"
+    assert [item["text"] for item in rows] == ["vindication requires an extra payoff beat"]
+    assert rows[0]["source_table"] == "genre-routing"
 
 
 def test_read_json_if_exists_returns_none_for_missing_file(tmp_path):

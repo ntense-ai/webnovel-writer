@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-scratchpad 压缩器。
-"""
+'Scratchpad compactor.'
 from __future__ import annotations
 
 from typing import Dict, List, Tuple
@@ -25,7 +23,7 @@ def compact_scratchpad(data: ScratchpadData, max_items: int = 500) -> Scratchpad
     if data.count_items() <= max_items:
         return data
 
-    # 1) 同 key 的 outdated 只保留最新，避免历史膨胀。
+    # 1) Retain only the latest outdated entry for each key to prevent historical bloat.
     for bucket in CATEGORY_TO_BUCKET.values():
         rows: List[MemoryItem] = list(getattr(data, bucket))
         latest_outdated: Dict[Tuple, MemoryItem] = {}
@@ -41,10 +39,10 @@ def compact_scratchpad(data: ScratchpadData, max_items: int = 500) -> Scratchpad
         keep.extend(latest_outdated.values())
         setattr(data, bucket, keep)
 
-    # 2) 清理已回收伏笔。
+    # 2) Remove resolved foreshadowing.
     data.open_loops = [row for row in data.open_loops if not _is_resolved_open_loop(row)]
 
-    # 3) 压缩过旧 timeline（与当前最新章节相距 50 章以上）。
+    # 3) Compact old timeline entries more than 50 chapters behind the latest chapter.
     timeline = sorted(data.timeline, key=lambda x: x.source_chapter)
     if timeline:
         latest_chapter = max(x.source_chapter for x in timeline)
@@ -56,14 +54,14 @@ def compact_scratchpad(data: ScratchpadData, max_items: int = 500) -> Scratchpad
                 label = row.value or row.subject or row.field or row.id
                 if label:
                     samples.append(str(label))
-            summary_text = "；".join(samples) if samples else "早期关键事件"
+            summary_text = "; ".join(samples) if samples else "Early key events"
             summary_item = MemoryItem(
                 id=f"timeline-summary-upto-{old[-1].source_chapter}",
                 layer="semantic",
                 category="story_fact",
                 subject="timeline_summary",
                 field=f"<=ch{old[-1].source_chapter}",
-                value=f"早期事件摘要：{summary_text}",
+                value=f"Early-event summary: {summary_text}",
                 payload={
                     "from_chapter": old[0].source_chapter,
                     "to_chapter": old[-1].source_chapter,
@@ -84,7 +82,7 @@ def compact_scratchpad(data: ScratchpadData, max_items: int = 500) -> Scratchpad
                 data.story_facts.append(summary_item)
         data.timeline = fresh
 
-    # 4) 若仍超限，按状态和新鲜度做全局截断，保证总量不超过 max_items。
+    # 4) If still over budget, truncate globally by status and freshness to stay within max_items.
     if data.count_items() > max_items:
         ranked: List[Tuple[str, MemoryItem]] = []
         for bucket in CATEGORY_TO_BUCKET.values():

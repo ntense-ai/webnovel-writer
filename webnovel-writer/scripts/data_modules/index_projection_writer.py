@@ -286,7 +286,7 @@ class IndexProjectionWriter:
                 continue
             entity_id = str(delta.get("entity_id") or delta.get("id") or "").strip()
             entity_type = str(delta.get("type") or delta.get("entity_type") or "").strip()
-            if entity_id and (not entity_type or entity_type == "角色"):
+            if entity_id and (not entity_type or entity_type == "character"):
                 ids.append(entity_id)
         return list(dict.fromkeys(ids))
 
@@ -295,7 +295,7 @@ class IndexProjectionWriter:
         if path is None:
             return ""
         stem = path.stem
-        match = re.match(r"(?:第0*\d+章|chapter-0*\d+)[-_ ]+(.+)$", stem, re.IGNORECASE)
+        match = re.match(r"chapter-0*\d+[-_ ]+(.+)$", stem, re.IGNORECASE)
         return match.group(1).strip() if match else ""
 
     def _chapter_word_count(self, chapter: int) -> int:
@@ -378,7 +378,7 @@ class IndexProjectionWriter:
                     {
                         "entity_id": entity_id,
                         "canonical_name": str(payload.get("name") or event.get("subject") or entity_id).strip(),
-                        "type": str(payload.get("type") or "物品").strip() or "物品",
+                        "type": str(payload.get("type") or "item").strip() or "item",
                         "current": current,
                         "desc": str(payload.get("description") or "").strip(),
                         "chapter": chapter,

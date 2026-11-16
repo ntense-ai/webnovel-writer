@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""
-安全工具函数库
-用于webnovel-writer系统的通用安全函数
-
-创建时间: 2026-01-02
-创建原因: 安全审计发现路径遍历和命令注入漏洞
-修复方案: 集中管理所有安全相关的输入清理函数
-"""
+'Shared security utilities for webnovel-writer.\n\nCreated 2026-01-02 after an audit identified path traversal and command injection risks. Centralize security-related input sanitization here.'
 
 import json
 import os
@@ -19,7 +12,7 @@ from pathlib import Path
 from runtime_compat import enable_windows_utf8_stdio
 from typing import Any, Dict, Optional, Union
 
-# 尝试导入 filelock（可选依赖）
+# Try importing filelock, an optional dependency.
 try:
     from filelock import FileLock
     HAS_FILELOCK = True
@@ -29,53 +22,28 @@ except (ImportError, OSError):
 
 
 def sanitize_filename(name: str, max_length: int = 100) -> str:
-    """
-    清理文件名，防止路径遍历攻击 (CWE-22)
-
-    安全关键函数 - 修复extract_entities.py路径遍历漏洞
-
-    Args:
-        name: 原始文件名（可能包含路径遍历字符）
-        max_length: 文件名最大长度（默认100字符）
-
-    Returns:
-        安全的文件名（仅包含基本文件名，移除所有路径信息）
-
-    示例:
-        >>> sanitize_filename("../../../etc/passwd")
-        'passwd'
-        >>> sanitize_filename("C:\\Windows\\System32")
-        'System32'
-        >>> sanitize_filename("正常角色名")
-        '正常角色名'
-
-    安全验证:
-        - ✅ 防止目录遍历（../、..\\）
-        - ✅ 防止绝对路径（/、C:\\）
-        - ✅ 移除特殊字符
-        - ✅ 长度限制
-    """
-    # Step 1: 仅保留基础文件名（移除所有路径）
+    'Sanitize a filename against path traversal (CWE-22).\n\nSecurity-critical: addresses traversal in extract_entities.py.\n\nArgs:\n    name: Original filename, potentially containing traversal characters.\n    max_length: Maximum filename length, default 100.\n\nReturn a safe basename with all path information removed. For example, ../../../etc/passwd becomes passwd, and a Windows System32 path becomes System32. Ordinary character names remain usable.\n\nRemove directory traversal, absolute-path components, and special characters; enforce a length limit.'
+    # Step 1: retain only the basename, removing path components.
     safe_name = os.path.basename(name)
 
-    # Step 2: 移除路径分隔符（双重保险）
+    # Step 2: remove path separators as defense in depth.
     safe_name = safe_name.replace('/', '_').replace('\\', '_')
 
-    # Step 3: 只保留安全字符
-    # 允许：中文(\u4e00-\u9fff)、字母(a-zA-Z)、数字(0-9)、下划线(_)、连字符(-)
+    # Step 3: retain only safe characters.
+    # Allow CJK characters (\u4e00-\u9fff), Latin letters, digits, underscores, and hyphens.
     safe_name = re.sub(r'[^\w\u4e00-\u9fff-]', '_', safe_name)
 
-    # Step 4: 移除连续的下划线（美化）
+    # Step 4: collapse repeated underscores for readability.
     safe_name = re.sub(r'_+', '_', safe_name)
 
-    # Step 5: 长度限制
+    # Step 5: enforce the length limit.
     if len(safe_name) > max_length:
         safe_name = safe_name[:max_length]
 
-    # Step 6: 移除首尾下划线
+    # Step 6: trim leading and trailing underscores.
     safe_name = safe_name.strip('_')
 
-    # Step 7: 确保非空（防御性编程）
+    # Step 7: ensure a nonempty result defensively.
     if not safe_name:
         safe_name = "unnamed_entity"
 
@@ -83,53 +51,30 @@ def sanitize_filename(name: str, max_length: int = 100) -> str:
 
 
 def sanitize_commit_message(message: str, max_length: int = 200) -> str:
-    """
-    清理Git提交消息，防止命令注入 (CWE-77)
-
-    安全关键函数 - 修复backup_manager.py命令注入漏洞
-
-    Args:
-        message: 原始提交消息（可能包含Git标志）
-        max_length: 消息最大长度（默认200字符）
-
-    Returns:
-        安全的提交消息（移除Git特殊标志和危险字符）
-
-    示例:
-        >>> sanitize_commit_message("Test\\n--author='Attacker'")
-        'Test  author Attacker'
-        >>> sanitize_commit_message("--amend Chapter 1")
-        'amend Chapter 1'
-
-    安全验证:
-        - ✅ 防止多行注入（换行符）
-        - ✅ 防止Git标志注入（--xxx）
-        - ✅ 防止参数分隔符混淆（引号）
-        - ✅ 防止单字母标志（-x）
-    """
-    # Step 1: 移除换行符（防止多行参数注入）
+    'Sanitize Git commit messages against command injection (CWE-77).\n\nSecurity-critical: addresses injection in backup_manager.py.\n\nArgs:\n    message: Original message, possibly containing Git flags.\n    max_length: Maximum message length, default 200.\n\nReturn a message with dangerous flags and characters removed. Strip multiline injection, double-dash flags, quoting ambiguity, and leading single-letter flags.'
+    # Step 1: remove newlines to prevent multiline argument injection.
     safe_msg = message.replace('\n', ' ').replace('\r', ' ')
 
-    # Step 2: 移除Git特殊标志（--开头的参数）
+    # Step 2: remove Git flag prefixes beginning with two hyphens.
     safe_msg = re.sub(r'--[\w-]+', '', safe_msg)
 
-    # Step 3: 移除引号（防止参数分隔符混淆）
+    # Step 3: remove quotes to prevent argument-delimiter confusion.
     safe_msg = safe_msg.replace("'", "").replace('"', '')
 
-    # Step 4: 移除前导的-（防止单字母标志如-m）
+    # Step 4: remove leading hyphens to prevent single-letter flags such as -m.
     safe_msg = safe_msg.lstrip('-')
 
-    # Step 5: 移除连续空格（美化）
+    # Step 5: collapse repeated spaces.
     safe_msg = re.sub(r'\s+', ' ', safe_msg)
 
-    # Step 6: 长度限制
+    # Step 6: enforce the length limit.
     if len(safe_msg) > max_length:
         safe_msg = safe_msg[:max_length]
 
-    # Step 7: 移除首尾空格
+    # Step 7: trim surrounding whitespace.
     safe_msg = safe_msg.strip()
 
-    # Step 8: 确保非空
+    # Step 8: ensure a nonempty result.
     if not safe_msg:
         safe_msg = "Untitled commit"
 
@@ -137,87 +82,36 @@ def sanitize_commit_message(message: str, max_length: int = 200) -> str:
 
 
 def create_secure_directory(path: str, mode: int = 0o700) -> Path:
-    """
-    创建安全目录（仅所有者可访问）
-
-    安全关键函数 - 修复文件权限配置缺失漏洞
-
-    Args:
-        path: 目录路径
-        mode: 权限模式（默认0o700，仅所有者可读写执行）
-
-    Returns:
-        Path对象
-
-    示例:
-        >>> create_secure_directory('.webnovel')
-        PosixPath('.webnovel')  # drwx------ (700)
-
-    安全验证:
-        - ✅ 仅所有者可访问（0o700）
-        - ✅ 防止同组用户读取
-        - ✅ 跨平台兼容（Windows/Linux/macOS）
-    """
+    'Create a directory with owner-only access where supported.\n\nSecurity-critical: addresses missing permission configuration.\n\nArgs:\n    path: Directory path.\n    mode: Permission mode, default 0o700 (owner read/write/execute).\n\nReturn a Path. On Unix, restrict access to the owner rather than other group members. Windows uses its inherited permissions for compatibility.'
     path_obj = Path(path)
 
-    # Windows 上传入 mode 会触发不可预期的 ACL 行为（实测会导致目录创建后立刻无法访问）。
-    # 因此在 Windows 下不传 mode，保持默认继承权限；在类 Unix 系统才使用 mode。
+    # On Windows, passing mode can cause unexpected ACL behavior, including immediate loss of access.
+    # Preserve inherited permissions on Windows; pass mode only on Unix-like platforms.
     if os.name == 'nt':
         os.makedirs(path, exist_ok=True)
     else:
         os.makedirs(path, mode=mode, exist_ok=True)
 
-    # 双重保险：显式设置权限（某些系统可能忽略makedirs的mode参数）
-    if os.name != 'nt':  # Unix系统（Linux/macOS）
+    # Explicitly set permissions as defense in depth; some systems ignore makedirs mode.
+    if os.name != 'nt':  # Unix platforms: Linux and macOS.
         os.chmod(path, mode)
 
     return path_obj
 
 
 def create_secure_file(file_path: str, content: str, mode: int = 0o600) -> None:
-    """
-    创建安全文件（仅所有者可读写）
-
-    Args:
-        file_path: 文件路径
-        content: 文件内容
-        mode: 权限模式（默认0o600，仅所有者可读写）
-
-    安全验证:
-        - ✅ 仅所有者可读写（0o600）
-        - ✅ 防止其他用户访问
-    """
-    # 创建文件
+    'Create a file with owner-only read/write permissions where supported.\n\nArgs:\n    file_path: Destination path.\n    content: File contents.\n    mode: Permission mode, default 0o600.\n\nOn Unix, other users are denied access.'
+    # Create the file.
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    # 设置权限（仅Unix系统）
+    # Set permissions on Unix only.
     if os.name != 'nt':
         os.chmod(file_path, mode)
 
 
 def validate_integer_input(value: str, field_name: str) -> int:
-    """
-    验证并转换整数输入（严格模式）
-
-    安全关键函数 - 修复update_state.py弱验证漏洞
-
-    Args:
-        value: 输入值（字符串）
-        field_name: 字段名称（用于错误消息）
-
-    Returns:
-        转换后的整数
-
-    Raises:
-        ValueError: 输入不是有效整数
-
-    示例:
-        >>> validate_integer_input("123", "chapter_num")
-        123
-        >>> validate_integer_input("abc", "level")
-        ValueError: ❌ 错误：level 必须是整数，收到: abc
-    """
+    'Strictly validate and convert integer input.\n\nSecurity-critical: addresses weak validation in update_state.py.\n\nArgs:\n    value: Input string.\n    field_name: Field label for error messages.\n\nReturn the converted integer. Raise ValueError for invalid input. For example, 123 converts to integer 123; abc is rejected.'
     try:
         return int(value)
     except ValueError:
@@ -226,24 +120,15 @@ def validate_integer_input(value: str, field_name: str) -> int:
 
 
 # ============================================================================
-# Git 环境检测（优雅降级支持）
+# Git environment detection for graceful fallback.
 # ============================================================================
 
-# 缓存 Git 可用性检测结果
+# Cache Git availability.
 _git_available: Optional[bool] = None
 
 
 def is_git_available() -> bool:
-    """
-    检测 Git 是否可用
-
-    Returns:
-        bool: Git 是否可用
-
-    说明：
-        - 检测结果会被缓存，避免重复检测
-        - 用于支持在无 Git 环境下优雅降级
-    """
+    'Check whether Git is available.\n\nCache the boolean result to avoid repeated checks and support graceful fallback in environments without Git.'
     global _git_available
 
     if _git_available is not None:
@@ -266,15 +151,7 @@ def is_git_available() -> bool:
 
 
 def is_git_repo(path: Union[str, Path]) -> bool:
-    """
-    检测指定目录是否是 Git 仓库
-
-    Args:
-        path: 目录路径
-
-    Returns:
-        bool: 是否是 Git 仓库
-    """
+    'Return whether the specified directory is a Git repository.\n\nArgs:\n    path: Directory to inspect.'
     if not is_git_available():
         return False
 
@@ -289,27 +166,7 @@ def git_graceful_operation(
     *,
     fallback_msg: str = "Git unavailable; skipping version-control operation"
 ) -> tuple:
-    """
-    优雅执行 Git 操作（Git 不可用时静默降级）
-
-    Args:
-        args: Git 命令参数（不含 'git'）
-        cwd: 工作目录
-        fallback_msg: 降级时的提示消息
-
-    Returns:
-        (success: bool, output: str, was_skipped: bool)
-        - success: 操作是否成功
-        - output: 输出内容
-        - was_skipped: 是否因 Git 不可用而跳过
-
-    示例:
-        >>> success, output, skipped = git_graceful_operation(
-        ...     ["add", "."], cwd="/path/to/project"
-        ... )
-        >>> if skipped:
-        ...     print("Git not available, using fallback")
-    """
+    'Run a Git operation, gracefully skipping it when Git is unavailable.\n\nArgs:\n    args: Git arguments without the git executable.\n    cwd: Working directory.\n    fallback_msg: Message shown when falling back.\n\nReturn (success, output, was_skipped), where was_skipped indicates Git was unavailable. For example, pass ["add", "."] with a project cwd and use a local fallback when skipped.'
     if not is_git_available():
         print(f"⚠️  {fallback_msg}", file=sys.stderr)
         return False, "", True
@@ -335,12 +192,12 @@ def git_graceful_operation(
 
 
 # ============================================================================
-# 原子化文件写入（防止并发冲突和数据损坏）
+# Atomic file writes prevent concurrency conflicts and corruption.
 # ============================================================================
 
 
 class AtomicWriteError(Exception):
-    """Atomic write failed异常"""
+    'Exception raised when an atomic write fails.'
     pass
 
 
@@ -352,14 +209,7 @@ def _replace_with_retry(
     first_delay: float = 0.02,
     max_delay: float = 0.5,
 ) -> None:
-    """
-    os.replace 带退避重试（仅针对 PermissionError）。
-
-    Windows 上目标文件被其他进程瞬时打开（编辑器 file watcher、杀毒软件、
-    同步盘、索引器——均未开 FILE_SHARE_DELETE 共享位）时，os.replace 报
-    WinError 5；占用通常是毫秒级，短退避重试即可穿过（issue #125）。
-    重试穷尽后抛出最后一次的 PermissionError。
-    """
+    'Retry os.replace with backoff for PermissionError only.\n\nOn Windows, editors, antivirus tools, sync clients, and indexers may briefly hold a destination without FILE_SHARE_DELETE, causing WinError 5. Short retries bridge these millisecond-scale locks (issue #125). Raise the last PermissionError when retries are exhausted.'
     delay = first_delay
     for attempt in range(attempts):
         try:
@@ -380,51 +230,22 @@ def atomic_write_json(
     backup: bool = True,
     indent: int = 2
 ) -> None:
-    """
-    原子化写入 JSON 文件，防止并发冲突和数据损坏 (CWE-362, CWE-367)
-
-    安全关键函数 - 修复 state.json 并发写入风险
-
-    实现策略:
-    1. 写入临时文件（同目录，确保同文件系统）
-    2. 可选：使用 filelock 获取排他锁
-    3. 可选：备份原文件
-    4. 原子重命名（os.replace 在 POSIX 上是原子的）
-
-    Args:
-        file_path: 目标文件路径
-        data: 要写入的字典数据
-        use_lock: 是否使用文件锁（需要 filelock 库）
-        backup: 是否在写入前备份原文件
-        indent: JSON 缩进（默认 2）
-
-    Raises:
-        AtomicWriteError: 写入失败时抛出
-
-    示例:
-        >>> atomic_write_json('.webnovel/state.json', {'progress': {'chapter': 10}})
-
-    安全验证:
-        - ✅ 防止写入中断导致的数据损坏（先写临时文件）
-        - ✅ 防止并发写入冲突（filelock）
-        - ✅ 支持回滚（备份机制）
-        - ✅ 跨平台兼容
-    """
+    'Atomically write JSON to prevent concurrent-write conflicts and corruption (CWE-362, CWE-367).\n\nSecurity-critical: protects state.json writes. Write a temporary file in the destination directory, optionally acquire an exclusive filelock and back up the original, then replace the destination atomically.\n\nArgs:\n    file_path: Destination path.\n    data: Dictionary to serialize.\n    use_lock: Enable file locking (requires filelock).\n    backup: Back up the original before writing.\n    indent: JSON indentation, default 2.\n\nRaise AtomicWriteError on failure. Temporary files protect against interrupted writes; filelock protects concurrency; backups support restoration.'
     file_path = Path(file_path)
     parent_dir = file_path.parent
     parent_dir.mkdir(parents=True, exist_ok=True)
 
-    # 准备 JSON 内容
+    # Prepare JSON content.
     try:
         json_content = json.dumps(data, ensure_ascii=False, indent=indent)
     except (TypeError, ValueError) as e:
         raise AtomicWriteError(f"JSON serialization failed: {e}")
 
-    # 锁文件路径
+    # Lock file path.
     lock_path = file_path.with_suffix(file_path.suffix + '.lock')
     backup_path = file_path.with_suffix(file_path.suffix + '.bak')
 
-    # 创建临时文件（同目录确保同文件系统，os.replace 才能原子操作）
+    # Place the temporary file beside the destination so os.replace stays on one filesystem.
     fd, temp_path = tempfile.mkstemp(
         suffix='.tmp',
         prefix=file_path.stem + '_',
@@ -432,35 +253,35 @@ def atomic_write_json(
     )
 
     try:
-        # Step 1: 写入临时文件
+        # Step 1: write the temporary file.
         with os.fdopen(fd, 'w', encoding='utf-8') as f:
             f.write(json_content)
             f.flush()
-            os.fsync(f.fileno())  # 确保写入磁盘
+            os.fsync(f.fileno())  # Ensure contents reach disk.
 
-        # Step 2: 获取锁（如果可用且启用）
+        # Step 2: acquire the lock if available and enabled.
         lock = None
         if use_lock and HAS_FILELOCK:
             lock = FileLock(str(lock_path), timeout=10)
             lock.acquire()
 
         try:
-            # Step 3: 备份原文件（如果存在且启用备份）
+            # Step 3: back up an existing file if backups are enabled.
             if backup and file_path.exists():
                 try:
                     import shutil
                     shutil.copy2(file_path, backup_path)
                 except OSError:
-                    pass  # Backup failed不阻止写入
+                    pass  # Backup failure does not block the write.
 
-            # Step 4: 原子重命名（Windows 上目标被瞬时占用会 WinError 5，带退避重试）
+            # Step 4: replace atomically, retrying transient Windows WinError 5 locks with backoff.
             try:
                 _replace_with_retry(temp_path, file_path)
-                temp_path = None  # 标记已成功，不需要清理
+                temp_path = None  # Mark success so cleanup is unnecessary.
             except PermissionError:
                 if os.environ.get("WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE") != "1":
                     raise
-                # 测试沙箱可能允许写入但拒绝替换/删除既有文件；生产环境不启用该降级。
+                # Test sandboxes may permit writes but deny replacement/deletion; never enable this fallback in production.
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(json_content)
                     f.flush()
@@ -474,7 +295,7 @@ def atomic_write_json(
         raise AtomicWriteError(f"Atomic write failed: {e}")
 
     finally:
-        # 清理：删除临时文件（如果仍存在说明写入失败）
+        # Cleanup: remove a remaining temporary file after a failed write.
         if temp_path is not None:
             try:
                 os.unlink(temp_path)
@@ -486,19 +307,7 @@ def read_json_safe(
     file_path: Union[str, Path],
     default: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
-    """
-    安全读取 JSON 文件（带默认值和错误处理）
-
-    Args:
-        file_path: 文件路径
-        default: 文件不存在或解析失败时的默认值
-
-    Returns:
-        解析后的字典，或默认值
-
-    示例:
-        >>> state = read_json_safe('.webnovel/state.json', {})
-    """
+    "Read JSON safely with a default and error handling.\n\nArgs:\n    file_path: Source path.\n    default: Value returned for missing or invalid files.\n\nReturn parsed data or the default. Example: read_json_safe('.webnovel/state.json', {})."
     file_path = Path(file_path)
     if default is None:
         default = {}
@@ -515,19 +324,7 @@ def read_json_safe(
 
 
 def restore_from_backup(file_path: Union[str, Path]) -> bool:
-    """
-    从备份恢复文件
-
-    Args:
-        file_path: 原文件路径
-
-    Returns:
-        是否成功恢复
-
-    示例:
-        >>> restore_from_backup('.webnovel/state.json')
-        True
-    """
+    "Restore a file from its backup.\n\nArgs:\n    file_path: Original file path.\n\nReturn whether restoration succeeded. Example: restore_from_backup('.webnovel/state.json')."
     file_path = Path(file_path)
     backup_path = file_path.with_suffix(file_path.suffix + '.bak')
 
@@ -546,37 +343,37 @@ def restore_from_backup(file_path: Union[str, Path]) -> bool:
 
 
 # ============================================================================
-# 单元测试（内置自检）
+# Built-in unit-test self-checks.
 # ============================================================================
 
 def _run_self_tests():
-    """运行内置安全测试"""
+    'Run built-in security checks.'
     print("🔍 Running security utility self-tests...")
 
     # Test 1: sanitize_filename
-    assert sanitize_filename("../../../etc/passwd") == "passwd", "路径遍历测试失败"
-    assert sanitize_filename("C:\\Windows\\System32") == "System32", "Windows路径测试失败"
-    assert sanitize_filename("正常角色名") == "正常角色名", "中文测试失败"
-    assert sanitize_filename("/tmp/../../../../../etc/hosts") == "hosts", "复杂路径遍历测试失败"
-    assert sanitize_filename("test///file...name") == "file_name", "特殊字符测试失败"  # . 会被替换
+    assert sanitize_filename("../../../etc/passwd") == "passwd", "Path traversal test failed"
+    assert sanitize_filename("C:\\Windows\\System32") == "System32", "Windows path test failed"
+    assert sanitize_filename("Élodie") == "Élodie", "Unicode test failed"
+    assert sanitize_filename("/tmp/../../../../../etc/hosts") == "hosts", "Complex path traversal test failed"
+    assert sanitize_filename("test///file...name") == "file_name", "Special character test failed"  # Dots are replaced.
     print("  ✅ sanitize_filename: All tests passed")
 
     # Test 2: sanitize_commit_message
     result = sanitize_commit_message("Test\n--author='Attacker'")
-    assert "\n" not in result, "换行符未移除"
-    assert "--author" not in result, "Git标志未移除"
-    assert "Attacker" in result, "内容被错误移除"
+    assert "\n" not in result, "Newline was not removed"
+    assert "--author" not in result, "Git flag was not removed"
+    assert "Attacker" in result, "Content was incorrectly removed"
 
-    assert sanitize_commit_message("--amend Chapter 1") == "Chapter 1", "Git标志测试失败"  # --amend被完全移除
-    assert "'" not in sanitize_commit_message("Test'message"), "引号测试失败"
-    assert sanitize_commit_message("-m Test") == "m Test", "单字母标志测试失败"  # -m被移除后是"m Test"
+    assert sanitize_commit_message("--amend Chapter 1") == "Chapter 1", "Git flag test failed"  # --amend is removed entirely.
+    assert "'" not in sanitize_commit_message("Test'message"), "Quote test failed"
+    assert sanitize_commit_message("-m Test") == "m Test", "Single-letter flag test failed"  # Removing the leading hyphen from -m leaves m Test.
     print("  ✅ sanitize_commit_message: All tests passed")
 
     # Test 3: validate_integer_input
-    assert validate_integer_input("123", "test") == 123, "整数验证测试失败"
+    assert validate_integer_input("123", "test") == 123, "Integer validation test failed"
     try:
         validate_integer_input("abc", "test")
-        assert False, "应该抛出ValueError"
+        assert False, "Expected ValueError"
     except ValueError:
         pass
     print("  ✅ validate_integer_input: All tests passed")
@@ -586,28 +383,28 @@ def _run_self_tests():
     test_dir = Path(tf.mkdtemp())
     test_file = test_dir / "test_state.json"
 
-    # 写入测试
-    test_data = {"chapter": 10, "中文键": "中文值"}
+    # Test writing.
+    test_data = {"chapter": 10, "unicode_key": "café"}
     atomic_write_json(test_file, test_data, use_lock=False, backup=False)
-    assert test_file.exists(), "原子写入未创建文件"
+    assert test_file.exists(), "Atomic write did not create file"
 
-    # 读取验证
+    # Verify reading.
     with open(test_file, 'r', encoding='utf-8') as f:
         loaded = json.load(f)
-    assert loaded == test_data, "原子写入数据不匹配"
+    assert loaded == test_data, "Atomic write data mismatch"
 
-    # 备份测试
+    # Test backup.
     atomic_write_json(test_file, {"updated": True}, use_lock=False, backup=True)
     backup_file = test_file.with_suffix('.json.bak')
-    assert backup_file.exists(), "备份未创建"
+    assert backup_file.exists(), "Backup not created"
 
-    # 恢复测试
+    # Test restoration.
     restore_from_backup(test_file)
     with open(test_file, 'r', encoding='utf-8') as f:
         restored = json.load(f)
-    assert restored == test_data, "恢复数据不匹配"
+    assert restored == test_data, "Restored data mismatch"
 
-    # 清理
+    # Cleanup.
     import shutil
     shutil.rmtree(test_dir)
     print("  ✅ atomic_write_json: All tests passed")
@@ -620,9 +417,9 @@ def _run_self_tests():
 
 
 if __name__ == "__main__":
-    # Windows UTF-8 编码修复（必须在打印前执行）
+    # Configure Windows UTF-8 output before printing.
     if sys.platform == "win32":
         enable_windows_utf8_stdio()
 
-    # 运行自检测试
+    # Run self-checks.
     _run_self_tests()

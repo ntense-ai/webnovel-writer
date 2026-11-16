@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-MemoryContractAdapter——薄适配器，包装现有模块满足 MemoryContract Protocol。
-
-不做存储重构，仅委托给 StateManager / IndexManager / ScratchpadManager 等。
-"""
+'MemoryContractAdapter is a thin wrapper around existing modules implementing the MemoryContract Protocol. It does not restructure storage; it delegates to StateManager, IndexManager, ScratchpadManager, and related modules.'
 from __future__ import annotations
 
 import json
@@ -32,13 +28,13 @@ logger = logging.getLogger(__name__)
 
 
 class MemoryContractAdapter:
-    """满足 MemoryContract Protocol 的具体实现。"""
+    'Concrete implementation of the MemoryContract Protocol.'
 
     def __init__(self, config: DataModulesConfig | None = None):
         self.config = config or get_config()
 
     # ------------------------------------------------------------------
-    # 内部懒加载（避免在构造时就初始化所有重量级模块）
+    # Lazy-load internals to avoid initializing every heavyweight module during construction.
     # ------------------------------------------------------------------
 
     def _state_manager(self):
@@ -62,7 +58,7 @@ class MemoryContractAdapter:
         return MemoryOrchestrator(self.config)
 
     # ------------------------------------------------------------------
-    # 契约方法
+    # Contract methods
     # ------------------------------------------------------------------
 
     def commit_chapter(self, chapter: int, result: dict) -> CommitResult:
@@ -105,7 +101,7 @@ class MemoryContractAdapter:
             logger.warning("commit_chapter: MemoryWriter failed: %s", e)
             warnings.append(f"MemoryWriter error: {e}")
 
-        # 3. 摘要路径
+        # 3. Summary path
         padded = f"{chapter:04d}"
         summary_file = self.config.webnovel_dir / "summaries" / f"ch{padded}.md"
         if summary_file.exists():
@@ -166,7 +162,7 @@ class MemoryContractAdapter:
         sections["runtime_status"] = runtime_sources.to_dict()
         sections["latest_commit"] = runtime_sources.latest_commit or {}
 
-        # 1. MemoryOrchestrator 基础包
+        # 1. Base MemoryOrchestrator package
         try:
             orch = self._memory_orchestrator()
             pack = orch.build_memory_pack(chapter)
@@ -174,7 +170,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: orchestrator failed: %s", e)
 
-        # 2. 章纲摘要
+        # 2. Chapter-outline summary
         try:
             from chapter_outline_loader import load_chapter_outline
             outline = load_chapter_outline(self.config.project_root, chapter, max_chars=1500)
@@ -183,7 +179,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: outline failed: %s", e)
 
-        # 3. 最近摘要
+        # 3. Recent summaries
         try:
             summaries = {}
             for prev_ch in range(max(1, chapter - 2), chapter):
@@ -195,7 +191,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: summaries failed: %s", e)
 
-        # 4. 主角状态 + 进度
+        # 4. Protagonist state and progress
         try:
             sm = self._state_manager()
             sm._load_state()
@@ -208,7 +204,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: state failed: %s", e)
 
-        # 5. 活跃约束（world_rules 前 5 条）
+        # 5. Active constraints: first five world_rules
         try:
             rules = self.query_rules()
             if rules:
@@ -216,7 +212,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: rules failed: %s", e)
 
-        # 6. 紧急伏笔（前 3 条）
+        # 6. Urgent foreshadowing: first three entries
         try:
             loops = self.get_open_loops()
             if loops:
@@ -224,7 +220,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: loops failed: %s", e)
 
-        # 7. 题材画像摘要（只抽取当前题材的 profile，避免全量加载 genre-profiles.md）
+        # 7. Genre-profile summary: extract only the current genre rather than loading all of genre-profiles.md.
         try:
             from .genre_profile_builder import extract_genre_section
             genre = str(
@@ -254,7 +250,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: genre_profile_excerpt failed: %s", e)
 
-        # 8. 作者文风记忆（/webnovel-learn 写入的 project_memory.json）
+        # 8. Author style memory: project_memory.json written by /webnovel-learn
         try:
             patterns = self._load_author_style_patterns()
             if patterns:
@@ -262,7 +258,7 @@ class MemoryContractAdapter:
         except Exception as e:
             logger.warning("load_context: author_style_patterns failed: %s", e)
 
-        # 9. 风格契约（设定集/风格契约.md，作者手写的文风约定）
+        # 9. Style contract: the author's handwritten conventions in settings/style-guide.md
         try:
             contract = self._load_style_contract()
             if contract:
@@ -282,7 +278,7 @@ class MemoryContractAdapter:
 
     @staticmethod
     def _importance_weight(value: Any) -> float:
-        """importance 归一为数值权重（越大越重要）；兼容命名档位与数字字符串。"""
+        'Normalize importance to numeric weight, where higher is more important; supports named tiers and numeric strings.'
         named = {
             "critical": 5.0,
             "highest": 5.0,
@@ -326,9 +322,9 @@ class MemoryContractAdapter:
         return result
 
     def _load_style_contract(self) -> str:
-        path = project_path(self.config.project_root, "settings/风格契约.md")
+        path = project_path(self.config.project_root, "settings/style-guide.md")
         if not path.exists():
-            matches = sorted(self.config.settings_dir.glob("*风格契约*.md")) if self.config.settings_dir.exists() else []
+            matches = sorted(self.config.settings_dir.glob("*style-guide*.md")) if self.config.settings_dir.exists() else []
             if not matches:
                 return ""
             path = matches[0]
@@ -343,7 +339,7 @@ class MemoryContractAdapter:
             if not entity:
                 return None
 
-            entity_type = sm.get_entity_type(entity_id) or "角色"
+            entity_type = sm.get_entity_type(entity_id) or "character"
             state_changes = sm.get_state_changes(entity_id)
             recent_changes = state_changes[-5:] if state_changes else []
 
@@ -351,7 +347,7 @@ class MemoryContractAdapter:
                 id=entity_id,
                 name=entity.get("name", entity_id),
                 type=entity_type,
-                tier=entity.get("tier", "核心"),
+                tier=entity.get("tier", "core"),
                 aliases=entity.get("aliases", []),
                 attributes={k: v for k, v in entity.items()
                             if k not in ("name", "tier", "aliases", "first_appearance", "last_appearance")},

@@ -9,9 +9,9 @@ from project_paths import project_path
 
 
 @pytest.mark.parametrize('label,canonical', [
-    ('fantasy', '奇幻'), ('science fiction', '科幻'), ('Mystery', '悬疑'),
-    ('historical romance', '古言'), ('urban fantasy', '都市'),
-    ('cultivation', '仙侠'), ('xuanhuan', '玄幻'), ('fanfiction', '衍生'),
+    ('fantasy', 'fantasy'), ('science fiction', 'sci-fi'), ('Mystery', 'mystery'),
+    ('historical romance', 'historical-romance'), ('urban fantasy', 'urban'),
+    ('cultivation', 'xianxia'), ('xuanhuan', 'xuanhuan'), ('fanfiction', 'fanfiction'),
 ])
 def test_english_genres_resolve_to_stable_internal_keys(label, canonical):
     assert resolve_genre_input(label).canonical_genre == canonical
@@ -23,9 +23,9 @@ def test_unknown_english_genre_is_not_silently_accepted():
         initializer._validate_initial_genre_source('mystery+unrecognizedgenre')
 
 
-def test_template_fields_support_english_and_legacy_labels():
-    rendered = initializer._apply_label_replacements('- Name:\n- 姓名：\n- Age:', {'姓名': 'Alice'})
-    assert rendered == '- Name: Alice\n- 姓名： Alice\n- Age:'
+def test_template_fields_preserve_unicode_values_and_punctuation():
+    rendered = initializer._apply_label_replacements('- Name:\n- Name：\n- Age:', {'Name': 'Élodie'})
+    assert rendered == '- Name: Élodie\n- Name： Élodie\n- Age:'
 
 
 def test_english_init_populates_content_and_preserves_custom_files(tmp_path, monkeypatch):
@@ -38,17 +38,17 @@ def test_english_init_populates_content_and_preserves_custom_files(tmp_path, mon
         heroine_config='single', heroine_names='Eve', heroine_role='Ally',
         antagonist_tiers='Minor antagonist:Captain;Major antagonist:Director', target_chapters=80)
     state = json.loads((tmp_path / '.webnovel/state.json').read_text())
-    assert state['project_info']['genre'] == '科幻'
+    assert state['project_info']['genre'] == 'sci-fi'
     assert state['project_info']['genre_label'] == 'science fiction'
-    protagonist = project_path(tmp_path, 'settings/主角卡.md')
+    protagonist = project_path(tmp_path, 'settings/protagonist.md')
     assert '- Name: Alice' in protagonist.read_text()
     assert '- True desire (possibly unconscious): Find her brother' in protagonist.read_text()
-    assert '- Number of continents/planes: Three planets' in project_path(tmp_path, 'settings/世界观.md').read_text()
-    assert '- System type: Technology' in project_path(tmp_path, 'settings/力量体系.md').read_text()
-    assert '| Alice | Pilot |' in project_path(tmp_path, 'settings/主角组.md').read_text()
-    assert '- Name: Eve' in project_path(tmp_path, 'settings/女主卡.md').read_text()
-    assert '| Major antagonist | Director | Late stage |' in project_path(tmp_path, 'settings/反派设计.md').read_text()
-    outline = project_path(tmp_path, 'outlines/总纲.md').read_text()
+    assert '- Number of continents/planes: Three planets' in project_path(tmp_path, 'settings/worldbuilding.md').read_text()
+    assert '- System type: Technology' in project_path(tmp_path, 'settings/power-system.md').read_text()
+    assert '| Alice | Pilot |' in project_path(tmp_path, 'settings/protagonist-team.md').read_text()
+    assert '- Name: Eve' in project_path(tmp_path, 'settings/heroine.md').read_text()
+    assert '| Major antagonist | Director | Late stage |' in project_path(tmp_path, 'settings/antagonist.md').read_text()
+    outline = project_path(tmp_path, 'outlines/master-outline.md').read_text()
     assert '| 1 | | Chapters 1-50 |' in outline
     assert outline.count('| 1 |') == 1
     assert '| 2 |' not in outline
@@ -57,9 +57,9 @@ def test_english_init_populates_content_and_preserves_custom_files(tmp_path, mon
     assert protagonist.read_text() == 'Custom character biography'
 
 
-def test_legacy_chinese_genre_still_resolves():
-    assert resolve_genre_input('规则怪谈').canonical_genre == '悬疑'
-    assert initializer._validate_initial_genre_source('规则怪谈') == '规则怪谈'
+def test_english_route_genre_resolves():
+    assert resolve_genre_input('rules-horror').canonical_genre == 'mystery'
+    assert initializer._validate_initial_genre_source('rules-horror') == 'rules-horror'
 
 
 def test_english_fallback_outline_and_ensemble_detection():
@@ -67,5 +67,5 @@ def test_english_fallback_outline_and_ensemble_detection():
     assert 'Volume 1 (Chapters 1-50)' in text
     assert 'Volume 2 (Chapters 51-80)' in text
     assert initializer._needs_protagonist_group('Dual protagonists')
-    assert initializer._needs_protagonist_group('双主角')
+    assert initializer._needs_protagonist_group('dual')
     assert not initializer._needs_protagonist_group('single protagonist')

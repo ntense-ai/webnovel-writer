@@ -21,7 +21,7 @@ git diff --stat <previous-version-tag>..HEAD
 
 ## Standard Template
 
-Use the English headings below. The validator also accepts legacy Chinese headings for older releases.
+Use the required English headings below.
 
 ```md
 # vX.Y.Z - One sentence describing the benefit for users

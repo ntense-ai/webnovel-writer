@@ -585,7 +585,7 @@ No complex state machine is needed initially, but add a lightweight ledger:
   "started_at": "",
   "updated_at": "",
   "steps": [
-    {"id": "draft", "label": "Draft prose", "status": "done", "outputs": ["正文/第0013章.md"]},
+    {"id": "draft", "label": "Draft prose", "status": "done", "outputs": ["chapters/Chapter 0013.md"]},
     {"id": "data", "label": "Save chapter story facts", "status": "failed", "problem": "API timeout"}
   ]
 }
@@ -772,8 +772,8 @@ Must report:
 
 - Project directory.
 - `.webnovel/state.json`.
-- `设定集/世界观.md`, `设定集/力量体系.md`, `设定集/主角卡.md`, `设定集/反派设计.md`.
-- `大纲/总纲.md`.
+- `settings/worldbuilding.md`, `settings/power-system.md`, `settings/protagonist.md`, `settings/antagonist.md`.
+- `outlines/master-outline.md`.
 - `.webnovel/idea_bank.json`.
 - `.story-system/MASTER_SETTING.json`.
 - Whether reference-work deconstruction was used.
@@ -790,11 +790,11 @@ Tasks:
 
 Must report:
 
-- `大纲/第{volume_id}卷-节拍表.md`.
-- `大纲/第{volume_id}卷-时间线.md`.
-- `大纲/第{volume_id}卷-详细大纲.md`.
+- `outlines/Volume {volume_id}-beattable.md`.
+- `outlines/Volume {volume_id}-timeline.md`.
+- `outlines/Volume {volume_id}-detailedoutlines.md`.
 - Which setting files received new settings.
-- `大纲/第{volume_id}卷-总纲写回.json`.
+- `outlines/Volume {volume_id}-master-outlinewriteback.json`.
 - Whether `master-outline-sync` completed.
 - Whether `update-state` completed.
 - Whether Story System contracts were refreshed.
@@ -1302,8 +1302,8 @@ After implementation, authors see a consistent delivery report rather than a str
 Overall status: Completed. You may continue with Chapter 13.
 
 1. Generated Files and Completion Status
-- 正文/第0012章-风雪夜归人.md: Generated and passed writing checks.
-- 审查报告/第12章审查报告.md: Generated, with no blocking issues.
+- chapters/Chapter 0012-Returning Home on a Snowy Night.md: Generated and passed writing checks.
+- reviews/Chapter 12reviews.md: Generated, with no blocking issues.
 - This chapter's story facts: Saved; state, summary, long-term memory, and retrieval library updated.
 - Backup: Completed.
 

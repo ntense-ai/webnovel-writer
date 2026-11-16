@@ -81,4 +81,4 @@ def explain(term: str, *, terms: dict[str, AuthorTerm] | None = None) -> str:
     found = lookup(term, terms=terms)
     if found:
         return found.explanation
-    return f"{term}：系统暂未登记这个术语，先按原词显示。"
+    return f"{term}: This term is not registered yet; displaying it unchanged."

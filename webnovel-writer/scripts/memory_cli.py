@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-memory_cli.py — MemoryContract CLI 入口。
-
-提供 load-context / query-entity / query-rules / read-summary /
-get-open-loops / get-timeline 六个子命令，输出 JSON。
-"""
+'MemoryContract CLI entry point.\n\nProvides six JSON-output subcommands: load-context, query-entity, query-rules, read-summary, get-open-loops, and get-timeline.'
 from __future__ import annotations
 
 import argparse

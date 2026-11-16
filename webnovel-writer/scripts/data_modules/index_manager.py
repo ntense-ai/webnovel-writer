@@ -1,36 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Index Manager - 索引管理模块 (v5.4)
-
-管理 index.db (SQLite) 的读写操作：
-- 章节元数据索引
-- 实体出场记录
-- 场景索引
-- 实体存储 (从 state.json 迁移)
-- 别名索引 (一对多)
-- 状态变化记录
-- 关系存储
-- 快速查询接口
-- 追读力债务管理 (v5.3 引入，v5.4 沿用)
-
-v5.4 变更:
-- 新增 invalid_facts 表：追踪无效事实 (pending/confirmed)
-- 新增 tool_call_stats 表：记录工具调用成功率与错误信息
-- 新增 review_metrics 表：记录审查指标与趋势数据
-
-v5.3 变更:
-- 新增 override_contracts 表：记录违背软建议时的Override Contract
-- 新增 chase_debt 表：追读力债务追踪
-- 新增 debt_events 表：债务事件日志（产生/偿还/利息）
-- 新增 chapter_reading_power 表：章节追读力元数据
-
-v5.1 变更:
-- 新增 entities 表替代 state.json 中的 entities_v3
-- 新增 aliases 表替代 state.json 中的 alias_index (支持一对多)
-- 新增 state_changes 表替代 state.json 中的 state_changes
-- 新增 relationships 表替代 state.json 中的 structured_relationships
-"""
+'Index Manager (v5.4): reads and writes index.db (SQLite) for chapter metadata, entity appearances, scenes, migrated entity storage, one-to-many aliases, state changes, relationships, fast queries, and reader-engagement debt. v5.4 adds invalid_facts for pending/confirmed invalid facts, tool_call_stats for success rates and errors, and review_metrics for review trends. v5.3 adds override_contracts for deviations from soft guidance, chase_debt for engagement debt, debt_events for creation/repayment/interest logs, and chapter_reading_power for chapter engagement metadata. v5.1 replaces state.json entities_v3, alias_index, state_changes, and structured_relationships with the entities, aliases, state_changes, and relationships tables respectively.'
 
 import sqlite3
 import json
@@ -56,7 +26,7 @@ from .override_ledger_service import ensure_override_ledger_columns
 
 @dataclass
 class ChapterMeta:
-    """章节元数据"""
+    'Chapter metadata.'
 
     chapter: int
     title: str
@@ -68,7 +38,7 @@ class ChapterMeta:
 
 @dataclass
 class SceneMeta:
-    """场景元数据"""
+    'Scene metadata.'
 
     chapter: int
     scene_index: int
@@ -81,14 +51,14 @@ class SceneMeta:
 
 @dataclass
 class EntityMeta:
-    """实体元数据 (v5.1 引入)"""
+    'Entity metadata, introduced in v5.1.'
 
     id: str
-    type: str  # 角色/地点/物品/势力/招式
+    type: str  # Character/location/item/faction/technique
     canonical_name: str
-    tier: str = "装饰"  # 核心/重要/次要/装饰
+    tier: str = "decorative"  # Core/important/minor/decorative
     desc: str = ""
-    current: Dict = field(default_factory=dict)  # 当前状态 (realm/location/items等)
+    current: Dict = field(default_factory=dict)  # Current state, such as realm, location, and items
     first_appearance: int = 0
     last_appearance: int = 0
     is_protagonist: bool = False
@@ -97,7 +67,7 @@ class EntityMeta:
 
 @dataclass
 class StateChangeMeta:
-    """状态变化记录 (v5.1 引入)"""
+    'State-change record, introduced in v5.1.'
 
     entity_id: str
     field: str
@@ -109,7 +79,7 @@ class StateChangeMeta:
 
 @dataclass
 class RelationshipMeta:
-    """关系记录 (v5.1 引入)"""
+    'Relationship record, introduced in v5.1.'
 
     from_entity: str
     to_entity: str
@@ -120,7 +90,7 @@ class RelationshipMeta:
 
 @dataclass
 class RelationshipEventMeta:
-    """关系事件记录 (v5.5 引入)"""
+    'Relationship event record, introduced in v5.5.'
 
     from_entity: str
     to_entity: str
@@ -137,36 +107,36 @@ class RelationshipEventMeta:
 
 @dataclass
 class OverrideContractMeta:
-    """Override Contract (v5.3 引入)"""
+    'Override Contract, introduced in v5.3.'
 
     chapter: int
     constraint_type: str  # SOFT_HOOK_STRENGTH / SOFT_MICROPAYOFF / etc.
-    constraint_id: str  # 具体约束标识
+    constraint_id: str  # Specific constraint identifier
     rationale_type: str  # TRANSITIONAL_SETUP / LOGIC_INTEGRITY / etc.
-    rationale_text: str  # 具体理由说明
-    payback_plan: str  # 偿还计划描述
-    due_chapter: int  # 偿还截止章节
+    rationale_text: str  # Specific explanation of the reason
+    payback_plan: str  # Repayment plan description
+    due_chapter: int  # Repayment deadline chapter
     status: str = "pending"  # pending / fulfilled / overdue / cancelled
 
 
 @dataclass
 class ChaseDebtMeta:
-    """追读力债务 (v5.3 引入)"""
+    'Reader-engagement debt, introduced in v5.3.'
 
     id: int = 0
     debt_type: str = ""  # hook_strength / micropayoff / coolpoint / etc.
-    original_amount: float = 1.0  # 初始债务量
-    current_amount: float = 1.0  # 当前债务量（含利息）
-    interest_rate: float = 0.1  # 利息率（每章）
-    source_chapter: int = 0  # 产生债务的章节
-    due_chapter: int = 0  # 截止章节
-    override_contract_id: int = 0  # 关联的Override Contract
+    original_amount: float = 1.0  # Initial debt amount
+    current_amount: float = 1.0  # Current debt amount, including interest
+    interest_rate: float = 0.1  # Interest rate per chapter
+    source_chapter: int = 0  # Chapter where the debt arose
+    due_chapter: int = 0  # Deadline chapter
+    override_contract_id: int = 0  # Associated Override Contract
     status: str = "active"  # active / paid / overdue / written_off
 
 
 @dataclass
 class DebtEventMeta:
-    """债务事件日志 (v5.3 引入)"""
+    'Debt event log, introduced in v5.3.'
 
     debt_id: int
     event_type: (
@@ -179,23 +149,23 @@ class DebtEventMeta:
 
 @dataclass
 class ChapterReadingPowerMeta:
-    """章节追读力元数据 (v5.3 引入)"""
+    'Chapter reader-engagement metadata, introduced in v5.3.'
 
     chapter: int
-    hook_type: str = ""  # 章末钩子类型
+    hook_type: str = ""  # End-of-chapter hook type
     hook_strength: str = "medium"  # strong / medium / weak
-    coolpoint_patterns: List[str] = field(default_factory=list)  # 使用的爽点模式
-    micropayoffs: List[str] = field(default_factory=list)  # 微兑现列表
-    hard_violations: List[str] = field(default_factory=list)  # 硬约束违规
-    soft_suggestions: List[str] = field(default_factory=list)  # 软建议
-    is_transition: bool = False  # 是否为过渡章
-    override_count: int = 0  # Override Contract数量
-    debt_balance: float = 0.0  # 当前债务余额
+    coolpoint_patterns: List[str] = field(default_factory=list)  # Payoff patterns used
+    micropayoffs: List[str] = field(default_factory=list)  # List of micro-payoffs
+    hard_violations: List[str] = field(default_factory=list)  # Hard-constraint violations
+    soft_suggestions: List[str] = field(default_factory=list)  # Soft guidance
+    is_transition: bool = False  # Whether this is a transition chapter
+    override_count: int = 0  # Number of Override Contracts
+    debt_balance: float = 0.0  # Current debt balance
 
 
 @dataclass
 class ReviewMetrics:
-    """审查指标记录 (v5.4 引入)"""
+    'Review metrics record, introduced in v5.4.'
 
     start_chapter: int
     end_chapter: int
@@ -211,7 +181,7 @@ class ReviewMetrics:
 
 @dataclass
 class WritingChecklistScoreMeta:
-    """写作清单评分记录（Context Contract v2 Phase F）"""
+    'Writing-checklist score record, Context Contract v2 Phase F.'
 
     chapter: int
     template: str = "plot"
@@ -230,20 +200,20 @@ class WritingChecklistScoreMeta:
 
 
 class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexReadingMixin, IndexObservabilityMixin):
-    """索引管理器"""
+    'Index manager.'
 
     def __init__(self, config=None):
         self.config = config or get_config()
         self._init_db()
 
     def _init_db(self):
-        """初始化数据库表"""
+        'Initialize database tables.'
         self.config.ensure_dirs()
 
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 章节表
+            # Chapter table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS chapters (
                     chapter INTEGER PRIMARY KEY,
@@ -256,7 +226,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 场景表
+            # Scene table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS scenes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -271,7 +241,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 实体出场表
+            # Entity appearance table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS appearances (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -283,7 +253,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 创建索引
+            # Create indexes.
             cursor.execute(
                 "CREATE INDEX IF NOT EXISTS idx_scenes_chapter ON scenes(chapter)"
             )
@@ -294,15 +264,15 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_appearances_chapter ON appearances(chapter)"
             )
 
-            # ==================== v5.1 引入表 ====================
+            # ==================== Tables introduced in v5.1 ====================
 
-            # 实体表 (替代 state.json 中的 entities_v3)
+            # Entities table, replacing state.json entities_v3
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS entities (
                     id TEXT PRIMARY KEY,
                     type TEXT NOT NULL,
                     canonical_name TEXT NOT NULL,
-                    tier TEXT DEFAULT '装饰',
+                    tier TEXT DEFAULT 'decorative',
                     desc TEXT,
                     current_json TEXT,
                     first_appearance INTEGER DEFAULT 0,
@@ -314,7 +284,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 别名表 (替代 state.json 中的 alias_index，支持一对多)
+            # Aliases table, replacing state.json alias_index with one-to-many support
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS aliases (
                     alias TEXT NOT NULL,
@@ -325,7 +295,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 状态变化表 (替代 state.json 中的 state_changes)
+            # State-changes table, replacing state.json state_changes
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS state_changes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -339,7 +309,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 关系表 (替代 state.json 中的 structured_relationships)
+            # Relationships table, replacing state.json structured_relationships
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS relationships (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -353,7 +323,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # v5.1 引入索引
+            # Indexes introduced in v5.1
             cursor.execute(
                 "CREATE INDEX IF NOT EXISTS idx_entities_type ON entities(type)"
             )
@@ -385,7 +355,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_relationships_chapter ON relationships(chapter)"
             )
 
-            # 关系事件表 (v5.5 引入，用于时序回放/图谱分析)
+            # Relationship-events table, introduced in v5.5 for temporal replay and graph analysis
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS relationship_events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -416,9 +386,9 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_relationship_events_type_chapter ON relationship_events(type, chapter)"
             )
 
-            # ==================== v5.3 引入表：追读力债务管理 ====================
+            # ==================== v5.3 Tables: reader-engagement debt ====================
 
-            # Override Contract 表
+            # Override Contract table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS override_contracts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -436,7 +406,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 追读力债务表
+            # Reader-engagement debt table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS chase_debt (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -454,7 +424,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 债务事件日志表
+            # Debt-event log table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS debt_events (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -468,7 +438,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # 章节追读力元数据表
+            # Chapter reader-engagement metadata table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS chapter_reading_power (
                     chapter INTEGER PRIMARY KEY,
@@ -486,7 +456,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 )
             """)
 
-            # v5.3 引入索引
+            # Indexes introduced in v5.3
             cursor.execute(
                 "CREATE INDEX IF NOT EXISTS idx_override_contracts_chapter ON override_contracts(chapter)"
             )
@@ -513,9 +483,9 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_debt_events_chapter ON debt_events(chapter)"
             )
 
-            # ==================== v5.4 新增表：无效事实与日志 ====================
+            # ==================== v5.4 Tables: invalid facts and logging ====================
 
-            # 无效事实表
+            # Invalid-facts table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS invalid_facts (
                     id INTEGER PRIMARY KEY,
@@ -537,7 +507,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_invalid_source ON invalid_facts(source_type, source_id)"
             )
 
-            # 审查指标表
+            # Review-metrics table
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS review_metrics (
                     start_chapter INTEGER NOT NULL,
@@ -557,7 +527,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_review_metrics_end ON review_metrics(end_chapter)"
             )
 
-            # RAG 查询日志
+            # RAG query log
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS rag_query_log (
                     id INTEGER PRIMARY KEY,
@@ -577,7 +547,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_rag_query_chapter ON rag_query_log(chapter)"
             )
 
-            # 工具调用统计
+            # Tool-call statistics
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS tool_call_stats (
                     id INTEGER PRIMARY KEY,
@@ -597,7 +567,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
                 "CREATE INDEX IF NOT EXISTS idx_tool_stats_chapter ON tool_call_stats(chapter)"
             )
 
-            # 写作清单评分记录（Phase F）
+            # Writing-checklist score records, Phase F
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS writing_checklist_scores (
                     chapter INTEGER PRIMARY KEY,
@@ -626,7 +596,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
 
     @contextmanager
     def _get_conn(self):
-        """获取数据库连接"""
+        'Get a database connection.'
         conn = sqlite3.connect(str(self.config.index_db))
         conn.row_factory = sqlite3.Row
         try:
@@ -635,7 +605,7 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
             conn.close()
 
     def apply_entity_delta(self, delta: Dict[str, Any]) -> bool:
-        """将 commit/entity 提取产物映射为实体或关系索引更新。"""
+        'Map commit/entity extraction artifacts to entity or relationship index updates.'
         if not isinstance(delta, dict):
             return False
 
@@ -677,18 +647,18 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
         canonical_name = str(
             metadata.get("canonical_name", existing.get("canonical_name")) or entity_id
         ).strip() or entity_id
-        tier = str(metadata.get("tier", existing.get("tier")) or "装饰").strip() or "装饰"
-        # 显式布尔值优先；未提供时才从本次 tier 或已有标记推断。
+        tier = str(metadata.get("tier", existing.get("tier")) or "decorative").strip() or "decorative"
+        # Explicit booleans take priority; infer from the current tier or existing flag only when omitted.
         if "is_protagonist" in metadata:
             is_protagonist = bool(metadata["is_protagonist"])
-        elif metadata.get("tier") is not None and tier == "主角":
+        elif metadata.get("tier") is not None and tier == "protagonist":
             is_protagonist = True
         else:
             is_protagonist = bool(existing.get("is_protagonist"))
 
         entity_type = str(
-            metadata.get("type", existing.get("type")) or "角色"
-        ).strip() or "角色"
+            metadata.get("type", existing.get("type")) or "character"
+        ).strip() or "character"
 
         entity = EntityMeta(
             id=entity_id,
@@ -705,9 +675,9 @@ class IndexManager(IndexChapterMixin, IndexEntityMixin, IndexDebtMixin, IndexRea
         self.upsert_entity(entity, update_metadata=True)
         return True
 
-    # ==================== 章节操作 ====================
+    # ==================== Chapter operations ====================
 
-# ==================== CLI 接口 ====================
+# ==================== CLI interface ====================
 
 
 
@@ -724,28 +694,28 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    # 获取统计
+    # Get statistics.
     subparsers.add_parser("stats")
 
-    # 查询章节
+    # Query chapters.
     chapter_parser = subparsers.add_parser("get-chapter")
     chapter_parser.add_argument("--chapter", type=int, required=True)
 
-    # 查询最近出场
+    # Query recent appearances.
     recent_parser = subparsers.add_parser("recent-appearances")
     recent_parser.add_argument("--limit", type=int, default=None)
 
-    # 查询实体出场
+    # Query an entity's appearances.
     entity_parser = subparsers.add_parser("entity-appearances")
     entity_parser.add_argument("--entity", required=True)
     entity_parser.add_argument("--limit", type=int, default=None)
 
-    # 搜索场景
+    # Search scenes.
     search_parser = subparsers.add_parser("search-scenes")
     search_parser.add_argument("--location", required=True)
     search_parser.add_argument("--limit", type=int, default=None)
 
-    # 处理章节数据 (写入)
+    # Process and write chapter data.
     process_parser = subparsers.add_parser("process-chapter")
     process_parser.add_argument("--chapter", type=int, required=True)
     process_parser.add_argument("--title", required=True)
@@ -754,47 +724,47 @@ def main():
     process_parser.add_argument("--entities", required=True, help="Entity list as JSON")
     process_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
 
-    # ==================== v5.1 引入命令 ====================
+    # ==================== Commands introduced in v5.1 ====================
 
-    # 获取实体
+    # Get an entity.
     get_entity_parser = subparsers.add_parser("get-entity")
     get_entity_parser.add_argument("--id", required=True, help="Entity ID")
 
-    # 获取核心实体
+    # Get core entities.
     subparsers.add_parser("get-core-entities")
 
-    # 获取主角
+    # Get the protagonist.
     subparsers.add_parser("get-protagonist")
 
-    # 按类型获取实体
+    # Get entities by type.
     type_parser = subparsers.add_parser("get-entities-by-type")
     type_parser.add_argument(
         "--type", required=True, help="Entity type (character/location/item/faction/technique; legacy type values supported)"
     )
     type_parser.add_argument("--include-archived", action="store_true")
 
-    # 按别名查找实体
+    # Look up entities by alias.
     alias_parser = subparsers.add_parser("get-by-alias")
     alias_parser.add_argument("--alias", required=True, help="Alias")
 
-    # 获取实体别名
+    # Get an entity's aliases.
     aliases_parser = subparsers.add_parser("get-aliases")
     aliases_parser.add_argument("--entity", required=True, help="Entity ID")
 
-    # 注册别名
+    # Register an alias.
     reg_alias_parser = subparsers.add_parser("register-alias")
     reg_alias_parser.add_argument("--alias", required=True)
     reg_alias_parser.add_argument("--entity", required=True)
     reg_alias_parser.add_argument("--type", required=True, help="Entity type")
 
-    # 获取实体关系
+    # Get entity relationships.
     rel_parser = subparsers.add_parser("get-relationships")
     rel_parser.add_argument("--entity", required=True)
     rel_parser.add_argument(
         "--direction", choices=["from", "to", "both"], default="both"
     )
 
-    # 获取关系事件
+    # Get relationship events.
     rel_events_parser = subparsers.add_parser("get-relationship-events")
     rel_events_parser.add_argument("--entity", required=True)
     rel_events_parser.add_argument("--direction", choices=["from", "to", "both"], default="both")
@@ -802,7 +772,7 @@ def main():
     rel_events_parser.add_argument("--to-chapter", type=int, default=None)
     rel_events_parser.add_argument("--limit", type=int, default=100)
 
-    # 获取关系图谱
+    # Get the relationship graph.
     rel_graph_parser = subparsers.add_parser("get-relationship-graph")
     rel_graph_parser.add_argument("--center", required=True, help="Central entity ID")
     rel_graph_parser.add_argument("--depth", type=int, default=2)
@@ -810,7 +780,7 @@ def main():
     rel_graph_parser.add_argument("--top-edges", type=int, default=50)
     rel_graph_parser.add_argument("--format", choices=["json", "mermaid"], default="json")
 
-    # 获取关系时间线
+    # Get the relationship timeline.
     rel_timeline_parser = subparsers.add_parser("get-relationship-timeline")
     rel_timeline_parser.add_argument("--a", required=True, help="Entity A")
     rel_timeline_parser.add_argument("--b", required=True, help="Entity B")
@@ -818,32 +788,32 @@ def main():
     rel_timeline_parser.add_argument("--to-chapter", type=int, default=None)
     rel_timeline_parser.add_argument("--limit", type=int, default=100)
 
-    # 写入关系事件
+    # Write a relationship event.
     rel_event_record_parser = subparsers.add_parser("record-relationship-event")
     rel_event_record_parser.add_argument("--data", required=True, help="Relationship event data as JSON")
 
-    # 获取状态变化
+    # Get state changes.
     changes_parser = subparsers.add_parser("get-state-changes")
     changes_parser.add_argument("--entity", required=True)
     changes_parser.add_argument("--limit", type=int, default=20)
 
-    # 写入实体
+    # Write an entity.
     upsert_entity_parser = subparsers.add_parser("upsert-entity")
     upsert_entity_parser.add_argument(
         "--data", required=True, help="Entity data as JSON"
     )
 
-    # 写入关系
+    # Write a relationship.
     upsert_rel_parser = subparsers.add_parser("upsert-relationship")
     upsert_rel_parser.add_argument("--data", required=True, help="Relationship data as JSON")
 
-    # 写入状态变化
+    # Write a state change.
     state_change_parser = subparsers.add_parser("record-state-change")
     state_change_parser.add_argument(
         "--data", required=True, help="State change data as JSON"
     )
 
-    # ==================== v5.4 新增命令 ====================
+    # ==================== Commands added in v5.4 ====================
     invalid_parser = subparsers.add_parser("mark-invalid")
     invalid_parser.add_argument("--source-type", required=True)
     invalid_parser.add_argument("--source-id", required=True)
@@ -879,72 +849,72 @@ def main():
     checklist_score_trend_parser = subparsers.add_parser("get-writing-checklist-score-trend")
     checklist_score_trend_parser.add_argument("--last-n", type=int, default=10)
 
-    # ==================== v5.3 引入命令 ====================
+    # ==================== Commands introduced in v5.3 ====================
 
-    # 获取债务汇总
+    # Get the debt summary.
     subparsers.add_parser("get-debt-summary")
 
-    # 获取最近章节追读力元数据
+    # Get recent chapter reader-engagement metadata.
     reading_power_parser = subparsers.add_parser("get-recent-reading-power")
     reading_power_parser.add_argument("--limit", type=int, default=10)
 
-    # 获取章节追读力元数据
+    # Get chapter reader-engagement metadata.
     chapter_rp_parser = subparsers.add_parser("get-chapter-reading-power")
     chapter_rp_parser.add_argument("--chapter", type=int, required=True)
 
-    # 获取爽点模式使用统计
+    # Get payoff-pattern usage statistics.
     pattern_stats_parser = subparsers.add_parser("get-pattern-usage-stats")
     pattern_stats_parser.add_argument("--last-n", type=int, default=20)
 
-    # 获取钩子类型使用统计
+    # Get hook-type usage statistics.
     hook_stats_parser = subparsers.add_parser("get-hook-type-stats")
     hook_stats_parser.add_argument("--last-n", type=int, default=20)
 
-    # 合并查询：追读力 + 模式统计 + 钩子统计（减少工具调用次数）
+    # Combined query: reader engagement, pattern statistics, and hook statistics to reduce tool calls.
     reader_signals_parser = subparsers.add_parser("get-reader-signals")
     reader_signals_parser.add_argument("--limit", type=int, default=5)
     reader_signals_parser.add_argument("--last-n", type=int, default=20)
 
-    # 获取待偿还Override
+    # Get Overrides awaiting repayment.
     pending_override_parser = subparsers.add_parser("get-pending-overrides")
     pending_override_parser.add_argument("--before-chapter", type=int, default=None)
 
-    # 获取逾期Override
+    # Get overdue Overrides.
     overdue_override_parser = subparsers.add_parser("get-overdue-overrides")
     overdue_override_parser.add_argument("--current-chapter", type=int, required=True)
 
-    # 获取活跃债务
+    # Get active debts.
     subparsers.add_parser("get-active-debts")
 
-    # 获取逾期债务
+    # Get overdue debts.
     overdue_debt_parser = subparsers.add_parser("get-overdue-debts")
     overdue_debt_parser.add_argument("--current-chapter", type=int, required=True)
 
-    # 计算利息
+    # Calculate interest.
     accrue_parser = subparsers.add_parser("accrue-interest")
     accrue_parser.add_argument("--current-chapter", type=int, required=True)
 
-    # 偿还债务
+    # Repay debt.
     pay_debt_parser = subparsers.add_parser("pay-debt")
     pay_debt_parser.add_argument("--debt-id", type=int, required=True)
     pay_debt_parser.add_argument("--amount", type=float, required=True)
     pay_debt_parser.add_argument("--chapter", type=int, required=True)
 
-    # 创建Override Contract
+    # Create an Override Contract.
     create_override_parser = subparsers.add_parser("create-override-contract")
     create_override_parser.add_argument(
         "--data", required=True, help="Override Contract data as JSON"
     )
 
-    # 创建债务
+    # Create debt.
     create_debt_parser = subparsers.add_parser("create-debt")
     create_debt_parser.add_argument("--data", required=True, help="Debt data as JSON")
 
-    # 标记Override已偿还
+    # Mark an Override fulfilled.
     fulfill_override_parser = subparsers.add_parser("fulfill-override")
     fulfill_override_parser.add_argument("--contract-id", type=int, required=True)
 
-    # 保存章节追读力元数据
+    # Save chapter reader-engagement metadata.
     save_rp_parser = subparsers.add_parser("save-chapter-reading-power")
     save_rp_parser.add_argument(
         "--data", required=True, help="Chapter reader-retention metadata as JSON"
@@ -954,10 +924,10 @@ def main():
     args = parser.parse_args(argv)
     command_started_at = time.perf_counter()
 
-    # 初始化
+    # Initialize.
     config = None
     if args.project_root:
-        # 允许传入“工作区根目录”，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+        # Accept a workspace root and resolve it to the actual book project_root, which must contain .webnovel/state.json.
         from project_locator import resolve_project_root
         from .config import DataModulesConfig
 
@@ -1038,7 +1008,7 @@ def main():
         )
         emit_success(stats, message="chapter_processed", chapter=args.chapter)
 
-    # ==================== v5.1 引入命令处理 ====================
+    # ==================== v5.1 Command handlers ====================
 
     elif args.command == "get-entity":
         entity = manager.get_entity(args.id)
@@ -1157,7 +1127,7 @@ def main():
             id=data["id"],
             type=data["type"],
             canonical_name=data["canonical_name"],
-            tier=data.get("tier", "装饰"),
+            tier=data.get("tier", "decorative"),
             desc=data.get("desc", ""),
             current=data.get("current", {}),
             first_appearance=data.get("first_appearance", 0),
@@ -1196,7 +1166,7 @@ def main():
         record_id = manager.record_state_change(change)
         emit_success({"id": record_id, "entity": change.entity_id, "field": change.field}, message="state_change_recorded")
 
-    # ==================== v5.4 无效事实命令处理 ====================
+    # ==================== v5.4 Invalid-fact command handlers ====================
 
     elif args.command == "mark-invalid":
         invalid_id = manager.mark_invalid_fact(
@@ -1281,7 +1251,7 @@ def main():
         trend = manager.get_writing_checklist_score_trend(args.last_n)
         emit_success(trend, message="writing_checklist_score_trend")
 
-    # ==================== v5.3 引入命令处理 ====================
+    # ==================== v5.3 Command handlers ====================
 
     elif args.command == "get-debt-summary":
         summary = manager.get_debt_summary()

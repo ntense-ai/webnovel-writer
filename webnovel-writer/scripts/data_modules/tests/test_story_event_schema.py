@@ -13,7 +13,7 @@ def test_story_event_supports_power_breakthrough():
             "chapter": 3,
             "event_type": "power_breakthrough",
             "subject": "xiaoyan",
-            "payload": {"from": "斗之气三段", "to": "斗者"},
+            "payload": {"from": "Combat Energy Stage Three", "to": "Dou Zhe"},
         }
     )
     assert event.event_type == "power_breakthrough"

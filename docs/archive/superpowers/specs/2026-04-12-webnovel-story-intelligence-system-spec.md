@@ -374,8 +374,8 @@ It does not answer how to write one technique. It answers:
 
 Add the core routing table:
 
-- Filename: `题材与调性推理.csv`
-- Chinese name: `题材与调性推理` (genre and tone reasoning)
+- Filename: `genre-routing.csv`
+- Chinese name: `genre-routing` (genre and tone reasoning)
 
 ### 5.3 Suggested Fields
 
@@ -383,21 +383,21 @@ The table still follows the existing common CSV contract. These are **additional
 
 | Field | Description |
 |-------|-------------|
-| `题材/流派` | Primary genre |
-| `中文名` | Standard human-readable name |
-| `题材别名` | Slang, common names, platform terminology |
-| `核心调性` | Underdog rise, intense romantic tension, restrained buildup and release, uncanny pressure, etc. |
-| `节奏策略` | Golden opening chapters, slow buildup, continuous payoffs, milestone eruptions, etc. |
-| `主爽点` | Core payoff type |
-| `辅助爽点` | Secondary payoffs |
-| `冲突引擎` | How conflict is generated |
-| `适配人设` | Recommended character frameworks |
-| `适配金手指` | Recommended special-advantage or setting types |
-| `适配桥段` | Common plot-beat directions |
-| `强制禁忌/毒点` | Genre-level red lines |
-| `推荐基础检索表` | Base domains prioritized during system generation |
-| `推荐动态检索表` | Dynamic domains prioritized for volume/chapter briefs |
-| `默认查询词` | Query expansions for vague input |
+| `genre_route` | Primary genre |
+| `display name` | Standard human-readable name |
+| `genre_aliases` | Slang, common names, platform terminology |
+| `core_tone` | Underdog rise, intense romantic tension, restrained buildup and release, uncanny pressure, etc. |
+| `pacing_strategy` | Golden opening chapters, slow buildup, continuous payoffs, milestone eruptions, etc. |
+| `primarypayoff` | Core payoff type |
+| `supportingpayoff` | Secondary payoffs |
+| `conflict engine` | How conflict is generated |
+| `adaptationcharacter-design` | Recommended character frameworks |
+| `compatible special advantages` | Recommended special-advantage or setting types |
+| `adaptationtrope` | Common plot-beat directions |
+| `mandatory prohibitions/pitfalls` | Genre-level red lines |
+| `recommended_base_tables` | Base domains prioritized during system generation |
+| `recommended_dynamic_tables` | Dynamic domains prioritized for volume/chapter briefs |
+| `default_query` | Query expansions for vague input |
 
 ### 5.4 Genre Reasoning Principles
 
@@ -525,7 +525,7 @@ Global reasoning and routing:
 
 | Filename | Name | Role |
 |----------|------|------|
-| `题材与调性推理.csv` | Genre and tone reasoning | Genre routing and global orchestration |
+| `genre-routing.csv` | Genre and tone reasoning | Genre routing and global orchestration |
 
 ### 6.3 Rule Tables
 
@@ -533,20 +533,20 @@ Structured rules and entry-based knowledge:
 
 | Filename | Name | Role |
 |----------|------|------|
-| `命名规则.csv` | Naming rules | People, places, factions, techniques, etc. |
-| `场景写法.csv` | Scene writing | Combat, dialogue, conflict, and plot-scene patterns |
-| `写作技法.csv` | Writing techniques | Techniques and pitfalls |
-| `桥段套路.csv` | Plot tropes | Tropes, setup, reversals, variations |
-| `人设与关系.csv` | Characters and relationships | Archetypes, interactions, prohibitions |
-| `爽点与节奏.csv` | Payoffs and pacing | Pacing phases, emotional orchestration, failure modes |
-| `金手指与设定.csv` | Special advantages and settings | Advantages, world rules, limits, costs |
+| `naming.csv` | Naming rules | People, places, factions, techniques, etc. |
+| `scenes.csv` | Scene writing | Combat, dialogue, conflict, and plot-scene patterns |
+| `techniques.csv` | Writing techniques | Techniques and pitfalls |
+| `tropes.csv` | Plot tropes | Tropes, setup, reversals, variations |
+| `characters.csv` | Characters and relationships | Archetypes, interactions, prohibitions |
+| `pacing.csv` | Payoffs and pacing | Pacing phases, emotional orchestration, failure modes |
+| `powers.csv` | Special advantages and settings | Advantages, world rules, limits, costs |
 
 Suggested future tables:
 
 | Filename | Name | Role |
 |----------|------|------|
-| `冲突设计.csv` | Conflict design | Triggers, escalation chains, resolutions |
-| `反派机制.csv` | Antagonist mechanisms | Logic, hierarchy, defeat patterns, prohibitions |
+| `conflict design.csv` | Conflict design | Triggers, escalation chains, resolutions |
+| `antagonistmechanism.csv` | Antagonist mechanisms | Logic, hierarchy, defeat patterns, prohibitions |
 
 ### 6.4 Methodology Docs
 
@@ -1015,9 +1015,9 @@ The **stable interface** visible to skills, agents, and tests must live under un
 Target CLI:
 
 ```bash
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-master --genre "修仙退婚流"
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-volume --title "拍卖会卷"
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-chapter --query "拍卖会打脸"
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-master --genre "cultivation broken-engagement fiction"
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-volume --title "auction volume"
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system generate-chapter --query "auction-room vindication"
 ```
 
 If retained, `story_system/cli.py` is only a local development/debugging or internal wrapper entry point, not an external command depended upon by skills/prompts.
@@ -1037,8 +1037,8 @@ Argument rules:
 Reserve explicit amendment entry points:
 
 ```bash
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system amend-master --event "主角获得第二核心金手指"
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system amend-volume --volume 2 --event "阵营关系反转"
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system amend-master --event "The protagonist gains a second core special power"
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system amend-volume --volume 2 --event "factionrelationshipreversal"
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" story-system refresh-chapter --chapter 15
 ```
 
@@ -1263,7 +1263,7 @@ New roles:
 
 Do not downgrade them abruptly:
 
-1. Manually migrate stable fields into `题材与调性推理.csv`.
+1. Manually migrate stable fields into `genre-routing.csv`.
 2. Have `story_system` prefer CSV with Markdown fallback.
 3. Downgrade `genre-profiles.md` only after CSV coverage reaches the threshold.
 
@@ -1272,7 +1272,7 @@ Do not downgrade them abruptly:
 During phases 1/2, never allow peer sources of truth. Fix priority:
 
 1. `.story-system` contracts
-2. `题材与调性推理.csv`
+2. `genre-routing.csv`
 3. `genre-profiles.md`
 4. `templates/genres/*.md`
 
@@ -1340,7 +1340,7 @@ Even a target-state specification needs basic migration criteria.
 
 #### Day 1
 
-- Add `题材与调性推理.csv`.
+- Add `genre-routing.csv`.
 - Add minimal `generate-master`.
 - Retain `reference_search.py`.
 - Retain `context_manager`.
@@ -1509,20 +1509,20 @@ Do not require every legacy table to rename fields immediately, but require unif
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
-    "题材与调性推理": ["强制禁忌/毒点"],
-    "人设与关系": ["忌讳写法"],
-    "爽点与节奏": ["常见崩盘误区"],
-    "场景写法": ["反面写法"],
-    "写作技法": ["常见误区"],
-    "桥段套路": ["忌讳写法"],
+    "genre-routing": ["mandatory prohibitions/pitfalls"],
+    "characters": ["prohibited approaches"],
+    "pacing": ["common failure modes"],
+    "scenes": ["negative examples"],
+    "techniques": ["common pitfalls"],
+    "tropes": ["prohibited approaches"],
 }
 ```
 
 Notes:
 
-- If retrofit phase 1 adds `忌讳写法` to `桥段套路.csv`, phase 2 must keep reading it to avoid divergence.
-- `桥段套路.反套路变种` supplies variation ideas, not anti-patterns by default.
-- `金手指与设定.数值控制边界` belongs in `system_constraints`, not automatically in anti-patterns.
+- If retrofit phase 1 adds `prohibited approaches` to `tropes.csv`, phase 2 must keep reading it to avoid divergence.
+- `tropes.subversive_variant` supplies variation ideas, not anti-patterns by default.
+- `powers.numeric_limits` belongs in `system_constraints`, not automatically in anti-patterns.
 - Only explicitly negative fields belong in `ANTI_PATTERN_SOURCE_FIELDS`.
 
 ### 12.3 Output Requirement

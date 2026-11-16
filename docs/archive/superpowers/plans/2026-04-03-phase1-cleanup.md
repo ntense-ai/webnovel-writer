@@ -79,8 +79,8 @@ def test_review_issue_blocking_defaults():
     issue = ReviewIssue(
         severity="critical",
         category="continuity",
-        location="第3段",
-        description="主角使用了已失去的能力",
+        location="paragraph 3",
+        description="The protagonist uses an ability already lost",
     )
     assert issue.blocking is True
 
@@ -90,8 +90,8 @@ def test_review_issue_non_critical_not_blocking():
     issue = ReviewIssue(
         severity="high",
         category="setting",
-        location="第7段",
-        description="时间线矛盾",
+        location="paragraph 7",
+        description="timeline contradiction",
     )
     assert issue.blocking is False
 
@@ -105,7 +105,7 @@ def test_review_result_counts():
             ReviewIssue(severity="high", category="setting", location="p2", description="d2"),
             ReviewIssue(severity="high", category="timeline", location="p3", description="d3", blocking=True),
         ],
-        summary="测试",
+        summary="test",
     )
     assert result.blocking_count == 2
     assert result.issues_count == 3
@@ -113,7 +113,7 @@ def test_review_result_counts():
 
 
 def test_review_result_no_issues():
-    result = ReviewResult(chapter=10, issues=[], summary="无问题")
+    result = ReviewResult(chapter=10, issues=[], summary="no issues")
     assert result.blocking_count == 0
     assert result.has_blocking is False
 
@@ -122,26 +122,26 @@ def test_review_result_to_dict_roundtrip():
     result = ReviewResult(
         chapter=10,
         issues=[
-            ReviewIssue(severity="medium", category="ai_flavor", location="p5", description="AI味重",
-                        evidence="'稳住心神'出现3次", fix_hint="替换为具体动作描写"),
+            ReviewIssue(severity="medium", category="ai_flavor", location="p5", description="AIheavy stylistic traces",
+                        evidence="'steady one's mind'appears3times", fix_hint="replace with concreteactiondescription"),
         ],
-        summary="1个AI味问题",
+        summary="1itemsAIstylistic issue",
     )
     d = result.to_dict()
     assert d["chapter"] == 10
     assert d["blocking_count"] == 0
     assert len(d["issues"]) == 1
     assert d["issues"][0]["category"] == "ai_flavor"
-    assert d["issues"][0]["fix_hint"] == "替换为具体动作描写"
+    assert d["issues"][0]["fix_hint"] == "replace with concreteactiondescription"
 
 
 def test_parse_review_output_from_dict():
     raw = {
         "issues": [
             {"severity": "critical", "category": "continuity", "location": "p1",
-             "description": "矛盾", "evidence": "证据", "fix_hint": "修复"},
+             "description": "contradiction", "evidence": "evidence", "fix_hint": "fix"},
         ],
-        "summary": "1个严重问题",
+        "summary": "1serious issues",
     }
     result = parse_review_output(chapter=5, raw=raw)
     assert result.chapter == 5
@@ -151,9 +151,9 @@ def test_parse_review_output_from_dict():
 def test_parse_review_output_tolerates_missing_fields():
     raw = {
         "issues": [
-            {"severity": "low", "description": "小问题"},
+            {"severity": "low", "description": "minor issue"},
         ],
-        "summary": "轻微",
+        "summary": "minor",
     }
     result = parse_review_output(chapter=1, raw=raw)
     assert result.issues[0].category == "other"
@@ -167,7 +167,7 @@ def test_review_result_to_metrics_dict():
             ReviewIssue(severity="critical", category="continuity", location="p1", description="d1"),
             ReviewIssue(severity="high", category="ai_flavor", location="p2", description="d2"),
         ],
-        summary="测试",
+        summary="test",
     )
     metrics = result.to_metrics_dict()
     assert metrics["chapter"] == 10
@@ -496,7 +496,7 @@ Remove workflow parsers and routing from `scripts/data_modules/webnovel.py`:
 Delete parser definitions:
 ```python
 # Delete these two lines
-p_workflow = sub.add_parser("workflow", help="转发到 workflow_manager.py")
+p_workflow = sub.add_parser("workflow", help="forward to workflow_manager.py")
 p_workflow.add_argument("args", nargs=argparse.REMAINDER)
 ```
 
@@ -607,21 +607,21 @@ def test_review_pipeline_builds_artifacts_v6(tmp_path):
                     {
                         "severity": "critical",
                         "category": "timeline",
-                        "location": "第2段",
-                        "description": "时间线回跳",
-                        "evidence": "上章深夜，本章突然中午",
-                        "fix_hint": "补时间过渡",
+                        "location": "paragraph 2",
+                        "description": "timeline jumps backward",
+                        "evidence": "late at night in the previous chapter，suddenly noon in this chapter",
+                        "fix_hint": "add a time transition",
                         "blocking": True,
                     },
                     {
                         "severity": "medium",
                         "category": "ai_flavor",
-                        "location": "第5段",
-                        "description": "'稳住心神'出现2次",
-                        "fix_hint": "替换为具体动作",
+                        "location": "paragraph 5",
+                        "description": "'steady one's mind'appears2times",
+                        "fix_hint": "replace with concreteaction",
                     },
                 ],
-                "summary": "1个阻断，1个中等",
+                "summary": "1blockers，1medium issues",
             },
             ensure_ascii=False,
         ),

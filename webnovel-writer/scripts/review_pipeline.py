@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Step 3 审查结果处理。
-
-读取 reviewer agent 的原始输出 JSON，解析为 ReviewResult，
-生成 metrics 用于 index.db 沉淀。
-"""
+'Process Step 3 review results.\n\nParse reviewer-agent JSON output as ReviewResult and generate metrics for persistence in index.db.'
 from __future__ import annotations
 
 import argparse

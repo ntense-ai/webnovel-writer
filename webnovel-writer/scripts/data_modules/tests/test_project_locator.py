@@ -83,7 +83,7 @@ def test_resolve_project_root_uses_workspace_pointer(tmp_path):
     workspace = tmp_path / "workspace"
     (workspace / ".claude").mkdir(parents=True, exist_ok=True)
 
-    project_root = workspace / "凡人资本论"
+    project_root = workspace / "Mortal Capital"
     (project_root / ".webnovel").mkdir(parents=True, exist_ok=True)
     (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
 
@@ -102,7 +102,7 @@ def test_resolve_project_root_explicit_workspace_uses_unique_child_project(tmp_p
 
     workspace = tmp_path / "workspace"
     (workspace / ".git").mkdir(parents=True, exist_ok=True)
-    project_root = workspace / "凡人资本论"
+    project_root = workspace / "Mortal Capital"
     (project_root / ".webnovel").mkdir(parents=True, exist_ok=True)
     (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
 

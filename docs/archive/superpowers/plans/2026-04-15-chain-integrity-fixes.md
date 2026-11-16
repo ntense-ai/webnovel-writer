@@ -1,6 +1,6 @@
 # Init→Plan→Write Pipeline Integrity Remediation Plan
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -21,59 +21,59 @@
 
 ## Task 1: Complete Init Genre Aliases in the Reasoning Table
 
-**Problem:** Init genre labels (修仙, 系统流, 高武, 西幻, etc.) do not match reasoning-table labels (东方仙侠, 西方奇幻, etc.), so reasoning does not take effect for some genres.
+**Problem:** Init genre labels (cultivation, system-fiction, high-martial-power, western-fantasy, etc.) do not match reasoning-table labels (Easternxianxia, Westernfantasy, etc.), so reasoning does not take effect for some genres.
 
 **Files:**
-- Modify: `webnovel-writer/references/csv/裁决规则.csv`
-- Modify: `webnovel-writer/references/csv/题材与调性推理.csv`
+- Modify: `webnovel-writer/references/csv/adjudication.csv`
+- Modify: `webnovel-writer/references/csv/genre-routing.csv`
 
 - [ ] **Step 1: Map Init Genres to Reasoning Genres**
 
 Genre set listed at lines 110–113 of init SKILL.md (exact runtime labels retained):
 
 ```
-Fantasy/cultivation: 修仙 | 系统流 | 高武 | 西幻 | 无限流 | 末世 | 科幻
-Urban/modern: 都市异能 | 都市日常 | 都市脑洞 | 现实题材 | 黑暗题材 | 电竞 | 直播文
-Romance: 古言 | 宫斗宅斗 | 青春甜宠 | 豪门总裁 | ...
-Special genres: 规则怪谈 | 悬疑脑洞 | 悬疑灵异 | 历史古代 | 历史脑洞 | ...
+Fantasy/cultivation: cultivation | system-fiction | high-martial-power | western-fantasy | infinite-scenarios | apocalypse | sci-fi
+Urban/modern: urban-fantasy | urban-slice-of-life | urban-speculative | realistic-fiction | dark-fiction | esports | livestream-fiction
+Romance: historical-romance | palace-household-intrigue | young-sweet-romance | billionaire-romance | ...
+Special genres: rules-horror | speculative-mystery | paranormal-mystery | ancient-history | alternate-history | ...
 ```
 
 Map to the seven existing reasoning genres:
 
 | Init genre label | → Reasoning genre |
 |------------|-----------|
-| 修仙、仙侠 | 东方仙侠 |
-| 西幻、西方奇幻 | 西方奇幻 |
-| 末世、科幻 | 科幻末世 |
-| 都市异能、都市脑洞、现实题材 | 都市日常 |
-| 都市修真、现代修真 | 都市修真 |
-| 高武、都市异能 (high-martial-arts variant) | 都市高武 |
-| 历史古代、历史脑洞 | 历史古代 |
-| 系统流、无限流 | 东方仙侠 (fallback; mostly cultivation variants) |
+| cultivation、xianxia | Easternxianxia |
+| western-fantasy、Westernfantasy | Westernfantasy |
+| apocalypse、sci-fi | science-fiction apocalypse |
+| urban-fantasy、urban-speculative、realistic-fiction | urban-slice-of-life |
+| urbancultivation、modern cultivation | urbancultivation |
+| high-martial-power、urban-fantasy (high-martial-arts variant) | urbanhigh-martial-power |
+| ancient-history、alternate-history | ancient-history |
+| system-fiction、infinite-scenarios | Easternxianxia (fallback; mostly cultivation variants) |
 
 Unmapped genres (romance, rule-based horror, mystery, etc.) currently have no reasoning rows and use an empty-reasoning fallback.
 
-- [ ] **Step 2: Complete Aliases in the Keywords Column of 裁决规则.csv**
+- [ ] **Step 2: Complete Aliases in the Keywords Column of adjudication.csv**
 
-Append init genre labels to each row’s `关键词` (keywords) column:
+Append init genre labels to each row’s `keywords` (keywords) column:
 
 | Reasoning genre | Current keywords | Append |
 |---------|-----------|------|
-| 西方奇幻 | `西方奇幻\|奇幻` | `\|西幻` |
-| 东方仙侠 | `东方仙侠\|仙侠` | `\|修仙\|系统流\|无限流` |
-| 科幻末世 | `科幻末世\|末世\|科幻` | (already covered) |
-| 都市日常 | `都市日常\|都市` | `\|都市脑洞\|现实题材\|黑暗题材` |
-| 都市修真 | `都市修真\|修真\|现代修真` | (already covered) |
-| 都市高武 | `都市高武\|高武\|都市异能` | (already covered) |
-| 历史古代 | `历史古代\|历史\|古代` | `\|历史脑洞` |
+| Westernfantasy | `Westernfantasy\|fantasy` | `\|western-fantasy` |
+| Easternxianxia | `Easternxianxia\|xianxia` | `\|cultivation\|system-fiction\|infinite-scenarios` |
+| science-fiction apocalypse | `science-fiction apocalypse\|apocalypse\|sci-fi` | (already covered) |
+| urban-slice-of-life | `urban-slice-of-life\|urban` | `\|urban-speculative\|realistic-fiction\|dark-fiction` |
+| urbancultivation | `urbancultivation\|cultivation\|modern cultivation` | (already covered) |
+| urbanhigh-martial-power | `urbanhigh-martial-power\|high-martial-power\|urban-fantasy` | (already covered) |
+| ancient-history | `ancient-history\|historical\|ancient times` | `\|alternate-history` |
 
-Edit the CSV and append to the `关键词` column in the corresponding rows.
+Edit the CSV and append to the `keywords` column in the corresponding rows.
 
 - [ ] **Step 3: Check Routing-Table Alias Coverage**
 
-The eight current rows in `题材与调性推理.csv` represent subgenres such as broken-engagement stories and rule-based horror, not broad genre categories. **Do not change existing rows.**
+The eight current rows in `genre-routing.csv` represent subgenres such as broken-engagement stories and rule-based horror, not broad genre categories. **Do not change existing rows.**
 
-The routing table lacks broad-category rows such as 东方仙侠, 西方奇幻, and 科幻末世. When the user’s genre is 修仙, `_route()` may match no row because existing rows describe specific subgenres.
+The routing table lacks broad-category rows such as Easternxianxia, Westernfantasy, and science-fiction apocalypse. When the user’s genre is cultivation, `_route()` may match no row because existing rows describe specific subgenres.
 
 Determine whether broad-category rows are needed by checking `_route()` fallback behavior. With no match, it uses `--genre` as `explicit_genre_fallback` and consults the default recommendation table. This fallback is sufficient.
 
@@ -88,7 +88,7 @@ cd "D:\wk\novel skill\webnovel-writer\webnovel-writer" && python -m pytest scrip
 - [ ] **Step 5: Commit**
 
 ```bash
-cd "D:\wk\novel skill\webnovel-writer" && git add webnovel-writer/references/csv/裁决规则.csv && git commit -m "fix: expand reasoning table genre aliases to cover init genre names"
+cd "D:\wk\novel skill\webnovel-writer" && git add webnovel-writer/references/csv/adjudication.csv && git commit -m "fix: expand reasoning table genre aliases to cover init genre names"
 ```
 
 ---
@@ -117,7 +117,7 @@ Replace with:
 GENRE="$(python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" state get-field --field project.genre)"
 
 # Use the chapter-outline objective as retrieval query (fall back to genre if no outline)
-CHAPTER_GOAL="{从章纲提取的本章目标，如'韩立进入坊市试探消息真伪'}"
+CHAPTER_GOAL="{fromchapter-outlinethe chapter goal extracted from，for example'Han Lienters the market to test the truth of a rumor'}"
 
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" \
   story-system "${CHAPTER_GOAL}" --genre "${GENRE}" --chapter {chapter_num} --persist --emit-runtime-contracts --format both
@@ -128,7 +128,7 @@ Add the following explanation before this command:
 **Genre parameter rules:**
 - Read `--genre` from `project.genre` in `state.json`; never enter it manually
 - Set the first positional argument (query) to the chapter outline’s objective field for CSV knowledge retrieval
-- If the outline has no explicit objective, fall back to `"{题材} 第{chapter_num}章"`
+- If the outline has no explicit objective, fall back to `"{genre} Chapter {chapter_num}"`
 ```
 
 - [ ] **Step 2: Update the story-system Call in plan SKILL.md**
@@ -227,7 +227,7 @@ After the pre-writing sources-of-truth list, add priority guidance:
 ```markdown
 **Data priority (highest → lowest):**
 1. Explicit user requirements
-2. Original master/chapter outline (this chapter’s content in `大纲/第X卷-详细大纲.md`)
+2. Original master/chapter outline (this chapter’s content in `outlines/Volume X-detailedoutlines.md`)
 3. Story Contracts `MASTER_SETTING` (genre, tone, core prohibitions)
 4. The `reasoning` field in `chapter_{NNN}.json` (reasoning-layer style/pacing/reader-turn-off advice)
 5. Accepted `CHAPTER_COMMIT` (post-writing facts)
@@ -241,7 +241,7 @@ The `chapter_focus` field in `chapter_{NNN}.json` is only a CSV-derived referenc
 After the contract-tree explanation at lines 146–148, add:
 
 ```markdown
-**Note**: `chapter_focus` in `.story-system/chapters/chapter_{NNN}.json` is CSV-derived advice, not the actual chapter objective. For that objective, the original outline in `大纲/第X卷-详细大纲.md` takes highest priority. The core value of `chapter_{NNN}.json` is the reasoning metadata in `reasoning`: style priorities, pacing strategies, and anti-patterns.
+**Note**: `chapter_focus` in `.story-system/chapters/chapter_{NNN}.json` is CSV-derived advice, not the actual chapter objective. For that objective, the original outline in `outlines/Volume X-detailedoutlines.md` takes highest priority. The core value of `chapter_{NNN}.json` is the reasoning metadata in `reasoning`: style priorities, pacing strategies, and anti-patterns.
 ```
 
 - [ ] **Step 3: Commit**
@@ -276,7 +276,7 @@ Current Step 1 (lines 97–113) reads only state.json and the master outline. Re
 cat "$PROJECT_ROOT/.webnovel/state.json"
 
 # Master outline (global blueprint)
-cat "$PROJECT_ROOT/大纲/总纲.md"
+cat "$PROJECT_ROOT/outlines/master-outline.md"
 ```
 
 **Plot state of existing volumes** (required for cross-volume planning):
@@ -291,11 +291,11 @@ done
 
 # Current core-character state (understand protagonist progress)
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
-  knowledge query-entity-state --entity "{protagonist_id}" --at-chapter {上一卷最后章}
+  knowledge query-entity-state --entity "{protagonist_id}" --at-chapter {previous volume's final chapter}
 
 # Current core-relationship state
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
-  knowledge query-relationships --entity "{protagonist_id}" --at-chapter {上一卷最后章}
+  knowledge query-relationships --entity "{protagonist_id}" --at-chapter {previous volume's final chapter}
 
 # Active foreshadowing (unresolved across volumes)
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
@@ -306,16 +306,16 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
 
 ```bash
 # Genre-relevant pacing and plot-beat references for this volume
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 爽点与节奏 --query "{卷级核心冲突}" --genre "${GENRE}"
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 桥段套路 --query "{卷级核心冲突}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table pacing --query "{volume_core_conflict}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table tropes --query "{volume_core_conflict}" --genre "${GENRE}"
 ```
 ```
 
 Read as needed (unchanged):
-- `设定集/世界观.md`
-- `设定集/力量体系.md`
-- `设定集/主角卡.md`
-- `设定集/反派设计.md`
+- `settings/worldbuilding.md`
+- `settings/power-system.md`
+- `settings/protagonist.md`
+- `settings/antagonist.md`
 - `.webnovel/idea_bank.json`
 
 - [ ] **Step 2: Add Existing-State References to Planning Step 6 (Volume Outline Skeleton)**
@@ -360,25 +360,25 @@ cd "D:\wk\novel skill\webnovel-writer\webnovel-writer" && python -m pytest scrip
 python3 -c "
 import csv
 from pathlib import Path
-path = Path('webnovel-writer/references/csv/裁决规则.csv')
+path = Path('webnovel-writer/references/csv/adjudication.csv')
 with open(path, 'r', encoding='utf-8-sig') as f:
     for row in csv.DictReader(f):
-        genre = row['题材']
-        keywords = row['关键词']
+        genre = row['genre']
+        keywords = row['keywords']
         print(f'{genre}: {keywords}')
 "
 ```
 
-Confirm init labels such as 修仙, 西幻, 系统流, 都市脑洞, and 历史脑洞 appear in the corresponding rows’ keywords.
+Confirm init labels such as cultivation, western-fantasy, system-fiction, urban-speculative, and alternate-history appear in the corresponding rows’ keywords.
 
 - [ ] **Step 4: Manually Walk the Critical Init→Write Path**
 
 Simulated checks:
-1. Init sets genre="修仙" → state.json.project.genre="修仙"
-2. Init triggers story-system "修仙" --genre "修仙" → MASTER_SETTING.json is generated
-3. Write reads genre from state.json → passes --genre "修仙" to story-system
-4. story-system `_route()` attempts to match 修仙 → routing-table fallback (no exact match, but explicit_genre_fallback exists)
-5. story-system `_load_reasoning("修仙")` → matches the 东方仙侠 reasoning row through alias 修仙
+1. Init sets genre="cultivation" → state.json.project.genre="cultivation"
+2. Init triggers story-system "cultivation" --genre "cultivation" → MASTER_SETTING.json is generated
+3. Write reads genre from state.json → passes --genre "cultivation" to story-system
+4. story-system `_route()` attempts to match cultivation → routing-table fallback (no exact match, but explicit_genre_fallback exists)
+5. story-system `_load_reasoning("cultivation")` → matches the Easternxianxia reasoning row through alias cultivation
 6. Reasoning takes effect → chapter_brief.reasoning has a value
 
 Confirm this path is unbroken.

@@ -71,16 +71,16 @@ def temp_project(tmp_path, monkeypatch):
 async def test_store_and_search(temp_project):
     adapter = RAGAdapter(temp_project)
     chunks = [
-        {"chapter": 1, "scene_index": 1, "content": "萧炎在天云宗修炼斗气"},
-        {"chapter": 1, "scene_index": 2, "content": "药老传授炼药技巧"},
+        {"chapter": 1, "scene_index": 1, "content": "Xiao Yan cultivates combat energy at Skycloud Sect"},
+        {"chapter": 1, "scene_index": 2, "content": "Yao Lao teaches alchemy"},
     ]
     stored = await adapter.store_chunks(chunks)
     assert stored == 2
 
-    vec_results = await adapter.vector_search("萧炎", top_k=2)
+    vec_results = await adapter.vector_search("Xiao Yan", top_k=2)
     assert len(vec_results) == 2
 
-    bm25_results = adapter.bm25_search("萧炎", top_k=2)
+    bm25_results = adapter.bm25_search("Xiao Yan", top_k=2)
     assert len(bm25_results) >= 1
 
     stats = adapter.get_stats()
@@ -95,8 +95,8 @@ async def test_store_chunks_with_embedding_failure(tmp_path, monkeypatch):
 
     adapter = RAGAdapter(cfg)
     chunks = [
-        {"chapter": 1, "scene_index": 1, "content": "短内容"},
-        {"chapter": 1, "scene_index": 2, "content": "稍长内容用于索引"},
+        {"chapter": 1, "scene_index": 1, "content": "short content"},
+        {"chapter": 1, "scene_index": 2, "content": "slightly longer content for indexing"},
     ]
     stored = await adapter.store_chunks(chunks)
     assert stored == 1
@@ -106,9 +106,9 @@ async def test_store_chunks_with_embedding_failure(tmp_path, monkeypatch):
 async def test_hybrid_search_full_scan(temp_project):
     adapter = RAGAdapter(temp_project)
     await adapter.store_chunks(
-        [{"chapter": 1, "scene_index": 1, "content": "萧炎修炼"}]
+        [{"chapter": 1, "scene_index": 1, "content": "Xiao Yan cultivates"}]
     )
-    results = await adapter.hybrid_search("萧炎", vector_top_k=5, bm25_top_k=5, rerank_top_n=1)
+    results = await adapter.hybrid_search("Xiao Yan", vector_top_k=5, bm25_top_k=5, rerank_top_n=1)
     assert results
     assert results[0].source == "hybrid"
 
@@ -122,11 +122,11 @@ async def test_hybrid_search_prefilter(tmp_path, monkeypatch):
     adapter = RAGAdapter(cfg)
     await adapter.store_chunks(
         [
-            {"chapter": 1, "scene_index": 1, "content": "萧炎修炼"},
-            {"chapter": 2, "scene_index": 1, "content": "药老出场"},
+            {"chapter": 1, "scene_index": 1, "content": "Xiao Yan cultivates"},
+            {"chapter": 2, "scene_index": 1, "content": "Yao Lao appears"},
         ]
     )
-    results = await adapter.hybrid_search("药老", vector_top_k=2, bm25_top_k=2, rerank_top_n=1)
+    results = await adapter.hybrid_search("Yao Lao", vector_top_k=2, bm25_top_k=2, rerank_top_n=1)
     assert results
 
 
@@ -134,27 +134,27 @@ async def test_hybrid_search_prefilter(tmp_path, monkeypatch):
 async def test_search_respects_chapter_filter_across_strategies(tmp_path, monkeypatch):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
-    cfg.vector_full_scan_max_vectors = 0  # 强制走预筛选分支
+    cfg.vector_full_scan_max_vectors = 0  # force the prefilter branch
     monkeypatch.setattr(rag_module, "get_client", lambda config: StubClient())
     adapter = RAGAdapter(cfg)
     await adapter.store_chunks(
         [
-            {"chapter": 1, "scene_index": 1, "content": "前文线索，尚未涉及关键宝物"},
-            {"chapter": 2, "scene_index": 1, "content": "秘宝现世，引发争夺"},
-            {"chapter": 3, "scene_index": 1, "content": "秘宝大战彻底爆发"},
+            {"chapter": 1, "scene_index": 1, "content": "earlier clue，key treasure not yet involved"},
+            {"chapter": 2, "scene_index": 1, "content": "treasure appears，triggers competition"},
+            {"chapter": 3, "scene_index": 1, "content": "battle over the treasure fully erupts"},
         ]
     )
 
-    vector_results = await adapter.vector_search("秘宝", top_k=5, chapter=1)
+    vector_results = await adapter.vector_search("secret treasure", top_k=5, chapter=1)
     assert vector_results
     assert all((r.chapter or 0) <= 1 for r in vector_results)
 
-    bm25_results = adapter.bm25_search("秘宝", top_k=5, chapter=1)
+    bm25_results = adapter.bm25_search("secret treasure", top_k=5, chapter=1)
     assert bm25_results
     assert all((r.chapter or 0) <= 1 for r in bm25_results)
 
     hybrid_results = await adapter.hybrid_search(
-        "秘宝",
+        "secret treasure",
         vector_top_k=5,
         bm25_top_k=5,
         rerank_top_n=3,
@@ -175,8 +175,8 @@ async def test_graph_hybrid_search_with_entity_expansion(tmp_path, monkeypatch):
     adapter.index_manager.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=2,
@@ -185,39 +185,39 @@ async def test_graph_hybrid_search_with_entity_expansion(tmp_path, monkeypatch):
     adapter.index_manager.upsert_entity(
         EntityMeta(
             id="yaolao",
-            type="角色",
-            canonical_name="药老",
+            type="character",
+            canonical_name="Yao Lao",
             current={},
             first_appearance=1,
             last_appearance=2,
         )
     )
-    adapter.index_manager.register_alias("萧炎", "xiaoyan", "角色")
-    adapter.index_manager.register_alias("药老", "yaolao", "角色")
+    adapter.index_manager.register_alias("Xiao Yan", "xiaoyan", "character")
+    adapter.index_manager.register_alias("Yao Lao", "yaolao", "character")
     adapter.index_manager.upsert_relationship(
         RelationshipMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
-            description="收徒",
+            type="mentor-student",
+            description="accept a disciple",
             chapter=1,
         )
     )
 
     await adapter.store_chunks(
         [
-            {"chapter": 1, "scene_index": 1, "content": "萧炎拜药老为师，正式成为师徒"},
-            {"chapter": 2, "scene_index": 1, "content": "萧炎在天云宗修炼斗气"},
+            {"chapter": 1, "scene_index": 1, "content": "Xiao Yan becomes Yao Lao's disciple，formally become master and disciple"},
+            {"chapter": 2, "scene_index": 1, "content": "Xiao Yan cultivates combat energy at Skycloud Sect"},
         ]
     )
 
     results = await adapter.graph_hybrid_search(
-        "萧炎和药老关系",
+        "Xiao Yan and Yao Lao relationship",
         top_k=2,
-        center_entities=["萧炎", "药老"],
+        center_entities=["Xiao Yan", "Yao Lao"],
     )
     assert results
-    assert any("药老" in r.content for r in results)
+    assert any("Yao Lao" in r.content for r in results)
     assert all(r.source == "graph_hybrid" for r in results)
 
 
@@ -231,19 +231,19 @@ async def test_search_auto_uses_graph_strategy_when_enabled(tmp_path, monkeypatc
     adapter.index_manager.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=1,
         )
     )
-    adapter.index_manager.register_alias("萧炎", "xiaoyan", "角色")
+    adapter.index_manager.register_alias("Xiao Yan", "xiaoyan", "character")
     await adapter.store_chunks(
-        [{"chapter": 1, "scene_index": 1, "content": "萧炎突破斗师"}]
+        [{"chapter": 1, "scene_index": 1, "content": "Xiao Yan advances to Combat Master"}]
     )
 
-    results = await adapter.search("萧炎关系", top_k=1, strategy="auto")
+    results = await adapter.search("Xiao Yan relationships", top_k=1, strategy="auto")
     assert results
     assert results[0].source in {"graph_hybrid", "hybrid"}
 
@@ -256,7 +256,7 @@ async def test_graph_hybrid_search_fallback_when_graph_disabled(tmp_path, monkey
     monkeypatch.setattr(rag_module, "get_client", lambda config: StubClient())
     adapter = RAGAdapter(cfg)
     await adapter.store_chunks(
-        [{"chapter": 1, "scene_index": 1, "content": "萧炎在天云宗修炼斗气"}]
+        [{"chapter": 1, "scene_index": 1, "content": "Xiao Yan cultivates combat energy at Skycloud Sect"}]
     )
 
     modes = []
@@ -265,7 +265,7 @@ async def test_graph_hybrid_search_fallback_when_graph_disabled(tmp_path, monkey
         modes.append(mode)
 
     monkeypatch.setattr(adapter, "_log_query", _record_log)
-    results = await adapter.graph_hybrid_search("萧炎关系", top_k=1)
+    results = await adapter.graph_hybrid_search("Xiao Yan relationships", top_k=1)
 
     assert results
     assert modes
@@ -284,8 +284,8 @@ async def test_graph_hybrid_search_rerank_failure_uses_candidates(tmp_path, monk
     adapter.index_manager.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=2,
@@ -294,36 +294,36 @@ async def test_graph_hybrid_search_rerank_failure_uses_candidates(tmp_path, monk
     adapter.index_manager.upsert_entity(
         EntityMeta(
             id="yaolao",
-            type="角色",
-            canonical_name="药老",
+            type="character",
+            canonical_name="Yao Lao",
             current={},
             first_appearance=1,
             last_appearance=2,
         )
     )
-    adapter.index_manager.register_alias("萧炎", "xiaoyan", "角色")
-    adapter.index_manager.register_alias("药老", "yaolao", "角色")
+    adapter.index_manager.register_alias("Xiao Yan", "xiaoyan", "character")
+    adapter.index_manager.register_alias("Yao Lao", "yaolao", "character")
     adapter.index_manager.upsert_relationship(
         RelationshipMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
-            description="收徒",
+            type="mentor-student",
+            description="accept a disciple",
             chapter=1,
         )
     )
 
     await adapter.store_chunks(
         [
-            {"chapter": 1, "scene_index": 1, "content": "萧炎拜药老为师，正式成为师徒"},
-            {"chapter": 2, "scene_index": 1, "content": "萧炎在天云宗修炼斗气"},
+            {"chapter": 1, "scene_index": 1, "content": "Xiao Yan becomes Yao Lao's disciple，formally become master and disciple"},
+            {"chapter": 2, "scene_index": 1, "content": "Xiao Yan cultivates combat energy at Skycloud Sect"},
         ]
     )
 
     results = await adapter.graph_hybrid_search(
-        "萧炎和药老关系",
+        "Xiao Yan and Yao Lao relationship",
         top_k=2,
-        center_entities=["萧炎", "药老"],
+        center_entities=["Xiao Yan", "Yao Lao"],
     )
 
     assert results
@@ -338,10 +338,10 @@ async def test_search_unknown_strategy_falls_back_to_hybrid(tmp_path, monkeypatc
     monkeypatch.setattr(rag_module, "get_client", lambda config: StubClient())
     adapter = RAGAdapter(cfg)
     await adapter.store_chunks(
-        [{"chapter": 1, "scene_index": 1, "content": "萧炎在天云宗修炼斗气"}]
+        [{"chapter": 1, "scene_index": 1, "content": "Xiao Yan cultivates combat energy at Skycloud Sect"}]
     )
 
-    results = await adapter.search("萧炎", top_k=1, strategy="not_exists")
+    results = await adapter.search("Xiao Yan", top_k=1, strategy="not_exists")
     assert results
     assert all(r.source == "hybrid" for r in results)
 
@@ -353,7 +353,7 @@ async def test_search_with_backtrack(temp_project):
         {
             "chapter": 1,
             "scene_index": 0,
-            "content": "章节摘要",
+            "content": "chapter summary",
             "chunk_type": "summary",
             "chunk_id": "ch0001_summary",
             "source_file": "summaries/ch0001.md",
@@ -361,15 +361,15 @@ async def test_search_with_backtrack(temp_project):
         {
             "chapter": 1,
             "scene_index": 1,
-            "content": "场景内容",
+            "content": "scene content",
             "chunk_type": "scene",
             "chunk_id": "ch0001_s1",
             "parent_chunk_id": "ch0001_summary",
-            "source_file": "正文/第0001章.md#scene_1",
+            "source_file": "chapters/chapter-0001.md#scene_1",
         },
     ]
     await adapter.store_chunks(chunks)
-    results = await adapter.search_with_backtrack("场景", top_k=1)
+    results = await adapter.search_with_backtrack("scene", top_k=1)
     assert any(r.chunk_type == "summary" for r in results)
 
 
@@ -388,11 +388,11 @@ def test_recent_and_fetch_vectors(temp_project):
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding, parent_chunk_id, chunk_type, source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            ("ch0001_s1", 1, 1, "内容", b"", None, "scene", "正文/第0001章.md#scene_1"),
+            ("ch0001_s1", 1, 1, "content", b"", None, "scene", "chapters/chapter-0001.md#scene_1"),
         )
         cursor.execute(
             "INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding, parent_chunk_id, chunk_type, source_file) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            ("ch0002_s1", 2, 1, "后文内容", b"", None, "scene", "正文/第0002章.md#scene_1"),
+            ("ch0002_s1", 2, 1, "later content", b"", None, "scene", "chapters/chapter-0002.md#scene_1"),
         )
         conn.commit()
 
@@ -408,7 +408,7 @@ def test_init_db_migrates_legacy_vectors_schema(tmp_path, monkeypatch):
     cfg.ensure_dirs()
     monkeypatch.setattr(rag_module, "get_client", lambda config: StubClient())
 
-    # 旧结构：缺少 parent_chunk_id/chunk_type/source_file/created_at
+    # old structure：missing parent_chunk_id/chunk_type/source_file/created_at
     with closing(sqlite3.connect(str(cfg.vector_db))) as conn:
         cursor = conn.cursor()
         cursor.execute(
@@ -427,7 +427,7 @@ def test_init_db_migrates_legacy_vectors_schema(tmp_path, monkeypatch):
             INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding)
             VALUES (?, ?, ?, ?, ?)
             """,
-            ("ch0001_s1", 1, 1, "旧数据", b""),
+            ("ch0001_s1", 1, 1, "old data", b""),
         )
         conn.commit()
 
@@ -468,15 +468,15 @@ def test_rag_adapter_cli(temp_project, monkeypatch, capsys):
             "--chapter",
             "1",
             "--scenes",
-            json.dumps([{"index": 1, "summary": "摘要", "content": "内容"}], ensure_ascii=False),
+            json.dumps([{"index": 1, "summary": "summary", "content": "content"}], ensure_ascii=False),
         ]
     )
 
     # search
-    run_cli(["--project-root", root, "search", "--query", "内容", "--mode", "bm25", "--top-k", "5"])
-    run_cli(["--project-root", root, "search", "--query", "内容", "--mode", "vector", "--top-k", "5"])
-    run_cli(["--project-root", root, "search", "--query", "内容", "--mode", "hybrid", "--top-k", "5"])
-    run_cli(["--project-root", root, "search", "--query", "内容", "--mode", "auto", "--top-k", "5"])
+    run_cli(["--project-root", root, "search", "--query", "content", "--mode", "bm25", "--top-k", "5"])
+    run_cli(["--project-root", root, "search", "--query", "content", "--mode", "vector", "--top-k", "5"])
+    run_cli(["--project-root", root, "search", "--query", "content", "--mode", "hybrid", "--top-k", "5"])
+    run_cli(["--project-root", root, "search", "--query", "content", "--mode", "auto", "--top-k", "5"])
 
     capsys.readouterr()
 
@@ -504,7 +504,7 @@ def test_rag_adapter_cli_search_shows_degraded_warning(temp_project, monkeypatch
         rag_module.main()
 
     root = str(temp_project.project_root)
-    run_cli(["--project-root", root, "search", "--query", "测试", "--mode", "vector", "--top-k", "3"])
+    run_cli(["--project-root", root, "search", "--query", "test", "--mode", "vector", "--top-k", "3"])
 
     captured = capsys.readouterr()
     payload = json.loads(captured.out.strip().splitlines()[-1])

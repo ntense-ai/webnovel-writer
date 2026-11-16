@@ -60,14 +60,14 @@
   "disambiguation_pending": [],
   "chapter_meta": {
     "0001": {
-      "hook": {"type": "危机钩", "content": "...", "strength": "strong"},
+      "hook": {"type": "crisis", "content": "...", "strength": "strong"},
       "pattern": {
-        "opening": "冲突开场",
-        "hook": "危机钩",
-        "emotion_rhythm": "低→高",
+        "opening": "Opening conflict",
+        "hook": "crisis",
+        "emotion_rhythm": "low→high",
         "info_density": "medium"
       },
-      "ending": {"time": "夜晚", "location": "宗门大殿", "emotion": "紧张"}
+      "ending": {"time": "Night", "location": "Sect main hall", "emotion": "Tense"}
     }
   }
 }

@@ -15,8 +15,8 @@ def append_summary_projection(project_root: Path, commit_payload: dict) -> dict:
 
     target = Path(project_root) / ".webnovel" / "summaries" / f"ch{chapter:04d}.md"
     target.parent.mkdir(parents=True, exist_ok=True)
-    if "## 剧情摘要" not in summary_text:
-        summary_text = f"## 剧情摘要\n{summary_text}\n"
+    if "## Plot Summary" not in summary_text:
+        summary_text = f"## Plot Summary\n{summary_text}\n"
     target.write_text(summary_text, encoding="utf-8")
     return {"applied": True, "writer": "summary", "path": str(target)}
 

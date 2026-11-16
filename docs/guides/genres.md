@@ -29,27 +29,27 @@ The system automatically recognizes common aliases, for example. The literal inp
 
 | Input | Automatically mapped to |
 |------|-----------|
-| 玄幻、修真、玄幻修仙 (fantasy/cultivation variants) | 修仙 (cultivation) |
-| 都市修真 (urban cultivation) | 都市异能 (urban supernatural powers) |
-| 游戏电竞、电竞文 (gaming/esports fiction) | 电竞 (esports) |
-| 直播、主播、直播带货 (livestreaming, streamers, live commerce) | 直播文 (livestream fiction) |
-| 克系、克系悬疑 (Cthulhu-style fiction/mystery) | 克苏鲁 (Cthulhu fiction) |
+| xuanhuan、cultivation、xuanhuancultivation (fantasy/cultivation variants) | cultivation (cultivation) |
+| urbancultivation (urban cultivation) | urban-fantasy (urban supernatural powers) |
+| gaming-esports、esportsfiction (gaming/esports fiction) | esports (esports) |
+| livestreaming、streamer、livestream commerce (livestreaming, streamers, live commerce) | livestream-fiction (livestream fiction) |
+| cosmic horror、cosmic horrormystery (Cthulhu-style fiction/mystery) | cosmic-horror (Cthulhu fiction) |
 
 ## Hybrid-Genre Rules
 
-- Join two genres with `+` (for example, `都市脑洞+规则怪谈`, high-concept urban fiction + rules-based horror). Separators `/`, `、`, and `与` are also supported.
+- Join two genres with `+` (for example, `urban-speculative+rules-horror`, high-concept urban fiction + rules-based horror). Separators `/`, `、`, and `and` are also supported.
 - Combine no more than two genres.
 - A 7:3 primary-to-secondary ratio is recommended: the main plot follows the primary genre's logic, while the secondary genre supplies hooks, rules, and satisfying payoffs.
 
 Examples (literal supported genre inputs):
 
-- `都市脑洞+规则怪谈`
-- `修仙+系统流`
-- `古言+宫斗宅斗`
+- `urban-speculative+rules-horror`
+- `cultivation+system-fiction`
+- `historical-romance+palace-household-intrigue`
 
 ## Genre Template Outputs
 
-When a project is initialized, the selected genre template is automatically inserted into the reference-genre-template section (`参考题材模板`) of `settings/worldbuilding.md`.
+When a project is initialized, the selected genre template is automatically inserted into the reference-genre-template section (`referencegenretemplate`) of `settings/worldbuilding.md`.
 
 The system also includes six fine-tuned genre configuration directories (`genres/`) with more detailed writing guidance for specific genres:
 

@@ -26,15 +26,15 @@ def test_review_author_view_marks_blocking_as_must_fix():
                 {
                     "severity": "critical",
                     "category": "timeline",
-                    "location": "第2段",
-                    "description": "时间线回跳",
-                    "fix_hint": "补一句从深夜到清晨的过渡",
+                    "location": "Chapter2paragraph",
+                    "description": "timeline jumps backward",
+                    "fix_hint": "add a transition from late night to dawn",
                     "blocking": True,
                 },
                 {
                     "severity": "medium",
-                    "description": "节奏略慢",
-                    "fix_hint": "压缩解释",
+                    "description": "pacing slightly slow",
+                    "fix_hint": "shorten explanations",
                 },
             ]
         )
@@ -43,16 +43,16 @@ def test_review_author_view_marks_blocking_as_must_fix():
     assert view.status == "must_fix"
     assert view.verdict == "⛔ Fix before continuing"
     assert len(view.actions) == 1
-    assert "时间线回跳" in view.actions[0]
-    assert "补一句" in view.actions[0]
+    assert "timeline jumps backward" in view.actions[0]
+    assert "add a transition" in view.actions[0]
 
 
 def test_review_author_view_limits_actions_to_three_and_prioritizes_severity():
     issues = [
-        {"severity": "low", "description": "低优先级"},
-        {"severity": "medium", "description": "中优先级"},
-        {"severity": "high", "description": "高优先级"},
-        {"severity": "critical", "description": "严重但非阻断", "blocking": False},
+        {"severity": "low", "description": "low priority"},
+        {"severity": "medium", "description": "medium priority"},
+        {"severity": "high", "description": "high priority"},
+        {"severity": "critical", "description": "serious but nonblocking", "blocking": False},
     ]
 
     view = build_review_author_view(_payload(issues))
@@ -60,17 +60,17 @@ def test_review_author_view_limits_actions_to_three_and_prioritizes_severity():
     assert view.status == "suggest_fix"
     assert view.verdict == "⚠️ Changes recommended"
     assert len(view.actions) == 3
-    assert "严重但非阻断" in view.actions[0]
-    assert "高优先级" in view.actions[1]
-    assert "中优先级" in view.actions[2]
+    assert "serious but nonblocking" in view.actions[0]
+    assert "high priority" in view.actions[1]
+    assert "medium priority" in view.actions[2]
 
 
 def test_review_author_view_allows_clean_chapter_to_continue():
-    view = build_review_author_view(_payload([], summary="整体可继续"))
+    view = build_review_author_view(_payload([], summary="overall continuation allowed"))
 
     assert view.status == "can_continue"
     assert view.verdict == "✅ Ready to continue"
-    assert view.actions == ("整体可继续",)
+    assert view.actions == ("overall continuation allowed",)
 
 
 def test_review_author_view_render_has_author_section():
@@ -79,9 +79,9 @@ def test_review_author_view_render_has_author_section():
             [
                 {
                     "severity": "high",
-                    "location": "第5段",
-                    "description": "人物动机不清",
-                    "fix_hint": "补一句内心取舍",
+                    "location": "Chapter5paragraph",
+                    "description": "unclear character motivation",
+                    "fix_hint": "add an internal dilemma",
                 }
             ]
         )
@@ -89,4 +89,4 @@ def test_review_author_view_render_has_author_section():
 
     assert rendered.startswith("## Author view")
     assert "Chapter verdict: ⚠️ Changes recommended" in rendered
-    assert "人物动机不清" in rendered
+    assert "unclear character motivation" in rendered

@@ -15,8 +15,8 @@ def test_normalize_override_record_sets_record_type():
     row = normalize_override_record(
         record_type="contract_override",
         field="core_tone",
-        base_value="先压后爆",
-        override_value="当场爆发",
+        base_value="pressure before payoff",
+        override_value="immediate eruption",
         source_level="chapter",
     )
     assert row["record_type"] == "contract_override"
@@ -27,8 +27,8 @@ def test_normalize_override_record_supports_amend_proposal():
     row = normalize_override_record(
         record_type="amend_proposal",
         field="world_rule",
-        base_value="金手指每日一次",
-        override_value="金手指失控突破",
+        base_value="special advantage once daily",
+        override_value="uncontrolled special-ability breakthrough",
         source_level="master",
     )
     assert row["record_type"] == "amend_proposal"
@@ -42,11 +42,11 @@ def test_world_rule_broken_generates_amend_proposal():
             {
                 "event_id": "evt-001",
                 "event_type": "world_rule_broken",
-                "subject": "金手指",
+                "subject": "special advantage",
                 "payload": {
                     "field": "world_rule",
-                    "base_value": "每日一次",
-                    "proposed_value": "短时失控突破",
+                    "base_value": "once daily",
+                    "proposed_value": "brief uncontrolled breakthrough",
                 },
             }
         ],
@@ -64,8 +64,8 @@ def test_persist_amend_proposals_writes_pending_rows(tmp_path):
             "chapter": 3,
             "target_level": "master",
             "field": "world_rule",
-            "base_value": "每日一次",
-            "proposed_value": "短时失控突破",
+            "base_value": "once daily",
+            "proposed_value": "brief uncontrolled breakthrough",
             "reason_tag": "world_rule_broken",
         }
     ]
@@ -86,6 +86,6 @@ def test_persist_amend_proposals_writes_pending_rows(tmp_path):
     assert inserted == 1
     assert row["record_type"] == "amend_proposal"
     assert row["field"] == "world_rule"
-    assert row["override_value"] == "短时失控突破"
+    assert row["override_value"] == "brief uncontrolled breakthrough"
     assert row["source_level"] == "master"
     assert row["status"] == "pending"

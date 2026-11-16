@@ -1,0 +1,218 @@
+# High-Power Martial Arts Fiction Template
+
+> Runtime preset identifier: `high-martial-power` (English taxonomy and initialization preset).
+
+> **Core appeal**: The martial pinnacle + passionate battles + strength above all. Fists make the argument; the strong make the rules.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack M21
+- General overlay: Pack U03
+
+## 1. Core Subgenres
+
+### Global Martial Awakening
+- **Features**: Spiritual energy returns; everyone practices martial arts, which become mainstream.
+- **Core payoffs**: Martial breakthroughs, climbing rankings, national-war glory.
+- **Representative works**: *Global Martial Arts*, *I Have a Sword*, *Tribulation of Myriad Races*.
+
+### Martial Grandmaster
+- **Features**: Traditional martial arts, grandmaster realms, inherited techniques.
+- **Core payoffs**: Technical breakthroughs, school rivalries, becoming leader of the martial world.
+- **Representative works**: *Dragon and Snake*, *Grandmaster of Chinese Martial Arts*.
+
+### Competitive Fighting
+- **Features**: Arena contests, professional fighting, passionate duels.
+- **Core payoffs**: Arena victories, technical progress, championship glory.
+- **Representative works**: *Fists Subdue Mountains and Rivers*, *The King's Avatar*.
+
+### Martial Cultivation
+- **Features**: Combines martial arts and cultivation; enter the Dao through combat.
+- **Core payoffs**: Martial realms, bodily sanctification, shattering the void through martial power.
+- **Representative works**: *Shrouding the Heavens*, *Perfect World*, *The Sacred Ruins*.
+
+---
+
+## 2. Worldbuilding: Martial Society
+
+### Status of Martial Arts
+- **Hidden era**: Martial practitioners remain hidden; ordinary people are unaware.
+- **Public era**: Martial arts become publicly known and professionalized.
+- **Mainstream era**: Martial arts become society's core and practitioners hold high status.
+
+### Social Structure
+| Class | Features | Authority |
+|------|------|------|
+| Martial saint | Power of a nation | Above ordinary society |
+| Grandmaster | National strategic combat power | National-adviser level |
+| Master | Power of a city | Senior leadership |
+| Expert | Elite combat power | Middle ranks |
+| Practitioner | Basic combat power | Ordinary status |
+| Ordinary person | No martial power | Lowest tier |
+
+### Faction Landscape
+- **National martial department**: Official martial organization.
+- **Martial clans**: Families with long martial traditions.
+- **Training halls/dojos**: Institutions teaching martial arts.
+- **Underground factions**: Black markets and assassin organizations.
+- **Other species/beasts**: Humanity's enemies.
+
+---
+
+## 3. Martial System Design
+
+### Standard Realms
+| Realm | Features | Combat power |
+|------|------|------|
+| Manifest force | Externalized strength | One versus ten |
+| Hidden force | Internalized strength | One versus a hundred |
+| Transformed force | Strength becomes intangible | One versus a thousand |
+| Grandmaster | Initial domain | One versus ten thousand |
+| Great grandmaster | Mature domain | Power of a city |
+| Martial saint | Ultimate martial attainment | Power of a nation |
+
+### Martial Art Categories
+| Type | Features | Examples |
+|------|------|------|
+| External arts | Strengthen the body | Golden Bell Shield, Iron Shirt |
+| Internal arts | Cultivate inner energy | Nine Yang Divine Art |
+| Fist arts | Close combat | Xingyi, Bajiquan |
+| Kicking arts | Leg attacks | Tan Tui, Chuojiao |
+| Weapon arts | Weapon techniques | Swordsmanship, saber techniques |
+| Lightness arts | Movement and speed | Lingbo Microsteps |
+
+### Martial Resources
+- **Manuals**: Inherited techniques.
+- **Pills**: Strengthen the constitution and heal injuries.
+- **Heavenly treasures**: Break through bottlenecks.
+- **Weapons**: Divine weapons and exceptional blades.
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Arena Domination
+- **Scene**: A formal contest before a crowd.
+- **Payoff**: One move defeats the opponent and shocks everyone.
+- **Key**: Establish enough buildup and develop the opponent.
+
+### Martial Breakthrough
+- **Scene**: A life-or-death crisis/secluded training.
+- **Payoff**: A realm breakthrough causes a surge in strength.
+- **Key**: Prior accumulation is necessary; breakthroughs cannot appear from nowhere.
+
+### Winning Respect Through Strength
+- **Scene**: Dismissed by others, the protagonist lets strength speak.
+- **Payoff**: Fists settle the argument and force everyone to submit.
+- **Key**: Use restraint rather than mindless humiliation scenes.
+
+### National Glory
+- **Scene**: Represent the country in battle.
+- **Payoff**: Win honor and inspire national pride.
+- **Key**: Establish attachment to home and country beforehand.
+
+---
+
+## 5. Outline Structure (Standard: 2 Million Chinese Characters)
+
+### Volume One: Initiation (Chapters 1-80)
+- **Core**: The protagonist awakens martial talent.
+- **Setting**: City/training hall.
+- **Climax**: First display of talent defeats a formidable peer.
+
+### Volume Two: Rise (Chapters 81-180)
+- **Core**: Join a martial organization and enter competitions.
+- **Setting**: Provincial/national.
+- **Climax**: Win an important championship.
+
+### Volume Three: Fame (Chapters 181-350)
+- **Core**: Become a renowned martial practitioner.
+- **Setting**: Nationwide.
+- **Climax**: Become a grandmaster and shock the martial world.
+
+### Volume Four: Supremacy (Chapters 351-550)
+- **Core**: Enter international competition.
+- **Setting**: International.
+- **Climax**: Win a national contest and raise the country's prestige.
+
+### Volume Five: Pinnacle (Chapters 551-700)
+- **Core**: Pursue the ultimate martial attainment.
+- **Setting**: Global/otherworldly.
+- **Climax**: Reach the martial pinnacle.
+
+---
+
+## 6. Combat Design
+
+### Combat Pacing
+```
+Probing phase (20%):
+- Both sides test each other and demonstrate baseline strength.
+- Spectators/commentators introduce their backgrounds.
+
+Clash phase (40%):
+- Full engagement and exchanges of techniques.
+- Show each martial art's characteristics.
+
+Climax phase (30%):
+- Signature-technique showdown.
+- Unexpected reversal.
+
+Conclusion phase (10%):
+- Clear victory and defeat.
+- Subsequent consequences.
+```
+
+### Combat Description Essentials
+- **Technique names**: Convey a wuxia atmosphere.
+- **Power comparisons**: Use concrete descriptions.
+- **Environmental interaction**: Show combat's effect on the surroundings.
+- **Psychology**: Track both sides' mental shifts.
+
+---
+
+## 7. Martial Clan Design
+
+### Clan Components
+| Component | Description |
+|------|------|
+| Inherited arts | Techniques unique to the family |
+| Family history | Generations of accumulated experience |
+| Resource reserves | Pills, manuals, natural treasures |
+| Talent development | Training system for descendants |
+| External ties | Relationships with other factions |
+
+### Clan Conflicts
+- **Resource competition**: Fighting over natural treasures.
+- **Rankings**: Competing for clan prestige.
+- **Old grievances**: Historical debts and feuds.
+- **Marriage politics**: Strategic interfamily marriages.
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ Broken power scaling and numerical inflation.
+- ❌ Constant humiliation scenes that exhaust the reader.
+- ❌ Contradictory martial rules.
+- ❌ Supporting characters reduced to tools.
+
+### Recommended Practices
+- ✅ Keep the power system internally consistent.
+- ✅ Use humiliation payoffs sparingly and with setup.
+- ✅ Make martial rules detailed and consistent.
+- ✅ Give supporting characters independent personalities.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="martial-art" name="Martial art name" desc="Effect" tier="level" grade="Grade" kind="Type" source="Source"/>
+<entity type="martial-artist" name="Martial artist name" desc="Characteristics" tier="level" realm="Realm" skill="Signature technique" faction="faction"/>
+<entity type="faction" name="Faction name" desc="Nature" tier="level" leader="Sect leader" territory="Territory" heritage="Heritage"/>
+<entity type="pill" name="Pill name" desc="Effect" tier="level" grade="Grade" material="Materials"/>
+<entity type="weapon" name="Weapon name" desc="Characteristics" tier="level" grade="Grade" material="Material"/>
+```

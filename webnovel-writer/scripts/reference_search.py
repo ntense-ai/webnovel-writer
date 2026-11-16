@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Reference CSV 检索工具。
-
-在 references/csv/ 目录下的 CSV 文件中执行 BM25 关键词搜索，
-支持按技能、题材过滤，返回 JSON 格式结果。
-
-用法:
-    python reference_search.py --skill write --query "角色命名" --genre 玄幻
-    python reference_search.py --skill write --table 命名规则 --query "战斗描写" --max-results 3
-"""
+'Search reference CSV files using BM25 keyword matching.\n\nRead references/csv/, filter by skill and genre, and return JSON.\n\nUsage:\n    python reference_search.py --skill write --query "character naming" --genre xuanhuan\n    python reference_search.py --skill write --query "combat description" --max-results 3\n'
 from __future__ import annotations
 
 import argparse
@@ -30,9 +21,9 @@ from genre_taxonomy import GENRE_CANONICAL, resolve_canonical_genre
 
 # Stable internal CSV names remain valid; English callers use these public names.
 TABLE_ALIASES = {
-    "naming": "命名规则", "scenes": "场景写法", "techniques": "写作技法",
-    "tropes": "桥段套路", "pacing": "爽点与节奏", "characters": "人设与关系",
-    "powers": "金手指与设定", "genre-routing": "题材与调性推理", "adjudication": "裁决规则",
+    "naming": "naming", "scenes": "scenes", "techniques": "techniques",
+    "tropes": "tropes", "pacing": "pacing", "characters": "characters",
+    "powers": "powers", "genre-routing": "genre-routing", "adjudication": "adjudication",
 }
 
 
@@ -83,20 +74,16 @@ def _split_multi_value(cell: Any) -> List[str]:
 
 
 def _skill_matches(row: Dict[str, str], skill: str) -> bool:
-    """Return True if *skill* appears in the pipe-separated ``适用技能`` column."""
-    return skill in _split_multi_value(row.get("适用技能", ""))
+    'Return whether skill appears in the pipe-separated applicable-skills column.'
+    return skill in _split_multi_value(row.get("applicable_skills", ""))
 
 
 def _genre_matches(row: Dict[str, str], genre: Optional[str]) -> bool:
-    """Return True if *genre* is None, or matches ``适用题材`` (``全部`` always matches).
-
-    Both the input *genre* and the cell values are resolved to canonical form
-    before comparison, so platform tags and legacy values work transparently.
-    """
+    'Return True when genre is None or matches the applicable-genres column; the all-genres value always matches.\n\nNormalize input and cell genres to canonical values before comparison so platform tags and legacy values work transparently.'
     if genre is None:
         return True
-    cell = row.get("适用题材", "")
-    if cell.strip() == "全部":
+    cell = row.get("applicable_genres", "")
+    if cell.strip() == "all":
         return True
     requested_genres = [
         resolved
@@ -137,96 +124,96 @@ def resolve_genre(genre: Optional[str]) -> Optional[str]:
 # ---------------------------------------------------------------------------
 
 CSV_CONFIG: Dict[str, Dict[str, Any]] = {
-    "命名规则": {
-        "file": "命名规则.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "命名对象", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "naming": {
+        "file": "naming.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "naming_target", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "contract_inject": "MASTER_SETTING.base_context",
         "prefix": "NR",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "场景写法": {
-        "file": "场景写法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "模式名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "scenes": {
+        "file": "scenes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pattern_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "contract_inject": "CHAPTER_BRIEF.dynamic_context",
         "prefix": "SP",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "写作技法": {
-        "file": "写作技法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "技法名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "techniques": {
+        "file": "techniques.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "technique_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "contract_inject": "CHAPTER_BRIEF.dynamic_context",
         "prefix": "WT",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "桥段套路": {
-        "file": "桥段套路.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "桥段名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "tropes": {
+        "file": "tropes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "trope_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
         "contract_inject": "CHAPTER_BRIEF.dynamic_context",
         "prefix": "TR",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "爽点与节奏": {
-        "file": "爽点与节奏.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "节奏类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "pacing": {
+        "file": "pacing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pacing_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
         "contract_inject": "CHAPTER_BRIEF.dynamic_context",
         "prefix": "PA",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "人设与关系": {
-        "file": "人设与关系.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "人设类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "characters": {
+        "file": "characters.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "character_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "contract_inject": "MASTER_SETTING.base_context",
         "prefix": "CH",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "金手指与设定": {
-        "file": "金手指与设定.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "设定类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "powers": {
+        "file": "powers.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "setting_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "contract_inject": "MASTER_SETTING.base_context",
         "prefix": "SY",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "题材与调性推理": {
-        "file": "题材与调性推理.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "题材别名": 3},
-        "output_cols": ["编号", "题材/流派", "canonical_genre", "核心调性", "推荐基础检索表", "推荐动态检索表"],
-        "poison_col": "毒点",
+    "genre-routing": {
+        "file": "genre-routing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "genre_aliases": 3},
+        "output_cols": ["id", "genre_route", "canonical_genre", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
+        "poison_col": "pitfalls",
         "role": "route",
         "contract_inject": "MASTER_SETTING.route",
         "prefix": "GR",
-        "required_cols": ["编号", "适用技能", "题材/流派", "canonical_genre", "核心调性", "推荐基础检索表", "推荐动态检索表"],
+        "required_cols": ["id", "applicable_skills", "genre_route", "canonical_genre", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
     },
-    "裁决规则": {
-        "file": "裁决规则.csv",
-        "search_cols": {"题材": 4, "关键词": 3, "意图与同义词": 4},
-        "output_cols": ["题材", "风格优先级", "爽点优先级", "节奏默认策略",
-                        "毒点权重", "冲突裁决", "contract注入层", "反模式"],
+    "adjudication": {
+        "file": "adjudication.csv",
+        "search_cols": {"genre": 4, "keywords": 3, "intent_synonyms": 4},
+        "output_cols": ["genre", "style_priority", "payoff_priority", "default_pacing_strategy",
+                        "pitfall_weight", "conflict_resolution", "contract_injection_layer", "anti_pattern"],
         "poison_col": "",
         "role": "reasoning",
         "contract_inject": "CHAPTER_BRIEF.writing_guidance",
         "prefix": "RS",
-        "required_cols": ["编号", "题材", "风格优先级", "爽点优先级", "节奏默认策略", "冲突裁决"],
+        "required_cols": ["id", "genre", "style_priority", "payoff_priority", "default_pacing_strategy", "conflict_resolution"],
     },
 }
 
@@ -236,10 +223,10 @@ CSV_CONFIG: Dict[str, Dict[str, Any]] = {
 
 _TOKEN_SPLIT_RE = re.compile(r"[\s|,，、/；;：:（）()【】\[\]<>《》""\"'''!?！？。…]+")
 _DEFAULT_SEARCH_WEIGHTS = {
-    "意图与同义词": 4,
-    "关键词": 3,
-    "核心摘要": 2,
-    "详细展开": 1,
+    "intent_synonyms": 4,
+    "keywords": 3,
+    "summary": 2,
+    "details": 1,
 }
 
 
@@ -252,7 +239,7 @@ def _tokenize(text: str) -> List[str]:
         token = part.strip()
         if not token:
             continue
-        # 过滤 don't -> t 这类单字符英文噪声，避免触发子串兜底误召回。
+        # Drop single-letter noise such as the t from don't to avoid false substring-fallback matches.
         if len(token) == 1 and token.isascii():
             continue
         tokens.append(token)
@@ -327,23 +314,23 @@ def _compute_idf(query_terms: List[str], all_docs: List[List[str]]) -> Dict[str,
 
 # Hardcoded fallback columns when no CSV_CONFIG entry exists.
 _FALLBACK_CONTENT_COLUMNS = [
-    "技法名称", "桥段名称", "人设类型", "节奏类型", "设定类型",
-    "规则", "说明", "模式名称",
-    "常见误区", "前置铺垫", "核心爽点", "转折设计",
-    "核心动机", "行为逻辑", "互动模式", "忌讳写法",
-    "情绪调动手法", "常见崩盘误区",
-    "数值控制边界", "与剧情交互方式",
-    "正例", "示例片段",
-    "反例", "反面写法",
-    "命名对象", "场景类型", "技法类型", "适用场景",
+    "technique_name", "trope_name", "character_type", "pacing_type", "setting_type",
+    "rule", "description", "pattern_name",
+    "common_mistakes", "setup", "core_payoff", "twist_design",
+    "core_motivation", "behavior_logic", "interaction_pattern", "avoid",
+    "emotional_techniques", "common_failure_modes",
+    "numeric_limits", "plot_interaction",
+    "positive_example", "example_excerpt",
+    "negative_example", "negative_example",
+    "naming_target", "scene_type", "technique_type", "applicable_scenes",
 ]
 
-_SUMMARY_SKIP_COLS = {"编号", "大模型指令", "详细展开", "核心摘要"}
+_SUMMARY_SKIP_COLS = {"id", "model_instruction", "details", "summary"}
 
 
 def _build_summary(row: Dict[str, str], table_name: Optional[str] = None) -> str:
     """Merge key content columns into a single summary string."""
-    core_summary = row.get("核心摘要", "").strip()
+    core_summary = row.get("summary", "").strip()
     if core_summary:
         return core_summary
 
@@ -361,7 +348,7 @@ def _build_summary(row: Dict[str, str], table_name: Optional[str] = None) -> str
             parts.append(val)
     if parts:
         return "；".join(parts)
-    return row.get("详细展开", "").strip()
+    return row.get("details", "").strip()
 
 
 # ---------------------------------------------------------------------------
@@ -392,15 +379,6 @@ def search(
 
     table = TABLE_ALIASES.get(table, table)
     tables = load_tables(csv_dir, table=table)
-    # Legacy vocabulary is an input-only compatibility index, never prose output.
-    legacy_aliases = {}
-    alias_path = csv_dir / "legacy-search-aliases.json"
-    if alias_path.is_file() and re.search(r"[\u4e00-\u9fff]", query):
-        try:
-            legacy_aliases = json.loads(alias_path.read_text(encoding="utf-8"))
-        except (ValueError, OSError):
-            legacy_aliases = {}
-
     if not tables:
         return {
             "status": "success",
@@ -443,8 +421,6 @@ def search(
         tbl_cfg = CSV_CONFIG.get(tbl_name)
         weights = dict(tbl_cfg["search_cols"]) if tbl_cfg else None
         terms = _build_doc_terms(row, weights)
-        if legacy_aliases:
-            terms.extend(_build_doc_terms(legacy_aliases.get(row.get("编号", ""), {}), weights))
         doc_terms_list.append(terms)
     avg_dl = sum(len(d) for d in doc_terms_list) / len(doc_terms_list) if doc_terms_list else 1.0
     idf_map = _compute_idf(query_terms, doc_terms_list)
@@ -463,17 +439,14 @@ def search(
     results: List[Dict[str, Any]] = []
     for _score, tbl_name, row in top:
         results.append({
-            "id": row.get("编号", ""),
-            "table": next((key for key, value in TABLE_ALIASES.items() if value == tbl_name), tbl_name),
+            "id": row.get("id", ""),
+            "instruction": row.get("model_instruction", "").strip(),
+            "table": tbl_name,
+            "category": row.get("category", ""),
+            "level": row.get("level", ""),
+            "applicable_genres": row.get("applicable_genres", ""),
             "summary": _build_summary(row, table_name=tbl_name),
-            "instruction": row.get("大模型指令", "").strip(),
-            "编号": row.get("编号", ""),
-            "表": tbl_name,
-            "分类": row.get("分类", ""),
-            "层级": row.get("层级", ""),
-            "适用题材": row.get("适用题材", ""),
-            "内容摘要": _build_summary(row, table_name=tbl_name),
-            "大模型指令": row.get("大模型指令", "").strip(),
+            "model_instruction": row.get("model_instruction", "").strip(),
         })
 
     return {

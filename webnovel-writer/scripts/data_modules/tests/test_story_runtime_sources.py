@@ -14,7 +14,7 @@ def test_load_runtime_sources_prefers_latest_accepted_commit(tmp_path):
     (story_root / "commits").mkdir(parents=True, exist_ok=True)
 
     (story_root / "MASTER_SETTING.json").write_text(
-        json.dumps({"meta": {"contract_type": "MASTER_SETTING"}, "route": {"primary_genre": "玄幻"}}, ensure_ascii=False),
+        json.dumps({"meta": {"contract_type": "MASTER_SETTING"}, "route": {"primary_genre": "xuanhuan"}}, ensure_ascii=False),
         encoding="utf-8",
     )
     (story_root / "chapters" / "chapter_003.json").write_text(

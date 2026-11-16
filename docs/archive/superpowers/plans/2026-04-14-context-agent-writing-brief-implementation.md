@@ -138,10 +138,10 @@ def test_context_agent_loads_fixed_guides_and_outputs_writer_brief():
     text = (AGENTS_DIR / "context-agent.md").read_text(encoding="utf-8")
     assert "core-constraints.md" in text
     assert "anti-ai-guide.md" in text
-    assert "写作任务书" in text
-    assert "### 示例" in text
-    assert "你现在要写《凡人修仙传》第47章《坊市试探》。" in text
-    assert "Step 2 直写提示词" not in text
+    assert "writing brief" in text
+    assert "### example" in text
+    assert "you are now to write《A Record of a Mortal's Journey to Immortality》Chapter 47《testing the market》。" in text
+    assert "Step 2 direct-writing prompt" not in text
     assert "Context Contract" not in text
 ```
 
@@ -207,7 +207,7 @@ git commit -m "feat: make context agent write briefs from example"
 # webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py
 def test_webnovel_write_skill_routes_step2_through_writing_brief():
     text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
-    assert "写作任务书" in text
+    assert "writing brief" in text
     assert "context-agent" in text
     assert "Step 0.5" not in text
     assert 'cat "${SKILL_ROOT}/../../references/shared/core-constraints.md"' not in text
@@ -232,7 +232,7 @@ Hard requirements:
 
 ```json
 // webnovel-writer/skills/webnovel-write/evals/evals.json
-"expected_output": "完成 Step 1 到 Step 6 的完整流程，由 context-agent 先生成写作任务书，再起草第4章正文..."
+"expected_output": "Complete the full workflow from Step 1 through Step 6. Have context-agent generate the writing brief first, then draft Chapter 4..."
 ```
 
 ```md
@@ -295,7 +295,7 @@ All pass, 0 failures
 Run:
 
 ```bash
-rg -n "Step 0\\.5|writing_brief_renderer|test_writing_brief_renderer|Context Contract|Step 2 直写提示词|cat \\\"\\$\\{SKILL_ROOT\\}/../../references/shared/core-constraints.md\\\"|cat \\\"\\$\\{SKILL_ROOT\\}/references/anti-ai-guide.md\\\"" \
+rg -n "Step 0\\.5|writing_brief_renderer|test_writing_brief_renderer|Context Contract|Step 2 direct-writing prompt|cat \\\"\\$\\{SKILL_ROOT\\}/../../references/shared/core-constraints.md\\\"|cat \\\"\\$\\{SKILL_ROOT\\}/references/anti-ai-guide.md\\\"" \
   webnovel-writer \
   docs/guides/commands.md
 ```

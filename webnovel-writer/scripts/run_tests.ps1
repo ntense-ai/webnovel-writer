@@ -21,7 +21,7 @@ $env:TMP = $tmpRoot
 $env:TEMP = $tmpRoot
 $env:PYTHONPATH = ".claude/scripts"
 
-# 避免 Windows 下 basetemp 目录因权限/残留锁导致 rm_rf 失败（会让所有用例在 setup 阶段直接报错）。
+# Avoid basetemp permissions or stale locks breaking Windows test setup.
 $runId = Get-Date -Format "yyyyMMdd_HHmmssfff"
 $baseTemp = Join-Path $tmpRoot ("run-" + $Mode + "-" + $runId)
 
@@ -29,8 +29,8 @@ Write-Host "ProjectRoot: $ProjectRoot"
 Write-Host "TMP/TEMP: $tmpRoot"
 Write-Host "Mode: $Mode"
 
-# 预检：某些 Windows Python 发行版（尤其 WindowsApps shim）在 tempfile.mkdtemp 时会创建“不可访问目录”，
-# 会导致 pytest 在创建/清理临时目录阶段直接 WinError 5。
+# Preflight: WindowsApps Python may create inaccessible temporary directories.
+# This causes WinError 5 during temporary-directory creation or cleanup.
 @'
 import tempfile
 from pathlib import Path
@@ -38,7 +38,7 @@ import sys
 
 try:
     d = Path(tempfile.mkdtemp(prefix="webnovel_writer_pytest_"))
-    # 既要能列目录，也要能写文件；否则 pytest 必挂。
+    # Both directory listing and file writing must work for pytest.
     list(d.iterdir())
     (d / "probe.txt").write_text("ok", encoding="utf-8")
 except Exception as exc:
@@ -47,8 +47,8 @@ except Exception as exc:
 '@ | python - 2>$null
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
-    Write-Host "❌ Python 临时目录预检失败（常见原因：WindowsApps 的 python.exe shim / 权限异常）"
-    Write-Host "建议：改用标准 Python（python.org 安装版）或用 uv/uvx 提供的 Python 运行测试。"
+    Write-Host "Python temporary-directory preflight failed (WindowsApps shim or permissions)."
+    Write-Host "Use standard Python from python.org or an interpreter provided by uv/uvx."
     exit 1
 }
 

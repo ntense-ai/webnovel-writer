@@ -65,7 +65,7 @@ The following decisions were confirmed in brainstorming and should not be repeat
 
 ### 2.5 Reasoning Layer
 
-- Create an independent `裁决规则.csv`.
+- Create an independent `adjudication.csv`.
 - Key it by genre.
 - It determines how to adjudicate matches, what takes priority, and where to inject results, not which tables to search.
 
@@ -91,13 +91,13 @@ The following decisions were confirmed in brainstorming and should not be repeat
 
 Complete these seven genres first (exact table labels retained):
 
-1. Western fantasy (`西方奇幻`)
-2. Eastern xianxia (`东方仙侠`)
-3. Science-fiction apocalypse (`科幻末世`)
-4. Urban slice of life (`都市日常`)
-5. Urban cultivation (`都市修真`)
-6. Urban high martial arts (`都市高武`)
-7. Historical fiction (`历史古代`)
+1. Western fantasy (`Westernfantasy`)
+2. Eastern xianxia (`Easternxianxia`)
+3. Science-fiction apocalypse (`science-fiction apocalypse`)
+4. Urban slice of life (`urban-slice-of-life`)
+5. Urban cultivation (`urbancultivation`)
+6. Urban high martial arts (`urbanhigh-martial-power`)
+7. Historical fiction (`ancient-history`)
 
 Other genres are outside this convergence effort.
 
@@ -165,39 +165,39 @@ Each table instead defines:
 
 ```python
 CSV_CONFIG = {
-    "命名规则": {
-        "file": "命名规则.csv",
-        "search_cols": ["关键词", "意图与同义词", "核心摘要"],
-        "output_cols": ["编号", "命名对象", "核心摘要", "大模型指令", "详细展开"],
-        "poison_cols": ["毒点"],
+    "naming": {
+        "file": "naming.csv",
+        "search_cols": ["keywords", "intent_synonyms", "summary"],
+        "output_cols": ["id", "naming_target", "summary", "model_instruction", "details"],
+        "poison_cols": ["pitfalls"],
         "role": "base",
     },
-    "场景写法": {
-        "file": "场景写法.csv",
-        "search_cols": ["关键词", "意图与同义词", "核心摘要"],
-        "output_cols": ["编号", "模式名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_cols": ["毒点"],
+    "scenes": {
+        "file": "scenes.csv",
+        "search_cols": ["keywords", "intent_synonyms", "summary"],
+        "output_cols": ["id", "pattern_name", "summary", "model_instruction", "details"],
+        "poison_cols": ["pitfalls"],
         "role": "base",
     },
-    "题材与调性推理": {
-        "file": "题材与调性推理.csv",
-        "search_cols": ["题材关键词", "别名"],
-        "output_cols": ["题材", "默认调性", "推荐基础表", "推荐动态表"],
-        "poison_cols": ["毒点"],
+    "genre-routing": {
+        "file": "genre-routing.csv",
+        "search_cols": ["genrekeywords", "alias"],
+        "output_cols": ["genre", "default tone", "recommended basetable", "recommended dynamictable"],
+        "poison_cols": ["pitfalls"],
         "role": "route",
     },
-    "裁决规则": {
-        "file": "裁决规则.csv",
-        "search_cols": ["题材"],
+    "adjudication": {
+        "file": "adjudication.csv",
+        "search_cols": ["genre"],
         "output_cols": [
-            "题材",
-            "风格优先级",
-            "爽点优先级",
-            "节奏默认策略",
-            "毒点权重",
-            "冲突裁决",
-            "contract注入层",
-            "反模式",
+            "genre",
+            "style_priority",
+            "payoff_priority",
+            "default_pacing_strategy",
+            "pitfall_weight",
+            "conflict_resolution",
+            "contract_injection_layer",
+            "anti_pattern",
         ],
         "poison_cols": [],
         "role": "reasoning",
@@ -241,21 +241,21 @@ Audit and repair existing tables consistently so the reasoning and contract laye
 
 #### 5.3.1 Standardize Reader-Turn-Off Columns
 
-Rename these legacy columns uniformly to `毒点`:
+Rename these legacy columns uniformly to `pitfalls`:
 
-- `反面写法`
-- `忌讳写法`
-- `常见误区`
-- `常见崩盘误区`
+- `negative examples`
+- `prohibited approaches`
+- `common pitfalls`
+- `common failure modes`
 
 #### 5.3.2 Add Routing-Table Fields
 
-At minimum, add these to `题材与调性推理.csv`:
+At minimum, add these to `genre-routing.csv`:
 
-- `推荐基础表`
-- `推荐动态表`
-- `默认调性`
-- `风格锚点`
+- `recommended basetable`
+- `recommended dynamictable`
+- `default tone`
+- `style anchor`
 
 #### 5.3.3 Content-Completion Rules
 
@@ -264,8 +264,8 @@ Make all additions manually; do not write an automated migration script.
 Minimum requirements:
 
 - Every table covers common scenarios for all seven genres.
-- Every `意图与同义词` entry includes at least three synonymous expressions.
-- Every `毒点` entry is nonempty.
+- Every `intent_synonyms` entry includes at least three synonymous expressions.
+- Every `pitfalls` entry is nonempty.
 
 #### 5.3.4 Synchronize README
 
@@ -277,7 +277,7 @@ Update `README.md` to reflect:
 
 ### 5.4 Acceptance
 
-- All reader-turn-off columns are named `毒点`.
+- All reader-turn-off columns are named `pitfalls`.
 - The routing table returns recommended base and dynamic tables.
 - `README` and `CSV_CONFIG` agree.
 
@@ -287,7 +287,7 @@ Update `README.md` to reflect:
 
 ### 6.1 Work Required
 
-Create `裁决规则.csv` as an independent `Reasoning Layer`.
+Create `adjudication.csv` as an independent `Reasoning Layer`.
 
 It does not choose which tables to search. It determines:
 
@@ -308,16 +308,16 @@ This matches the relationship in `ui-ux-pro-max` between:
 
 ### 6.3 Fields
 
-`裁决规则.csv` must include at least:
+`adjudication.csv` must include at least:
 
-- `题材`
-- `风格优先级`
-- `爽点优先级`
-- `节奏默认策略`
-- `毒点权重`
-- `冲突裁决`
-- `contract注入层`
-- `反模式`
+- `genre`
+- `style_priority`
+- `payoff_priority`
+- `default_pacing_strategy`
+- `pitfall_weight`
+- `conflict_resolution`
+- `contract_injection_layer`
+- `anti_pattern`
 
 ### 6.4 Initial Coverage
 
@@ -326,7 +326,7 @@ Cover the seven genres first, one row each.
 ### 6.5 Acceptance
 
 - `source_trace` can trace results to the reasoning table.
-- Ordering across multiple table matches follows `冲突裁决`.
+- Ordering across multiple table matches follows `conflict_resolution`.
 - Genre-specific output can explain why these entries entered the contract.
 
 ---

@@ -28,8 +28,8 @@ def test_process_extraction_and_register_new_entities(temp_project):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -39,13 +39,13 @@ def test_process_extraction_and_register_new_entities(temp_project):
     results, warnings = linker.process_extraction_result(
         [
             {
-                "mention": "萧炎",
+                "mention": "Xiao Yan",
                 "candidates": ["xiaoyan"],
                 "suggested": "xiaoyan",
                 "confidence": 0.7,
             },
             {
-                "mention": "宗主",
+                "mention": "Sect Leader",
                 "candidates": ["zongzhu"],
                 "suggested": "zongzhu",
                 "confidence": 0.4,
@@ -60,15 +60,15 @@ def test_process_extraction_and_register_new_entities(temp_project):
         [
             {
                 "suggested_id": "hongyi",
-                "name": "红衣女子",
-                "type": "角色",
-                "mentions": ["红衣", "女子"],
+                "name": "Woman in Red",
+                "type": "character",
+                "mentions": ["Red", "woman"],
             }
         ]
     )
     assert registered == ["hongyi"]
     aliases = idx.get_entity_aliases("hongyi")
-    assert "红衣女子" in aliases
+    assert "Woman in Red" in aliases
 
 
 def test_entity_linker_cli(temp_project, monkeypatch, capsys):
@@ -76,8 +76,8 @@ def test_entity_linker_cli(temp_project, monkeypatch, capsys):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -90,10 +90,10 @@ def test_entity_linker_cli(temp_project, monkeypatch, capsys):
 
     root = str(temp_project.project_root)
 
-    run_cli(["--project-root", root, "register-alias", "--entity", "xiaoyan", "--alias", "炎帝"])
-    run_cli(["--project-root", root, "lookup", "--mention", "炎帝"])
-    run_cli(["--project-root", root, "lookup", "--mention", "不存在"])
-    run_cli(["--project-root", root, "lookup-all", "--mention", "炎帝"])
+    run_cli(["--project-root", root, "register-alias", "--entity", "xiaoyan", "--alias", "Flame Emperor"])
+    run_cli(["--project-root", root, "lookup", "--mention", "Flame Emperor"])
+    run_cli(["--project-root", root, "lookup", "--mention", "nonexistent"])
+    run_cli(["--project-root", root, "lookup-all", "--mention", "Flame Emperor"])
     run_cli(["--project-root", root, "list-aliases", "--entity", "xiaoyan"])
 
     capsys.readouterr()

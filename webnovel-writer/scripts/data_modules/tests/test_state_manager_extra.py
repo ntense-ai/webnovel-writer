@@ -28,7 +28,7 @@ def test_ensure_state_schema_and_progress(temp_project):
     # relationships as list should be migrated to structured_relationships
     state = {
         "relationships": [
-            {"from_entity": "a", "to_entity": "b", "type": "师徒", "chapter": 1}
+            {"from_entity": "a", "to_entity": "b", "type": "mentor-student", "chapter": 1}
         ],
         "progress": {"current_chapter": "2", "total_words": "10"},
     }
@@ -46,38 +46,38 @@ def test_ensure_state_schema_and_progress(temp_project):
 def test_add_update_entities_and_alias(temp_project):
     manager = StateManager(temp_project, enable_sqlite_sync=False)
 
-    entity = EntityState(id="xiaoyan", name="萧炎", type="角色", tier="核心", aliases=["炎帝"])
+    entity = EntityState(id="xiaoyan", name="Xiao Yan", type="character", tier="core", aliases=["Flame Emperor"])
     assert manager.add_entity(entity) is True
     assert manager.add_entity(entity) is False
 
-    manager.update_entity("xiaoyan", {"current": {"realm": "斗师"}})
+    manager.update_entity("xiaoyan", {"current": {"realm": "Dou Shi"}})
     updated = manager.get_entity("xiaoyan")
-    assert updated["current"]["realm"] == "斗师"
+    assert updated["current"]["realm"] == "Dou Shi"
 
-    assert manager.get_entity_type("xiaoyan") == "角色"
+    assert manager.get_entity_type("xiaoyan") == "character"
     assert manager.get_entity_type("missing") is None
 
     assert "xiaoyan" in manager.get_all_entities()
-    assert "xiaoyan" in manager.get_entities_by_type("角色")
-    assert "xiaoyan" in manager.get_entities_by_tier("核心")
+    assert "xiaoyan" in manager.get_entities_by_type("character")
+    assert "xiaoyan" in manager.get_entities_by_tier("core")
 
     # unknown type update
-    assert manager.update_entity("missing", {"current": {"realm": "斗者"}}, "角色") is False
+    assert manager.update_entity("missing", {"current": {"realm": "Dou Zhe"}}, "character") is False
 
 
 def test_update_entity_appearance_and_relationships(temp_project):
     manager = StateManager(temp_project, enable_sqlite_sync=False)
-    manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色"))
+    manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character"))
 
-    manager.update_entity_appearance("xiaoyan", 5, "角色")
+    manager.update_entity_appearance("xiaoyan", 5, "character")
     entity = manager.get_entity("xiaoyan")
     assert entity.get("first_appearance") == 5
     assert entity.get("last_appearance") == 5
 
     # unknown entity should no-op
-    manager.update_entity_appearance("missing", 3, "角色")
+    manager.update_entity_appearance("missing", 3, "character")
 
-    manager.add_relationship("xiaoyan", "yaolao", "师徒", "收徒", 1)
+    manager.add_relationship("xiaoyan", "yaolao", "mentor-student", "accept a disciple", 1)
     rels = manager.get_relationships("xiaoyan")
     assert len(rels) == 1
 
@@ -88,14 +88,14 @@ def test_disambiguation_and_save_state(temp_project):
         1,
         [
             {
-                "mention": "宗主",
+                "mention": "sect leader",
                 "candidates": ["zongzhu", "lintian"],
                 "suggested": "zongzhu",
                 "confidence": 0.4,
             },
             {
-                "mention": "萧炎",
-                "candidates": [{"type": "角色", "id": "xiaoyan"}],
+                "mention": "Xiao Yan",
+                "candidates": [{"type": "character", "id": "xiaoyan"}],
                 "suggested": "xiaoyan",
                 "confidence": 0.6,
             },
@@ -116,8 +116,8 @@ def test_save_state_no_pending(temp_project):
 
 def test_save_state_with_sqlite_sync_and_protagonist(temp_project):
     manager = StateManager(temp_project)
-    manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色", tier="核心"))
-    manager.update_entity("xiaoyan", {"current": {"realm": "斗师", "location": "天云宗"}})
+    manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character", tier="core"))
+    manager.update_entity("xiaoyan", {"current": {"realm": "Dou Shi", "location": "Skycloud Sect"}})
     manager.update_progress(10, words=500)
     manager.save_state()
 
@@ -125,15 +125,15 @@ def test_save_state_with_sqlite_sync_and_protagonist(temp_project):
     assert state.get("_migrated_to_sqlite") is True
     assert state.get("progress", {}).get("current_chapter") == 10
 
-    # 标记为主角并同步
+    # mark protagonist and synchronize
     idx = IndexManager(temp_project)
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
-            current={"realm": "斗王", "location": "天云宗"},
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
+            current={"realm": "Dou Wang", "location": "Skycloud Sect"},
             first_appearance=1,
             last_appearance=10,
             is_protagonist=True,
@@ -141,18 +141,18 @@ def test_save_state_with_sqlite_sync_and_protagonist(temp_project):
         update_metadata=True,
     )
     manager.sync_protagonist_from_entity()
-    assert manager._state.get("protagonist_state", {}).get("power", {}).get("realm") == "斗王"
+    assert manager._state.get("protagonist_state", {}).get("power", {}).get("realm") == "Dou Wang"
 
     manager._state["protagonist_state"] = {
-        "power": {"realm": "斗皇", "layer": 2},
-        "location": {"current": "中州"},
+        "power": {"realm": "Combat Emperor", "layer": 2},
+        "location": {"current": "Central Province"},
     }
-    manager._state.setdefault("entities_v3", {"角色": {}})
-    manager._state["entities_v3"]["角色"]["xiaoyan"] = {
-        "canonical_name": "萧炎",
-        "tier": "核心",
+    manager._state.setdefault("entities_v3", {"character": {}})
+    manager._state["entities_v3"]["character"]["xiaoyan"] = {
+        "canonical_name": "Xiao Yan",
+        "tier": "core",
         "desc": "",
-        "current": {"realm": "斗王", "location": "天云宗"},
+        "current": {"realm": "Dou Wang", "location": "Skycloud Sect"},
         "first_appearance": 1,
         "last_appearance": 10,
         "history": [],
@@ -160,7 +160,7 @@ def test_save_state_with_sqlite_sync_and_protagonist(temp_project):
     manager.sync_protagonist_to_entity("xiaoyan")
     manager.save_state()
     updated = idx.get_entity("xiaoyan")
-    assert updated["current_json"]["realm"] == "斗皇"
+    assert updated["current_json"]["realm"] == "Combat Emperor"
 
     # export context
     exported = manager.export_for_context()
@@ -169,33 +169,33 @@ def test_save_state_with_sqlite_sync_and_protagonist(temp_project):
 
 def test_process_chapter_result_and_sqlite_sync(temp_project):
     manager = StateManager(temp_project)
-    manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色", tier="核心"))
+    manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character", tier="core"))
 
     result = {
         "entities_appeared": [
-            {"id": "xiaoyan", "type": "角色", "mentions": ["萧炎", "小炎子"], "confidence": 0.9}
+            {"id": "xiaoyan", "type": "character", "mentions": ["Xiao Yan", "Young Yan"], "confidence": 0.9}
         ],
         "entities_new": [
             {
                 "suggested_id": "yaolao",
-                "name": "药老",
-                "type": "角色",
-                "tier": "重要",
-                "mentions": ["药老"],
-                "aliases": ["药老先生"],
+                "name": "Yao Lao",
+                "type": "character",
+                "tier": "major",
+                "mentions": ["Yao Lao"],
+                "aliases": ["Yao Lao"],
             }
         ],
         "state_changes": [
-            {"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师", "reason": "突破"}
+            {"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi", "reason": "breakthrough"}
         ],
         "relationships_new": [
-            {"from": "xiaoyan", "to": "yaolao", "type": "师徒", "description": "收徒"}
+            {"from": "xiaoyan", "to": "yaolao", "type": "mentor-student", "description": "accept a disciple"}
         ],
         "uncertain": [
-            {"mention": "宗主", "candidates": ["zongzhu", "lintian"], "suggested": "zongzhu", "confidence": 0.2},
+            {"mention": "sect leader", "candidates": ["zongzhu", "lintian"], "suggested": "zongzhu", "confidence": 0.2},
             {
-                "mention": "萧炎",
-                "candidates": [{"type": "角色", "id": "xiaoyan"}],
+                "mention": "Xiao Yan",
+                "candidates": [{"type": "character", "id": "xiaoyan"}],
                 "suggested": "xiaoyan",
                 "confidence": 0.8,
                 "adopted": True,
@@ -203,10 +203,10 @@ def test_process_chapter_result_and_sqlite_sync(temp_project):
         ],
         "chapter_meta": {"hook": "test", "end": "ok"},
         "memory_facts": {
-            "timeline_events": [{"event": "萧炎离开天云宗", "chapter": 12, "time_hint": "夜晚"}],
-            "world_rules": [{"rule": "修炼体系九境", "scope": "global", "domain": "修炼体系", "field": "境界划分"}],
-            "open_loops": [{"content": "三年之约", "status": "active", "urgency": 80}],
-            "reader_promises": [{"content": "纳兰嫣然会出场", "type": "encounter"}],
+            "timeline_events": [{"event": "Xiao Yan leaves Skycloud Sect", "chapter": 12, "time_hint": "night"}],
+            "world_rules": [{"rule": "nine cultivation realms", "scope": "global", "domain": "cultivation system", "field": "realm tiers"}],
+            "open_loops": [{"content": "three-year challenge", "status": "active", "urgency": 80}],
+            "reader_promises": [{"content": "Nalan Yanran appears", "type": "encounter"}],
         },
     }
     warnings = manager.process_chapter_result(12, result)
@@ -217,14 +217,14 @@ def test_process_chapter_result_and_sqlite_sync(temp_project):
 
     idx = IndexManager(temp_project)
     assert idx.get_entity("yaolao") is not None
-    assert idx.get_entity("药老")["id"] == "yaolao"
-    assert idx.get_entity("小炎子")["id"] == "xiaoyan"
-    assert "药老先生" in idx.get_entity_aliases("yaolao")
+    assert idx.get_entity("Yao Lao")["id"] == "yaolao"
+    assert idx.get_entity("Young Yan")["id"] == "xiaoyan"
+    assert "Yao Lao" in idx.get_entity_aliases("yaolao")
     assert idx.get_relationship_between("xiaoyan", "yaolao")
     assert idx.get_entity_state_changes("xiaoyan")
 
-    by_type = manager.get_entities_by_type("角色")
-    by_tier = manager.get_entities_by_tier("核心")
+    by_type = manager.get_entities_by_type("character")
+    by_tier = manager.get_entities_by_tier("core")
     assert "xiaoyan" in by_type
     assert "xiaoyan" in by_tier
     assert temp_project.scratchpad_file.exists()
@@ -232,9 +232,9 @@ def test_process_chapter_result_and_sqlite_sync(temp_project):
 
 def test_export_context_and_protagonist_alias(temp_project):
     manager = StateManager(temp_project, enable_sqlite_sync=False)
-    manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色", tier="核心"))
-    manager._state["disambiguation_warnings"] = [{"chapter": 1, "mention": "萧炎"}]
-    manager._state["disambiguation_pending"] = [{"chapter": 2, "mention": "宗主"}]
+    manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character", tier="core"))
+    manager._state["disambiguation_warnings"] = [{"chapter": 1, "mention": "Xiao Yan"}]
+    manager._state["disambiguation_pending"] = [{"chapter": 2, "mention": "sect leader"}]
 
     exported = manager.export_for_context()
     assert "xiaoyan" in exported.get("entities", {})
@@ -246,9 +246,9 @@ def test_export_context_and_protagonist_alias(temp_project):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -256,16 +256,16 @@ def test_export_context_and_protagonist_alias(temp_project):
         ),
         update_metadata=True,
     )
-    idx.register_alias("小炎子", "xiaoyan", "角色")
-    manager_sql._state["protagonist_state"] = {"name": "小炎子"}
+    idx.register_alias("Young Yan", "xiaoyan", "character")
+    manager_sql._state["protagonist_state"] = {"name": "Young Yan"}
     assert manager_sql.get_protagonist_entity_id() == "xiaoyan"
 
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -282,22 +282,22 @@ def test_sqlite_metadata_update_and_alias_sync(temp_project):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
-            current={"realm": "斗者"},
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
+            current={"realm": "Dou Zhe"},
             first_appearance=1,
             last_appearance=1,
             is_protagonist=False,
         )
     )
 
-    manager._state.setdefault("entities_v3", {"角色": {}})
-    manager._state["entities_v3"]["角色"]["xiaoyan"] = {
-        "canonical_name": "萧炎",
-        "tier": "核心",
+    manager._state.setdefault("entities_v3", {"character": {}})
+    manager._state["entities_v3"]["character"]["xiaoyan"] = {
+        "canonical_name": "Xiao Yan",
+        "tier": "core",
         "desc": "",
-        "current": {"realm": "斗者"},
+        "current": {"realm": "Dou Zhe"},
         "first_appearance": 1,
         "last_appearance": 1,
         "history": [],
@@ -305,24 +305,24 @@ def test_sqlite_metadata_update_and_alias_sync(temp_project):
 
     manager.update_entity(
         "xiaoyan",
-        {"canonical_name": "萧炎·新", "tier": "重要", "current": {"realm": "斗王"}},
-        "角色",
+        {"canonical_name": "Xiao Yan·new", "tier": "major", "current": {"realm": "Dou Wang"}},
+        "character",
     )
-    manager.update_entity("xiaoyan", {"location": "中州"}, "角色")
-    manager.update_entity_appearance("xiaoyan", 2, "角色")
-    manager._pending_alias_entries["小炎子"] = [{"type": "角色", "id": "xiaoyan"}]
+    manager.update_entity("xiaoyan", {"location": "Central Province"}, "character")
+    manager.update_entity_appearance("xiaoyan", 2, "character")
+    manager._pending_alias_entries["Young Yan"] = [{"type": "character", "id": "xiaoyan"}]
 
     manager.save_state()
 
     updated = idx.get_entity("xiaoyan")
-    assert updated["canonical_name"] == "萧炎·新"
-    assert updated["current_json"]["realm"] == "斗王"
-    assert updated["current_json"]["location"] == "中州"
+    assert updated["canonical_name"] == "Xiao Yan·new"
+    assert updated["current_json"]["realm"] == "Dou Wang"
+    assert updated["current_json"]["location"] == "Central Province"
     assert updated["last_appearance"] == 2
 
     aliases = idx.get_entity_aliases("xiaoyan")
-    assert "萧炎·新" in aliases
-    assert "小炎子" in aliases
+    assert "Xiao Yan·new" in aliases
+    assert "Young Yan" in aliases
 
 
 def test_ensure_state_schema_invalid_inputs(temp_project):
@@ -345,8 +345,8 @@ def test_ensure_state_schema_invalid_inputs(temp_project):
 def test_save_state_preserves_sqlite_pending_on_sync_failure(temp_project):
     manager = StateManager(temp_project)
 
-    manager.add_entity(EntityState(id="e1", name="测试角色", type="角色", first_appearance=1, last_appearance=1))
-    manager.update_entity("e1", {"current": {"realm": "炼气"}}, "角色")
+    manager.add_entity(EntityState(id="e1", name="Test Character", type="character", first_appearance=1, last_appearance=1))
+    manager.update_entity("e1", {"current": {"realm": "qi-refining"}}, "character")
 
     class _BrokenSQLManager:
         def process_chapter_entities(self, **kwargs):
@@ -360,7 +360,7 @@ def test_save_state_preserves_sqlite_pending_on_sync_failure(temp_project):
     state = json.loads(temp_project.state_file.read_text(encoding="utf-8"))
     assert state.get("_migrated_to_sqlite") is True
 
-    # SQLite 同步失败后，SQLite 相关 pending 不应被清空，便于后续重试
+    # SQLite after synchronization failure，SQLite related pending must not be cleared，for later retries
     assert manager._pending_entity_patches
     assert manager._pending_sqlite_data.get("chapter") == 1
 
@@ -410,7 +410,7 @@ def test_set_chapter_status_preserves_existing_disk_state(temp_project):
             "current_chapter": 8,
             "chapter_status": {"3": "chapter_committed"},
         },
-        "disambiguation_warnings": [{"chapter": 4, "mention": "宗主"}],
+        "disambiguation_warnings": [{"chapter": 4, "mention": "sect leader"}],
     }
     temp_project.state_file.write_text(
         json.dumps(external_state, ensure_ascii=False),
@@ -423,7 +423,7 @@ def test_set_chapter_status_preserves_existing_disk_state(temp_project):
     assert saved["progress"]["current_chapter"] == 8
     assert saved["progress"]["chapter_status"]["3"] == "chapter_committed"
     assert saved["progress"]["chapter_status"]["5"] == "chapter_drafted"
-    assert saved["disambiguation_warnings"] == [{"chapter": 4, "mention": "宗主"}]
+    assert saved["disambiguation_warnings"] == [{"chapter": 4, "mention": "sect leader"}]
 
 
 def test_set_chapter_status_does_not_rollback_same_chapter_disk_state(temp_project):
@@ -452,7 +452,7 @@ def test_sync_to_sqlite_exceptions_and_no_sql_manager(temp_project, monkeypatch)
     manager = StateManager(temp_project)
     manager._pending_progress_chapter = 1
     manager._pending_sqlite_data["chapter"] = 1
-    manager._pending_alias_entries["alias"] = [{"type": "角色", "id": "xiaoyan"}]
+    manager._pending_alias_entries["alias"] = [{"type": "character", "id": "xiaoyan"}]
 
     def boom(*args, **kwargs):
         raise RuntimeError("boom")
@@ -469,43 +469,43 @@ def test_sync_to_sqlite_exceptions_and_no_sql_manager(temp_project, monkeypatch)
 def test_entity_fallbacks_and_updates(temp_project):
     manager = StateManager(temp_project, enable_sqlite_sync=False)
 
-    manager.add_entity(EntityState(id="hero", name="主角", type="未知", tier="核心"))
-    manager.add_entity(EntityState(id="place", name="乌坦城", type="地点", tier="重要"))
+    manager.add_entity(EntityState(id="hero", name="protagonist", type="unknown", tier="core"))
+    manager.add_entity(EntityState(id="place", name="Wutan City", type="location", tier="major"))
 
-    assert manager.get_entity("hero", "角色")["canonical_name"] == "主角"
-    assert manager.get_entity("place")["canonical_name"] == "乌坦城"
-    assert manager.get_entity_type("place") == "地点"
+    assert manager.get_entity("hero", "character")["canonical_name"] == "protagonist"
+    assert manager.get_entity("place")["canonical_name"] == "Wutan City"
+    assert manager.get_entity_type("place") == "location"
 
-    assert "hero" in manager.get_entities_by_type("角色")
-    assert "hero" in manager.get_entities_by_tier("核心")
+    assert "hero" in manager.get_entities_by_type("character")
+    assert "hero" in manager.get_entities_by_tier("core")
     assert "hero" in manager.get_all_entities()
 
     assert manager.update_entity("missing", {"current": {"a": 1}}) is False
 
-    manager.update_entity("hero", {"attributes": {"hp": 1}}, "角色")
-    manager._state["entities_v3"]["角色"]["hero"].pop("current", None)
-    manager.update_entity("hero", {"current": {"mp": 2}}, "角色")
-    manager.update_entity("hero", {"tier": "重要"}, "角色")
+    manager.update_entity("hero", {"attributes": {"hp": 1}}, "character")
+    manager._state["entities_v3"]["character"]["hero"].pop("current", None)
+    manager.update_entity("hero", {"current": {"mp": 2}}, "character")
+    manager.update_entity("hero", {"tier": "major"}, "character")
 
     manager._state["entities_v3"] = "bad"
-    manager.update_entity_appearance("hero", 1, "角色")
-    manager._state["entities_v3"]["角色"]["hero"] = {"first_appearance": 0, "last_appearance": 0}
-    manager.update_entity_appearance("hero", 1, "角色")
-    manager.update_entity_appearance("hero", 2, "角色")
+    manager.update_entity_appearance("hero", 1, "character")
+    manager._state["entities_v3"]["character"]["hero"] = {"first_appearance": 0, "last_appearance": 0}
+    manager.update_entity_appearance("hero", 1, "character")
+    manager.update_entity_appearance("hero", 2, "character")
 
 
 def test_register_alias_internal_and_get_all_entities_sqlite(temp_project):
     manager = StateManager(temp_project)
-    manager._register_alias_internal("xiaoyan", "角色", "")
-    manager._register_alias_internal("xiaoyan", "角色", "萧炎")
+    manager._register_alias_internal("xiaoyan", "character", "")
+    manager._register_alias_internal("xiaoyan", "character", "Xiao Yan")
 
     idx = IndexManager(temp_project)
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -523,37 +523,37 @@ def test_record_disambiguation_and_process_chapter_existing(temp_project):
         [
             "bad",
             {"mention": "", "confidence": 0.1},
-            {"mention": "宗主", "confidence": "bad", "adopted": "zongzhu"},
+            {"mention": "sect leader", "confidence": "bad", "adopted": "zongzhu"},
         ],
     )
     assert warnings
 
-    manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色"))
-    warnings = manager.process_chapter_result(2, {"entities_new": [{"id": "xiaoyan", "name": "萧炎"}]})
+    manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character"))
+    warnings = manager.process_chapter_result(2, {"entities_new": [{"id": "xiaoyan", "name": "Xiao Yan"}]})
     assert any("Entity already exists" in w for w in warnings)
 
 
 def test_sync_protagonist_from_string_and_empty_updates(temp_project):
     manager = StateManager(temp_project, enable_sqlite_sync=False)
-    manager._state.setdefault("entities_v3", {"角色": {}})
-    manager._state["entities_v3"]["角色"]["bad"] = {
+    manager._state.setdefault("entities_v3", {"character": {}})
+    manager._state["entities_v3"]["character"]["bad"] = {
         "current": None,
         "current_json": "not-json",
     }
-    manager._state["entities_v3"]["角色"]["hero"] = {
+    manager._state["entities_v3"]["character"]["hero"] = {
         "current": None,
-        "current_json": json.dumps({"realm": "斗师", "layer": 2, "location": "乌坦城", "last_chapter": 3}),
+        "current_json": json.dumps({"realm": "Dou Shi", "layer": 2, "location": "Wutan City", "last_chapter": 3}),
     }
     manager.sync_protagonist_from_entity("bad")
     manager.sync_protagonist_from_entity("hero")
-    assert manager._state["protagonist_state"]["power"]["realm"] == "斗师"
+    assert manager._state["protagonist_state"]["power"]["realm"] == "Dou Shi"
 
     manager._state["protagonist_state"] = {}
     manager.sync_protagonist_to_entity()
 
 
 def test_state_manager_cli_commands(temp_project, monkeypatch, capsys):
-    # CLI 的 resolve_project_root 需要 state.json 存在
+    # CLI of resolve_project_root requires state.json exists
     if not temp_project.state_file.exists():
         temp_project.state_file.write_text("{}", encoding="utf-8")
 
@@ -561,9 +561,9 @@ def test_state_manager_cli_commands(temp_project, monkeypatch, capsys):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -590,11 +590,11 @@ def test_state_manager_cli_commands(temp_project, monkeypatch, capsys):
     assert out["status"] == "success"
     assert out["data"].get("id") == "xiaoyan"
 
-    out = run_cli(["state_manager", "--project-root", str(temp_project.project_root), "list-entities", "--type", "角色"])
+    out = run_cli(["state_manager", "--project-root", str(temp_project.project_root), "list-entities", "--type", "character"])
     assert out["status"] == "success"
     assert any(e.get("id") == "xiaoyan" for e in out.get("data", []))
 
-    out = run_cli(["state_manager", "--project-root", str(temp_project.project_root), "list-entities", "--tier", "核心"])
+    out = run_cli(["state_manager", "--project-root", str(temp_project.project_root), "list-entities", "--tier", "core"])
     assert out["status"] == "success"
     assert any(e.get("id") == "xiaoyan" for e in out.get("data", []))
 

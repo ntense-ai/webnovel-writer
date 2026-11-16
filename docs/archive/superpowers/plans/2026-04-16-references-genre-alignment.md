@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Establish authoritative genre enums, aligning the CSV `适用题材` column, routing table, reasoning table, and search script to one set of values; fill validation-script and structural gaps.
+**Goal:** Establish authoritative genre enums, aligning the CSV `applicable_genres` column, routing table, reasoning table, and search script to one set of values; fill validation-script and structural gaps.
 
 **Architecture:** A two-layer genre system (15 canonical_genre + 37 platform_tag values) drives the entire pipeline. `genre-canonical.md` is the human-readable source of truth; Python constant `GENRE_CANONICAL` is the machine-readable source. `validate_csv.py` checks consistency between both and actual CSV data. Changes are limited to `references/csv/`, `scripts/reference_search.py`, `scripts/validate_csv.py`, and `scripts/data_modules/story_system_engine.py`; do not change skill prose or contract output structures.
 
@@ -31,9 +31,9 @@ class TestGenreCanonical:
         from reference_search import GENRE_CANONICAL
         assert len(GENRE_CANONICAL) == 15
         expected = {
-            "都市", "玄幻", "仙侠", "奇幻", "科幻",
-            "历史", "悬疑", "游戏", "古言", "现言",
-            "幻言", "年代", "种田", "快穿", "衍生",
+            "urban", "xuanhuan", "xianxia", "fantasy", "sci-fi",
+            "historical", "mystery", "game-lit", "historical-romance", "contemporary-romance",
+            "fantasy-romance", "period-fiction", "farming", "quick-transmigration", "fanfiction",
         }
         assert GENRE_CANONICAL == expected
 
@@ -47,14 +47,14 @@ class TestGenreCanonical:
 
     def test_platform_to_canonical_spot_checks(self):
         from reference_search import PLATFORM_TO_CANONICAL
-        assert PLATFORM_TO_CANONICAL["都市日常"] == "都市"
-        assert PLATFORM_TO_CANONICAL["战神赘婿"] == "都市"
-        assert PLATFORM_TO_CANONICAL["东方仙侠"] == "仙侠"
-        assert PLATFORM_TO_CANONICAL["西方奇幻"] == "奇幻"
-        assert PLATFORM_TO_CANONICAL["古风世情"] == "古言"
-        assert PLATFORM_TO_CANONICAL["豪门总裁"] == "现言"
-        assert PLATFORM_TO_CANONICAL["快穿"] == "快穿"
-        assert PLATFORM_TO_CANONICAL["科幻末世"] == "科幻"
+        assert PLATFORM_TO_CANONICAL["urban-slice-of-life"] == "urban"
+        assert PLATFORM_TO_CANONICAL["warrior-son-in-law"] == "urban"
+        assert PLATFORM_TO_CANONICAL["Easternxianxia"] == "xianxia"
+        assert PLATFORM_TO_CANONICAL["Westernfantasy"] == "fantasy"
+        assert PLATFORM_TO_CANONICAL["classical stylesocial-realism"] == "historical-romance"
+        assert PLATFORM_TO_CANONICAL["billionaire-romance"] == "contemporary-romance"
+        assert PLATFORM_TO_CANONICAL["quick-transmigration"] == "quick-transmigration"
+        assert PLATFORM_TO_CANONICAL["science-fiction apocalypse"] == "sci-fi"
 ```
 
 - [ ] **Step 2: Run tests to confirm failure**
@@ -72,48 +72,48 @@ Insert before `CSV_CONFIG` in `reference_search.py` (around line 84):
 # ---------------------------------------------------------------------------
 
 GENRE_CANONICAL: set[str] = {
-    "都市", "玄幻", "仙侠", "奇幻", "科幻",
-    "历史", "悬疑", "游戏", "古言", "现言",
-    "幻言", "年代", "种田", "快穿", "衍生",
+    "urban", "xuanhuan", "xianxia", "fantasy", "sci-fi",
+    "historical", "mystery", "game-lit", "historical-romance", "contemporary-romance",
+    "fantasy-romance", "period-fiction", "farming", "quick-transmigration", "fanfiction",
 }
 
 PLATFORM_TO_CANONICAL: Dict[str, str] = {
     # Male-oriented categories
-    "都市日常": "都市", "都市修真": "都市", "都市高武": "都市",
-    "战神赘婿": "都市", "都市种田": "都市", "都市脑洞": "都市",
-    "传统玄幻": "玄幻", "玄幻脑洞": "玄幻",
-    "东方仙侠": "仙侠",
-    "西方奇幻": "奇幻",
-    "科幻末世": "科幻",
-    "历史古代": "历史", "历史脑洞": "历史", "抗战谍战": "历史",
-    "悬疑脑洞": "悬疑", "悬疑灵异": "悬疑",
-    "游戏体育": "游戏",
-    "动漫衍生": "衍生", "男频衍生": "衍生",
+    "urban-slice-of-life": "urban", "urbancultivation": "urban", "urbanhigh-martial-power": "urban",
+    "warrior-son-in-law": "urban", "urban-farming": "urban", "urban-speculative": "urban",
+    "traditional-xuanhuan": "xuanhuan", "speculative-xuanhuan": "xuanhuan",
+    "Easternxianxia": "xianxia",
+    "Westernfantasy": "fantasy",
+    "science-fiction apocalypse": "sci-fi",
+    "ancient-history": "historical", "alternate-history": "historical", "wartime-espionage": "historical",
+    "speculative-mystery": "mystery", "paranormal-mystery": "mystery",
+    "gaming-and-sports": "game-lit",
+    "animefanfiction": "fanfiction", "male-orientedfanfiction": "fanfiction",
     # Female-oriented categories
-    "古风世情": "古言", "宫斗宅斗": "古言", "古言脑洞": "古言",
-    "现言脑洞": "现言", "青春甜宠": "现言", "星光璀璨": "现言",
-    "职场婚恋": "现言", "豪门总裁": "现言",
-    "玄幻言情": "幻言",
-    "年代": "年代", "民国言情": "年代",
-    "种田": "种田",
-    "快穿": "快穿",
-    "女频悬疑": "悬疑",
-    "女频衍生": "衍生",
+    "classical stylesocial-realism": "historical-romance", "palace-household-intrigue": "historical-romance", "historical-romancehigh concept": "historical-romance",
+    "speculative-contemporary-romance": "contemporary-romance", "young-sweet-romance": "contemporary-romance", "Shining Stars": "contemporary-romance",
+    "workplace-romance": "contemporary-romance", "billionaire-romance": "contemporary-romance",
+    "cultivation-romance": "fantasy-romance",
+    "period-fiction": "period-fiction", "republican-era-romance": "period-fiction",
+    "farming": "farming",
+    "quick-transmigration": "quick-transmigration",
+    "women-centered-mystery": "mystery",
+    "women-orientedfanfiction": "fanfiction",
 }
 
 # Legacy values that appeared in old CSV data → canonical mapping.
 # Used by _resolve_genre() during the migration period.
 _LEGACY_GENRE_MAP: Dict[str, str] = {
-    "东方仙侠": "仙侠", "西方奇幻": "奇幻", "科幻末世": "科幻",
-    "都市日常": "都市", "都市修真": "都市", "都市高武": "都市",
-    "历史古代": "历史",
-    "谍战": "历史", "军事": "历史", "武侠": "历史",
-    "刑侦": "悬疑", "惊悚": "悬疑", "推理": "悬疑", "规则怪谈": "悬疑",
-    "末世": "科幻", "赛博朋克": "科幻",
-    "网游": "游戏", "电竞": "游戏", "竞技": "游戏", "体育": "游戏",
-    "轻小说": "衍生", "同人": "衍生",
-    "校园": "现言", "青春": "现言", "娱乐圈": "现言", "职场": "现言",
-    "高武": "都市",
+    "Easternxianxia": "xianxia", "Westernfantasy": "fantasy", "science-fiction apocalypse": "sci-fi",
+    "urban-slice-of-life": "urban", "urbancultivation": "urban", "urbanhigh-martial-power": "urban",
+    "ancient-history": "historical",
+    "espionage": "historical", "military": "historical", "wuxia": "historical",
+    "criminal investigation": "mystery", "thriller": "mystery", "deduction": "mystery", "rules-horror": "mystery",
+    "apocalypse": "sci-fi", "cyberpunk": "sci-fi",
+    "online gaming": "game-lit", "esports": "game-lit", "competition": "game-lit", "sports": "game-lit",
+    "light novel": "fanfiction", "fan fiction": "fanfiction",
+    "school": "contemporary-romance", "youth": "contemporary-romance", "entertainment-industry": "contemporary-romance", "workplace": "contemporary-romance",
+    "high-martial-power": "urban",
 }
 
 
@@ -126,7 +126,7 @@ def resolve_genre(genre: Optional[str]) -> Optional[str]:
     if genre is None:
         return None
     g = genre.strip()
-    if g in GENRE_CANONICAL or g == "全部":
+    if g in GENRE_CANONICAL or g == "all":
         return g
     if g in PLATFORM_TO_CANONICAL:
         return PLATFORM_TO_CANONICAL[g]
@@ -163,39 +163,39 @@ Append to `TestGenreCanonical` in `test_reference_search.py`:
 ```python
     def test_resolve_genre_canonical_passthrough(self):
         from reference_search import resolve_genre
-        assert resolve_genre("都市") == "都市"
-        assert resolve_genre("全部") == "全部"
+        assert resolve_genre("urban") == "urban"
+        assert resolve_genre("all") == "all"
         assert resolve_genre(None) is None
 
     def test_resolve_genre_platform_tag(self):
         from reference_search import resolve_genre
-        assert resolve_genre("都市日常") == "都市"
-        assert resolve_genre("战神赘婿") == "都市"
-        assert resolve_genre("古风世情") == "古言"
+        assert resolve_genre("urban-slice-of-life") == "urban"
+        assert resolve_genre("warrior-son-in-law") == "urban"
+        assert resolve_genre("classical stylesocial-realism") == "historical-romance"
 
     def test_resolve_genre_legacy(self):
         from reference_search import resolve_genre
-        assert resolve_genre("武侠") == "历史"
-        assert resolve_genre("刑侦") == "悬疑"
-        assert resolve_genre("网游") == "游戏"
+        assert resolve_genre("wuxia") == "historical"
+        assert resolve_genre("criminal investigation") == "mystery"
+        assert resolve_genre("online gaming") == "game-lit"
 
     def test_search_with_platform_tag_genre(self):
-        """--genre 都市日常 should match rows with 适用题材=都市."""
+        """--genre urban-slice-of-life should match rows with applicable_genres=urban."""
         out = run_search(
             "--skill", "write",
-            "--table", "命名规则",
-            "--query", "角色命名",
-            "--genre", "都市日常",
+            "--table", "naming",
+            "--query", "characternaming",
+            "--genre", "urban-slice-of-life",
         )
         assert out["status"] == "success"
-        # Should find results (都市日常 resolves to 都市, matching rows tagged 都市)
-        assert out["data"]["total"] >= 0  # may be 0 if no 都市 rows, but no error
+        # Should find results: the urban slice-of-life alias resolves to the urban genre and matches its tagged rows.
+        assert out["data"]["total"] >= 0  # may be 0 if no urban rows, but no error
 ```
 
 - [ ] **Step 2: Run tests to confirm failure**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py::TestGenreCanonical::test_search_with_platform_tag_genre -v`
-Expected: May PASS because `都市日常` contains the substring `都市`, or may match imprecisely. The three `resolve_genre` tests are the key checks.
+Expected: May PASS because `urban-slice-of-life` contains the substring `urban`, or may match imprecisely. The three `resolve_genre` tests are the key checks.
 
 - [ ] **Step 3: Modify _genre_matches and search**
 
@@ -203,15 +203,15 @@ Modify `_genre_matches` in `reference_search.py` (around line 74):
 
 ```python
 def _genre_matches(row: Dict[str, str], genre: Optional[str]) -> bool:
-    """Return True if *genre* is None, or matches ``适用题材`` (``全部`` always matches).
+    """Return True if *genre* is None, or matches ``applicable_genres`` (``all`` always matches).
 
     Both the input *genre* and the cell values are resolved to canonical form
     before comparison, so platform tags and legacy values work transparently.
     """
     if genre is None:
         return True
-    cell = row.get("适用题材", "")
-    if cell.strip() == "全部":
+    cell = row.get("applicable_genres", "")
+    if cell.strip() == "all":
         return True
     resolved_genre = resolve_genre(genre)
     cell_genres = [resolve_genre(v) for v in _split_multi_value(cell)]
@@ -264,20 +264,20 @@ Append to `test_csv_config.py`:
 ```python
 def test_csv_config_has_prefix_field():
     for name, config in CSV_CONFIG.items():
-        assert "prefix" in config, f"表 {name} 缺少 prefix 字段"
+        assert "prefix" in config, f"table {name} missing prefix field"
         assert isinstance(config["prefix"], str)
         assert len(config["prefix"]) >= 2
 
 
 def test_csv_config_has_required_cols_field():
     for name, config in CSV_CONFIG.items():
-        assert "required_cols" in config, f"表 {name} 缺少 required_cols 字段"
+        assert "required_cols" in config, f"table {name} missing required_cols field"
         assert isinstance(config["required_cols"], list)
         assert len(config["required_cols"]) >= 1
 
 
 def test_csv_config_prefix_matches_actual_data():
-    """Every row's 编号 must start with the declared prefix."""
+    """Every row's id must start with the declared prefix."""
     for name, config in CSV_CONFIG.items():
         csv_path = CSV_DIR / config["file"]
         if not csv_path.exists():
@@ -285,9 +285,9 @@ def test_csv_config_prefix_matches_actual_data():
         prefix = config["prefix"]
         with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
             for row in csv.DictReader(f):
-                row_id = row.get("编号", "")
+                row_id = row.get("id", "")
                 assert row_id.startswith(prefix + "-"), (
-                    f"表 {name} 行 {row_id} 编号不以 {prefix}- 开头"
+                    f"table {name} row {row_id} iddoes not start with {prefix}- beginning"
                 )
 ```
 
@@ -302,87 +302,87 @@ Modify `CSV_CONFIG` in `reference_search.py`, adding two fields per table:
 
 ```python
 CSV_CONFIG: Dict[str, Dict[str, Any]] = {
-    "命名规则": {
-        "file": "命名规则.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "命名对象", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "naming": {
+        "file": "naming.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "naming_target", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "prefix": "NR",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "场景写法": {
-        "file": "场景写法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "模式名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "scenes": {
+        "file": "scenes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pattern_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "prefix": "SP",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "写作技法": {
-        "file": "写作技法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "技法名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "techniques": {
+        "file": "techniques.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "technique_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "prefix": "WT",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "桥段套路": {
-        "file": "桥段套路.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "桥段名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "tropes": {
+        "file": "tropes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "trope_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
         "prefix": "TR",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "爽点与节奏": {
-        "file": "爽点与节奏.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "节奏类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "pacing": {
+        "file": "pacing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pacing_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
         "prefix": "PA",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "人设与关系": {
-        "file": "人设与关系.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "人设类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "characters": {
+        "file": "characters.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "character_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "prefix": "CH",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "金手指与设定": {
-        "file": "金手指与设定.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "设定类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "powers": {
+        "file": "powers.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "setting_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
         "prefix": "SY",
-        "required_cols": ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"],
+        "required_cols": ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"],
     },
-    "题材与调性推理": {
-        "file": "题材与调性推理.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "题材别名": 3},
-        "output_cols": ["编号", "题材/流派", "核心调性", "推荐基础检索表", "推荐动态检索表"],
-        "poison_col": "毒点",
+    "genre-routing": {
+        "file": "genre-routing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "genre_aliases": 3},
+        "output_cols": ["id", "genre_route", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
+        "poison_col": "pitfalls",
         "role": "route",
         "prefix": "GR",
-        "required_cols": ["编号", "适用技能", "题材/流派", "核心调性", "推荐基础检索表", "推荐动态检索表"],
+        "required_cols": ["id", "applicable_skills", "genre_route", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
     },
-    "裁决规则": {
-        "file": "裁决规则.csv",
-        "search_cols": {"题材": 4},
-        "output_cols": ["题材", "风格优先级", "爽点优先级", "节奏默认策略",
-                        "毒点权重", "冲突裁决", "contract注入层", "反模式"],
+    "adjudication": {
+        "file": "adjudication.csv",
+        "search_cols": {"genre": 4},
+        "output_cols": ["genre", "style_priority", "payoff_priority", "default_pacing_strategy",
+                        "pitfall_weight", "conflict_resolution", "contract_injection_layer", "anti_pattern"],
         "poison_col": "",
         "role": "reasoning",
         "prefix": "RS",
-        "required_cols": ["编号", "题材", "风格优先级", "爽点优先级", "节奏默认策略", "冲突裁决"],
+        "required_cols": ["id", "genre", "style_priority", "payoff_priority", "default_pacing_strategy", "conflict_resolution"],
     },
 }
 ```
@@ -516,12 +516,12 @@ def validate(csv_dir: Path) -> Dict[str, List[str]]:
 
     all_ids: Dict[str, str] = {}  # id -> table_name
 
-    valid_genres = GENRE_CANONICAL | {"全部"}
+    valid_genres = GENRE_CANONICAL | {"all"}
 
     for table_name, config in CSV_CONFIG.items():
         csv_path = csv_dir / config["file"]
         if not csv_path.exists():
-            errors.append(f"[{table_name}] 文件不存在: {config['file']}")
+            errors.append(f"[{table_name}] file does not exist: {config['file']}")
             continue
 
         rows = _load_csv(csv_path)
@@ -542,16 +542,16 @@ def validate(csv_dir: Path) -> Dict[str, List[str]]:
             declared_cols.add(poison)
         missing_headers = declared_cols - headers
         if missing_headers:
-            errors.append(f"[{table_name}] CSV 缺少列头: {missing_headers}")
+            errors.append(f"[{table_name}] CSV missing header: {missing_headers}")
 
         for i, row in enumerate(rows, start=2):  # row 1 is header
-            row_id = row.get("编号", "").strip()
+            row_id = row.get("id", "").strip()
 
             # Check: ID uniqueness
             if row_id:
                 if row_id in all_ids:
                     errors.append(
-                        f"[{table_name}] 行{i} 编号 {row_id} 重复（首次出现于 {all_ids[row_id]}）"
+                        f"[{table_name}] row{i} id {row_id} duplicate（first appears at {all_ids[row_id]}）"
                     )
                 else:
                     all_ids[row_id] = table_name
@@ -559,55 +559,55 @@ def validate(csv_dir: Path) -> Dict[str, List[str]]:
             # Check: prefix consistency
             if prefix and row_id and not row_id.startswith(prefix + "-"):
                 errors.append(
-                    f"[{table_name}] 行{i} 编号 {row_id} 应以 {prefix}- 开头"
+                    f"[{table_name}] row{i} id {row_id} should begin with {prefix}- beginning"
                 )
 
             # Check: required columns non-empty
             for col in required_cols:
                 val = row.get(col, "").strip()
                 if not val:
-                    errors.append(f"[{table_name}] 行{i} ({row_id}) 必填列 {col} 为空")
+                    errors.append(f"[{table_name}] row{i} ({row_id}) required column {col} is empty")
 
             # Check: delimiter convention (no Chinese comma in multi-value fields)
-            for col in ("适用技能", "关键词", "意图与同义词", "适用题材"):
+            for col in ("applicable_skills", "keywords", "intent_synonyms", "applicable_genres"):
                 val = row.get(col, "")
                 if _CHINESE_COMMA.search(val):
                     errors.append(
-                        f"[{table_name}] 行{i} ({row_id}) {col} 含中文逗号，应使用 |"
+                        f"[{table_name}] row{i} ({row_id}) {col} contains a full-width comma，should use |"
                     )
 
-            # Check: 适用题材 values in canonical set
-            genre_cell = row.get("适用题材", "").strip()
+            # Check that the applicable-genre column contains only canonical values.
+            genre_cell = row.get("applicable_genres", "").strip()
             if genre_cell:
                 for g in _split(genre_cell):
                     if g not in valid_genres:
                         warnings.append(
-                            f"[{table_name}] 行{i} ({row_id}) 适用题材值 '{g}' "
-                            f"不在 canonical 枚举中"
+                            f"[{table_name}] row{i} ({row_id}) applicable_genresvalue '{g}' "
+                            f"not in canonical enum"
                         )
 
     # Cross-table check: route ↔ reasoning coverage
     route_genres: set[str] = set()
     reasoning_genres: set[str] = set()
 
-    route_path = csv_dir / "题材与调性推理.csv"
+    route_path = csv_dir / "genre-routing.csv"
     if route_path.exists():
         for row in _load_csv(route_path):
-            val = row.get("题材/流派", "").strip()
+            val = row.get("genre_route", "").strip()
             if val:
                 route_genres.add(val)
 
-    reasoning_path = csv_dir / "裁决规则.csv"
+    reasoning_path = csv_dir / "adjudication.csv"
     if reasoning_path.exists():
         for row in _load_csv(reasoning_path):
-            val = row.get("题材", "").strip()
+            val = row.get("genre", "").strip()
             if val:
                 reasoning_genres.add(val)
 
     # Every canonical genre should have at least one reasoning row
     for cg in GENRE_CANONICAL:
         if cg not in reasoning_genres:
-            warnings.append(f"[裁决规则] canonical genre '{cg}' 无对应裁决行")
+            warnings.append(f"[adjudication] canonical genre '{cg}' no correspondingadjudicationrow")
 
     return {"errors": errors, "warnings": warnings}
 
@@ -647,7 +647,7 @@ Expected: 2 tests PASS
 - [ ] **Step 5: Run validator, inspect actual output, and record current warning count**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python validate_csv.py`
-Expected: 0 errors (valid structure), multiple warnings (noncanonical `适用题材` values + missing canonical coverage in reasoning rules)
+Expected: 0 errors (valid structure), multiple warnings (noncanonical `applicable_genres` values + missing canonical coverage in reasoning rules)
 
 - [ ] **Step 6: Commit**
 
@@ -659,11 +659,11 @@ git commit -m "feat: add validate_csv.py — schema, ID, prefix, genre, delimite
 
 ---
 
-### Task 5: Add canonical_genre column to 题材与调性推理.csv
+### Task 5: Add canonical_genre column to genre-routing.csv
 
 **Files:**
-- Modify: `webnovel-writer/references/csv/题材与调性推理.csv`
-- Modify: `webnovel-writer/scripts/reference_search.py` (CSV_CONFIG for 题材与调性推理)
+- Modify: `webnovel-writer/references/csv/genre-routing.csv`
+- Modify: `webnovel-writer/scripts/reference_search.py` (CSV_CONFIG for genre-routing)
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py:115-159`
 
 - [ ] **Step 1: Write failing test: engine route output includes canonical_genre**
@@ -683,12 +683,12 @@ def test_route_output_includes_canonical_genre(tmp_path):
     from data_modules.story_system_engine import StorySystemEngine
 
     engine = StorySystemEngine(csv_dir=csv_dst)
-    route = engine._route("退婚流 三年之约", "玄幻")
+    route = engine._route("broken-engagement fiction three-year agreement", "xuanhuan")
     assert "canonical_genre" in route["meta"]
     assert route["meta"]["canonical_genre"] in {
-        "都市", "玄幻", "仙侠", "奇幻", "科幻",
-        "历史", "悬疑", "游戏", "古言", "现言",
-        "幻言", "年代", "种田", "快穿", "衍生",
+        "urban", "xuanhuan", "xianxia", "fantasy", "sci-fi",
+        "historical", "mystery", "game-lit", "historical-romance", "contemporary-romance",
+        "fantasy-romance", "period-fiction", "farming", "quick-transmigration", "fanfiction",
     }
 ```
 
@@ -698,33 +698,33 @@ Expected: FAIL — `KeyError: 'canonical_genre'`
 
 - [ ] **Step 3: Modify CSV and code**
 
-**3a.** Add `canonical_genre` after `题材/流派` in `题材与调性推理.csv`. Manually fill the corresponding canonical value for every row. Example:
+**3a.** Add `canonical_genre` after `genre_route` in `genre-routing.csv`. Manually fill the corresponding canonical value for every row. Example:
 
-| 编号 | 题材/流派 | canonical_genre | ... |
+| id | genre_route | canonical_genre | ... |
 |------|----------|----------------|-----|
-| GR-001 | 玄幻退婚流 | 玄幻 | ... |
-| GR-002 | 规则动物园 | 悬疑 | ... |
+| GR-001 | broken-engagement-fantasy | xuanhuan | ... |
+| GR-002 | rules-horror-zoo | mystery | ... |
 
 All eight current rows need `canonical_genre`.
 
-**3b.** In `reference_search.py`, add `"canonical_genre"` to `output_cols` in `CSV_CONFIG["题材与调性推理"]`:
+**3b.** In `reference_search.py`, add `"canonical_genre"` to `output_cols` in `CSV_CONFIG["genre-routing"]`:
 
 ```python
-"题材与调性推理": {
-    "file": "题材与调性推理.csv",
-    "search_cols": {"关键词": 3, "意图与同义词": 4, "题材别名": 3},
-    "output_cols": ["编号", "题材/流派", "canonical_genre", "核心调性", "推荐基础检索表", "推荐动态检索表"],
-    "poison_col": "毒点",
+"genre-routing": {
+    "file": "genre-routing.csv",
+    "search_cols": {"keywords": 3, "intent_synonyms": 4, "genre_aliases": 3},
+    "output_cols": ["id", "genre_route", "canonical_genre", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
+    "poison_col": "pitfalls",
     "role": "route",
     "prefix": "GR",
-    "required_cols": ["编号", "适用技能", "题材/流派", "canonical_genre", "核心调性", "推荐基础检索表", "推荐动态检索表"],
+    "required_cols": ["id", "applicable_skills", "genre_route", "canonical_genre", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
 },
 ```
 
 **3c.** Modify `_route` in `story_system_engine.py` (around lines 141–158), adding `canonical_genre` to returned `meta`:
 
 ```python
-        primary_genre = str(matched.get("题材/流派") or genre or "").strip()
+        primary_genre = str(matched.get("genre_route") or genre or "").strip()
         canonical = str(matched.get("canonical_genre") or "").strip()
         if not canonical:
             # Fallback: resolve via PLATFORM_TO_CANONICAL
@@ -764,25 +764,25 @@ Expected: ALL PASS
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
-git add webnovel-writer/references/csv/题材与调性推理.csv webnovel-writer/scripts/reference_search.py webnovel-writer/scripts/data_modules/story_system_engine.py
+git add webnovel-writer/references/csv/genre-routing.csv webnovel-writer/scripts/reference_search.py webnovel-writer/scripts/data_modules/story_system_engine.py
 git commit -m "feat: add canonical_genre column to route table, thread through engine"
 ```
 
 ---
 
-### Task 6: Migrate existing CSV 适用题材 columns to canonical enums
+### Task 6: Migrate existing CSV applicable_genres columns to canonical enums
 
 **Files:**
-- Modify: `webnovel-writer/references/csv/命名规则.csv`
-- Modify: `webnovel-writer/references/csv/场景写法.csv`
-- Modify: `webnovel-writer/references/csv/写作技法.csv`
-- Modify: `webnovel-writer/references/csv/桥段套路.csv`
-- Modify: `webnovel-writer/references/csv/人设与关系.csv`
-- Modify: `webnovel-writer/references/csv/爽点与节奏.csv`
-- Modify: `webnovel-writer/references/csv/金手指与设定.csv`
-- Modify: `webnovel-writer/references/csv/裁决规则.csv`
+- Modify: `webnovel-writer/references/csv/naming.csv`
+- Modify: `webnovel-writer/references/csv/scenes.csv`
+- Modify: `webnovel-writer/references/csv/techniques.csv`
+- Modify: `webnovel-writer/references/csv/tropes.csv`
+- Modify: `webnovel-writer/references/csv/characters.csv`
+- Modify: `webnovel-writer/references/csv/pacing.csv`
+- Modify: `webnovel-writer/references/csv/powers.csv`
+- Modify: `webnovel-writer/references/csv/adjudication.csv`
 
-**Note: this is manual data editing. Inspect every CSV row’s `适用题材` field and replace noncanonical values with canonical enums.**
+**Note: this is manual data editing. Inspect every CSV row’s `applicable_genres` field and replace noncanonical values with canonical enums.**
 
 - [ ] **Step 1: Run validate_csv.py for the complete warning list**
 
@@ -795,25 +795,25 @@ This outputs all warnings that applicable-genre values are outside the canonical
 Open each CSV and apply the existing non-enum value migration mapping in `genre-canonical.md`:
 
 Migration rules:
-- `谍战` → `历史`
-- `刑侦|惊悚|推理|规则怪谈` → `悬疑`
-- `末世|赛博朋克` → `科幻`
-- `军事|武侠` → `历史`
-- `网游|电竞|竞技|体育` → `游戏`
-- `高武` → `都市`
-- `系统文|无限流` → use the actual setting genre (`玄幻`/`都市`/`悬疑`)
-- `狗血|爽文|深度剧情|现实向|群像|史诗` → remove that value; use a specific applicable genre or `全部`
-- `动作|心理|战争|灾难|长篇|知乎短篇` → remove that value; use a specific applicable genre or `全部`
-- `校园|青春|娱乐圈|职场` → `现言`
-- `商战|商业` → `都市` or `现言`
-- `同人|轻小说` → `衍生`
+- `espionage` → `historical`
+- `criminal investigation|thriller|deduction|rules-horror` → `mystery`
+- `apocalypse|cyberpunk` → `sci-fi`
+- `military|wuxia` → `historical`
+- `online gaming|esports|competition|sports` → `game-lit`
+- `high-martial-power` → `urban`
+- `system fiction|infinite-scenarios` → use the actual setting genre (`xuanhuan`/`urban`/`mystery`)
+- `melodrama|payoff-driven fiction|deep plot|realistic|ensemble|epic` → remove that value; use a specific applicable genre or `all`
+- `action|psychological|war|disaster|long-form|zhihu-short-fiction` → remove that value; use a specific applicable genre or `all`
+- `school|youth|entertainment-industry|workplace` → `contemporary-romance`
+- `commercial rivalry|business` → `urban` or `contemporary-romance`
+- `fan fiction|light novel` → `fanfiction`
 
 Save each modified file, preserving UTF-8 with BOM.
 
 - [ ] **Step 3: Run validate_csv.py; confirm zero or substantially fewer warnings**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python validate_csv.py`
-Expected: 0 errors, zero `适用题材` warnings (only reasoning-coverage warnings remain)
+Expected: 0 errors, zero `applicable_genres` warnings (only reasoning-coverage warnings remain)
 
 - [ ] **Step 4: Run existing search tests to check regressions**
 
@@ -825,7 +825,7 @@ Expected: ALL PASS
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
 git add webnovel-writer/references/csv/*.csv
-git commit -m "refactor: migrate all CSV 适用题材 values to canonical genre enum"
+git commit -m "refactor: migrate all CSV applicable_genres values to canonical genre enum"
 ```
 
 ---
@@ -842,9 +842,9 @@ Replace the old classification at README.md lines 166–170:
 ```markdown
 ## Applicable genres (Fanqie classification)
 
-**Male-oriented:** 都市、玄幻、仙侠、奇幻、武侠、历史、军事、科幻、悬疑、游戏、体育、轻小说
+**Male-oriented:** urban、xuanhuan、xianxia、fantasy、wuxia、historical、military、sci-fi、mystery、game-lit、sports、light novel
 
-**Female-oriented:** 现言、古言、幻言、悬疑、轻小说
+**Female-oriented:** contemporary-romance、historical-romance、fantasy-romance、mystery、light novel
 ```
 
 With:
@@ -852,20 +852,20 @@ With:
 ````markdown
 ## Applicable genre enum
 
-The `适用题材` column accepts only these 15 canonical values or `全部`:
+The `applicable_genres` column accepts only these 15 canonical values or `all`:
 
 ```
-都市  玄幻  仙侠  奇幻  科幻
-历史  悬疑  游戏  古言  现言
-幻言  年代  种田  快穿  衍生
+urban  xuanhuan  xianxia  fantasy  sci-fi
+historical  mystery  game-lit  historical-romance  contemporary-romance
+fantasy-romance  period-fiction  farming  quick-transmigration  fanfiction
 ```
 
 See `genre-canonical.md` for the complete two-layer system (canonical + Fanqie platform_tag mappings).
 
-**Do not** put these in `适用题材`:
-- Fanqie subcategories (e.g. `都市日常`, `战神赘婿`): these are platform_tag values used only in routing tables
-- Trope names (e.g. `退婚流`, `系统流`): these belong in `桥段套路.csv`
-- Tone/scene/format labels (e.g. `爽文`, `动作`, `短篇`): these are not genres
+**Do not** put these in `applicable_genres`:
+- Fanqie subcategories (e.g. `urban-slice-of-life`, `warrior-son-in-law`): these are platform_tag values used only in routing tables
+- Trope names (e.g. `broken-engagement fiction`, `system-fiction`): these belong in `tropes.csv`
+- Tone/scene/format labels (e.g. `payoff-driven fiction`, `action`, `short-fiction`): these are not genres
 ````
 
 - [ ] **Step 2: Commit**
@@ -949,19 +949,19 @@ class TestEndToEndSmoke:
     """Smoke tests: full pipeline from search to result, across genres."""
 
     def test_xuanhuan_genre_returns_results(self):
-        out = run_search("--skill", "write", "--query", "升级打脸", "--genre", "玄幻")
+        out = run_search("--skill", "write", "--query", "progression and vindication", "--genre", "xuanhuan")
         assert out["status"] == "success"
         assert out["data"]["total"] >= 1
 
     def test_guyan_genre_returns_results(self):
-        out = run_search("--skill", "write", "--query", "宫斗 嫡庶", "--genre", "古言")
+        out = run_search("--skill", "write", "--query", "palace intrigue legitimate and concubine-born heirs", "--genre", "historical-romance")
         assert out["status"] == "success"
-        # May be 0 if no 古言 rows exist yet, but must not error
+        # May be 0 if no historical-romance rows exist yet, but must not error
         assert isinstance(out["data"]["results"], list)
 
     def test_platform_tag_as_genre(self):
-        """Using a platform_tag like 都市日常 should work as --genre."""
-        out = run_search("--skill", "write", "--query", "日常搞笑", "--genre", "都市日常")
+        """Using a platform_tag like urban-slice-of-life should work as --genre."""
+        out = run_search("--skill", "write", "--query", "everyday-lifecomedy", "--genre", "urban-slice-of-life")
         assert out["status"] == "success"
         assert isinstance(out["data"]["results"], list)
 
@@ -1001,8 +1001,8 @@ git commit -m "test: add end-to-end smoke tests for genre canonical pipeline"
 | 2 | Integrate resolve_genre into _genre_matches and search() | Task 1 |
 | 3 | Add prefix / required_cols to CSV_CONFIG | None (may run alongside Task 1) |
 | 4 | validate_csv.py validator | Task 1 + 3 |
-| 5 | Add canonical_genre to 题材与调性推理.csv and integrate engine | Task 1 |
-| 6 | Migrate all CSV 适用题材 columns to canonical values | Task 2 |
+| 5 | Add canonical_genre to genre-routing.csv and integrate engine | Task 1 |
+| 6 | Migrate all CSV applicable_genres columns to canonical values | Task 2 |
 | 7 | Update CSV README genre section | Task 6 |
 | 8 | Top-level references/README.md index | None (may run alongside any task) |
 | 9 | End-to-end smoke tests | Task 2 + 4 + 6 |

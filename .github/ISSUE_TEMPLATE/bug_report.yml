@@ -1,12 +1,12 @@
-name: Bug 反馈
-description: 反馈命令、Agent、数据链或 Dashboard 中可复现的问题。
+name: Bug report
+description: Report reproducible problems in commands, agents, the data pipeline, or Dashboard.
 title: "【Bug】"
 labels: ["bug"]
 body:
   - type: dropdown
     id: product_line
     attributes:
-      label: 产品线
+      label: Product line
       options:
         - v6（Claude Code / master）
         - v8（DSH Scriptor / v8）
@@ -15,106 +15,106 @@ body:
   - type: markdown
     attributes:
       value: |
-        感谢帮助改进 Webnovel Writer。请尽量提供可复现信息；如果涉及小说正文、API Key 或个人数据，请先脱敏。
+        Thank you for improving Webnovel Writer. Include reproducible details and redact manuscript text, API keys, and personal data.
   - type: textarea
     id: summary
     attributes:
-      label: 问题概述
-      description: 简短说明发生了什么。
-      placeholder: "例如：执行 /webnovel-write 12 后 review-pipeline 通过，但没有生成 CHAPTER_COMMIT。"
+      label: Summary
+      description: Briefly describe what happened.
+      placeholder: "Example: after /webnovel-write 12, review-pipeline passes but no CHAPTER_COMMIT is generated."
     validations:
       required: true
   - type: dropdown
     id: area
     attributes:
-      label: 影响范围
-      description: 请选择问题涉及的模块。
+      label: Affected area
+      description: Select the affected module.
       multiple: true
       options:
-        - Claude Code Skill 命令
+        - Claude Code skill commands
         - Python CLI
         - Story System / CHAPTER_COMMIT
         - RAG / reference search
         - Dashboard
-        - Agent 提示词 / 工作流
-        - 模板 / 题材画像
-        - 文档
-        - 其他
+        - Agent prompts / workflows
+        - Templates / genre profiles
+        - Documentation
+        - Other
     validations:
       required: true
   - type: input
     id: command
     attributes:
-      label: 触发命令或入口
-      description: 是哪个命令触发了问题？
-      placeholder: "/webnovel-write 12 或 python -X utf8 ... webnovel.py preflight"
+      label: Triggering command or entry point
+      description: Which command triggered the problem?
+      placeholder: "/webnovel-write 12 or python -X utf8 ... webnovel.py preflight"
   - type: textarea
     id: reproduce
     attributes:
-      label: 复现步骤
-      description: 请写出最小、稳定的复现步骤。
+      label: Steps to reproduce
+      description: Provide minimal, reliable reproduction steps.
       placeholder: |
-        1. 使用 ... 安装插件
-        2. 在 ... 项目中执行 ...
-        3. 看到 ...
+        1. Install the plugin using ...
+        2. Run ... in project ...
+        3. Observe ...
     validations:
       required: true
   - type: textarea
     id: expected
     attributes:
-      label: 预期行为
-      description: 正常情况下应该发生什么？
+      label: Expected behavior
+      description: What should happen?
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
-      label: 实际行为
-      description: 实际发生了什么？如有报错或日志，请贴出关键片段。
+      label: Actual behavior
+      description: What happened? Include relevant error or log excerpts.
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
-      label: 运行环境
-      description: 请补充版本和平台信息。
+      label: Environment
+      description: Include version and platform information.
       value: |
-        - 操作系统：
-        - Python 版本：
-        - Claude Code 版本：
-        - 插件版本：
-        - 安装范围：user / project
+        - Operating system:
+        - Python version:
+        - Claude Code version:
+        - Plugin version:
+        - Installation scope:user / project
     validations:
       required: true
   - type: input
     id: model
     attributes:
-      label: 使用模型
-      description: 请填写触发问题时使用的模型名称；不确定时请写“未知”。
-      placeholder: "例如：deepseek-v4-pro / gpt-5.5 / claude-opus-4-8 / claude-sonnet-4-6 / gemini-3.1-pro-preview / gemini-3.5-flash"
+      label: Model used
+      description: Enter the model used when the problem occurred; write Unknown if unsure.
+      placeholder: "Example: deepseek-v4-pro / gpt-5.5 / claude-opus-4-8 / claude-sonnet-4-6 / gemini-3.1-pro-preview / gemini-3.5-flash"
     validations:
       required: true
   - type: textarea
     id: diagnostics
     attributes:
-      label: 诊断信息
-      description: 请贴出相关 preflight/status 输出。请先脱敏 API Key、私密正文和个人信息。
+      label: Diagnostics
+      description: Include relevant preflight/status output. Redact API keys, private manuscript text, and personal information.
       placeholder: |
         python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" preflight --format json
   - type: textarea
     id: files
     attributes:
-      label: 相关文件或状态
-      description: 请列出相关文件、commit artifact、截图或 Dashboard 页面。除非必要，不要粘贴私密章节全文。
+      label: Related files or state
+      description: List relevant files, commit artifacts, screenshots, or Dashboard pages. Avoid sharing full private chapters.
       placeholder: ".story-system/commits/chapter_012.commit.json, .webnovel/state.json, Dashboard > System"
   - type: checkboxes
     id: checklist
     attributes:
-      label: 提交前检查
+      label: Before submitting
       options:
-        - label: 我已经搜索过现有 Issue，确认不是重复反馈。
+        - label: I searched existing issues and confirmed this is not a duplicate.
           required: true
-        - label: 我已经移除或脱敏 API Key、私密小说内容和个人信息。
+        - label: I removed or redacted API keys, private manuscript content, and personal information.
           required: true
-        - label: 我提供了足够用于复现或诊断的信息。
+        - label: I provided enough information to reproduce or diagnose the problem.
           required: true

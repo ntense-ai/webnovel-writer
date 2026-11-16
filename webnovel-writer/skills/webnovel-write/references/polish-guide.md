@@ -102,71 +102,49 @@ Responsibilities:
 
 ### Layer 1: High-risk vocabulary (200+ terms, initial set)
 
-The exact Chinese detection terms below apply only when the user requests Chinese prose or an existing book is written in Chinese. For English prose, apply the English style principles and diagnose natural English equivalents in context; do not insert, mechanically translate, or require these legacy matching terms.
+These examples are diagnostic prompts, not a blacklist. Judge each phrase in context, preserving natural dialogue and the author's voice. For prose in another language, apply equivalent stylistic principles in that language.
 
-#### A. Summary/conclusion terms（22）
+#### A. Summary and conclusion
+Overall; in conclusion; all in all; it follows that; as we can see; ultimately; in short; to sum up; in other words; broadly speaking; in the final analysis.
 
-综合、总之、总而言之、由此可见、可以看出、不难发现、归根结底、说到底、总体来看、从这个角度看、换句话说、简而言之、概括来说、可以说、由此得出、结论是、最终可知、总的来说、总括起来、整体而言、总体上、综上。
+#### B. Enumeration templates
+First; second; third; finally; on the one hand; on the other hand; additionally; moreover; next; the first point; the next step.
 
-#### B. Enumeration templates（24）
+#### C. Formal or academic phrasing
+To some extent; fundamentally; in terms of; on a conceptual level; is manifested in; constitutes; facilitates; provides; reflects; embodies; gives rise to; with respect to.
 
-首先、其次、再次、最后、第一、第二、第三、其一、其二、其三、一方面、另一方面、再者、此外、另外、同时、接着、然后、随后、紧接着、最后一步、下一步、第一点、第二点。
+#### D. Overused logical connectives
+Therefore; consequently; nevertheless; however; meanwhile; correspondingly; furthermore; as a result; in contrast; conversely; thus.
 
-#### C. Formal/academic phrasing（24）
+#### E. Direct emotion statements
+He was extremely angry; she was filled with joy; he felt profound sadness; her emotions were complicated; he was deeply moved; she felt helpless; his heart sank; a wave of fear washed over her.
 
-某种程度上、本质上、意义上、维度上、层面上、在于、体现为、构成了、形成了、实现了、完成了、进行了、展开了、推动了、促进了、提供了、具备了、拥有了、达成了、呈现出、表现出、反映出、蕴含着、折射出。
+#### F. Stock action phrases
+Frowned; sighed; took a deep breath; spoke slowly; said coldly; said softly; the corners of his mouth rose; her eyes narrowed; his gaze flickered; she froze; he stopped in his tracks; took half a step back; slowly nodded; shook her head.
 
-#### D. Overused logical connectives（22）
+#### G. Stock environmental phrases
+The air seemed to freeze; tension filled the room; night was black as ink; the wind cut to the bone; deathly silence; time stood still; the room was filled with; the only source of light; silence fell like a wave; in that instant.
 
-因此、因而、所以、由于、然而、不过、但是、与此同时、同样地、对应地、相应地、进一步、更进一步、从而、进而、于是、结果是、于是乎、故而、由此、相较之下、反过来说。
+#### H. Narrative filler
+In fact; actually; strictly speaking; objectively; generally speaking; under the circumstances; at this moment; on that basis; from a certain perspective; for him; this meant that; this showed that; it was no coincidence; undeniably.
 
-#### E. Direct emotion statements（22）
+#### I. Vague abstractions
+Fate; growth; transformation; transcendence; value; meaning; determination; perseverance; belief; hope; despair; courage; justice; evil; truth; complexity; profundity. Ground abstractions in a specific action, choice, or consequence.
 
-非常愤怒、非常开心、非常难过、心中五味杂陈、百感交集、情绪复杂、内心震撼、不由得感慨、感到无奈、感到痛苦、感到欣慰、感到恐惧、深受触动、心潮起伏、心情沉重、心情复杂、心里一暖、心里一沉、心中一紧、不禁一愣、不由一怔、内心一震。
+#### J. Mechanical openings and endings
+Our story begins; let us turn our attention to; meanwhile, elsewhere; back to the present; little did he know; the wheels of fate began to turn; a new chapter began; to be continued; the real test was yet to come; a storm was brewing; this was only the beginning; only time would tell.
 
-#### F. Stock action phrases（22）
+#### K. Stock facial expressions
+A look flashed across her eyes; his pupils contracted; the corners of her mouth curved upward; his brow furrowed; her expression changed; his face darkened; she betrayed no emotion. Give characters distinctive reactions instead of repeating the same expressions.
 
-皱起眉头、叹了口气、深吸一口气、缓缓开口、沉声说道、淡淡说道、冷冷说道、轻声说道、嘴角上扬、嘴角抽了抽、眼神一凝、目光一闪、身形一滞、脚步一顿、浑身一震、心头一跳、不由后退半步、猛地转身、抬手一挥、缓缓点头、轻轻摇头、下意识后退。
+#### L. Generic adverbs
+Slowly; faintly; slightly; gently; quietly; silently; secretly; gradually. Remove unnecessary adverbs and convey pace or intensity through action and consequence.
 
-#### G. Stock environmental phrases（22）
+#### M. Stock thought framing
+He thought to himself; her heart tightened; he silently considered; she understood inwardly; a feeling rose in his heart; she secretly speculated; he made a mental calculation. Where useful, write the thought directly or externalize it through behavior.
 
-空气仿佛凝固、气氛骤然紧张、气压陡然下降、夜色如墨、月色如水、寒风刺骨、四周一片寂静、死一般的寂静、时间仿佛静止、空间仿佛扭曲、房间里弥漫着、唯一的光源、摇摇欲坠、压抑得让人喘不过气、沉默像潮水、空气中充满了、一切都显得、世界仿佛、就在这一刻、忽然之间、刹那间、顷刻之间。
-
-#### H. Narrative filler（22）
-
-事实上、实际上、某种意义上、严格来说、客观而言、主观上、一般来说、通常情况下、在这种情况下、在这个时候、在此基础上、在这个意义上、从某种角度、对于他来说、对她而言、这意味着、这说明、这代表着、这并不奇怪、并非偶然、不可否认、毋庸置疑。
-
-#### I. Vague abstractions（22）
-
-命运、成长、蜕变、升华、价值、意义、抉择、坚持、信念、初心、希望、绝望、勇气、正义、邪恶、真实、虚伪、复杂、深刻、宏大、渺小、沉重。
-
-#### J. Mechanical opening/ending phrases（24）
-
-故事要从、让我们把视线、镜头转到、与此同时在另一边、回到现在、再说回、这一切都要从、他并不知道、命运的齿轮开始转动、新的篇章开始了、未完待续、故事才刚刚开始、真正的考验还在后面、一场风暴即将来临、更大的阴谋正在酝酿、这只是开始、答案尚未揭晓、未来会怎样、谁也不知道、他深知、她明白、可他不知道的是、可她不知道的是、然而一切才刚开始。
-
-#### K. Expression templates（15）
-
-眸中闪过、眼底掠过、瞳孔微缩、嘴角微微上扬、嘴角勾起一抹弧度、眉头微蹙、眉心微皱、面色微变、神色一凝、目光微闪、眼神微动、唇角微翘、脸色微沉、面色如常、不露声色。
-
-> Trait: AI gives every character the same expression templates. Instead, design distinctive micro-actions for each character (biting a pen cap = anxiety; twisting a watch = impatience).
-
-#### L. Generic adverbs（10）
-
-缓缓、淡淡、微微、轻轻、静静、默默、悄悄、慢慢、渐渐、暗暗。
-
-> Trait: AI puts these adverbs before almost every action, creating a fixed adverb + verb pattern (speaking slowly, speaking blandly, nodding slightly, sighing gently). Remove the adverb; imply speed/intensity through preceding action or results.
-
-#### M. Stock internal-monologue phrases（10）
-
-心中暗道、心中一凛、心中暗自思量、心下了然、心中不由得、心底涌起一股、心中升起一丝、暗自盘算、暗自揣测、心中有了计较。
-
-> Instead, remove the thought-framing phrase and write the thought directly or externalize it (clenched fist = determination; unconsciously touching chin = thought).
-
-#### N. Reversal/escalation templates（9）
-
-话虽如此、就在此刻、然而下一刻、正当……之际、殊不知、可惜的是、然而就在这时、就在众人以为……的时候、更令人惊讶的是。
-
-> Trait: AI uses these formulas to manufacture a sense of reversal, but readers recognize the coming turn as soon as they see them, eliminating suspense.
+#### N. Formulaic reversals
+Be that as it may; at that very moment; but in the next instant; just as; little did they know; unfortunately; however, at that moment; just when everyone thought; even more surprisingly. Use concrete causes and consequences rather than announcing each twist.
 
 ### Layer 2: Sentence rules (anti-template)
 
@@ -211,7 +189,7 @@ The exact Chinese detection terms below apply only when the user requests Chines
 
 ### Layer 7: Punctuation rhythm
 
-- Do not repeatedly use `......` or `！！！`.
+- Do not repeatedly use `......` or `!!!`.
 - At most one ellipsis and one exclamation mark per paragraph, except special emotional outbursts.
 - Prefer splitting long sentences containing more than four commas.
 
@@ -310,7 +288,7 @@ Required:
 - anti_ai_force_check: pass/fail
 - Reader-alienation risk: pass/fail
 - Deviations:
-  - {位置}: {原因}
+- {location}: {reason}
 ```
 
 If any `critical` issues remain, explicitly mark “Failed” and return to Step 4 for further repair.

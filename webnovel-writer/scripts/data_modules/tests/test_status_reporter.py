@@ -33,27 +33,27 @@ def test_foreshadowing_analysis_uses_real_chapters_and_handles_missing_data():
             "plot_threads": {
                 "foreshadowing": [
                     {
-                        "content": "林家宝库铭文的秘密",
-                        "status": "未回收",
-                        "tier": "核心",
+                        "content": "the secret of the Lin family treasury inscription",
+                        "status": "unresolved",
+                        "tier": "core",
                         "planted_chapter": 20,
                         "target_chapter": 100,
                     },
                     {
-                        "content": "神秘玉佩来历",
-                        "status": "待回收",
-                        "tier": "支线",
+                        "content": "origin of the mysterious jade pendant",
+                        "status": "unresolved",
+                        "tier": "subplot",
                         "added_chapter": 50,
                         "target": 150,
                     },
                     {
-                        "content": "旧日誓言",
-                        "status": "未回收",
-                        "tier": "装饰",
+                        "content": "old oath",
+                        "status": "unresolved",
+                        "tier": "decorative",
                     },
                     {
-                        "content": "已完成伏笔",
-                        "status": "已回收",
+                        "content": "completed foreshadowing",
+                        "status": "resolved",
                         "planted_chapter": 10,
                         "target_chapter": 20,
                     },
@@ -69,24 +69,24 @@ def test_foreshadowing_analysis_uses_real_chapters_and_handles_missing_data():
         assert len(foreshadowing) == 3
 
         records = {item["content"]: item for item in foreshadowing}
-        assert records["林家宝库铭文的秘密"]["planted_chapter"] == 20
-        assert records["林家宝库铭文的秘密"]["elapsed"] == 100
-        assert records["林家宝库铭文的秘密"]["status"] == "🔴 已超期"
+        assert records["the secret of the Lin family treasury inscription"]["planted_chapter"] == 20
+        assert records["the secret of the Lin family treasury inscription"]["elapsed"] == 100
+        assert records["the secret of the Lin family treasury inscription"]["status"] == "🔴 Overdue"
 
-        assert records["神秘玉佩来历"]["planted_chapter"] == 50
-        assert records["神秘玉佩来历"]["target_chapter"] == 150
-        assert records["神秘玉佩来历"]["status"] in {"🟡 轻度超时", "🟢 正常"}
+        assert records["origin of the mysterious jade pendant"]["planted_chapter"] == 50
+        assert records["origin of the mysterious jade pendant"]["target_chapter"] == 150
+        assert records["origin of the mysterious jade pendant"]["status"] in {"🟡 Mildly overdue", "🟢 Normal"}
 
-        assert records["旧日誓言"]["planted_chapter"] is None
-        assert records["旧日誓言"]["status"] == "⚪ 数据不足"
+        assert records["old oath"]["planted_chapter"] is None
+        assert records["old oath"]["status"] == "⚪ Insufficient data"
 
         urgency = reporter.analyze_foreshadowing_urgency()
         urgency_by_content = {item["content"]: item for item in urgency}
 
-        assert urgency_by_content["林家宝库铭文的秘密"]["urgency"] is not None
-        assert urgency_by_content["林家宝库铭文的秘密"]["status"] == "🔴 已超期"
-        assert urgency_by_content["旧日誓言"]["urgency"] is None
-        assert urgency_by_content["旧日誓言"]["status"] == "⚪ 数据不足"
+        assert urgency_by_content["the secret of the Lin family treasury inscription"]["urgency"] is not None
+        assert urgency_by_content["the secret of the Lin family treasury inscription"]["status"] == "🔴 Overdue"
+        assert urgency_by_content["old oath"]["urgency"] is None
+        assert urgency_by_content["old oath"]["status"] == "⚪ Insufficient data"
 
 
 def test_pacing_analysis_prefers_real_coolpoint_metadata_over_estimation():
@@ -99,8 +99,8 @@ def test_pacing_analysis_prefers_real_coolpoint_metadata_over_estimation():
             "progress": {"current_chapter": 3, "total_words": 12000},
             "chapter_meta": {
                 "0003": {
-                    "hook": "下章有变",
-                    "coolpoint_patterns": ["身份掉马", "反派翻车"],
+                    "hook": "change in the next chapter",
+                    "coolpoint_patterns": ["identity reveal", "villain's downfall"],
                 }
             },
         }
@@ -110,17 +110,17 @@ def test_pacing_analysis_prefers_real_coolpoint_metadata_over_estimation():
         idx.save_chapter_reading_power(
             ChapterReadingPowerMeta(
                 chapter=1,
-                hook_type="渴望钩",
+                hook_type="desire",
                 hook_strength="strong",
-                coolpoint_patterns=["打脸权威", "身份掉马"],
+                coolpoint_patterns=["humbling an authority", "identity reveal"],
             )
         )
         idx.save_chapter_reading_power(
             ChapterReadingPowerMeta(
                 chapter=2,
-                hook_type="悬念钩",
+                hook_type="mystery",
                 hook_strength="medium",
-                coolpoint_patterns=["身份掉马"],
+                coolpoint_patterns=["identity reveal"],
             )
         )
 
@@ -163,7 +163,7 @@ def test_pacing_analysis_marks_missing_data_instead_of_assuming_one_point_per_ch
         seg = reporter.analyze_pacing()[0]
         assert seg["cool_points"] == 0
         assert seg["words_per_point"] is None
-        assert seg["rating"] == "数据不足"
+        assert seg["rating"] == "Insufficient data"
         assert seg["missing_chapters"] == 1
 
 
@@ -175,8 +175,8 @@ def test_relationship_graph_prefers_index_db_data():
 
         state = {
             "progress": {"current_chapter": 12, "total_words": 24000},
-            "protagonist_state": {"name": "萧炎"},
-            "relationships": {"allies": [{"name": "旧盟友", "relation": "友好"}], "enemies": []},
+            "protagonist_state": {"name": "Xiao Yan"},
+            "relationships": {"allies": [{"name": "old ally", "relation": "friendly"}], "enemies": []},
         }
         _write_state(project_root, state)
 
@@ -184,9 +184,9 @@ def test_relationship_graph_prefers_index_db_data():
         idx.upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
-                tier="核心",
+                type="character",
+                canonical_name="Xiao Yan",
+                tier="core",
                 current={},
                 first_appearance=1,
                 last_appearance=12,
@@ -196,9 +196,9 @@ def test_relationship_graph_prefers_index_db_data():
         idx.upsert_entity(
             EntityMeta(
                 id="yaolao",
-                type="角色",
-                canonical_name="药老",
-                tier="重要",
+                type="character",
+                canonical_name="Yao Lao",
+                tier="major",
                 current={},
                 first_appearance=1,
                 last_appearance=12,
@@ -208,8 +208,8 @@ def test_relationship_graph_prefers_index_db_data():
             RelationshipMeta(
                 from_entity="xiaoyan",
                 to_entity="yaolao",
-                type="师徒",
-                description="师徒关系",
+                type="mentor-student",
+                description="mentor-disciple relationship",
                 chapter=10,
             )
         )
@@ -217,13 +217,13 @@ def test_relationship_graph_prefers_index_db_data():
             RelationshipEventMeta(
                 from_entity="xiaoyan",
                 to_entity="yaolao",
-                type="师徒",
+                type="mentor-student",
                 chapter=10,
                 action="create",
                 polarity=1,
                 strength=0.9,
-                description="拜师",
-                evidence="萧炎拜药老为师",
+                description="become a disciple",
+                evidence="Xiao Yan becomes Yao Lao's disciple",
             )
         )
 
@@ -231,11 +231,11 @@ def test_relationship_graph_prefers_index_db_data():
         assert reporter.load_state() is True
         graph = reporter.generate_relationship_graph()
         assert "mermaid" in graph
-        assert "药老" in graph
-        assert "师徒" in graph
+        assert "Yao Lao" in graph
+        assert "mentor-student" in graph
 
 
-def test_english_health_report_preserves_legacy_analysis_labels(tmp_path, monkeypatch):
+def test_english_health_report_uses_english_analysis_labels(tmp_path, monkeypatch):
     """English presentation must not change legacy enums or translate story content."""
     import re
 
@@ -243,9 +243,9 @@ def test_english_health_report_preserves_legacy_analysis_labels(tmp_path, monkey
         "project_info": {"target_words": 100000},
         "progress": {"current_chapter": 120, "total_words": 50000},
         "plot_threads": {"foreshadowing": [
-            {"content": "The missing key", "tier": "核心", "status": "未回收",
+            {"content": "The missing key", "tier": "core", "status": "unresolved",
              "planted_chapter": 1, "target_chapter": 10},
-            {"content": "An unexplained letter", "tier": "支线", "status": "未回收"},
+            {"content": "An unexplained letter", "tier": "subplot", "status": "unresolved"},
         ]},
         "strand_tracker": {"history": [{"strand": "quest"}] * 20},
     }
@@ -253,7 +253,7 @@ def test_english_health_report_preserves_legacy_analysis_labels(tmp_path, monkey
     reporter = StatusReporter(str(tmp_path))
     assert reporter.load_state()
     monkeypatch.setattr(reporter, "analyze_characters", lambda: {
-        "Alex": {"status": "🔴 严重掉线", "last_appearance": 1, "absence": 119}
+        "Alex": {"status": "🔴 Severe absence", "last_appearance": 1, "absence": 119}
     })
     monkeypatch.setattr(reporter, "generate_relationship_graph", lambda: "graph LR\nAlex --> Sam")
     reporter.chapters_data = [{"chapter": 1, "word_count": 2000, "cool_points": None}]
@@ -265,5 +265,5 @@ def test_english_health_report_preserves_legacy_analysis_labels(tmp_path, monkey
     assert "Insufficient data" in report
     assert "Strand Weave Pacing Analysis" in report
     assert not re.search(r"[\u4e00-\u9fff]", report)
-    assert reporter.analyze_foreshadowing()[0]["status"] == "🔴 已超期"
-    assert reporter.state["plot_threads"]["foreshadowing"][0]["tier"] == "核心"
+    assert reporter.analyze_foreshadowing()[0]["status"] == "🔴 Overdue"
+    assert reporter.state["plot_threads"]["foreshadowing"][0]["tier"] == "core"

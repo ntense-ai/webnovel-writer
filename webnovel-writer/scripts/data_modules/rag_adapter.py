@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-RAG Adapter - RAG 检索适配模块
-
-封装向量检索功能：
-- 向量嵌入 (调用 Modal API)
-- 语义搜索
-- 重排序
-- 混合检索 (向量 + BM25)
-"""
+"RAG Adapter: retrieval integration for vector embeddings through the Modal API, semantic search, reranking, and hybrid vector/BM25 retrieval."
 
 import asyncio
 import sqlite3
@@ -55,7 +47,7 @@ VECTOR_REQUIRED_COLUMNS = (
 
 @dataclass
 class SearchResult:
-    """搜索结果"""
+    "Search result."
     chunk_id: str
     chapter: int
     scene_index: int
@@ -68,7 +60,7 @@ class SearchResult:
 
 
 class RAGAdapter:
-    """RAG 检索适配器"""
+    "RAG retrieval adapter."
 
     def __init__(self, config=None):
         self.config = config or get_config()
@@ -90,7 +82,7 @@ class RAGAdapter:
             self._degraded_mode_reason = "embedding_auth_failed"
 
     def _init_db(self):
-        """初始化向量数据库"""
+        "Initialize the vector database."
         self.config.ensure_dirs()
         needs_migration, existing_cols = self._inspect_vectors_schema()
         if needs_migration:
@@ -206,7 +198,7 @@ class RAGAdapter:
         )
 
     def _ensure_tables(self, cursor) -> None:
-        # 向量存储表
+        # Vector storage table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS vectors (
                 chunk_id TEXT PRIMARY KEY,
@@ -221,7 +213,7 @@ class RAGAdapter:
             )
         """)
 
-        # BM25 倒排索引表
+        # BM25 inverted index table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS bm25_index (
                 term TEXT,
@@ -231,7 +223,7 @@ class RAGAdapter:
             )
         """)
 
-        # 文档统计表
+        # Document statistics table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS doc_stats (
                 chunk_id TEXT PRIMARY KEY,
@@ -239,7 +231,7 @@ class RAGAdapter:
             )
         """)
 
-        # 创建索引
+        # Create indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vectors_chapter ON vectors(chapter)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vectors_parent ON vectors(parent_chunk_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_vectors_type ON vectors(chunk_type)")
@@ -247,7 +239,7 @@ class RAGAdapter:
 
     @contextmanager
     def _get_conn(self):
-        """获取数据库连接（确保关闭，避免 Windows 下文件句柄泄漏）"""
+        "Get a database connection and ensure it closes to avoid Windows file-handle leaks."
         conn = sqlite3.connect(str(self.config.vector_db))
         try:
             yield conn
@@ -315,7 +307,7 @@ class RAGAdapter:
         if not chunk_ids:
             return []
 
-        # SQLite 参数数量限制（默认 999），这里做分片查询
+        # Chunk queries to respect SQLite's parameter limit (999 by default).
         def _chunks(xs: List[str], size: int = 500):
             it = iter(xs)
             while True:
@@ -376,39 +368,23 @@ class RAGAdapter:
         results.sort(key=lambda x: x.score, reverse=True)
         return results[:top_k]
 
-    # ==================== 向量存储 ====================
+    # ==================== Vector storage ====================
 
     async def store_chunks(self, chunks: List[Dict]) -> int:
-        """
-        存储场景切片的向量
-
-        chunks 格式:
-        [
-            {
-                "chapter": 100,
-                "scene_index": 1,
-                "content": "场景内容...",
-                "chunk_type": "scene",
-                "parent_chunk_id": "ch0100_summary",
-                "source_file": "正文/第0100章.md#scene_1"
-            }
-        ]
-
-        返回存储数量
-        """
+        "Store scene-chunk vectors and return the number stored. Each chunks entry includes chapter (for example 100), scene_index (1), content (scene text), chunk_type (scene), parent_chunk_id (ch0100_summary), and source_file (chapters/chapter-0100.md#scene_1)."
         if not chunks:
             return 0
 
-        # 提取内容用于嵌入
+        # Extract content for embedding
         contents = [c.get("content", "") for c in chunks]
 
-        # 调用 API 获取嵌入向量（可能包含 None 表示失败）
+        # Request embeddings from the API; None entries indicate failures.
         embeddings = await self.api_client.embed_batch(contents)
 
         if not embeddings:
             return 0
 
-        # 存储到数据库（跳过嵌入失败的 chunk）
+        # Store successful chunks in the database.
         stored = 0
         skipped = 0
         errors = []
@@ -417,7 +393,7 @@ class RAGAdapter:
 
             for chunk, embedding in zip(chunks, embeddings):
                 if embedding is None:
-                    # 嵌入失败，跳过该 chunk（仅存储 BM25 索引供关键词检索）
+                    # Skip the failed embedding, retaining only the BM25 index for keyword retrieval.
                     skipped += 1
                     chunk_id = chunk.get("chunk_id")
                     if not chunk_id:
@@ -439,7 +415,7 @@ class RAGAdapter:
                     else:
                         chunk_id = f"ch{int(chunk['chapter']):04d}_s{int(chunk['scene_index'])}"
 
-                # 将向量序列化为 bytes
+                # Serialize the vector as bytes
                 embedding_bytes = self._serialize_embedding(embedding)
 
                 cursor.execute("""
@@ -457,7 +433,7 @@ class RAGAdapter:
                     chunk.get("source_file"),
                 ))
 
-                # 同时更新 BM25 索引
+                # Also update the BM25 index
                 try:
                     self._update_bm25_index(cursor, chunk_id, chunk.get("content", ""))
                 except Exception as e:
@@ -471,7 +447,7 @@ class RAGAdapter:
                 logger.error("SQLite commit failed: %s", e)
                 errors.append(f"SQLite commit failed: {e}")
 
-        # 输出警告日志
+        # Log warnings
         if skipped > 0:
             logger.warning(
                 "Vector embedding: %s stored, %s skipped (embedding failed)",
@@ -480,18 +456,18 @@ class RAGAdapter:
             )
         if errors:
 
-            for err in errors[:5]:  # 最多显示5条
+            for err in errors[:5]:  # Show at most five entries
                 logger.warning("%s", err)
 
         return stored
 
     def _serialize_embedding(self, embedding: List[float]) -> bytes:
-        """序列化向量"""
+        "Serialize a vector."
         import struct
         return struct.pack(f"{len(embedding)}f", *embedding)
 
     def _deserialize_embedding(self, data: bytes) -> List[float]:
-        """反序列化向量"""
+        "Deserialize a vector."
         import struct
         count = len(data) // 4
         return list(struct.unpack(f"{count}f", data))
@@ -517,33 +493,33 @@ class RAGAdapter:
         except Exception as exc:
             logger.warning("failed to log rag query: %s", exc)
 
-    # ==================== BM25 索引 ====================
+    # ==================== BM25 index ====================
 
     def _tokenize(self, text: str) -> List[str]:
-        """简单分词（中文按字符，英文按单词）"""
-        # 中文字符
+        "Simple tokenization: Chinese by character, English by word."
+        # Chinese characters
         chinese = re.findall(r'[\u4e00-\u9fff]+', text)
         chinese_chars = list("".join(chinese))
 
-        # 英文单词
+        # English words
         english = re.findall(r'[a-zA-Z]+', text.lower())
 
         return chinese_chars + english
 
     def _update_bm25_index(self, cursor, chunk_id: str, content: str):
-        """更新 BM25 索引"""
-        # 删除旧索引
+        "Update the BM25 index."
+        # Delete the old index
         cursor.execute("DELETE FROM bm25_index WHERE chunk_id = ?", (chunk_id,))
         cursor.execute("DELETE FROM doc_stats WHERE chunk_id = ?", (chunk_id,))
 
-        # 分词
+        # Tokenize
         tokens = self._tokenize(content)
         doc_length = len(tokens)
 
-        # 计算词频
+        # Calculate term frequencies
         tf_counter = Counter(tokens)
 
-        # 插入倒排索引
+        # Insert into the inverted index
         for term, count in tf_counter.items():
             tf = count / doc_length if doc_length > 0 else 0
             cursor.execute("""
@@ -551,13 +527,13 @@ class RAGAdapter:
                 VALUES (?, ?, ?)
             """, (term, chunk_id, tf))
 
-        # 更新文档统计
+        # Update document statistics
         cursor.execute("""
             INSERT INTO doc_stats (chunk_id, doc_length)
             VALUES (?, ?)
         """, (chunk_id, doc_length))
 
-    # ==================== 向量检索 ====================
+    # ==================== Vector retrieval ====================
 
     async def vector_search(
         self,
@@ -567,11 +543,11 @@ class RAGAdapter:
         log_query: bool = True,
         chapter: int | None = None,
     ) -> List[SearchResult]:
-        """向量相似度搜索"""
+        "Search by vector similarity."
         top_k = top_k or self.config.vector_top_k
         start_time = time.perf_counter()
 
-        # 获取查询向量
+        # Obtain the query vector
         query_embeddings = await self.api_client.embed([query])
         if not query_embeddings:
             self._update_degraded_mode()
@@ -581,7 +557,7 @@ class RAGAdapter:
 
         query_embedding = query_embeddings[0]
 
-        # 从数据库读取所有向量并计算相似度
+        # Read all vectors from the database and compute similarities
         with self._get_conn() as conn:
             cursor = conn.cursor()
             if chunk_type and chapter is not None:
@@ -628,7 +604,7 @@ class RAGAdapter:
                     continue
                 embedding = self._deserialize_embedding(embedding_bytes)
 
-                # 计算余弦相似度
+                # Calculate cosine similarity
                 score = self._cosine_similarity(query_embedding, embedding)
 
                 results.append(SearchResult(
@@ -643,7 +619,7 @@ class RAGAdapter:
                     source_file=source_file,
                 ))
 
-        # 排序并返回 top_k
+        # Sort and return top_k results
         results.sort(key=lambda x: x.score, reverse=True)
         results = results[:top_k]
         if log_query:
@@ -652,7 +628,7 @@ class RAGAdapter:
         return results
 
     def _cosine_similarity(self, a: List[float], b: List[float]) -> float:
-        """计算余弦相似度"""
+        "Calculate cosine similarity."
         dot_product = sum(x * y for x, y in zip(a, b))
         norm_a = math.sqrt(sum(x * x for x in a))
         norm_b = math.sqrt(sum(x * x for x in b))
@@ -660,7 +636,7 @@ class RAGAdapter:
             return 0.0
         return dot_product / (norm_a * norm_b)
 
-    # ==================== BM25 检索 ====================
+    # ==================== BM25 retrieval ====================
 
     def bm25_search(
         self,
@@ -672,7 +648,7 @@ class RAGAdapter:
         log_query: bool = True,
         chapter: int | None = None,
     ) -> List[SearchResult]:
-        """BM25 关键词搜索"""
+        "Search by BM25 keywords."
         top_k = top_k or self.config.bm25_top_k
         start_time = time.perf_counter()
 
@@ -683,17 +659,17 @@ class RAGAdapter:
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 获取文档总数和平均长度
+            # Obtain total document count and average length
             cursor.execute("SELECT COUNT(*), AVG(doc_length) FROM doc_stats")
             row = cursor.fetchone()
             total_docs = row[0] or 1
             avg_doc_length = row[1] or 1
 
-            # 计算每个文档的 BM25 分数
+            # Calculate each document's BM25 score
             doc_scores = {}
 
             for term in set(query_terms):
-                # 获取包含该词的文档
+                # Find documents containing the term
                 cursor.execute("""
                     SELECT b.chunk_id, b.tf, d.doc_length
                     FROM bm25_index b
@@ -711,14 +687,14 @@ class RAGAdapter:
                 idf = math.log((total_docs - df + 0.5) / (df + 0.5) + 1)
 
                 for chunk_id, tf, doc_length in docs_with_term:
-                    # BM25 公式
+                    # BM25 formula
                     score = idf * (tf * (k1 + 1)) / (tf + k1 * (1 - b + b * doc_length / avg_doc_length))
 
                     if chunk_id not in doc_scores:
                         doc_scores[chunk_id] = 0
                     doc_scores[chunk_id] += score
 
-            # 获取文档内容
+            # Fetch document content
             results = []
             for chunk_id, score in doc_scores.items():
                 if chunk_type and chapter is not None:
@@ -779,14 +755,14 @@ class RAGAdapter:
         return results
 
     def _extract_query_seed_entities(self, query: str) -> List[str]:
-        """从查询中提取种子实体（通过别名和实体 ID 匹配）。"""
+        "Extract seed entities from a query by matching aliases and entity IDs."
         tokens = set(re.findall(r"[\u4e00-\u9fff]{2,8}|[A-Za-z][A-Za-z0-9_]{1,24}", query))
         entity_ids: List[str] = []
         for token in tokens:
             if len(entity_ids) >= int(self.config.graph_rag_max_expanded_entities):
                 break
 
-            # 1) 通过别名匹配
+            # 1) Match aliases
             alias_hits = self.index_manager.get_entities_by_alias(token)
             for hit in alias_hits:
                 entity_id = str(hit.get("id") or "").strip()
@@ -796,7 +772,7 @@ class RAGAdapter:
             if len(entity_ids) >= int(self.config.graph_rag_max_expanded_entities):
                 break
 
-            # 2) 通过实体 ID 直匹配
+            # 2) Match entity IDs directly
             entity = self.index_manager.get_entity(token)
             if entity:
                 entity_id = str(entity.get("id") or "").strip()
@@ -806,7 +782,7 @@ class RAGAdapter:
         return entity_ids[: int(self.config.graph_rag_max_expanded_entities)]
 
     def _normalize_entity_ids(self, candidates: List[str]) -> List[str]:
-        """将输入实体候选（名称/别名/ID）规范化为实体 ID 列表。"""
+        "Normalize candidate names, aliases, or IDs into an entity-ID list."
         ids: List[str] = []
         for token in candidates:
             candidate = str(token or "").strip()
@@ -826,7 +802,7 @@ class RAGAdapter:
         return ids[: int(self.config.graph_rag_max_expanded_entities)]
 
     def _expand_related_entities(self, seed_entities: List[str], hops: int | None = None) -> List[str]:
-        """基于关系图扩展相关实体。"""
+        "Expand related entities through the relationship graph."
         max_entities = int(self.config.graph_rag_max_expanded_entities)
         hops = max(1, int(hops or self.config.graph_rag_expand_hops))
         expanded: List[str] = []
@@ -857,7 +833,7 @@ class RAGAdapter:
         chapter: int | None = None,
         limit: int | None = None,
     ) -> List[str]:
-        """根据实体名称/别名在向量库正文中筛选候选 chunk。"""
+        "Filter candidate chunks by entity names and aliases in stored text."
         if not entity_ids:
             return []
 
@@ -920,7 +896,7 @@ class RAGAdapter:
         top_k: int,
         chunk_type: str | None = None,
     ) -> List[SearchResult]:
-        """在指定候选 chunk 范围内执行向量检索。"""
+        "Run vector retrieval within the specified candidate chunks."
         if not chunk_ids:
             return []
 
@@ -949,7 +925,7 @@ class RAGAdapter:
         related_terms: set[str],
         max_chapter: int,
     ) -> float:
-        """为图谱候选增加先验分。"""
+        "Add prior scores to graph candidates."
         score = float(result.score)
         content = str(result.content or "")
 
@@ -975,13 +951,7 @@ class RAGAdapter:
         center_entities: Optional[List[str]] = None,
         log_query: bool = True,
     ) -> List[SearchResult]:
-        """
-        图谱增强混合检索：
-        1) 先走现有 hybrid 作为基础召回；
-        2) 基于实体关系图扩展候选；
-        3) 向量重算 + 图谱先验融合；
-        4) rerank 产出最终结果。
-        """
+        "Graph-enhanced hybrid retrieval: use hybrid retrieval as the base recall, expand candidates through entity relationships, recompute vectors and fuse graph priors, then rerank the final results."
         start_time = time.perf_counter()
 
         base_results = await self.hybrid_search(
@@ -1025,7 +995,7 @@ class RAGAdapter:
             chunk_type=chunk_type,
         )
 
-        # 构建实体术语集用于先验分
+        # Build entity terms for prior scoring
         seed_terms: set[str] = set()
         related_terms: set[str] = set()
         for idx, entity_id in enumerate(expanded_entities):
@@ -1109,7 +1079,7 @@ class RAGAdapter:
         center_entities: Optional[List[str]] = None,
         filters: Optional[Dict[str, Any]] = None,
     ) -> List[SearchResult]:
-        """统一检索入口。"""
+        "Unified retrieval entry point."
         strategy = str(strategy or "auto").lower()
         if filters and chapter is None:
             try:
@@ -1127,7 +1097,7 @@ class RAGAdapter:
                 strategy = "hybrid"
 
         if strategy not in {"vector", "bm25", "backtrack", "graph_hybrid", "hybrid"}:
-            # 未知策略统一降级 hybrid，避免调用方传错参数导致中断。
+            # Fall back to hybrid for unknown strategies rather than interrupting callers.
             strategy = "hybrid"
 
         if strategy == "vector":
@@ -1153,7 +1123,7 @@ class RAGAdapter:
             chapter=chapter,
         )
 
-    # ==================== 混合检索 ====================
+    # ==================== Hybrid retrieval ====================
 
     async def hybrid_search(
         self,
@@ -1165,26 +1135,18 @@ class RAGAdapter:
         chapter: int | None = None,
         log_query: bool = True,
     ) -> List[SearchResult]:
-        """
-        混合检索：向量 + BM25 + RRF 融合 + Rerank
-
-        步骤:
-        1. 向量检索 top_k
-        2. BM25 检索 top_k
-        3. RRF 融合
-        4. Rerank 精排
-        """
+        "Hybrid retrieval: retrieve top_k vector and BM25 matches, combine them with RRF fusion, then rerank precisely."
         vector_top_k = vector_top_k or self.config.vector_top_k
         bm25_top_k = bm25_top_k or self.config.bm25_top_k
         rerank_top_n = rerank_top_n or self.config.rerank_top_n
         start_time = time.perf_counter()
 
-        # 小规模：全表向量扫描（召回更稳）；大规模：预筛选避免 O(n) 扫描拖慢
+        # Scan all vectors for small collections to improve recall; prefilter large collections to avoid slow O(n) scans.
         vectors_count = await asyncio.to_thread(self._get_vectors_count)
         use_full_scan = vectors_count <= int(self.config.vector_full_scan_max_vectors)
 
         if use_full_scan:
-            # 并行执行向量和 BM25 检索
+            # Run vector and BM25 retrieval concurrently
             vector_results, bm25_results = await asyncio.gather(
                 self.vector_search(query, vector_top_k, chunk_type=chunk_type, log_query=False, chapter=chapter),
                 asyncio.to_thread(self.bm25_search, query, bm25_top_k, 1.5, 0.75, chunk_type, False, chapter),
@@ -1242,10 +1204,10 @@ class RAGAdapter:
                 top_k=int(vector_top_k),
             )
 
-            # BM25 结果用于融合时只取 top_k
+            # Use only top_k BM25 results for fusion
             bm25_results = list(bm25_candidates_results)[: int(bm25_top_k)]
 
-        # RRF 融合
+        # RRF fusion
         rrf_scores = {}
         k = self.config.rrf_k
 
@@ -1259,14 +1221,14 @@ class RAGAdapter:
                 rrf_scores[result.chunk_id] = {"result": result, "score": 0}
             rrf_scores[result.chunk_id]["score"] += 1 / (k + rank + 1)
 
-        # 按 RRF 分数排序
+        # Sort by RRF score
         sorted_results = sorted(
             rrf_scores.values(),
             key=lambda x: x["score"],
             reverse=True
         )
 
-        # 取 top candidates 进行 rerank
+        # Select the top candidates for reranking
         candidates = [item["result"] for item in sorted_results[:rerank_top_n * 2]]
 
         if not candidates:
@@ -1276,19 +1238,19 @@ class RAGAdapter:
                 self._log_query(query, "hybrid", final_results, latency_ms, chapter=chapter)
             return final_results
 
-        # 调用 Rerank API
+        # Call the Rerank API
         documents = [c.content for c in candidates]
         rerank_results = await self.api_client.rerank(query, documents, top_n=rerank_top_n)
 
         if not rerank_results:
-            # Rerank 失败，返回 RRF 结果
+            # Return RRF results if reranking fails
             final_results = [item["result"] for item in sorted_results[:rerank_top_n]]
             latency_ms = int((time.perf_counter() - start_time) * 1000)
             if log_query:
                 self._log_query(query, "hybrid", final_results, latency_ms, chapter=chapter)
             return final_results
 
-        # 组装最终结果
+        # Assemble final results
         final_results = []
         for r in rerank_results:
             idx = r.get("index", 0)
@@ -1365,10 +1327,10 @@ class RAGAdapter:
         self._log_query(query, "backtrack", merged, latency_ms)
         return merged
 
-    # ==================== 统计 ====================
+    # ==================== Statistics ====================
 
     def get_stats(self) -> Dict[str, int]:
-        """获取 RAG 统计"""
+        "Get RAG statistics."
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
@@ -1388,7 +1350,7 @@ class RAGAdapter:
             }
 
 
-# ==================== CLI 接口 ====================
+# ==================== CLI ====================
 
 def main():
     import argparse
@@ -1401,16 +1363,16 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    # 获取统计
+    # Fetch statistics
     subparsers.add_parser("stats")
 
-    # 写入索引
+    # Write the index
     index_parser = subparsers.add_parser("index-chapter")
     index_parser.add_argument("--chapter", type=int, required=True)
     index_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
     index_parser.add_argument("--summary", required=False, help="Chapter summary text")
 
-    # 搜索
+    # Search
     search_parser = subparsers.add_parser("search")
     search_parser.add_argument("--query", required=True)
     search_parser.add_argument(
@@ -1430,10 +1392,10 @@ def main():
     args = parser.parse_args(argv)
     command_started_at = time.perf_counter()
 
-    # 初始化
+    # Initialize
     config = None
     if args.project_root:
-        # 允许传入“工作区根目录”，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+        # Accept a workspace root and resolve the actual book project_root, which must contain .webnovel/state.json.
         from project_locator import resolve_project_root
         from .config import DataModulesConfig
 
@@ -1511,7 +1473,7 @@ def main():
                     "chunk_type": "scene",
                     "parent_chunk_id": parent_chunk_id,
                     "chunk_id": chunk_id,
-                    "source_file": f"{project_path(config.project_root, f'正文/第{args.chapter:04d}章.md').relative_to(config.project_root).as_posix()}#scene_{int(scene_index)}",
+                    "source_file": f"{project_path(config.project_root, f'chapters/chapter-{args.chapter:04d}.md').relative_to(config.project_root).as_posix()}#scene_{int(scene_index)}",
                 }
             )
 

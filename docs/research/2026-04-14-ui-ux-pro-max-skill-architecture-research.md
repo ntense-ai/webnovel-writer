@@ -187,18 +187,18 @@ CSV_CONFIG = {
 }
 ```
 
-Our current implementation differs materially. `webnovel-writer/scripts/reference_search.py` still uses **globally hardcoded fields**, not per-domain registration. These Chinese field identifiers are retained literally:
+Our current implementation differs materially. `webnovel-writer/scripts/reference_search.py` still uses **globally hardcoded fields**, not per-domain registration. The field identifiers are shown here in their English form:
 
 ```python
 _SEARCH_FIELD_WEIGHTS = {
-    "意图与同义词": 4,
-    "关键词": 3,
-    "核心摘要": 2,
-    "详细展开": 1,
+    "intent_synonyms": 4,
+    "keywords": 3,
+    "summary": 2,
+    "details": 1,
 }
 
 _CONTENT_COLUMNS = [
-    "技法名称", "桥段名称", "人设类型", ...
+    "technique_name", "trope_name", "character_type", ...
 ]
 ```
 
@@ -386,7 +386,7 @@ More accurate mapping:
 | `evolution-spec` layer | `ui-ux-pro-max` counterpart | `webnovel-writer` current / target | Completion |
 |------|------|------|------|
 | `Knowledge Layer` | `products.csv`, `styles/colors/...`, stack tables | Base, dynamic, and routing tables in `references/csv` | Basic structure exists: 7 rule tables, routing table, README schema |
-| `Reasoning Layer` | `CSV_CONFIG + detect_domain()` in `core.py`; reasoning rules in `design_system.py` | `题材与调性推理.csv`, `StorySystemEngine._route()`, future explicit `CSV_CONFIG` and reasoning config | Partial: routing and engine decisions exist, not yet extracted into explicit configuration |
+| `Reasoning Layer` | `CSV_CONFIG + detect_domain()` in `core.py`; reasoning rules in `design_system.py` | `genre-routing.csv`, `StorySystemEngine._route()`, future explicit `CSV_CONFIG` and reasoning config | Partial: routing and engine decisions exist, not yet extracted into explicit configuration |
 | `Contract Layer` | Unified `design_system` object and `MASTER.md/pages/*.md` | `MASTER_SETTING / VOLUME_BRIEF / CHAPTER_BRIEF / REVIEW_CONTRACT / anti_patterns` | Main structure connected: `engine.build()` produces `MASTER/CHAPTER/ANTI`; `RuntimeContractBuilder` produces `VOLUME/REVIEW` |
 | `Runtime Assembly Layer` | Page assembly using page override before MASTER | `context_manager(contract-first)` and runtime context assembly | Partial: runtime contracts are read, but the overall assembler is not fully consolidated around contract-first SSOT |
 | `Chapter Commit Layer` | No full counterpart; no event-commit main pipeline | `CHAPTER_COMMIT` + `override ledger` | Wired, governance pending: `ChapterCommitService` generates commits, writes event logs, triggers amend proposals and projection writers; rejected/backlog handling is not fully closed |
@@ -401,7 +401,7 @@ For retrieval and aggregation specifically:
 
 We already have:
 
-- `题材与调性推理.csv`
+- `genre-routing.csv`
 - 7 rule tables
 - `reference_search.py`
 - `story_system_engine.py`
@@ -495,10 +495,10 @@ Search and output columns are globally hardcoded, without domains:
 
 ```python
 _SEARCH_FIELD_WEIGHTS = {
-    "意图与同义词": 4,
-    "关键词": 3,
-    "核心摘要": 2,
-    "详细展开": 1,
+    "intent_synonyms": 4,
+    "keywords": 3,
+    "summary": 2,
+    "details": 1,
 }
 _CONTENT_COLUMNS = [...]
 ```
@@ -544,12 +544,12 @@ Retain these hard boundaries:
 `detect_domain()` mainly uses keyword heuristics. This can work for UI queries, but a story system needs stronger precedence:
 
 1. Explicit user genre / `.story-system` contract
-2. `题材与调性推理.csv`
+2. `genre-routing.csv`
 3. Alias / fallback
 4. Heuristic inference last
 
 This is **genre-routing precedence**, not the **runtime context-assembly precedence** in `evolution-spec 7.2`.
-The latter, when contracts exist, is `chapter -> volume -> master -> 题材与调性推理.csv -> genre-profiles.md -> templates/genres/*.md`.
+The latter, when contracts exist, is `chapter -> volume -> master -> genre-routing.csv -> genre-profiles.md -> templates/genres/*.md`.
 
 ### 9.3 Platform Templates Must Not Dictate Knowledge Structure
 
@@ -567,14 +567,14 @@ Do not replace `references/csv/README.md`; define complementary responsibilities
 - `README.md`: Human-readable schema, data-entry conventions, and table boundaries
 - Validation scripts: Keep column definitions, table roles, and prefix conventions aligned
 
-The README already documents schemas, for example (literal Chinese field names retained):
+The README already documents schemas, for example (English field identifiers):
 
 ```md
-| `关键词` | Yes | High-weight trigger terms; multivalue fields use `|` consistently |
-| `核心摘要` | Yes | Concise summary for high-weight retrieval and display |
+| `keywords` | Yes | High-weight trigger terms; multivalue fields use `|` consistently |
+| `summary` | Yes | Concise summary for high-weight retrieval and display |
 
-### 命名规则.csv
-| `命名对象` | Characters, book titles, locations, factions, techniques, props, etc. |
+### naming.csv
+| `naming_target` | Characters, book titles, locations, factions, techniques, props, etc. |
 ```
 
 The choice is not README versus `CSV_CONFIG`:

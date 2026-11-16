@@ -15,7 +15,7 @@
 - **Section A** covers every directly Read Markdown entry in the reference-loading-map from Plan §6.2.1 and assigns a reading method. Phase 4 (Tasks #13/#14) uses this to change loading and remove dead files.
 - **Section B** covers 8 Skills and 4 Agents, identifying essentials to retain and material to compress using the responsibility table in §4.2. Phases 1–5 (Tasks #5–#16) use this for slimming.
 - Four reading categories (criterion four + §6.2.2): **full-file read** / **section read** / **retrieval read** (CSV, listed separately in A.3) / **do not read** (cleanup candidates).
-- Section-read anchors are **literal headings from the files** (verified with Grep `^#{1,4} `). The Plan abbreviates anchors (removing `、` and shortening titles), so they **do not match actual headings verbatim**. Match this table's real anchors when reading sections; otherwise `Grep ^## 一 ` will not match `## 一、`. See the anchor-validation and FLAG discussion below. Historical Chinese anchor literals are retained for traceability.
+- Section-read anchors are **literal headings from the files** (verified with Grep `^#{1,4} `). The Plan abbreviates anchors (removing `、` and shortening titles), so they **do not match actual headings verbatim**. Match this table's real anchors when reading sections; otherwise `Grep ^## one ` will not match `## one、`. See the anchor-validation and FLAG discussion below. This historical audit describes the anchors used at the time; recheck the current English headings before using an anchor.
 
 ---
 
@@ -29,13 +29,13 @@ Large Markdown files triggered `always` or frequently impose a recurring cost on
 
 | File | Measured lines | Reading method | Section: actual stable heading anchor (literal) | Assigned task |
 |---|---|---|---|---|
-| `references/genre-profiles.md` | 696 | Section read | The **single** `### 2.x` for the current genre (`### 2.1`…`### 2.13`, 13 genres at about 44 lines each); optionally add `## 一、Profile 字段说明`. One genre per book → about 90% saved | #13 |
-| `skills/webnovel-init/references/creativity/selling-points.md` | 687 | Section read | `## 9. 核心卖点定位模板` (skeleton); optionally add  `### 1.3 核心卖点黄金公式`、`## 7. 实战检查清单` | #13 |
-| `references/reading-power-taxonomy.md` | 361 | Section read | As needed, read  `## 一、钩子类型` / `## 二、爽点模式` / `## 三、即时满足/微兑现` | #13 |
-| `skills/webnovel-plan/references/outlining/chapter-planning.md` | 322 | Section read | `## 10. 结构化节点规范（CBN/CPNs/CEN）` (L299 to EOF); when a template is needed, add  `## 7. 章节规划模板` | #13 |
-| `skills/webnovel-init/references/creativity/creativity-constraints.md` | 327 | Section read | For score display, read  `### 8.1 五维评分` (L262, about 10 lines); for idea collection, read  `## 一、创意包 Schema (Idea Package)` / `## 六、硬约束驱动创意 (Hard Constraints)` / `## 八、评分系统 (Scoring System)` | #13 |
-| `skills/webnovel-write/references/polish-guide.md` | 351 | Section read | Main path `## 2. 执行顺序（必须按序）`; separate Anti-AI vocabulary section  `## 98:Phase 1 增补：Anti-AI 规范` (also `## 2A. Anti-AI 检测细则`). **Must not be itemized into CSV (hard boundary in csv/README)** | #13 |
-| `references/shared/cool-points-guide.md` | 313 | Section read | Required payoff-dimension section; for genre adaptation use  `## 九、题材适配` (L194), selecting the relevant genre | #13 |
+| `references/genre-profiles.md` | 696 | Section read | The **single** `### 2.x` for the current genre (`### 2.1`…`### 2.13`, 13 genres at about 44 lines each); optionally add `## one、Profile fielddescription`. One genre per book → about 90% saved | #13 |
+| `skills/webnovel-init/references/creativity/selling-points.md` | 687 | Section read | `## 9. coreselling-point positioning template` (skeleton); optionally add  `### 1.3 corecore selling-point formula`、`## 7. practical checklist` | #13 |
+| `references/reading-power-taxonomy.md` | 361 | Section read | As needed, read  `## one、hook type` / `## two、payoffpattern` / `## three、immediate gratification/micro-payoff` | #13 |
+| `skills/webnovel-plan/references/outlining/chapter-planning.md` | 322 | Section read | `## 10. structurenode specification（CBN/CPNs/CEN）` (L299 to EOF); when a template is needed, add  `## 7. chapterplanning template` | #13 |
+| `skills/webnovel-init/references/creativity/creativity-constraints.md` | 327 | Section read | For score display, read  `### 8.1 five-dimensional scoring` (L262, about 10 lines); for idea collection, read  `## one、idea package Schema (Idea Package)` / `## six、creativity driven by hard constraints (Hard Constraints)` / `## eight、scoring system (Scoring System)` | #13 |
+| `skills/webnovel-write/references/polish-guide.md` | 351 | Section read | Main path `## 2. execution order（must run in order）`; separate Anti-AI vocabulary section  `## 98:Phase 1 addendum：Anti-AI specification` (also `## 2A. Anti-AI detailed detection rules`). **Must not be itemized into CSV (hard boundary in csv/README)** | #13 |
+| `references/shared/cool-points-guide.md` | 313 | Section read | Required payoff-dimension section; for genre adaptation use  `## nine、genreadaptation` (L194), selecting the relevant genre | #13 |
 
 > Section-read technique: use `Grep` content output matching `^#{1,4} ` to get anchor line numbers, then `Read` with offset/limit. Both are built into Claude Code and platform-independent.
 
@@ -60,8 +60,8 @@ Criteria: ≤ ~150 lines and requiring whole-document understanding → full rea
 | `skills/webnovel-init/references/creativity/anti-trope-urban.md` | 169 | Section read (on demand) | Triggered only for urban genre | #10 |
 | `skills/webnovel-init/references/creativity/anti-trope-xianxia.md` | 159 | Section read (on demand) | Triggered only for xianxia genre | #10 |
 | **webnovel-plan** | | | | |
-| `templates/output/大纲-卷节拍表.md` | 38 | Full read | — Template; must be applied as a whole | #11 |
-| `templates/output/大纲-卷时间线.md` | 51 | Full read | — Template; must be applied as a whole | #11 |
+| `templates/output/outlines-volume-beats.md` | 38 | Full read | — Template; must be applied as a whole | #11 |
+| `templates/output/outlines-volume-timeline.md` | 51 | Full read | — Template; must be applied as a whole | #11 |
 | `references/shared/strand-weave-pattern.md` | 111 | Full read | — Plan §6.2.2 explicitly keeps full reads for short files | #11 |
 | `references/outlining/plot-signal-vs-spoiler.md` | 53 | Full read | — | #11 |
 | `skills/webnovel-plan/references/outlining/conflict-design.md` | 277 | Section read | Triggered only when conflict guidance is needed; select the relevant conflict-type subsection | #11 |
@@ -86,11 +86,11 @@ Plan §6.2.1 explicitly says the CSV pipeline is already correct and should not 
 
 | Data source | Reading method | Invocation | Notes |
 |---|---|---|---|
-| `references/csv/场景写法.csv` | Retrieval read | `reference_search.py --table 场景写法 --query ... --genre ...` | write Step2 combat/confrontation/plot beats; replaces retired Markdown such as combat-scenes |
-| `references/csv/写作技法.csv` | Retrieval read | `reference_search.py --table 写作技法 --query ...` | write Step2 dialogue/emotion; replaces dialogue-writing / emotion-psychology |
-| `references/csv/题材与调性推理.csv`、`裁决规则.csv` and 8 tables in total | Retrieval read (indirect) | `story-system` internal `_route()` / `_collect_tables()` / `_load_reasoning()` | init/write consume indirectly through story-system; already on demand |
+| `references/csv/scenes.csv` | Retrieval read | `reference_search.py --table scenes --query ... --genre ...` | write Step2 combat/confrontation/plot beats; replaces retired Markdown such as combat-scenes |
+| `references/csv/techniques.csv` | Retrieval read | `reference_search.py --table techniques --query ...` | write Step2 dialogue/emotion; replaces dialogue-writing / emotion-psychology |
+| `references/csv/genre-routing.csv`、`adjudication.csv` and 8 tables in total | Retrieval read (indirect) | `story-system` internal `_route()` / `_collect_tables()` / `_load_reasoning()` | init/write consume indirectly through story-system; already on demand |
 
-> Existing CSVs: `裁决规则 / 场景写法 / 金手指与设定 / 命名规则 / 桥段套路 / 人设与关系 / 爽点与节奏 / 题材与调性推理 / 写作技法` (9 tables)+ `genre-canonical.md` + `README.md`。
+> Existing CSVs: `adjudication / scenes / powers / naming / tropes / characters / pacing / genre-routing / techniques` (9 tables)+ `genre-canonical.md` + `README.md`。
 
 ### A.4 Do Not Read (Phase 4 Cleanup Candidates → Task #14)
 
@@ -98,10 +98,10 @@ Items not currently called directly in the loading-map, plus writing/* migration
 
 | File | Measured lines | Current state / CSV replacement | Assigned task |
 |---|---|---|---|
-| `skills/webnovel-write/references/writing/combat-scenes.md` | 229 | Combat triggers now use `场景写法.csv`; not directly Read | #14 |
-| `skills/webnovel-write/references/writing/dialogue-writing.md` | 231 | Dialogue triggers now use `写作技法.csv` | #14 |
-| `skills/webnovel-write/references/writing/emotion-psychology.md` | 265 | Emotion triggers now use `写作技法.csv` | #14 |
-| `skills/webnovel-write/references/writing/scene-description.md` | 263 | Named in Plan §6.2.3; not directly Read; verify `场景写法.csv` coverage before cleanup | #14 |
+| `skills/webnovel-write/references/writing/combat-scenes.md` | 229 | Combat triggers now use `scenes.csv`; not directly Read | #14 |
+| `skills/webnovel-write/references/writing/dialogue-writing.md` | 231 | Dialogue triggers now use `techniques.csv` | #14 |
+| `skills/webnovel-write/references/writing/emotion-psychology.md` | 265 | Emotion triggers now use `techniques.csv` | #14 |
+| `skills/webnovel-write/references/writing/scene-description.md` | 263 | Named in Plan §6.2.3; not directly Read; verify `scenes.csv` coverage before cleanup | #14 |
 | `skills/webnovel-write/references/writing/desire-description.md` | 311 | Same as above; verify CSV coverage before cleanup | #14 |
 | `skills/webnovel-write/references/writing/genre-hook-payoff-library.md` | 85 | Named in Plan §6.2.3; not directly Read; verify CSV coverage before cleanup | #14 |
 | `skills/webnovel-write/references/style-variants.md` | 38 | Not directly called | #14 |
@@ -117,13 +117,13 @@ All 7 target anchors were verified with Grep `^#{1,4} ` to **exist**. None are m
 
 | File | Wording in the Plan | Actual heading (match this for section reads) |
 |---|---|---|
-| genre-profiles | 「一、字段说明」 | `## 一、Profile 字段说明` |
-| reading-power-taxonomy | 「## 一 钩子类型 / ## 二 爽点模式 / ## 三 微兑现」 | `## 一、钩子类型` / `## 二、爽点模式` / `## 三、即时满足/微兑现` |
-| selling-points | 「### 1.3」「## 7」「## 9」 | `### 1.3 核心卖点黄金公式` / `## 7. 实战检查清单` / `## 9. 核心卖点定位模板` |
-| chapter-planning | 「## 10 …」「## 7」 | `## 10. 结构化节点规范（CBN/CPNs/CEN）` / `## 7. 章节规划模板` |
-| creativity-constraints | 「### 8.1」「一 Schema / 六 硬约束 / 八 评分」 | `### 8.1 五维评分` / `## 一、创意包 Schema (Idea Package)` / `## 六、硬约束驱动创意 (Hard Constraints)` / `## 八、评分系统 (Scoring System)` |
-| polish-guide | 「## 2 执行顺序」「Anti-AI 词库段」 | `## 2. 执行顺序（必须按序）` / `## 98:Phase 1 增补：Anti-AI 规范` (also `## 2A. Anti-AI 检测细则`) |
-| cool-points-guide | 「## 九 题材适配」 | `## 九、题材适配` |
+| genre-profiles | 「one、fielddescription」 | `## one、Profile fielddescription` |
+| reading-power-taxonomy | 「## one hook type / ## two payoffpattern / ## three micro-payoff」 | `## one、hook type` / `## two、payoffpattern` / `## three、immediate gratification/micro-payoff` |
+| selling-points | 「### 1.3」「## 7」「## 9」 | `### 1.3 corecore selling-point formula` / `## 7. practical checklist` / `## 9. coreselling-point positioning template` |
+| chapter-planning | 「## 10 …」「## 7」 | `## 10. structurenode specification（CBN/CPNs/CEN）` / `## 7. chapterplanning template` |
+| creativity-constraints | 「### 8.1」「one Schema / six hard constraints / eight score」 | `### 8.1 five-dimensional scoring` / `## one、idea package Schema (Idea Package)` / `## six、creativity driven by hard constraints (Hard Constraints)` / `## eight、scoring system (Scoring System)` |
+| polish-guide | 「## 2 execution order」「Anti-AI vocabulary section」 | `## 2. execution order（must run in order）` / `## 98:Phase 1 addendum：Anti-AI specification` (also `## 2A. Anti-AI detailed detection rules`) |
+| cool-points-guide | 「## nine genreadaptation」 | `## nine、genreadaptation` |
 
 **FLAG: No missing anchors.** The only caveat: the Plan removes the Chinese enumeration delimiter `、` and shortens headings, so literal `Grep` can miss them. Phase 4 section reads and loading-map entries must use the actual headings in the right-hand column.
 

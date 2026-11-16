@@ -25,7 +25,7 @@ The actual work is:
 
 Keep these positions throughout:
 
-- **Tests are probes, not constraints.** Slimming will break wording assertions such as `assert "字符串" in text`. Those assertions themselves are noise to remove. If they protect a real red line, replace them with behavior assertions at the producing layer rather than retaining redundant prose to pass tests.
+- **Tests are probes, not constraints.** Slimming will break wording assertions such as `assert "string" in text`. Those assertions themselves are noise to remove. If they protect a real red line, replace them with behavior assertions at the producing layer rather than retaining redundant prose to pass tests.
 - **Do not remove Section 3's end-to-end workflow.** Formatting, slimming, moving references, compressing schemas, or changing read modes must not remove business steps. Section 3 supplies red lines; Section 4 supplies pruning criteria. They do not conflict.
 - **Use Claude Code's actual capabilities, neither invented nor excessively defensive.** This plan targets Claude Code, not a temporary chat shell, another agent environment, or remembered obsolete tool names. Design around official built-ins (`Read` offset/limit, `Grep`, `Glob`, `Agent`, `Skill`, `AskUserQuestion`, `Write`, `Edit`) and Bash, without hard dependencies on `sed` / `jq`. PowerShell is only an explicitly Windows-only fallback, with compatibility risks recorded. Preserve official behavior: subagents cannot spawn subagents; `tools` is a subagent allowlist; `skills` preloads entire Skills; Skill `allowed-tools` grants preapproval rather than restricting availability. Phase 0 verifies the current Claude Code version, actual registered names, local plugin-dev frontmatter compliance, and enabled tools in this repository.
 
@@ -78,7 +78,7 @@ Every Skill / Agent rewrite must preserve:
 - Before new-project creation, `/webnovel-init` must not use `where` to resolve the workspace to an old project. Derive the target from a sanitized book title.
 - `.story-system/` is the main-chain source of truth for pre-writing contracts and post-writing commits.
 - `.webnovel/state.json` remains a compatibility projection/read model, not a post-writing fact source.
-- Chapter-level `story-system` queries come from the actual detailed-outline goal, never `{章纲目标}`, `第N章章纲目标`, or other placeholders.
+- Chapter-level `story-system` queries come from the actual detailed-outline goal, never `{chapter-outlinegoal}`, `Chapter Nchapter-outlinegoal`, or other placeholders.
 - Concrete chapter writing/review/contract refresh must generate or verify `.story-system/MASTER_SETTING.json`, `.story-system/volumes/`, `.story-system/chapters/`, `.story-system/reviews/`.
 - Preserve all three `write-gate` stages: prewrite, precommit, postcommit.
 - Explicitly invoke subagents with `Agent`; the main workflow cannot verbally substitute for `context-agent`, `reviewer`, `data-agent`, or `deconstruction-agent` outputs.
@@ -97,7 +97,7 @@ Init is not merely collection. Preserve generation end to end:
 3. Load minimal references: data flow, genre tropes, genre profile. Load others as needed.
 4. Ask about inspiration before story-core collection. Reference-book analysis is optional, not automatic.
 5. If the user provides reference text/path/excerpt, invoke `webnovel-writer:deconstruction-agent`; no main-flow substitute.
-6. The deconstruction agent returns only `init_reference_research`, writes nothing, and creates no `.story-system`, `.webnovel`, `设定集`, `大纲`, `正文`, canon, or read model.
+6. The deconstruction agent returns only `init_reference_research`, writes nothing, and creates no `.story-system`, `.webnovel`, `settings`, `outlines`, `chapters`, canon, or read model.
 7. Consume only transferable patterns and differentiation requirements. With `quality.passed=false`, `confidence < 0.85`, or warnings, do not incorporate them into the creative-constraint package; show risks and obtain user confirmation.
 8. Steps 2-6 use only user-approved patterns transformed into this book's differentiated expression.
 9. Collect story core, characters, special advantage, worldbuilding, power rules, and creative constraints.
@@ -105,7 +105,7 @@ Init is not merely collection. Preserve generation end to end:
 11. Sanitize the title into `PROJECT_SLUG` and `PROJECT_ROOT`; show `WORKSPACE_ROOT`, `PROJECT_SLUG`, `PROJECT_ROOT`; confirm before writing.
 12. Run `webnovel.py init`.
 13. Write only final approved creative constraints into `.webnovel/idea_bank.json`.
-14. Patch `大纲/总纲.md` with one-line premise, main/hidden plots, creative constraints, antagonist tiers, payoff milestones.
+14. Patch `outlines/master-outline.md` with one-line premise, main/hidden plots, creative constraints, antagonist tiers, payoff milestones.
 15. Immediately generate the MASTER contract after init:
 
 ```bash
@@ -115,7 +115,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
 
 Do not pass `--chapter` here; generate only `MASTER_SETTING.json` and `anti_patterns.json`.
 
-16. Validate `state.json`, core setting files, `大纲/总纲.md`, `idea_bank.json`, `.story-system/MASTER_SETTING.json`.
+16. Validate `state.json`, core setting files, `outlines/master-outline.md`, `idea_bank.json`, `.story-system/MASTER_SETTING.json`.
 17. Recover by filling missing fields/rerunning minimal steps, not repeating the entire interview.
 
 ### 3.3 Complete `/webnovel-plan` Workflow
@@ -124,7 +124,7 @@ Plan is not only chapter outlining. Preserve the bridge from planning to writing
 
 1. Resolve the actual root; run `placeholder-scan`.
 2. Read genre from the initialization snapshot in `.webnovel/state.json`; `.story-system/` remains writing authority.
-3. Read `大纲/总纲.md`; verify volume title, chapter range, core conflict, final climax. Block if insufficient.
+3. Read `outlines/master-outline.md`; verify volume title, chapter range, core conflict, final climax. Block if insufficient.
 4. For cross-volume planning, read recent summaries, core-character states, core relationships, active foreshadowing.
 5. Complete the setting baseline: world, power system, protagonist card, antagonist design. Block on conflicts.
 6. Select the target volume and confirm scope.
@@ -133,10 +133,10 @@ Plan is not only chapter outlining. Preserve the bridge from planning to writing
 9. Generate volume-outline skeleton: summary, cast/antagonist tiers, Strand, payoffs, foreshadowing, constraint triggers.
 10. Batch chapter outlines: default 10/batch, 8 for complex genres, preferably no more than 12.
 11. Each chapter includes goal, resistance, cost, time anchor, duration, gap since previous chapter, countdown, payoff, Strand, antagonist tier, POV/protagonist, key entities, change, unresolved ending question, hook.
-12. Preserve structured nodes: `CBN`, `CPNs`, `CEN`, `必须覆盖节点`, `本章禁区`.
+12. Preserve structured nodes: `CBN`, `CPNs`, `CEN`, `Must-cover nodes`, `Chapter prohibitions`.
 13. Write new settings incrementally into existing setting files only.
 14. Validate beat sheet, timeline, detailed outline, time fields, countdown, BLOCKER, node continuity.
-15. Generate explicit structured writeback file `大纲/第{volume_id}卷-总纲写回.json`.
+15. Generate explicit structured writeback file `outlines/Volume {volume_id}-master-outlinewriteback.json`.
 16. Call `master-outline-sync`; update only V+1 anchors and explicit foreshadowing/open loops, never infer from free text.
 17. Call `update-state -- --volume-planned ... --chapters-range ...`.
 18. Once planning reaches concrete chapters, refresh runtime contracts with the actual chapter goal:
@@ -147,7 +147,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
   --persist --emit-runtime-contracts --format both
 ```
 
-Before writing, no current-chapter entity may retain `[待...]`, `暂名`, or `{占位}`.
+Before writing, no current-chapter entity may retain `[TODO...]`, `temporary name`, or `{placeholder}`.
 
 ### 3.4 Complete `/webnovel-write` Workflow
 
@@ -205,7 +205,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rev
   --chapter {chapter_num} \
   --review-results "${PROJECT_ROOT}/.webnovel/tmp/review_results.json" \
   --metrics-out "${PROJECT_ROOT}/.webnovel/tmp/review_metrics.json" \
-  --report-file "审查报告/第{chapter_num}章审查报告.md" \
+  --report-file "reviews/Chapter {chapter_num}reviews.md" \
   --save-metrics
 ```
 
@@ -496,9 +496,9 @@ Do not merely say "produce a file." Name its sole writer and check this matrix w
 | Artifact/path | Sole writer | Other layers |
 |---|---|---|
 | New project directory, base `.webnovel/`, setting scaffold | `webnovel.py init` | Init Skill collects, confirms, invokes |
-| `.webnovel/idea_bank.json`, initial `大纲/总纲.md` patch | Init main flow | Deconstruction agent never writes canon; runtime validates |
+| `.webnovel/idea_bank.json`, initial `outlines/master-outline.md` patch | Init main flow | Deconstruction agent never writes canon; runtime validates |
 | `.story-system/MASTER_SETTING.json`, volume/chapter contracts | `story-system --persist` | Skills/Agents never handwrite contract JSON |
-| `正文/第{chapter}章-*.md` | Write main flow Steps 2/4 | Context agent returns brief; reviewer/data-agent do not edit prose |
+| `chapters/Chapter {chapter}-*.md` | Write main flow Steps 2/4 | Context agent returns brief; reviewer/data-agent do not edit prose |
 | `.webnovel/tmp/review_results.json` | Default write/review main flow saves returned reviewer JSON | Reviewer returns strict JSON; direct reviewer writing requires Write and removal of main-flow write |
 | `.webnovel/tmp/review_metrics.json`, report, `review_metrics` table | `review-pipeline --save-metrics` | Main flow calls only; reviewer writes neither metrics nor report |
 | `.webnovel/tmp/fulfillment_result.json`, `disambiguation_result.json`, `extraction_result.json` | Data-agent | Main flow checks existence/schema, never rewrites |
@@ -610,7 +610,7 @@ Keep short files, such as 111-line `references/shared/strand-weave-pattern.md`, 
 
 Migration of `skills/webnovel-write/references/writing/*.md → CSV` in `reference-gap-register.md` is partly complete. The loading map lists combat-scenes, dialogue-writing, emotion-psychology, scene-description, desire-description, and genre-hook-payoff-library as no longer directly read, with CSV handling triggers. Files remain, approximately 1,400 lines of dead content. Procedure:
 
-1. Check whether `场景写法.csv` / `写作技法.csv` genuinely covers each candidate; do not blindly delete.
+1. Check whether `scenes.csv` / `techniques.csv` genuinely covers each candidate; do not blindly delete.
 2. If covered, delete or retain a CSV pointer stub.
 3. If not, manually add missing entries under `csv/README.md` migration rules before retiring Markdown.
 
@@ -842,7 +842,7 @@ Compression:
 - Replace long reference tables with stage-triggered reading.
 - Move structured-node examples out of main text.
 
-Never remove placeholder-scan; cross-volume state; setting baseline; beat sheet; timeline; volume outline; batch chapter outlines; setting writeback; explicit `大纲/第{volume_id}卷-总纲写回.json`; master-outline-sync; update-state; actual CHAPTER_GOAL contract refresh.
+Never remove placeholder-scan; cross-volume state; setting baseline; beat sheet; timeline; volume outline; batch chapter outlines; setting writeback; explicit `outlines/Volume {volume_id}-master-outlinewriteback.json`; master-outline-sync; update-state; actual CHAPTER_GOAL contract refresh.
 
 ### 10.3 `webnovel-review`
 
@@ -898,7 +898,7 @@ The original plan proposes a concise Chinese trigger-oriented frontmatter descri
 
 ### 12.2 Acceptance: Behavior/Contracts, Not Wording
 
-Assert correct actions, not the presence of particular strings. `fast.json`'s `commit_projection_runtime`, which actually runs commit→projection and checks state, is the model. Gradually retire `assert "字符串" in text`.
+Assert correct actions, not the presence of particular strings. `fast.json`'s `commit_projection_runtime`, which actually runs commit→projection and checks state, is the model. Gradually retire `assert "string" in text`.
 
 #### Required Behaviors
 
@@ -917,7 +917,7 @@ Assert correct actions, not the presence of particular strings. `fast.json`'s `c
 | `test_webnovel_write_data_agent_prompt_requires_extraction_schema` | Requires schema fields verbatim in main Skill, violating ownership | **Delete**; protect in data-agent schema and negative precommit tests |
 | Field list in `test_data_agent_is_described_as_extraction_only...` | Wording-level field presence | Strengthen into contract validation of data-agent's single-file schema |
 | `test_agent_template_structure` requiring sections 1-8 | Forces filler; removing ReAct causes false failures | **Relax**: renumber/reduce required sections; no empty filler |
-| Wording-bound `assert "字符串" in SKILL.md` | Obstructs slimming | Replace with behavior/contracts or move to producer |
+| Wording-bound `assert "string" in SKILL.md` | Obstructs slimming | Replace with behavior/contracts or move to producer |
 
 ### 12.3 Commands
 

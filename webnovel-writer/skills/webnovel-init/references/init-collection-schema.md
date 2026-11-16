@@ -19,7 +19,7 @@
     "desire": "",
     "flaw": "",
     "archetype": "",
-    "structure": "单主角"
+    "structure": "single"
   },
   "relationship": {
     "heroine_config": "",
@@ -71,4 +71,4 @@
 | `world.*` | Step 5 | World scale, power system, factions, social classes, currency, and realm chain |
 | `constraints.*` | Step 6 | Anti-trope, hard constraints, core selling points, and opening hook |
 
-Required fields are governed by the sufficiency gate in SKILL.md; optional fields may be left empty or set to “none”. The runtime value `单主角` means “single protagonist”.
+Required fields are governed by the sufficiency gate in SKILL.md; optional fields may be left empty or set to “none”. The runtime value `single` means “single protagonist”.

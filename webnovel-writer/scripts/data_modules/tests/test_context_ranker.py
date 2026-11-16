@@ -10,9 +10,9 @@ def test_rank_recent_summaries_prefers_recency_and_hook(tmp_path):
     ranker = ContextRanker(cfg)
 
     items = [
-        {"chapter": 8, "summary": "平稳推进"},
-        {"chapter": 9, "summary": "最后留下悬念？"},
-        {"chapter": 7, "summary": "老信息"},
+        {"chapter": 8, "summary": "Steady progress"},
+        {"chapter": 9, "summary": "Leave a mystery at the end？"},
+        {"chapter": 7, "summary": "Old information"},
     ]
 
     ranked = ranker.rank_recent_summaries(items, current_chapter=10)

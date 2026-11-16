@@ -50,8 +50,8 @@ def _create_dashboard_client(monkeypatch, project_root: Path) -> TestClient:
 def _write_state(project_root: Path) -> None:
     state = {
         "project_info": {
-            "title": "像素写手测试书",
-            "genre": "玄幻",
+            "title": "Pixel Writer Test Novel",
+            "genre": "xuanhuan",
             "target_words": 1000000,
             "target_chapters": 300,
         },
@@ -65,9 +65,9 @@ def _write_state(project_root: Path) -> None:
             ],
         },
         "protagonist_state": {
-            "name": "林长青",
-            "power": {"realm": "筑基"},
-            "location": {"current": "青元宗"},
+            "name": "Lin Changqing",
+            "power": {"realm": "foundation-establishment"},
+            "location": {"current": "Azure Origin Sect"},
         },
         "strand_tracker": {
             "current_dominant": "constellation",
@@ -80,23 +80,23 @@ def _write_state(project_root: Path) -> None:
         "plot_threads": {
             "foreshadowing": [
                 {
-                    "content": "青元秘境钥匙碎片",
-                    "status": "未回收",
-                    "tier": "核心",
+                    "content": "Azure Realm key fragment",
+                    "status": "unresolved",
+                    "tier": "core",
                     "planted_chapter": 1,
                     "target_chapter": 2,
                 },
                 {
-                    "content": "凤灵儿真实身份",
-                    "status": "未回收",
-                    "tier": "支线",
+                    "content": "Feng Ling'er's true identity",
+                    "status": "unresolved",
+                    "tier": "subplot",
                     "planted_chapter": 2,
                     "target_chapter": 6,
                 },
                 {
-                    "content": "第一卷残图",
-                    "status": "已回收",
-                    "tier": "装饰",
+                    "content": "Volume One Map Fragment",
+                    "status": "resolved",
+                    "tier": "decorative",
                     "planted_chapter": 1,
                     "target_chapter": 3,
                     "resolved_chapter": 3,
@@ -104,9 +104,9 @@ def _write_state(project_root: Path) -> None:
             ]
         },
         "chapter_meta": {
-            "0001": {"summary": "第一章概要"},
-            "0002": {"summary": "第二章概要"},
-            "0003": {"summary": "第三章概要"},
+            "0001": {"summary": "Chapter 1 outline"},
+            "0002": {"summary": "Chapter 2 outline"},
+            "0003": {"summary": "Chapter 3 outline"},
         },
     }
     webnovel_dir = project_root / ".webnovel"
@@ -126,56 +126,56 @@ def _build_project_data(project_root: Path) -> None:
     index.add_chapter(
         ChapterMeta(
             chapter=1,
-            title="初入山门",
-            location="青元宗",
+            title="First Arrival at the Sect",
+            location="Azure Origin Sect",
             word_count=3000,
             characters=["lintian"],
-            summary="第一章概要",
+            summary="Chapter 1 outline",
         )
     )
     index.add_chapter(
         ChapterMeta(
             chapter=2,
-            title="秘境异动",
-            location="青元秘境",
+            title="Hidden Realm Disturbance",
+            location="Azure Realm",
             word_count=3100,
             characters=["lintian", "fenglinger"],
-            summary="第二章概要",
+            summary="Chapter 2 outline",
         )
     )
     index.add_chapter(
         ChapterMeta(
             chapter=3,
-            title="夜探黑市",
-            location="黑市",
+            title="Night Visit to the Black Market",
+            location="black-market",
             word_count=3200,
             characters=["lintian", "heishifanzi"],
-            summary="第三章概要",
+            summary="Chapter 3 outline",
         )
     )
 
     index.save_chapter_reading_power(
         ChapterReadingPowerMeta(
             chapter=1,
-            hook_type="悬念钩",
+            hook_type="mystery",
             hook_strength="weak",
-            coolpoint_patterns=["身份伏笔"],
+            coolpoint_patterns=["Identity foreshadowing"],
         )
     )
     index.save_chapter_reading_power(
         ChapterReadingPowerMeta(
             chapter=2,
-            hook_type="反转钩",
+            hook_type="reversal",
             hook_strength="medium",
-            coolpoint_patterns=["秘境反转"],
+            coolpoint_patterns=["Hidden Realm Reversal"],
         )
     )
     index.save_chapter_reading_power(
         ChapterReadingPowerMeta(
             chapter=3,
-            hook_type="追杀钩",
+            hook_type="pursuit",
             hook_strength="strong",
-            coolpoint_patterns=["黑市追杀"],
+            coolpoint_patterns=["Black Market Pursuit"],
         )
     )
 
@@ -213,8 +213,8 @@ def _build_project_data(project_root: Path) -> None:
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "玄幻升级流"},
-                "master_constraints": {"core_tone": "先压后爆"},
+                "route": {"primary_genre": "xuanhuan progression"},
+                "master_constraints": {"core_tone": "Suppress then erupt"},
             },
             ensure_ascii=False,
             indent=2,
@@ -231,14 +231,14 @@ def _build_project_data(project_root: Path) -> None:
     )
     (story_root / "chapters" / "chapter_003.json").write_text(
         json.dumps(
-            {"meta": {"contract_type": "CHAPTER_BRIEF", "chapter": 3}, "override_allowed": {"chapter_focus": "夜探黑市"}},
+            {"meta": {"contract_type": "CHAPTER_BRIEF", "chapter": 3}, "override_allowed": {"chapter_focus": "Night Visit to the Black Market"}},
             ensure_ascii=False,
         ),
         encoding="utf-8",
     )
     (story_root / "reviews" / "chapter_003.review.json").write_text(
         json.dumps(
-            {"meta": {"contract_type": "REVIEW_CONTRACT", "chapter": 3}, "must_check": ["黑市冲突"]},
+            {"meta": {"contract_type": "REVIEW_CONTRACT", "chapter": 3}, "must_check": ["Black Market Conflict"]},
             ensure_ascii=False,
         ),
         encoding="utf-8",
@@ -299,7 +299,7 @@ def _build_project_data(project_root: Path) -> None:
         conn.execute(
             """
             INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding, parent_chunk_id, chunk_type, source_file)
-            VALUES ('ch0003_s1', 3, 1, '黑市线索', X'00', NULL, 'scene', '正文/第0003章.md')
+            VALUES ('ch0003_s1', 3, 1, 'Black Market Clues', X'00', NULL, 'scene', 'chapters/chapter-0003.md')
             """
         )
         conn.commit()
@@ -405,8 +405,8 @@ def test_dashboard_commits_and_contract_summary_endpoints(monkeypatch, tmp_path)
     contracts_payload = contracts_response.json()
     assert contracts_payload["chapter"] == 3
     assert contracts_payload["current_volume"] == 2
-    assert contracts_payload["master"]["primary_genre"] == "玄幻升级流"
-    assert contracts_payload["master"]["core_tone"] == "先压后爆"
+    assert contracts_payload["master"]["primary_genre"] == "xuanhuan progression"
+    assert contracts_payload["master"]["core_tone"] == "Suppress then erupt"
     assert contracts_payload["counts"]["volumes"] == 2
     assert contracts_payload["counts"]["chapters"] == 1
     assert contracts_payload["counts"]["reviews"] == 1

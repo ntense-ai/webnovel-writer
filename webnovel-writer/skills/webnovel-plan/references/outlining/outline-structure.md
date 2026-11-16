@@ -137,7 +137,7 @@ outlines/
 ├── volume-2-outline.md
 └── outline-change-log.md   # Optional manual change log
 ```
-**Strength**: plain text, easy version control and search. New projects use English paths. For existing projects, resolve the actual paths before reading or writing; retain legacy filenames.
+**Strength**: plain text, easy version control and search. New projects use English paths. Resolve the English project paths before reading or writing. Old project layouts are not supported.
 
 ### Tool B: Mind map (XMind/MindNode)
 ```

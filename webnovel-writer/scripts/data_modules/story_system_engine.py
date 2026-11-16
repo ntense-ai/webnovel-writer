@@ -19,18 +19,18 @@ from .story_contracts import merge_anti_patterns
 
 
 ANTI_PATTERN_SOURCE_FIELDS = {
-    "场景写法": ["毒点"],
-    "写作技法": ["毒点"],
-    "爽点与节奏": ["毒点"],
-    "人设与关系": ["毒点"],
-    "桥段套路": ["毒点"],
-    "题材与调性推理": ["毒点"],
-    "命名规则": ["毒点"],
-    "金手指与设定": ["毒点"],
+    "scenes": ["pitfalls"],
+    "techniques": ["pitfalls"],
+    "pacing": ["pitfalls"],
+    "characters": ["pitfalls"],
+    "tropes": ["pitfalls"],
+    "genre-routing": ["pitfalls"],
+    "naming": ["pitfalls"],
+    "powers": ["pitfalls"],
 }
 
 _TEXT_TOKEN_RE = re.compile(r"[\s|,，、/；;：:（）()【】\[\]<>《》\"'!?！？。…]+")
-_PLACEHOLDER_QUERY_RE = re.compile(r"^\s*(\{[^{}]*章纲目标[^{}]*\}|第\s*\d+\s*章\s*章纲目标)\s*$")
+_PLACEHOLDER_QUERY_RE = re.compile(r"^\s*(\{[^{}]*chapter outline goal[^{}]*\}|Chapter\s*\d+\s*outline goal)\s*$", re.IGNORECASE)
 _ASCII_LETTER_RE = re.compile(r"[A-Za-z]")
 
 
@@ -49,12 +49,6 @@ def _validate_explicit_genre_source(genre: Optional[str]) -> Optional[str]:
     normalized = str(genre or "").strip()
     if not normalized:
         return None
-    if _ASCII_LETTER_RE.search(normalized):
-        raise StorySystemRoutingError(
-            "story-system 题材参数必须使用中文名称，不能使用英文 profile key "
-            f"'{normalized}'。不会生成 .story-system contracts。"
-            "例如：规则怪谈、悬疑、玄幻。"
-        )
     return normalized
 
 
@@ -146,10 +140,10 @@ class StorySystemEngine:
                     "source_trace": source_trace,
                     "reasoning": (
                         {
-                            "genre": reasoning.get("题材", ""),
+                            "genre": reasoning.get("genre", ""),
                             "inject_target": self._reasoning_inject_target(reasoning),
-                            "style_priority": reasoning.get("风格优先级", ""),
-                            "pacing_strategy": reasoning.get("节奏默认策略", ""),
+                            "style_priority": reasoning.get("style_priority", ""),
+                            "pacing_strategy": reasoning.get("default_pacing_strategy", ""),
                         }
                         if reasoning
                         else {}
@@ -162,7 +156,7 @@ class StorySystemEngine:
         }
 
     def _route(self, query: str, genre: Optional[str]) -> Dict[str, Any]:
-        route_rows = self._load_csv_rows("题材与调性推理")
+        route_rows = self._load_csv_rows("genre-routing")
         query_text = self._normalize_text(" ".join([query or "", genre or ""]))
         inferred_canonical = "" if genre else self._infer_genre_from_text(query)
 
@@ -170,9 +164,9 @@ class StorySystemEngine:
         route_source = ""
         for row in route_rows:
             aliases = (
-                self._split_multi_value(row.get("关键词"))
-                + self._split_multi_value(row.get("意图与同义词"))
-                + self._split_multi_value(row.get("题材别名"))
+                self._split_multi_value(row.get("keywords"))
+                + self._split_multi_value(row.get("intent_synonyms"))
+                + self._split_multi_value(row.get("genre_aliases"))
             )
             if any(alias and self._normalize_text(alias) in query_text for alias in aliases):
                 matched = row
@@ -189,45 +183,45 @@ class StorySystemEngine:
         if matched is None:
             raise self._routing_error(query=query, genre=genre, route_rows=route_rows)
 
-        primary_genre = str(matched.get("题材/流派") or genre or "").strip()
+        primary_genre = str(matched.get("genre_route") or genre or "").strip()
         explicit_canonical = self._primary_resolved_genre(genre)
         canonical_genre = str(matched.get("canonical_genre") or "").strip()
         row_canonicals = [
             resolved
-            for raw in self._split_genre_value(matched.get("适用题材"))
+            for raw in self._split_genre_value(matched.get("applicable_genres"))
             for resolved in [resolve_genre(raw) or str(raw or "").strip()]
-            if resolved and resolved != "全部"
+            if resolved and resolved != "all"
         ]
-        if explicit_canonical and explicit_canonical != "全部":
-            if not row_canonicals or explicit_canonical in row_canonicals or canonical_genre in ("", "全部"):
+        if explicit_canonical and explicit_canonical != "all":
+            if not row_canonicals or explicit_canonical in row_canonicals or canonical_genre in ("", "all"):
                 canonical_genre = explicit_canonical
-        elif inferred_canonical and inferred_canonical != "全部":
-            if not row_canonicals or inferred_canonical in row_canonicals or canonical_genre in ("", "全部"):
+        elif inferred_canonical and inferred_canonical != "all":
+            if not row_canonicals or inferred_canonical in row_canonicals or canonical_genre in ("", "all"):
                 canonical_genre = inferred_canonical
         if not canonical_genre:
             resolved_primary = resolve_genre(primary_genre)
             if resolved_primary in GENRE_CANONICAL:
                 canonical_genre = resolved_primary
-            elif explicit_canonical and explicit_canonical != "全部":
+            elif explicit_canonical and explicit_canonical != "all":
                 canonical_genre = explicit_canonical
-        genre_filter = canonical_genre if canonical_genre not in ("", "全部") else ""
+        genre_filter = canonical_genre if canonical_genre not in ("", "all") else ""
         return {
             "meta": {
                 "primary_genre": primary_genre,
                 "canonical_genre": canonical_genre,
                 "route_source": route_source,
                 "genre_filter": genre_filter,
-                "recommended_base_tables": self._split_multi_value(matched.get("推荐基础检索表")),
-                "recommended_dynamic_tables": self._split_multi_value(matched.get("推荐动态检索表")),
+                "recommended_base_tables": self._split_multi_value(matched.get("recommended_base_tables")),
+                "recommended_dynamic_tables": self._split_multi_value(matched.get("recommended_dynamic_tables")),
             },
-            "core_tone": str(matched.get("核心调性") or "").strip(),
-            "pacing_strategy": str(matched.get("节奏策略") or "").strip(),
+            "core_tone": str(matched.get("core_tone") or "").strip(),
+            "pacing_strategy": str(matched.get("pacing_strategy") or "").strip(),
             "route_anti_patterns": self._extract_route_anti_patterns(matched),
-            "recommended_base_tables": self._split_multi_value(matched.get("推荐基础检索表")),
-            "recommended_dynamic_tables": self._split_multi_value(matched.get("推荐动态检索表")),
+            "recommended_base_tables": self._split_multi_value(matched.get("recommended_base_tables")),
+            "recommended_dynamic_tables": self._split_multi_value(matched.get("recommended_dynamic_tables")),
             "genre_filter": genre_filter,
-            "default_query": str(matched.get("默认查询词") or "").strip(),
-            "source_trace": [{"table": "题材与调性推理", "id": matched.get("编号", ""), "reason": route_source}],
+            "default_query": str(matched.get("default_query") or "").strip(),
+            "source_trace": [{"table": "genre-routing", "id": matched.get("id", ""), "reason": route_source}],
         }
 
     def _collect_tables(self, query: str, tables: List[str], genre: str, top_k: int) -> List[Dict[str, Any]]:
@@ -241,16 +235,16 @@ class StorySystemEngine:
                 genre=genre or None,
                 max_results=top_k,
             )
-            raw_rows = {str(row.get("编号") or ""): row for row in self._load_csv_rows(table_name)}
+            raw_rows = {str(row.get("id") or ""): row for row in self._load_csv_rows(table_name)}
             for item in result.get("data", {}).get("results", []):
-                row_id = str(item.get("编号") or "")
+                row_id = str(item.get("id") or "")
                 full_row = dict(raw_rows.get(row_id) or {})
-                full_row["_table"] = str(item.get("表") or table_name)
-                full_row["编号"] = row_id
-                full_row["核心摘要"] = str(
-                    full_row.get("核心摘要")
-                    or item.get("内容摘要")
-                    or item.get("核心摘要")
+                full_row["_table"] = str(item.get("table") or table_name)
+                full_row["id"] = row_id
+                full_row["summary"] = str(
+                    full_row.get("summary")
+                    or item.get("summary")
+                    or item.get("summary")
                     or ""
                 ).strip()
                 rows.append(full_row)
@@ -266,7 +260,7 @@ class StorySystemEngine:
                         {
                             "text": text,
                             "source_table": table_name,
-                            "source_id": row.get("编号", ""),
+                            "source_id": row.get("id", ""),
                         }
                     )
         return extracted
@@ -288,8 +282,8 @@ class StorySystemEngine:
                 trace.append(
                     {
                         "table": row.get("_table", ""),
-                        "id": row.get("编号", ""),
-                        "summary": row.get("核心摘要", ""),
+                        "id": row.get("id", ""),
+                        "summary": row.get("summary", ""),
                     }
                 )
         return trace
@@ -321,7 +315,7 @@ class StorySystemEngine:
     def _primary_resolved_genre(self, raw: Any) -> Optional[str]:
         resolved_values = self._resolve_genre_values(raw)
         for value in resolved_values:
-            if value in GENRE_CANONICAL or value == "全部":
+            if value in GENRE_CANONICAL or value == "all":
                 return value
         return resolved_values[0] if resolved_values else None
 
@@ -354,8 +348,8 @@ class StorySystemEngine:
         }
         for row in rows:
             candidates = (
-                self._split_genre_value(row.get("适用题材"))
-                + self._split_genre_value(row.get("题材/流派"))
+                self._split_genre_value(row.get("applicable_genres"))
+                + self._split_genre_value(row.get("genre_route"))
                 + self._split_genre_value(row.get("canonical_genre"))
             )
             resolved_candidates = {
@@ -384,26 +378,26 @@ class StorySystemEngine:
 
     def _extract_route_anti_patterns(self, row: Dict[str, Any]) -> List[Dict[str, Any]]:
         return [
-            {"text": text, "source_table": "题材与调性推理", "source_id": row.get("编号", "")}
-            for text in self._split_multi_value(row.get("毒点"))
+            {"text": text, "source_table": "genre-routing", "source_id": row.get("id", "")}
+            for text in self._split_multi_value(row.get("pitfalls"))
         ]
 
     # ------------------------------------------------------------------
-    # Reasoning / 裁决 layer
+    # Reasoning / adjudication layer
     # ------------------------------------------------------------------
 
     def _load_reasoning(self, genre: str) -> Dict[str, Any]:
-        """Load matching row from 裁决规则.csv for *genre*."""
-        rows = self._load_csv_rows("裁决规则")
+        "Load the matching adjudication-rules CSV row for genre."
+        rows = self._load_csv_rows("adjudication")
         genre_norm = self._normalize_text(genre)
         if not genre_norm:
             return {}
         for row in rows:
-            if self._normalize_text(row.get("题材")) == genre_norm:
+            if self._normalize_text(row.get("genre")) == genre_norm:
                 return row
             aliases = (
-                self._split_multi_value(row.get("关键词"))
-                + self._split_multi_value(row.get("意图与同义词"))
+                self._split_multi_value(row.get("keywords"))
+                + self._split_multi_value(row.get("intent_synonyms"))
             )
             if any(genre_norm == self._normalize_text(a) for a in aliases):
                 return row
@@ -416,7 +410,7 @@ class StorySystemEngine:
         dynamic_context: List[Dict[str, Any]],
         chapter_directive: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
-        """Rank *base_context* + *dynamic_context* rows using 冲突裁决 priority."""
+        "Rank base_context and dynamic_context rows by conflict-adjudication priority."
         combined = [dict(r) for r in base_context] + [dict(r) for r in dynamic_context]
         chapter_terms = self._chapter_keyword_terms(chapter_directive or {})
         if not reasoning and not chapter_terms:
@@ -424,12 +418,12 @@ class StorySystemEngine:
 
         priority_order = [
             s.strip()
-            for s in str(reasoning.get("冲突裁决") or "").split(">")
+            for s in str(reasoning.get("conflict_resolution") or "").split(">")
             if s.strip()
         ]
         priority_map = {name: idx for idx, name in enumerate(priority_order)}
 
-        genre_label = reasoning.get("题材", "")
+        genre_label = reasoning.get("genre", "")
         ranked_priorities = sorted(priority_map.values())
         max_priority = max(ranked_priorities) if ranked_priorities else 0
         max_chapter_score = 0
@@ -510,7 +504,7 @@ class StorySystemEngine:
             return 0
         haystack = " ".join(
             str(row.get(field) or "")
-            for field in ("关键词", "意图与同义词", "适用场景", "核心摘要", "详细展开")
+            for field in ("keywords", "intent_synonyms", "applicable_scenes", "summary", "details")
         ).lower()
         return sum(1 for term in terms if term and term in haystack)
 
@@ -519,13 +513,13 @@ class StorySystemEngine:
         reasoning: Dict[str, Any],
         anti_patterns: List[Dict[str, Any]],
     ) -> List[Dict[str, Any]]:
-        """Sort *anti_patterns* by 毒点权重 and append reasoning 反模式."""
+        "Sort anti_patterns by pitfall weight and append reasoning anti-patterns."
         if not reasoning:
             return anti_patterns
 
         weight_order = [
             s.strip()
-            for s in str(reasoning.get("毒点权重") or "").split(">")
+            for s in str(reasoning.get("pitfall_weight") or "").split(">")
             if s.strip()
         ]
 
@@ -538,12 +532,12 @@ class StorySystemEngine:
 
         sorted_anti = sorted(anti_patterns, key=_sort_key)
 
-        # Append 反模式 entries from reasoning row
+        # Append anti-pattern entries from the reasoning row
         existing_texts = {str(a.get("text") or "") for a in sorted_anti}
-        for text in self._split_multi_value(reasoning.get("反模式")):
+        for text in self._split_multi_value(reasoning.get("anti_pattern")):
             if text and text not in existing_texts:
                 sorted_anti.append(
-                    {"text": text, "source_table": "裁决规则", "source_id": reasoning.get("编号", "")}
+                    {"text": text, "source_table": "adjudication", "source_id": reasoning.get("id", "")}
                 )
                 existing_texts.add(text)
 
@@ -561,8 +555,8 @@ class StorySystemEngine:
             trace.append(
                 {
                     "table": row.get("_table", ""),
-                    "id": row.get("编号", ""),
-                    "summary": row.get("核心摘要", ""),
+                    "id": row.get("id", ""),
+                    "summary": row.get("summary", ""),
                     "reasoning_rule": row.get("_reasoning_rule", ""),
                     "priority_rank": row.get("_priority_rank", 999),
                     "chapter_keyword_score": row.get("_chapter_keyword_score", 0),
@@ -574,10 +568,10 @@ class StorySystemEngine:
 
     def _reasoning_inject_target(self, reasoning: Dict[str, Any]) -> str:
         if reasoning:
-            explicit = str(reasoning.get("contract注入层") or "").strip()
+            explicit = str(reasoning.get("contract_injection_layer") or "").strip()
             if explicit:
                 return explicit
-        cfg = CSV_CONFIG.get("裁决规则") or {}
+        cfg = CSV_CONFIG.get("adjudication") or {}
         return str(cfg.get("contract_inject") or "")
 
     def _routing_error(
@@ -590,12 +584,12 @@ class StorySystemEngine:
         query_text = str(query or "").strip()
         genre_text = str(genre or "").strip()
         if not route_rows:
-            detail = "题材与调性推理.csv 没有可用路由行"
+            detail = "genre-routing.csv has no available route rows"
         else:
-            detail = f"query={query_text!r}, genre={genre_text!r} 未命中任何路由行"
+            detail = f"no route matched query={query_text!r}, genre={genre_text!r}"
         return StorySystemRoutingError(
-            f"无法匹配 story-system 题材路由：{detail}。"
-            "不会生成 .story-system contracts。"
-            "请使用中文题材/流派（例如：规则怪谈、玄幻、仙侠），"
-            "或先在 题材与调性推理.csv 添加路由行。"
+            f"Cannot match story-system genre-routing: {detail}. "
+            "No .story-system contracts will be generated. "
+            "Use a supported genre (for example rules-horror, xuanhuan, xianxia), "
+            "or add a route row to genre-routing.csv first."
         )

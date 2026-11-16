@@ -73,12 +73,12 @@ For `webnovel-plan` Steps 3/4: set volume pacing first, then allocate at chapter
 
 ```markdown
 ## Volume {volume_id} pacing card
-- Genre: {电竞|直播文|克苏鲁}
-- Main task: {一句话}
+- Genre: {esports|livestream-fiction|cosmic-horror}
+- Main task: {one sentence}
 - Strand proportions: Quest {x}% / Fire {y}% / Constellation {z}%
 - Key milestones:
-  1) {中段事件}
-  2) {卷末事件}
-- Volume payoff: {必须兑现内容}
-- Next-volume hook: {下一卷核心问题}
+  1) {middle sectionevent}
+  2) {volume endingevent}
+- Volume payoff: {required payoff}
+- Next-volume hook: {next volumecorequestion}
 ```

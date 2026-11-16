@@ -26,8 +26,8 @@ def _write_json(path: Path, payload: dict) -> None:
 def _make_project(project_root: Path) -> None:
     (project_root / ".webnovel" / "tmp").mkdir(parents=True, exist_ok=True)
     (project_root / ".story-system" / "commits").mkdir(parents=True, exist_ok=True)
-    (project_root / "正文").mkdir(parents=True, exist_ok=True)
-    _write_json(project_root / ".webnovel" / "state.json", {"project_info": {"title": "测试书"}, "progress": {}})
+    (project_root / "chapters").mkdir(parents=True, exist_ok=True)
+    _write_json(project_root / ".webnovel" / "state.json", {"project_info": {"title": "Test Book"}, "progress": {}})
 
 
 def _commit_payload(status: str = "accepted") -> dict:
@@ -45,8 +45,8 @@ def _commit_payload(status: str = "accepted") -> dict:
 
 def test_run_ledger_records_write_step_status(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    chapter_file = tmp_path / "正文" / "第0001章.md"
-    chapter_file.write_text("正文\n", encoding="utf-8")
+    chapter_file = tmp_path / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters\n", encoding="utf-8")
 
     entry = record_write_step(
         tmp_path,
@@ -63,8 +63,8 @@ def test_run_ledger_records_write_step_status(tmp_path: Path) -> None:
 
 def test_write_resume_skips_completed_draft_and_review(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    chapter_file = tmp_path / "正文" / "第0001章.md"
-    chapter_file.write_text("正文\n", encoding="utf-8")
+    chapter_file = tmp_path / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters\n", encoding="utf-8")
     review_path = tmp_path / ".webnovel" / "tmp" / "review_results.json"
     _write_json(review_path, {"blocking_count": 0})
 
@@ -88,10 +88,10 @@ def test_write_resume_skips_completed_draft_and_review(tmp_path: Path) -> None:
 
 def test_write_resume_rechecks_review_when_chapter_file_changed(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    chapter_file = tmp_path / "正文" / "第0001章.md"
-    chapter_file.write_text("正文 v1\n", encoding="utf-8")
+    chapter_file = tmp_path / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters v1\n", encoding="utf-8")
     record_write_step(tmp_path, chapter=1, step="draft", status="completed", outputs={"chapter_file": chapter_file})
-    chapter_file.write_text("正文 v2\n", encoding="utf-8")
+    chapter_file.write_text("chapters v2\n", encoding="utf-8")
 
     plan = build_write_resume_plan(tmp_path, chapter=1)
 
@@ -103,8 +103,8 @@ def test_write_resume_rechecks_review_when_chapter_file_changed(tmp_path: Path) 
 
 def test_write_resume_retries_backup_after_commit_done(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    chapter_file = tmp_path / "正文" / "第0001章.md"
-    chapter_file.write_text("正文\n", encoding="utf-8")
+    chapter_file = tmp_path / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters\n", encoding="utf-8")
     record_write_step(tmp_path, chapter=1, step="draft", status="completed", outputs={"chapter_file": chapter_file})
     _write_json(tmp_path / ".story-system" / "commits" / "chapter_001.commit.json", _commit_payload("accepted"))
 
@@ -123,8 +123,8 @@ def test_write_resume_retries_backup_after_commit_done(tmp_path: Path) -> None:
 
 def test_write_resume_reruns_commit_after_rejected_commit(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    chapter_file = tmp_path / "正文" / "第0001章.md"
-    chapter_file.write_text("正文\n", encoding="utf-8")
+    chapter_file = tmp_path / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters\n", encoding="utf-8")
     review_path = tmp_path / ".webnovel" / "tmp" / "review_results.json"
     _write_json(review_path, {"blocking_count": 1})
     fulfillment_path = tmp_path / ".webnovel" / "tmp" / "fulfillment_result.json"

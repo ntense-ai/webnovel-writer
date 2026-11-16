@@ -1,17 +1,17 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 提问与交流
+  - name: Questions and discussion
     url: https://github.com/lingfengQAQ/webnovel-writer/discussions
-    about: 使用问题、创作思路或想法交流请到 Discussions，通常不必开 Issue。
-  - name: 文档中心
+    about: Use Discussions for usage questions, writing approaches, and ideas; an issue is usually unnecessary.
+  - name: Documentation hub
     url: https://github.com/lingfengQAQ/webnovel-writer/tree/master/docs
-    about: 提 Issue 前建议先查看文档，确认是否已有说明。
-  - name: 命令详解
+    about: Check the documentation before opening an issue.
+  - name: Command reference
     url: https://github.com/lingfengQAQ/webnovel-writer/blob/master/docs/guides/commands.md
-    about: 查看 Skill 命令、CLI 入口和常见工作流。
-  - name: v8 产品主页与使用教程
+    about: Explore skill commands, CLI entry points, and common workflows.
+  - name: v8 product site and tutorials
     url: https://lingfengqaq.github.io/webnovel-writer/
-    about: DSH Scriptor 的安装、版本、首章流程和排错说明。
-  - name: 私密报告安全漏洞
+    about: DSH Scriptor installation, releases, first-chapter workflow, and troubleshooting.
+  - name: Report a vulnerability privately
     url: https://github.com/lingfengQAQ/webnovel-writer/security/advisories/new
-    about: 不要在公开 Issue 中贴密钥、启动 token 或私人作品。
+    about: Do not post keys, launch tokens, or private work in public issues.

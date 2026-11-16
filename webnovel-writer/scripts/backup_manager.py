@@ -1,50 +1,5 @@
 #!/usr/bin/env python3
-"""
-Git 集成备份管理系统 (Backup Manager with Git)
-
-核心理念：写 200万字必然会"写废设定"，需要支持任意时间点回滚。
-
-🔧 重大升级：使用 Git 进行原子性版本控制
-
-为什么选择 Git：
-1. ✅ 原子性回滚：state.json + 正文/*.md 同时回滚，数据 100% 一致
-2. ✅ 增量存储：只存储 diff，节省 95% 空间
-3. ✅ 成熟稳定：经过 20 年验证的版本控制系统
-4. ✅ 分支管理：天然支持"平行世界"创作
-
-功能：
-1. 自动 Git 提交：每次 /webnovel-write 完成后自动 commit
-2. 原子性回滚：git checkout 同时回滚所有文件
-3. 版本历史：git log 查看完整历史
-4. 差异对比：git diff 查看任意两个版本的差异
-5. 分支创建：git branch 从任意时间点创建分支
-
-使用方式：
-  # 在第 45 章完成后自动备份（自动 git commit）
-  python backup_manager.py --chapter 45
-
-  # 回滚到第 30 章状态（git checkout）
-  python backup_manager.py --rollback 30
-
-  # 查看第 20 章和第 40 章的差异（git diff）
-  python backup_manager.py --diff 20 40
-
-  # 从第 50 章创建分支（git branch）
-  python backup_manager.py --create-branch 50 --branch-name "alternative-ending"
-
-  # 列出所有备份（git log）
-  python backup_manager.py --list
-
-Git 提交规范：
-  - 提交信息格式: "Chapter {N}: {章节标题}"
-  - Tag 格式: "ch{N}" (如 ch0045)
-  - 每个章节对应一个 commit + 一个 tag
-
-数据一致性保证：
-  ✅ 回滚时，state.json 和所有 .md 文件同步回滚
-  ✅ 不会出现"状态记录筑基期，但文件里写着金丹期"的数据撕裂
-  ✅ 原子性操作，要么全部成功，要么全部失败
-"""
+'Git-integrated backup manager.\n\nLong novels inevitably require setting revisions, so support restoring earlier states. Git provides coordinated versions of state.json and chapter Markdown, incremental storage, history, diffs, and branches for alternate storylines.\n\nFeatures: commit after /webnovel-write, restore chapter snapshots, inspect git log and git diff, and branch from earlier chapters.\n\nUsage:\n  python backup_manager.py --chapter 45\n  python backup_manager.py --rollback 30\n  python backup_manager.py --diff 20 40\n  python backup_manager.py --create-branch 50 --branch-name "alternative-ending"\n  python backup_manager.py --list\n\nCommit convention: "Chapter {N}: {chapter_title}"; tag convention: ch{N}, such as ch0045. Each chapter gets a commit and tag. Restoring coordinated state and Markdown avoids inconsistent cultivation levels between state records and chapter text.\n'
 
 import subprocess
 import json
@@ -58,12 +13,12 @@ from datetime import datetime
 from typing import Optional, List, Tuple
 
 # ============================================================================
-# 安全修复：导入安全工具函数（P1 MEDIUM）
+# Security fix: import secure utility functions (P1 MEDIUM).
 # ============================================================================
 from security_utils import sanitize_commit_message, is_git_available, is_git_repo, git_graceful_operation
 from project_locator import resolve_project_root
 
-# Windows 编码兼容性修复
+# Windows encoding compatibility.
 if sys.platform == "win32":
     enable_windows_utf8_stdio()
 
@@ -73,7 +28,7 @@ class BackupError(RuntimeError):
 
 
 class GitBackupManager:
-    """基于 Git 的备份管理器（支持优雅降级）"""
+    'Git-based backup manager with graceful fallback.'
 
     def __init__(self, project_root: str):
         self.project_root = Path(project_root)
@@ -85,14 +40,14 @@ class GitBackupManager:
             print("💡 To enable Git version control, install Git: https://git-scm.com/")
             return
 
-        # 检查 Git 是否初始化
+        # Check whether Git is initialized.
         if not self.git_dir.exists():
             print("⚠️  Git not initialized; run /webnovel-init or git init")
             print("💡 Initializing Git now...")
             self._init_git()
 
     def _init_git(self) -> bool:
-        """初始化 Git 仓库"""
+        'Initialize the Git repository.'
         try:
             # git init
             subprocess.run(
@@ -102,7 +57,7 @@ class GitBackupManager:
                 capture_output=True
             )
 
-            # 创建 .gitignore
+            # Create .gitignore.
             gitignore_file = self.project_root / ".gitignore"
             if not gitignore_file.exists():
                 with open(gitignore_file, 'w', encoding='utf-8') as f:
@@ -130,7 +85,7 @@ __pycache__/
 !.env.example
 """)
 
-            # 初始提交
+            # Initial commit.
             subprocess.run(
                 ["git", "add", "."],
                 cwd=self.project_root,
@@ -153,7 +108,7 @@ __pycache__/
             return False
 
     def _run_git_command(self, args: List[str], check: bool = True) -> Tuple[bool, str, str]:
-        """执行 Git 命令（支持优雅降级）"""
+        'Run a Git command with graceful fallback.'
         if not self.git_available:
             return False, "", "Git unavailable"
 
@@ -182,11 +137,11 @@ __pycache__/
 
     @staticmethod
     def _format_git_output(stdout: str, stderr: str) -> str:
-        """合并 Git 输出，优先保留 stderr 中的故障信息。"""
+        'Combine Git output, preferring diagnostic information from stderr.'
         return "\n".join(part.strip() for part in (stderr, stdout) if part.strip())
 
     def _local_backup(self, chapter_num: int) -> bool:
-        """本地备份（Git 不可用时的降级方案）"""
+        'Create a local backup when Git is unavailable.'
         backup_dir = self.project_root / ".webnovel" / "backups"
         backup_dir.mkdir(parents=True, exist_ok=True)
 
@@ -198,7 +153,7 @@ __pycache__/
             backup_path.mkdir(parents=True, exist_ok=True)
             copied = []
 
-            for folder_name in ("chapters", "outlines", "settings", "reviews", "正文", "大纲", "设定集", "审查报告"):
+            for folder_name in ("chapters", "outlines", "settings", "reviews"):
                 source_dir = self.project_root / folder_name
                 if source_dir.exists():
                     shutil.copytree(source_dir, backup_path / folder_name)
@@ -229,16 +184,10 @@ __pycache__/
             return False
 
     def backup(self, chapter_num: int, chapter_title: str = "") -> bool:
-        """
-        备份当前状态（Git commit + tag，或本地备份）
-
-        Args:
-            chapter_num: 章节号
-            chapter_title: 章节标题（可选）
-        """
+        'Back up the current state using a Git commit/tag or a local copy.\n\nArgs:\n    chapter_num: Chapter number.\n    chapter_title: Optional chapter title.'
         print(f"📝 Backing up chapter {chapter_num}...")
 
-        # 如果 Git 不可用，使用本地备份
+        # Fall back to local backups if Git is unavailable.
         if not self.git_available:
             return self._local_backup(chapter_num)
 
@@ -252,16 +201,16 @@ __pycache__/
         commit_message = f"Chapter {chapter_num}"
         if chapter_title:
             # ============================================================================
-            # 安全修复：清理提交消息，防止命令注入 (CWE-77) - P1 MEDIUM
-            # 原代码: commit_message += f": {chapter_title}"
-            # 漏洞: chapter_title可能包含 Git 标志（如 --author, --amend）导致命令注入
+            # Security fix: sanitize commit messages against command injection (CWE-77), P1 MEDIUM.
+            # Previous code: commit_message += f": {chapter_title}"
+            # Vulnerability: chapter_title could contain Git flags such as --author or --amend.
             # ============================================================================
             safe_chapter_title = sanitize_commit_message(chapter_title)
             commit_message += f": {safe_chapter_title}"
 
         success, stdout, stderr = self._run_git_command(
             ["commit", "-m", commit_message],
-            check=False  # 允许"无变更"的情况
+            check=False  # Allow the no-changes case.
         )
         commit_output = self._format_git_output(stdout, stderr)
 
@@ -280,7 +229,7 @@ __pycache__/
         # Step 3: git tag
         tag_name = f"ch{chapter_num:04d}"
 
-        # 删除旧 tag（如果存在）
+        # Delete the old tag if present.
         self._run_git_command(["tag", "-d", tag_name], check=False)
 
         success, stdout, stderr = self._run_git_command(["tag", tag_name], check=False)
@@ -292,9 +241,7 @@ __pycache__/
         return True
 
     def rollback(self, chapter_num: int) -> bool:
-        """
-        前滚式恢复到指定章节（在当前分支创建恢复提交）
-        """
+        'Restore a chapter snapshot by creating a forward recovery commit on the current branch.'
 
         tag_name = f"ch{chapter_num:04d}"
 
@@ -340,7 +287,7 @@ __pycache__/
         return True
 
     def diff(self, chapter_a: int, chapter_b: int):
-        """对比两个版本的差异（Git diff）"""
+        'Compare two versions with Git diff.'
 
         tag_a = f"ch{chapter_a:04d}"
         tag_b = f"ch{chapter_b:04d}"
@@ -356,7 +303,7 @@ __pycache__/
         print("📈 File change statistics:")
         print(output)
 
-        # 显示 state.json 的详细差异
+        # Display detailed state.json differences.
         print("\n📝 Detailed state.json diff:")
         success, state_diff, _ = self._run_git_command(
             ["diff", tag_a, tag_b, "--", ".webnovel/state.json"],
@@ -364,18 +311,18 @@ __pycache__/
         )
 
         if success and state_diff:
-            print(state_diff[:2000])  # 限制输出长度
+            print(state_diff[:2000])  # Limit output length.
             if len(state_diff) > 2000:
                 print("\n...(output truncated)")
         else:
             print("(no changes)")
 
     def list_backups(self):
-        """列出所有备份（Git log + tags）"""
+        'List backups using Git log and tags.'
 
         print("\n📚 Backups (Git tags):\n")
 
-        # 获取所有 tags
+        # Get all tags.
         success, tags_output, _ = self._run_git_command(["tag", "-l", "ch*"], check=False)
 
         if not success or not tags_output:
@@ -385,10 +332,10 @@ __pycache__/
         tags = sorted(tags_output.strip().split('\n'))
 
         for tag in tags:
-            # 提取章节号
+            # Extract the chapter number.
             chapter_num = int(tag[2:])
 
-            # 获取该 tag 的提交信息
+            # Get this tag's commit message.
             success, commit_info, _ = self._run_git_command(
                 ["log", tag, "-1", "--format=%h %ci %s"],
                 check=False,
@@ -399,7 +346,7 @@ __pycache__/
 
         print(f"\nTotal: {len(tags)} backups")
 
-        # 显示最近 5 次提交
+        # Display the five most recent commits.
         print("\n📜 Recent commits:\n")
         success, log_output, _ = self._run_git_command(
             ["log", "--oneline", "-5"],
@@ -410,20 +357,20 @@ __pycache__/
             print(log_output)
 
     def create_branch(self, chapter_num: int, branch_name: str) -> bool:
-        """从指定章节创建分支（Git branch）"""
+        'Create a branch from a specified chapter.'
 
         tag_name = f"ch{chapter_num:04d}"
 
         print(f"🌿 Creating branch from chapter {chapter_num}: {branch_name}")
 
-        # 检查 tag 是否存在
+        # Check whether the tag exists.
         success, _, _ = self._run_git_command(["rev-parse", tag_name], check=False)
 
         if not success:
             print(f"❌ Tag '{tag_name}' does not exist")
             return False
 
-        # 创建分支
+        # Create the branch.
         success, output, error = self._run_git_command(["branch", branch_name, tag_name], check=False)
 
         if not success:
@@ -468,17 +415,17 @@ Examples:
 
     args = parser.parse_args()
 
-    # 解析项目根目录（允许传入“工作区根目录”，统一解析到真正的 book project_root）
+    # Resolve the actual book project root; a workspace root is also accepted.
     try:
         project_root = str(resolve_project_root(args.project_root))
     except FileNotFoundError as exc:
         print(f"❌ Cannot locate project root (requires .webnovel/state.json): {exc}", file=sys.stderr)
         sys.exit(1)
 
-    # 创建管理器
+    # Create the manager.
     manager = GitBackupManager(project_root)
 
-    # 执行操作
+    # Perform the operation.
     if args.chapter:
         manager.backup(args.chapter, args.chapter_title or "")
 

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class IndexObservabilityMixin:
     def _row_to_dict(self, row: sqlite3.Row, parse_json: List[str] = None) -> Dict:
-        """将 Row 转换为字典"""
+        'Convert a Row to a dictionary.'
         d = dict(row)
         if parse_json:
             for key in parse_json:
@@ -32,7 +32,7 @@ class IndexObservabilityMixin:
                         )
         return d
 
-    # ==================== 无效事实管理 ====================
+    # ==================== Invalid-fact management ====================
 
     def mark_invalid_fact(
         self,
@@ -42,7 +42,7 @@ class IndexObservabilityMixin:
         marked_by: str = "user",
         chapter_discovered: Optional[int] = None,
     ) -> int:
-        """标记无效事实（pending）"""
+        'Mark a fact invalid with pending status.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -57,7 +57,7 @@ class IndexObservabilityMixin:
             return int(cursor.lastrowid)
 
     def resolve_invalid_fact(self, invalid_id: int, action: str) -> bool:
-        """确认或撤销无效标记"""
+        'Confirm or revoke an invalid marker.'
         action = action.lower()
         with self._get_conn() as conn:
             cursor = conn.cursor()
@@ -78,7 +78,7 @@ class IndexObservabilityMixin:
             return cursor.rowcount > 0
 
     def list_invalid_facts(self, status: Optional[str] = None) -> List[Dict]:
-        """列出无效事实"""
+        'List invalid facts.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             if status:
@@ -91,7 +91,7 @@ class IndexObservabilityMixin:
             return [dict(r) for r in cursor.fetchall()]
 
     def get_invalid_ids(self, source_type: str, status: str = "confirmed") -> set[str]:
-        """获取无效事实 ID 集合"""
+        'Get the set of invalid-fact IDs.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -100,7 +100,7 @@ class IndexObservabilityMixin:
             )
             return {str(r[0]) for r in cursor.fetchall() if r and r[0] is not None}
 
-    # ==================== 日志记录 ====================
+    # ==================== Logging ====================
 
     def log_rag_query(
         self,
@@ -145,7 +145,7 @@ class IndexObservabilityMixin:
             conn.commit()
 
     def get_stats(self) -> Dict[str, int]:
-        """获取索引统计"""
+        'Get index statistics.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
@@ -161,7 +161,7 @@ class IndexObservabilityMixin:
             cursor.execute("SELECT MAX(chapter) FROM chapters")
             max_chapter = cursor.fetchone()[0] or 0
 
-            # v5.1 引入统计
+            # Statistics introduced in v5.1
             cursor.execute("SELECT COUNT(*) FROM entities")
             entities = cursor.fetchone()[0]
 
@@ -180,7 +180,7 @@ class IndexObservabilityMixin:
             cursor.execute("SELECT COUNT(*) FROM relationship_events")
             relationship_events = cursor.fetchone()[0]
 
-            # v5.3 引入统计
+            # Statistics introduced in v5.3
             cursor.execute("SELECT COUNT(*) FROM override_contracts")
             override_contracts = cursor.fetchone()[0]
 
@@ -208,14 +208,14 @@ class IndexObservabilityMixin:
                 "scenes": scenes,
                 "appearances": appearances,
                 "max_chapter": max_chapter,
-                # v5.1 引入
+                # Introduced in v5.1
                 "entities": entities,
                 "active_entities": active_entities,
                 "aliases": aliases,
                 "state_changes": state_changes,
                 "relationships": relationships,
                 "relationship_events": relationship_events,
-                # v5.3 引入
+                # Introduced in v5.3
                 "override_contracts": override_contracts,
                 "pending_overrides": pending_overrides,
                 "active_debts": active_debts,

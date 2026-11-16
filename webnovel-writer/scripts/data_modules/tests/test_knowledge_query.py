@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""KnowledgeQuery 时序查询测试。"""
+"""KnowledgeQuery Temporal query tests。"""
 import json
 import sqlite3
 from pathlib import Path
@@ -20,7 +20,7 @@ def setup_db(tmp_path):
         CREATE TABLE IF NOT EXISTS entities (
             id TEXT PRIMARY KEY,
             canonical_name TEXT,
-            type TEXT DEFAULT '角色',
+            type TEXT DEFAULT 'character',
             current_json TEXT DEFAULT '{}',
             created_at TEXT,
             updated_at TEXT
@@ -57,23 +57,23 @@ def setup_db(tmp_path):
 
     conn.execute(
         "INSERT INTO entities (id, canonical_name, current_json) VALUES (?, ?, ?)",
-        ("hanli", "韩立", json.dumps({"realm": "筑基中期", "location": "乱星海"})),
+        ("hanli", "Han Li", json.dumps({"realm": "Mid Foundation Establishment", "location": "Scattered Star Sea"})),
     )
     conn.execute(
         "INSERT INTO state_changes (entity_id, field, old_value, new_value, chapter) VALUES (?, ?, ?, ?, ?)",
-        ("hanli", "realm", "练气圆满", "筑基初期", 30),
+        ("hanli", "realm", "Peak Qi Refining", "Early Foundation Establishment", 30),
     )
     conn.execute(
         "INSERT INTO state_changes (entity_id, field, old_value, new_value, chapter) VALUES (?, ?, ?, ?, ?)",
-        ("hanli", "realm", "筑基初期", "筑基中期", 50),
+        ("hanli", "realm", "Early Foundation Establishment", "Mid Foundation Establishment", 50),
     )
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "同门", 20),
+        ("hanli", "Chen Qiaoqian", "fellow-disciple", 20),
     )
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "合作", 45),
+        ("hanli", "Chen Qiaoqian", "cooperation", 45),
     )
     conn.commit()
     conn.close()
@@ -90,13 +90,13 @@ def test_entity_state_at_chapter_before_first_change(setup_db):
 def test_entity_state_at_chapter_after_first_breakthrough(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_state_at_chapter("hanli", 35)
-    assert result["state_at_chapter"]["realm"] == "筑基初期"
+    assert result["state_at_chapter"]["realm"] == "Early Foundation Establishment"
 
 
 def test_entity_state_at_chapter_after_second_breakthrough(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_state_at_chapter("hanli", 60)
-    assert result["state_at_chapter"]["realm"] == "筑基中期"
+    assert result["state_at_chapter"]["realm"] == "Mid Foundation Establishment"
 
 
 def test_relationships_at_chapter_before_any(setup_db):
@@ -109,8 +109,8 @@ def test_relationships_at_chapter_after_first(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_relationships_at_chapter("hanli", 25)
     assert len(result["relationships"]) == 1
-    assert result["relationships"][0]["to_entity"] == "陈巧倩"
-    assert result["relationships"][0]["relationship_type"] == "同门"
+    assert result["relationships"][0]["to_entity"] == "Chen Qiaoqian"
+    assert result["relationships"][0]["relationship_type"] == "fellow-disciple"
 
 
 def test_relationships_at_chapter_after_update(setup_db):
@@ -118,4 +118,4 @@ def test_relationships_at_chapter_after_update(setup_db):
     result = kq.entity_relationships_at_chapter("hanli", 50)
     rels = result["relationships"]
     assert len(rels) == 1
-    assert rels[0]["relationship_type"] == "合作"
+    assert rels[0]["relationship_type"] == "cooperation"

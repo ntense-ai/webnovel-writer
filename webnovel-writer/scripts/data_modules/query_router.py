@@ -10,11 +10,11 @@ from typing import Any, Dict, List
 class QueryRouter:
     def __init__(self):
         self.intent_patterns = {
-            "relationship": [r"关系", r"图谱", r"时间线", r"谁和谁", r"敌对", r"盟友"],
-            "entity": [r"人物", r"角色", r"谁", r"身份", r"别名"],
-            "scene": [r"地点", r"场景", r"哪里", r"位置"],
-            "setting": [r"设定", r"规则", r"体系", r"世界观"],
-            "plot": [r"剧情", r"发生", r"事件", r"经过"],
+            "relationship": [r"relationship", r"graph", r"timeline", r"who with whom", r"hostile", r"ally"],
+            "entity": [r"person", r"character", r"who", r"identity", r"alias"],
+            "scene": [r"location", r"scene", r"where", r"location"],
+            "setting": [r"setting", r"rule", r"system", r"worldbuilding"],
+            "plot": [r"plot", r"happened", r"event", r"course of events"],
         }
         self.patterns = {
             "entity": list(self.intent_patterns["entity"]),
@@ -24,21 +24,30 @@ class QueryRouter:
         }
 
     def _extract_entities(self, query: str) -> List[str]:
-        # 轻量启发式提取：提取长度 2-6 的中文短语，过滤常见查询词
-        candidates = re.findall(r"[\u4e00-\u9fff]{2,6}", query)
+        # Quoted names and capitalized Unicode names are conservative entity hints.
+        candidates = re.findall(r'["\']([^"\']+)["\']', query)
+        words = re.findall(r"\b[^\W\d_][\w'-]*\b", query, re.UNICODE)
+        phrase = []
+        for word in words + [""]:
+            if word and word[0].isupper():
+                phrase.append(word)
+            else:
+                if phrase:
+                    candidates.append(" ".join(phrase))
+                phrase = []
         stopwords = {
-            "关系",
-            "图谱",
-            "时间线",
-            "剧情",
-            "发生",
-            "事件",
-            "角色",
-            "人物",
-            "设定",
-            "世界观",
-            "地点",
-            "场景",
+            "relationship",
+            "graph",
+            "timeline",
+            "plot",
+            "happened",
+            "event",
+            "character",
+            "person",
+            "setting",
+            "worldbuilding",
+            "location",
+            "scene",
         }
         entities: List[str] = []
         for c in candidates:
@@ -49,7 +58,7 @@ class QueryRouter:
         return entities[:4]
 
     def _extract_time_scope(self, query: str) -> Dict[str, Any]:
-        m_range = re.search(r"第?\s*(\d+)\s*[-~到]\s*(\d+)\s*章", query)
+        m_range = re.search(r"\bchapters?\s+(\d+)\s*(?:[-~]|to)\s*(\d+)\b", query, re.IGNORECASE)
         if m_range:
             start = int(m_range.group(1))
             end = int(m_range.group(2))
@@ -57,7 +66,7 @@ class QueryRouter:
                 start, end = end, start
             return {"from_chapter": start, "to_chapter": end}
 
-        m_single = re.search(r"第?\s*(\d+)\s*章", query)
+        m_single = re.search(r"\bchapter\s+(\d+)\b", query, re.IGNORECASE)
         if m_single:
             chapter = int(m_single.group(1))
             return {"from_chapter": chapter, "to_chapter": chapter}
@@ -68,13 +77,13 @@ class QueryRouter:
         query = str(query or "")
         intent = "plot"
         for intent_name, patterns in self.intent_patterns.items():
-            if any(re.search(pat, query) for pat in patterns):
+            if any(re.search(r"\b(?:" + pat + r")\b", query, re.IGNORECASE) for pat in patterns):
                 intent = intent_name
                 break
 
         time_scope = self._extract_time_scope(query)
         entities = self._extract_entities(query)
-        needs_graph = intent == "relationship" or "关系" in query or "图谱" in query
+        needs_graph = intent == "relationship" or "relationship" in query or "graph" in query
         return {
             "intent": intent,
             "entities": entities,
@@ -140,5 +149,5 @@ class QueryRouter:
         return str(self.route_intent(query).get("intent") or "plot")
 
     def split(self, query: str) -> List[str]:
-        parts = re.split(r"[，,；;以及和]\s*", query)
+        parts = re.split(r"[,;]\s*|\s+and\s+", query)
         return [p.strip() for p in parts if p.strip()]

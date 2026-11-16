@@ -26,7 +26,7 @@ def test_upsert_character_state_marks_old_outdated(tmp_path):
         category="character_state",
         subject="xiaoyan",
         field="realm",
-        value="斗者",
+        value="Dou Zhe",
         source_chapter=1,
     )
     item2 = MemoryItem(
@@ -35,7 +35,7 @@ def test_upsert_character_state_marks_old_outdated(tmp_path):
         category="character_state",
         subject="xiaoyan",
         field="realm",
-        value="斗师",
+        value="Dou Shi",
         source_chapter=2,
     )
     manager.upsert_item(item1)
@@ -43,7 +43,7 @@ def test_upsert_character_state_marks_old_outdated(tmp_path):
     active = manager.query(category="character_state", subject="xiaoyan", status="active")
     outdated = manager.query(category="character_state", subject="xiaoyan", status="outdated")
     assert len(active) == 1
-    assert active[0].value == "斗师"
+    assert active[0].value == "Dou Shi"
     assert len(outdated) == 1
 
 
@@ -54,9 +54,9 @@ def test_upsert_world_rule_with_subject_field_key(tmp_path):
             id="w1",
             layer="semantic",
             category="world_rule",
-            subject="修炼体系",
-            field="境界划分",
-            value="九境",
+            subject="cultivation system",
+            field="realm divisions",
+            value="nine realms",
             source_chapter=1,
         )
     )
@@ -65,9 +65,9 @@ def test_upsert_world_rule_with_subject_field_key(tmp_path):
             id="w2",
             layer="semantic",
             category="world_rule",
-            subject="修炼体系",
-            field="突破条件",
-            value="需心境",
+            subject="cultivation system",
+            field="breakthrough requirements",
+            value="requires mental preparation",
             source_chapter=2,
         )
     )
@@ -82,9 +82,9 @@ def test_timeline_same_subject_different_chapter_should_append(tmp_path):
             id="t1",
             layer="semantic",
             category="timeline",
-            subject="离开宗门",
+            subject="Leave the sect",
             field="event",
-            value="离开宗门",
+            value="Leave the sect",
             source_chapter=10,
         )
     )
@@ -93,9 +93,9 @@ def test_timeline_same_subject_different_chapter_should_append(tmp_path):
             id="t2",
             layer="semantic",
             category="timeline",
-            subject="离开宗门",
+            subject="Leave the sect",
             field="event",
-            value="离开宗门",
+            value="Leave the sect",
             source_chapter=20,
         )
     )
@@ -110,9 +110,9 @@ def test_mark_status_and_stats(tmp_path):
             id="p1",
             layer="semantic",
             category="reader_promise",
-            subject="纳兰嫣然出场",
+            subject="Nalan Yanran appears",
             field="promise",
-            value="纳兰嫣然会在宗门大比前出场",
+            value="Nalan Yanran will appear before the sect tournament",
             source_chapter=8,
         )
     )
@@ -134,9 +134,9 @@ def test_compactor_enforces_global_limit_and_dedupes_timeline_summary(tmp_path):
             id="t-old-1",
             layer="semantic",
             category="timeline",
-            subject="事件一",
+            subject="Event One",
             field="event",
-            value="事件一",
+            value="Event One",
             source_chapter=1,
         )
     )
@@ -145,9 +145,9 @@ def test_compactor_enforces_global_limit_and_dedupes_timeline_summary(tmp_path):
             id="t-old-2",
             layer="semantic",
             category="timeline",
-            subject="事件二",
+            subject="Event Two",
             field="event",
-            value="事件二",
+            value="Event Two",
             source_chapter=2,
         )
     )
@@ -156,9 +156,9 @@ def test_compactor_enforces_global_limit_and_dedupes_timeline_summary(tmp_path):
             id="t-fresh",
             layer="semantic",
             category="timeline",
-            subject="事件三",
+            subject="Event Three",
             field="event",
-            value="事件三",
+            value="Event Three",
             source_chapter=60,
         )
     )
@@ -167,9 +167,9 @@ def test_compactor_enforces_global_limit_and_dedupes_timeline_summary(tmp_path):
             id="w1",
             layer="semantic",
             category="world_rule",
-            subject="修炼体系",
-            field="境界划分",
-            value="九境",
+            subject="cultivation system",
+            field="realm divisions",
+            value="nine realms",
             source_chapter=60,
         )
     )
@@ -189,9 +189,9 @@ def test_compactor_enforces_global_limit_and_dedupes_timeline_summary(tmp_path):
             id="w2",
             layer="semantic",
             category="world_rule",
-            subject="地理",
-            field="区域",
-            value="中州",
+            subject="Geography",
+            field="Region",
+            value="Central Province",
             source_chapter=61,
         )
     )

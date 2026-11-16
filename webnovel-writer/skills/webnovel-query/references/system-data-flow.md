@@ -15,7 +15,7 @@ This is a project data-structure reference. Claude already knows general file or
 
 ```
 project-root/
-├── chapters/           # Chapter files (chapter-0001.md or volume-1/chapter-0001-title.md; legacy layouts also supported)
+├── chapters/           # Chapter files (chapter-0001.md or volume-1/chapter-0001-title.md)
 ├── outlines/           # Volume/chapter/scene outlines
 ├── settings/         # Worldbuilding/power systems/character sheets/item sheets
 └── .webnovel/
@@ -163,7 +163,7 @@ CREATE TABLE entities (
     id TEXT PRIMARY KEY,
     type TEXT NOT NULL,           -- Character/location/item/faction/move
     canonical_name TEXT NOT NULL,
-    tier TEXT DEFAULT '装饰',     -- Core/important/secondary/decorative
+    tier TEXT DEFAULT 'decorative',     -- Core/important/secondary/decorative
     desc TEXT,
     current_json TEXT,            -- JSON: {realm, location, ...}
     first_appearance INTEGER,
@@ -225,7 +225,7 @@ The current main workflow no longer requires XML tags; Data Agent extracts intel
 
 | Field | Canonical values | Compatibility values (historical) |
 |------|--------|---------------|
-| status | `未回收` / `已回收` | 待回收/进行中/active/pending |
+| status | `unresolved` / `resolved` | unresolved/in progress/active/pending |
 
 **Recommended fields**: content, status, planted_chapter, target_chapter, tier
 
@@ -233,10 +233,10 @@ The current main workflow no longer requires XML tags; Data Agent extracts intel
 
 ```json
 {
-  "林天": [{"type": "角色", "id": "lintian"}],
-  "天云宗": [
-    {"type": "地点", "id": "loc_tianyunzong"},
-    {"type": "势力", "id": "faction_tianyunzong"}
+  "Lin Tian": [{"type": "character", "id": "lintian"}],
+  "Tianyun Sect": [
+    {"type": "location", "id": "loc_tianyunzong"},
+    {"type": "faction", "id": "faction_tianyunzong"}
   ]
 }
 ```
@@ -262,10 +262,10 @@ cat "$PROJECT_ROOT/.webnovel/state.json" | jq '.progress'
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-entity --id "xiaoyan"
-# Output: {"id": "xiaoyan", "type": "角色", "canonical_name": "萧炎", ...}
+# Output: {"id": "xiaoyan", "type": "character", "canonical_name": "Xiao Yan", ...}
 
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-core-entities
-# Output: all core entities (protagonist + tier=核心/重要)
+# Output: all core entities (protagonist + tier=core/major)
 ```
 </output>
 </example>
@@ -274,8 +274,8 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-cor
 <input>Find entities by alias (one-to-many)</input>
 <output>
 ```bash
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-by-alias --alias "天云宗"
-# Output: [{"id": "loc_tianyunzong", "type": "地点"}, {"id": "faction_tianyunzong", "type": "势力"}]
+python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-by-alias --alias "Tianyun Sect"
+# Output: [{"id": "loc_tianyunzong", "type": "location"}, {"id": "faction_tianyunzong", "type": "faction"}]
 ```
 </output>
 </example>
@@ -331,7 +331,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" migrate -- --
 </examples>
 
 <errors>
-❌ Foreshadowing status set to "待回收" → ✅ Use canonical "未回收"
+❌ Foreshadowing status set to "unresolved" → ✅ Use canonical "unresolved"
 ❌ Manual update omits planted_chapter → ✅ Script fills it automatically
 ❌ Confusing archive paths → ✅ Fixed at `.webnovel/archive/*.json`
 ❌ Expecting a single alias_index object → ✅ Current structure uses arrays (one-to-many)

@@ -20,7 +20,7 @@ from .config import get_config
 class ContextRanker:
     """Rank context-pack sections with lightweight deterministic heuristics."""
 
-    SUMMARY_HOOK_HINTS = ("?", "？", "悬念", "钩子", "反转", "冲突")
+    SUMMARY_HOOK_HINTS = ("?", "？", "suspense", "hook", "reversal", "conflict")
 
     def __init__(self, config=None):
         self.config = config or get_config()

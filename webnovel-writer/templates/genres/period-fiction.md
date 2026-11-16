@@ -1,0 +1,201 @@
+# Period-Life Fiction Template
+
+> Runtime preset identifier: `period-fiction` (English taxonomy and initialization preset).
+
+> **Core appeal**: Historical era + life's struggles + emotional resonance. Tell ordinary people's epic struggles within the currents of a particular period.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack F12
+- General overlay: Pack U02
+
+## 1. Core Subgenres
+
+### The 1960s and 1970s
+- **Features**: Planned economy, sent-down youth, material scarcity.
+- **Core payoffs**: Pocket-space stockpiles, knowledge advantage, improving living conditions.
+- **Representative works**: *Transmigrating to the Seventies as a Military Wife*, *Small Days in the Seventies*, *Rebirth into Good Times in the Sixties*.
+
+### The 1980s and 1990s
+- **Features**: Reform and opening, entering business, social transformation.
+- **Core payoffs**: Seizing opportunities, entrepreneurial wealth, benefiting from the era.
+- **Representative works**: *Rebirth in the Eighties: A Wife Like Snow*, *The Richest Woman of the Eighties*.
+
+### Republican-Era Life
+- **Features**: Turbulent times, family rise and fall, love and hatred.
+- **Core payoffs**: Survival amid chaos, family ascent, steadfast love.
+- **Representative works**: *Republican-Era Young Lady*, *Beauty in Troubled Times*.
+
+### Early People's Republic
+- **Features**: Reconstruction, a building boom, idealism.
+- **Core payoffs**: Technical contributions, construction achievements, national-era pride.
+- **Representative work**: *Transmigrating to the Fifties as a Military Wife*.
+
+---
+
+## 2. Worldbuilding: Period Society
+
+### Features of the 1960s-1970s
+| Element | Features | Impact |
+|------|------|------|
+| Economy | Planned economy, ration coupons | Material shortages |
+| Politics | Frequent political campaigns | Caution required |
+| Society | Collectivism | Individual yields to collective |
+| Marriage | Introductions through organizations | Romance secondary |
+| Work | Assigned employment | Secure "iron rice bowl" jobs |
+
+### Features of the 1980s-1990s
+| Element | Features | Impact |
+|------|------|------|
+| Economy | Reform and opening | Emerging opportunities |
+| Politics | Relative relaxation | Private business possible |
+| Society | Changing attitudes | Individual striving |
+| Marriage | Free choice in romance | Love takes priority |
+| Work | Rush into business | Breaking the iron rice bowl |
+
+### Resource System
+- **Coupons**: Grain, cloth, meat coupons in the 1960s-1970s.
+- **Connections**: Personal networks are the most important resource.
+- **Information**: Policy information and business opportunities.
+- **Skills**: Crafts, knowledge, education.
+
+---
+
+## 3. Period Elements
+
+### 1960s-1970s Elements
+| Element | Description | Use |
+|------|------|------|
+| Sent-down youth | Urban youth sent to the countryside | Background |
+| Worker-peasant-soldier university students | University entry by recommendation | Change in status |
+| Supply and marketing cooperatives | Distribution of goods | Resource acquisition |
+| Production teams | Collective labor | Everyday scenes |
+| Compound life | Military/government compounds | Special background |
+
+### 1980s-1990s Elements
+| Element | Description | Use |
+|------|------|------|
+| Individual businesses | Early entrepreneurs | Route to wealth |
+| Resellers | Trading goods for profit | Initial capital accumulation |
+| Stocks | Opening of stock markets | Wealth opportunities |
+| Overseas migration wave | Study/emigration | Life choices |
+| Layoff wave | State-enterprise reform | Crisis and opportunity |
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Pocket-Space Stockpiling
+- **Scene**: The protagonist has a storage space and prepares supplies.
+- **Payoff**: Others go hungry while the protagonist eats well.
+- **Key**: Keep it concealed; avoid conspicuous displays.
+
+### Knowledge Advantage
+- **Scene**: Solve problems with modern knowledge.
+- **Payoff**: Easily accomplish what others cannot.
+- **Example**: Save someone using modern medical knowledge.
+
+### Seizing Opportunities
+- **Scene**: Foresight identifies opportunities of the era.
+- **Payoff**: Prepare early and earn the first substantial capital.
+- **Example**: Buy property early, trade stocks, start businesses.
+
+### Silencing Awful Relatives
+- **Scene**: Difficult relatives/neighbors bully the protagonist.
+- **Payoff**: Their regret comes too late after the protagonist succeeds.
+- **Key**: Use setup; avoid contrivance.
+
+---
+
+## 5. Outline Structure (Standard: 1 Million Chinese Characters)
+
+### Volume One: A Foothold (Chapters 1-60)
+- **Core**: Transmigration/rebirth and adjustment.
+- **Status**: Bottom tier.
+- **Climax**: Gain stability and improve life.
+
+### Volume Two: Development (Chapters 61-150)
+- **Core**: Seize opportunities and start accumulating resources.
+- **Status**: Lower-middle tier.
+- **Climax**: Earn the first substantial capital.
+
+### Volume Three: Rise (Chapters 151-250)
+- **Core**: Develop the business and rise in status.
+- **Status**: Middle tier.
+- **Climax**: Become locally wealthy.
+
+### Volume Four: Pinnacle (Chapters 251-350)
+- **Core**: Career success and family fulfillment.
+- **Status**: Upper tier.
+- **Climax**: Reach life's pinnacle.
+
+### Volume Five: Fulfillment (Chapters 351-400)
+- **Core**: Children and grandchildren abound; enjoy old age.
+- **Status**: Top tier.
+- **Climax**: Satisfying resolution.
+
+---
+
+## 6. Character Design
+
+### Protagonist Types
+| Type | Features | Advantage |
+|------|------|------|
+| Reborn person | Knows the future | Foresight |
+| Transmigrator | Modern knowledge | Technological edge |
+| Pocket-space owner | Special advantage | Resource advantage |
+| Ordinary person | Grounded and hardworking | Strong realism |
+
+### Supporting Characters
+| Type | Function | Relationship to protagonist |
+|------|------|-----------|
+| Military husband | Romantic thread | Mutual support |
+| Difficult mother-in-law | Creates conflict | Must handle |
+| Close female friend | Assistance | Mutual help |
+| Malicious female rival | Opposition | Eventually humbled |
+
+---
+
+## 7. Creating a Sense of Period
+
+### Language
+- 1960s-1970s: "Comrade," "revolution," "serve the people."
+- 1980s-1990s: "Going into business," "ten-thousand-yuan household," "iron rice bowl."
+
+### Everyday Details
+| Period | Clothing | Food | Housing | Transport |
+|------|---|---|---|---|
+| 1960s-1970s | Blue, gray, green | Mainly coarse grains | Corridor-style housing | Bicycles |
+| 1980s-1990s | Bell-bottoms | Increasing variety | Self-contained apartments | Motorcycles |
+
+### Major Events
+- 1960s-1970s: Sent-down youth movement, restoration of university entrance examinations.
+- 1980s-1990s: Reform and opening, the Southern Tour speeches, Hong Kong's handover.
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ Weak period atmosphere that feels contemporary.
+- ❌ Politically sensitive content.
+- ❌ Overly obvious special advantages.
+- ❌ Dragging plots.
+
+### Recommended Practices
+- ✅ Attend to period details.
+- ✅ Avoid sensitive subjects.
+- ✅ Conceal special advantages.
+- ✅ Keep the pace tight.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="period-event" name="Event name" desc="Impact" tier="level" year="Year" impact="Effect on protagonist"/>
+<entity type="resource" name="Resource name" desc="Type" tier="level" rarity="Scarcity" source="Acquisition method"/>
+<entity type="relationship" name="personA-personB" desc="Relationship nature" tier="level" status="Current state"/>
+<entity type="enterprise" name="Enterprise name" desc="Type" tier="level" scale="Scale" profit="Profit"/>
+```

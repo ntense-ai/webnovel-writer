@@ -28,40 +28,40 @@ def _write_release_files(root: Path, *, version: str = "1.2.3", previous_tag: st
         {"name": "webnovel-writer", "version": version, "description": "desc"},
     )
     (root / "CHANGELOG.md").write_text(
-        f"""# 更新日志
+        f"""# Changelog
 
-## v{version} - 写章结果更清楚
+## v{version} - Clearer chapter results
 
-发版范围：`{previous_tag}..v{version}`。
+Release Scope：`{previous_tag}..v{version}`。
 
-### 给作者看的变化
+### Changes for Authors
 
-- 作者写章反馈更清楚。
+- Authors receive clearer chapter feedback.
 """,
         encoding="utf-8",
     )
     release_dir = root / "releases"
     release_dir.mkdir(parents=True, exist_ok=True)
     (release_dir / f"v{version}.md").write_text(
-        f"""# v{version} - 写章结果更清楚
+        f"""# v{version} - Clearer chapter results
 
-## 发版范围
+## Release Scope
 
-本次发布覆盖从 `{previous_tag}` 到本发布提交的全部变化。
+This release covers all changes from `{previous_tag}` to this release commit.
 
-## 给作者看的变化
+## Changes for Authors
 
-- 作者写章反馈更清楚。
+- Authors receive clearer chapter feedback.
 
-## 是否需要改旧项目
+## Do Existing Projects Need Changes?
 
-不需要。
+No.
 
-## 给维护者
+## For Maintainers
 
-- 新增校验。
+- Added validation.
 
-## 验证
+## Verification
 
 - pytest
 """,
@@ -90,7 +90,7 @@ def test_validate_release_notes_requires_release_file(tmp_path):
 def test_validate_release_notes_requires_previous_tag_in_release_note(tmp_path):
     _write_release_files(tmp_path)
     path = tmp_path / "releases" / "v1.2.3.md"
-    path.write_text(path.read_text(encoding="utf-8").replace("v1.2.2", "上个版本"), encoding="utf-8")
+    path.write_text(path.read_text(encoding="utf-8").replace("v1.2.2", "previous version"), encoding="utf-8")
 
     report = validate_release_notes(tmp_path, version="1.2.3", previous_tag="v1.2.2")
 
@@ -102,19 +102,19 @@ def test_validate_release_notes_requires_previous_tag_in_current_changelog_secti
     _write_release_files(tmp_path)
     changelog = tmp_path / "CHANGELOG.md"
     changelog.write_text(
-        """# 更新日志
+        """# Changelog
 
-## v1.2.3 - 写章结果更清楚
+## v1.2.3 - Clearer chapter results
 
-发版范围：上个版本到本版本。
+Release Scope：Previous version to current version.
 
-### 给作者看的变化
+### Changes for Authors
 
-- 作者写章反馈更清楚。
+- Authors receive clearer chapter feedback.
 
-## v1.2.2 - 旧版本
+## v1.2.2 - Previous release
 
-发版范围：`v1.2.1..v1.2.2`。
+Release Scope：`v1.2.1..v1.2.2`。
 """,
         encoding="utf-8",
     )

@@ -23,37 +23,37 @@ def test_story_system_persist_writes_master_chapter_and_anti_patterns(tmp_path, 
     csv_dir = tmp_path / "csv"
     csv_dir.mkdir()
     _write_csv(
-        csv_dir / "题材与调性推理.csv",
+        csv_dir / "genre-routing.csv",
         [
-            "编号", "适用技能", "分类", "层级", "关键词", "意图与同义词", "适用题材",
-            "大模型指令", "核心摘要", "详细展开", "题材/流派", "题材别名", "核心调性",
-            "节奏策略", "强制禁忌/毒点", "推荐基础检索表", "推荐动态检索表", "默认查询词",
+            "id", "applicable_skills", "category", "level", "keywords", "intent_synonyms", "applicable_genres",
+            "model_instruction", "summary", "details", "genre_route", "genre_aliases", "core_tone",
+            "pacing_strategy", "mandatory prohibitions/pitfalls", "recommended_base_tables", "recommended_dynamic_tables", "default_query",
         ],
         [
             {
-                "编号": "GR-001",
-                "适用技能": "write",
-                "分类": "题材路由",
-                "层级": "知识补充",
-                "关键词": "玄幻退婚流",
-                "意图与同义词": "退婚流",
-                "适用题材": "玄幻",
-                "大模型指令": "先压后爆",
-                "核心摘要": "退婚起手",
-                "详细展开": "",
-                "题材/流派": "玄幻退婚流",
-                "题材别名": "退婚流",
-                "核心调性": "先压后爆",
-                "节奏策略": "三章内反打",
-                "强制禁忌/毒点": "打脸不能软收尾",
-                "推荐基础检索表": "命名规则",
-                "推荐动态检索表": "桥段套路",
-                "默认查询词": "退婚|打脸",
+                "id": "GR-001",
+                "applicable_skills": "write",
+                "category": "genre-routing",
+                "level": "knowledge",
+                "keywords": "broken-engagement-fantasy",
+                "intent_synonyms": "broken-engagement story",
+                "applicable_genres": "xuanhuan",
+                "model_instruction": "pressure before payoff",
+                "summary": "broken-engagement opening",
+                "details": "",
+                "genre_route": "broken-engagement-fantasy",
+                "genre_aliases": "broken-engagement story",
+                "core_tone": "pressure before payoff",
+                "pacing_strategy": "counterattack within three chapters",
+                "mandatory prohibitions/pitfalls": "vindication must not end weakly",
+                "recommended_base_tables": "naming",
+                "recommended_dynamic_tables": "tropes",
+                "default_query": "broken engagement|public vindication",
             }
         ],
     )
-    _write_csv(csv_dir / "命名规则.csv", ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要"], [])
-    _write_csv(csv_dir / "桥段套路.csv", ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "忌讳写法"], [])
+    _write_csv(csv_dir / "naming.csv", ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary"], [])
+    _write_csv(csv_dir / "tropes.csv", ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary", "prohibited phrasing"], [])
 
     from story_system import main
 
@@ -62,7 +62,7 @@ def test_story_system_persist_writes_master_chapter_and_anti_patterns(tmp_path, 
         "argv",
         [
             "story_system",
-            "玄幻退婚流",
+            "broken-engagement-fantasy",
             "--project-root",
             str(project_root),
             "--chapter",
@@ -84,7 +84,7 @@ def test_story_system_persist_writes_master_chapter_and_anti_patterns(tmp_path, 
     assert (story_root / "chapters" / "chapter_001.md").is_file()
 
     payload = json.loads((story_root / "MASTER_SETTING.json").read_text(encoding="utf-8"))
-    assert payload["route"]["primary_genre"] == "玄幻退婚流"
+    assert payload["route"]["primary_genre"] == "broken-engagement-fantasy"
 
 
 def test_markdown_writer_preserves_manual_notes_outside_markers(tmp_path):
@@ -92,17 +92,17 @@ def test_markdown_writer_preserves_manual_notes_outside_markers(tmp_path):
 
     target = tmp_path / "MASTER_SETTING.md"
     target.write_text(
-        "# 手工说明\n手工备注\n<!-- STORY-SYSTEM:BEGIN -->\n旧内容\n<!-- STORY-SYSTEM:END -->\n",
+        "# manual explanation\nmanual note\n<!-- STORY-SYSTEM:BEGIN -->\nold content\n<!-- STORY-SYSTEM:END -->\n",
         encoding="utf-8",
     )
 
-    write_marked_markdown(target, "## Auto\n新内容\n")
+    write_marked_markdown(target, "## Auto\nnew content\n")
 
     text = target.read_text(encoding="utf-8")
-    assert "# 手工说明" in text
-    assert "手工备注" in text
+    assert "# manual explanation" in text
+    assert "manual note" in text
     assert "## Auto" in text
-    assert "旧内容" not in text
+    assert "old content" not in text
 
 
 def test_story_system_default_csv_dir_routes_real_genre_seed(tmp_path, monkeypatch, capsys):
@@ -117,7 +117,7 @@ def test_story_system_default_csv_dir_routes_real_genre_seed(tmp_path, monkeypat
         "argv",
         [
             "story_system",
-            "玄幻退婚流",
+            "broken-engagement-fantasy",
             "--project-root",
             str(project_root),
             "--format",
@@ -127,7 +127,7 @@ def test_story_system_default_csv_dir_routes_real_genre_seed(tmp_path, monkeypat
     main()
 
     payload = json.loads(capsys.readouterr().out)
-    assert payload["master_setting"]["route"]["primary_genre"] == "玄幻退婚流"
+    assert payload["master_setting"]["route"]["primary_genre"] == "broken-engagement-fantasy"
     assert payload["master_setting"]["route"]["route_source"] != "empty_csv_fallback"
 
 
@@ -137,7 +137,7 @@ def test_story_system_warns_on_placeholder_query(tmp_path, monkeypatch, capsys):
     (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     csv_dir = tmp_path / "csv"
     csv_dir.mkdir()
-    _write_csv(csv_dir / "题材与调性推理.csv", ["编号", "关键词"], [])
+    _write_csv(csv_dir / "genre-routing.csv", ["id", "keywords"], [])
 
     from story_system import main
 
@@ -146,7 +146,7 @@ def test_story_system_warns_on_placeholder_query(tmp_path, monkeypatch, capsys):
         "argv",
         [
             "story_system",
-            "{章纲目标}",
+            "{chapter outline goal}",
             "--project-root",
             str(project_root),
             "--chapter",
@@ -164,7 +164,7 @@ def test_story_system_warns_on_placeholder_query(tmp_path, monkeypatch, capsys):
 
     captured = capsys.readouterr()
     assert "placeholder" in captured.err
-    assert "无法匹配 story-system 题材路由" in captured.err
+    assert "Cannot match story-system genre-routing" in captured.err
 
 
 def test_story_system_persist_unroutable_exits_without_contracts(tmp_path, monkeypatch, capsys):
@@ -175,33 +175,33 @@ def test_story_system_persist_unroutable_exits_without_contracts(tmp_path, monke
     csv_dir = tmp_path / "csv"
     csv_dir.mkdir()
     _write_csv(
-        csv_dir / "题材与调性推理.csv",
+        csv_dir / "genre-routing.csv",
         [
-            "编号", "适用技能", "分类", "层级", "关键词", "意图与同义词", "适用题材",
-            "大模型指令", "核心摘要", "详细展开", "题材/流派", "canonical_genre", "题材别名", "核心调性",
-            "节奏策略", "毒点", "推荐基础检索表", "推荐动态检索表", "默认查询词",
+            "id", "applicable_skills", "category", "level", "keywords", "intent_synonyms", "applicable_genres",
+            "model_instruction", "summary", "details", "genre_route", "canonical_genre", "genre_aliases", "core_tone",
+            "pacing_strategy", "pitfalls", "recommended_base_tables", "recommended_dynamic_tables", "default_query",
         ],
         [
             {
-                "编号": "GR-001",
-                "适用技能": "story-system",
-                "分类": "题材路由",
-                "层级": "知识补充",
-                "关键词": "玄幻退婚流",
-                "意图与同义词": "退婚流",
-                "适用题材": "玄幻",
-                "大模型指令": "",
-                "核心摘要": "",
-                "详细展开": "",
-                "题材/流派": "玄幻退婚流",
-                "canonical_genre": "玄幻",
-                "题材别名": "退婚流",
-                "核心调性": "",
-                "节奏策略": "",
-                "毒点": "",
-                "推荐基础检索表": "命名规则",
-                "推荐动态检索表": "桥段套路",
-                "默认查询词": "",
+                "id": "GR-001",
+                "applicable_skills": "story-system",
+                "category": "genre-routing",
+                "level": "knowledge",
+                "keywords": "broken-engagement-fantasy",
+                "intent_synonyms": "broken-engagement story",
+                "applicable_genres": "xuanhuan",
+                "model_instruction": "",
+                "summary": "",
+                "details": "",
+                "genre_route": "broken-engagement-fantasy",
+                "canonical_genre": "xuanhuan",
+                "genre_aliases": "broken-engagement story",
+                "core_tone": "",
+                "pacing_strategy": "",
+                "pitfalls": "",
+                "recommended_base_tables": "naming",
+                "recommended_dynamic_tables": "tropes",
+                "default_query": "",
             }
         ],
     )
@@ -231,5 +231,5 @@ def test_story_system_persist_unroutable_exits_without_contracts(tmp_path, monke
     assert exc.value.code == 2
     captured = capsys.readouterr()
     assert "rules-mystery" in captured.err
-    assert "规则怪谈" in captured.err
+    assert "rules-horror" in captured.err
     assert not (project_root / ".story-system").exists()

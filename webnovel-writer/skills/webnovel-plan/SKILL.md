@@ -11,7 +11,7 @@ argument-hint: "[volume number, e.g. 1]"
 
 Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+New projects use English-only paths, filenames, schema keys, and enum identifiers. Use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Resolve paths with `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"`; resolve individual files with `--path outlines/master-outline.md` or the corresponding English relative path. Pass resolved paths to subagents. This branch targets newly created projects and does not migrate or support old project layouts or schemas. Do not rename, overwrite, or merge existing book content automatically. Story prose and names may contain Unicode characters; that does not change the English project schema.
 
 Main agent responsibility: incrementally refine volume outlines/timelines/chapter outlines from the master outline, write new settings back to the setting collection, and refresh Story System writing contracts. Do not redesign the global story or rewrite the entire master outline or setting collection.
 
@@ -43,7 +43,7 @@ export OUTLINES_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" placeholder-scan --format text
 ```
 
-Run `placeholder-scan` at both the start and end of planning. During plan, warn about placeholders and complete the relevant files. Before chapter writing, no `[待...]` / `暂名` / `{占位}` placeholders may remain for entities relevant to the current chapter.
+Run `placeholder-scan` at both the start and end of planning. During plan, warn about placeholders and complete the relevant files. Before chapter writing, no `[TODO...]` / `temporary name` / `{placeholder}` placeholders may remain for entities relevant to the current chapter.
 
 ## Reading strategy (trigger by stage; do not preload every reference)
 
@@ -51,8 +51,8 @@ Read each reference only when its corresponding step triggers it, preferably by 
 
 | Trigger | Reading mode | File |
 |------|---------|------|
-| Step 4 | Full text | `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md` |
-| Step 5 | Full text | `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md` |
+| Step 4 | Full text | `${SKILL_ROOT}/../../templates/output/outlines-volume-beats.md` |
+| Step 5 | Full text | `${SKILL_ROOT}/../../templates/output/outlines-volume-timeline.md` |
 | Step 6 always | Section | `${SKILL_ROOT}/../../references/genre-profiles.md` (only the current genre's `### 2.x` section) |
 | Step 6 always | Full text | `${SKILL_ROOT}/../../references/shared/strand-weave-pattern.md` |
 | Chapter breakdown always | Section | `${SKILL_ROOT}/../../references/outlining/plot-signal-vs-spoiler.md` |
@@ -65,9 +65,9 @@ Read each reference only when its corresponding step triggers it, preferably by 
 Search CSV creative references; do not `cat` entire tables:
 
 ```bash
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 爽点与节奏 --query "{volume_core_conflict}" --genre "${GENRE}"
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 桥段套路 --query "{volume_core_conflict}" --genre "${GENRE}"
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 命名规则 --query "角色命名" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table pacing --query "{volume_core_conflict}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table tropes --query "{volume_core_conflict}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table naming --query "characternaming" --genre "${GENRE}"
 ```
 
 ## Procedure
@@ -116,7 +116,7 @@ Confirm volume title, chapter range, core conflict, and any special requirements
 
 ### Step 4: Generate the volume beat sheet
 
-Load `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md`.
+Load `${SKILL_ROOT}/../../templates/output/outlines-volume-beats.md`.
 
 Hard requirements: fill in the midpoint reversal; if genuinely absent, write “None (reason: ...)”. Include at least three escalating crises. The new volume-ending hook must resolve into an unanswered question at the end of the final chapter.
 
@@ -124,7 +124,7 @@ Output file: `outlines/volume-{volume_id}-beats.md`
 
 ### Step 5: Generate the volume timeline
 
-Load `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md`.
+Load `${SKILL_ROOT}/../../templates/output/outlines-volume-timeline.md`.
 
 Hard requirements: specify the time system and this volume's duration; list countdown events, if any, and mark them D-N.
 
@@ -160,7 +160,7 @@ Core constraints:
 - Adjacent chapters' `CEN -> next chapter CBN` must connect logically (except the first and final chapters).
 - At most four `Must-cover nodes`; recommended: `CBN + CEN + 1–2 core CPNs`. Optional nodes are suggestions only, not primary grounds for failure.
 - At most five `Chapter prohibitions` entries; include only hard prohibitions on what absolutely must not happen in this chapter, not style suggestions.
-- Backward compatibility: if old project outlines lack these fields, downstream workflows run normally and skip only structured checks.
+- New-project contract: include these structured fields in every chapter outline so downstream checks can run.
 
 Output file: `outlines/volume-{volume_id}-outline.md`
 
@@ -187,10 +187,10 @@ After all checks pass, generate an explicit structured writeback file `outlines/
     "volume_end_climax": "Next volume's ending climax"
   },
   "foreshadow_writeback": [
-    {"content": "New foreshadowing explicitly added by this volume's plan", "buried_chapter": "Chapter 10", "payoff_chapter": "", "level": "卷级"}
+    {"content": "New foreshadowing explicitly added by this volume's plan", "buried_chapter": "Chapter 10", "payoff_chapter": "", "level": "volume"}
   ],
   "open_loop_writeback": [
-    {"content": "A question that remains open after this volume ends", "buried_chapter": "", "payoff_chapter": "", "level": "持续开放环"}
+    {"content": "A question that remains open after this volume ends", "buried_chapter": "", "payoff_chapter": "", "level": "ongoing-open-loop"}
   ]
 }
 ```
@@ -223,7 +223,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" sto
   --genre "${GENRE}" --chapter {chapter_num} --persist --emit-runtime-contracts --format both
 ```
 
-After generation, treat `.story-system/MASTER_SETTING.json`, `.story-system/volumes/`, `.story-system/chapters/`, and `.story-system/reviews/` as main-pipeline inputs for subsequent writing. Before writing, no `[待...]` / `暂名` / `{占位}` placeholders may remain for entities relevant to the current chapter.
+After generation, treat `.story-system/MASTER_SETTING.json`, `.story-system/volumes/`, `.story-system/chapters/`, and `.story-system/reviews/` as main-pipeline inputs for subsequent writing. Before writing, no `[TODO...]` / `temporary name` / `{placeholder}` placeholders may remain for entities relevant to the current chapter.
 
 ## Hard-failure conditions
 

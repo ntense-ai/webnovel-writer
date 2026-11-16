@@ -45,8 +45,8 @@ Review existing chapters across multiple quality dimensions.
 Query runtime information such as characters, foreshadowing, pacing, and state.
 
 ```bash
-/webnovel-query 萧炎
-/webnovel-query 伏笔
+/webnovel-query Xiao Yan
+/webnovel-query foreshadowing
 ```
 
 ### `/webnovel-learn [content]`
@@ -115,7 +115,7 @@ Recommended execution order:
 1. Generate contracts
 
 ```bash
-python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-system "玄幻退婚流" --chapter 12 --persist --emit-runtime-contracts --format both
+python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-system "broken-engagement-fantasy" --chapter 12 --persist --emit-runtime-contracts --format both
 ```
 
 2. Commit the chapter
@@ -224,7 +224,7 @@ python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJE
 Examples:
 
 ```bash
-python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-system "玄幻退婚流" --persist
+python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-system "broken-engagement-fantasy" --persist
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" chapter-commit --chapter 12 --review-result .webnovel/tmp/review.json
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-events --health
 ```

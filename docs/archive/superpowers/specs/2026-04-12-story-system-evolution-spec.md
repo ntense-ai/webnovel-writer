@@ -1,6 +1,6 @@
 # Webnovel Writer Story System Incremental Evolution Spec
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > **Date**: 2026-04-12
 > **Status**: Draft v1
@@ -348,7 +348,7 @@ Fixed context order:
 1. `chapter contract`
 2. `volume contract`
 3. `master contract`
-4. `题材与调性推理.csv`
+4. `genre-routing.csv`
 5. `genre-profiles.md`
 6. `templates/genres/*.md`
 7. Other local references
@@ -647,7 +647,7 @@ Sequence:
 
 New role: Active seed sources while route tables are built.
 
-1. Manually migrate stable fields into `题材与调性推理.csv`.
+1. Manually migrate stable fields into `genre-routing.csv`.
 2. Make `story_system` prefer CSV.
 3. Demote `genre-profiles.md` to fallback/reference.
 
@@ -715,7 +715,7 @@ Deliver:
 Goal: Establish the first stable contracts.
 
 Deliver:
-1. `题材与调性推理.csv`
+1. `genre-routing.csv`
 2. Minimal `MASTER_SETTING`
 3. Minimal `CHAPTER_BRIEF`
 4. `anti_patterns.json`
@@ -792,7 +792,7 @@ Story Contracts and `CHAPTER_COMMIT` belong to a particular book, so persist und
 
 Existing directory example:
 - `WORKSPACE_ROOT = D:\wk\xiaoshuo`
-- `PROJECT_ROOT = D:\wk\xiaoshuo\凡人资本论`
+- `PROJECT_ROOT = D:\wk\xiaoshuo\A Mortal's Capital`
 - Pointer: `D:\wk\xiaoshuo\.claude\.webnovel-current-project`
 
 This demonstrates:
@@ -805,16 +805,16 @@ Suggested structure, with original runtime directory names preserved:
 WORKSPACE_ROOT/
 ├── .claude/
 │   └── .webnovel-current-project
-├── 小说A/
-├── 小说B/
+├── novelA/
+├── novelB/
 └── ...
 
 PROJECT_ROOT/
 ├── .git/                  # Optional independent book version control
-├── 正文/
-├── 大纲/
-├── 设定集/
-├── 审查报告/
+├── chapters/
+├── outlines/
+├── settings/
+├── reviews/
 ├── .webnovel/
 └── .story-system/
     ├── MASTER_SETTING.json

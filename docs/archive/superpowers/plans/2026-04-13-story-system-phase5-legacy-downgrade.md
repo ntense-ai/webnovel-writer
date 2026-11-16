@@ -125,7 +125,7 @@ def test_load_runtime_sources_prefers_latest_accepted_commit(tmp_path):
     (story_root / "commits").mkdir(parents=True, exist_ok=True)
 
     (story_root / "MASTER_SETTING.json").write_text(
-        json.dumps({"meta": {"contract_type": "MASTER_SETTING"}, "route": {"primary_genre": "玄幻"}}),
+        json.dumps({"meta": {"contract_type": "MASTER_SETTING"}, "route": {"primary_genre": "xuanhuan"}}),
         encoding="utf-8",
     )
     (story_root / "chapters" / "chapter_003.json").write_text(
@@ -165,7 +165,7 @@ def test_commit_service_includes_volume_ref_and_write_fact_provenance(tmp_path):
     payload = service.build_commit(
         chapter=3,
         review_result={"blocking_count": 0},
-        fulfillment_result={"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []},
+        fulfillment_result={"planned_nodes": ["discover the trap"], "covered_nodes": ["discover the trap"], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
         extraction_result={"state_deltas": [], "entity_deltas": [], "accepted_events": []},
     )
@@ -329,12 +329,12 @@ git commit -m "feat: add story runtime source resolver"
 def test_context_manager_prefers_contract_route_over_legacy_genre_profile(temp_project):
     refs_dir = temp_project.project_root / ".claude" / "references"
     refs_dir.mkdir(parents=True, exist_ok=True)
-    (refs_dir / "genre-profiles.md").write_text("## 都市\n- 旧画像提示", encoding="utf-8")
-    (refs_dir / "reading-power-taxonomy.md").write_text("## 都市\n- 旧分类", encoding="utf-8")
+    (refs_dir / "genre-profiles.md").write_text("## urban\n- old profile hint", encoding="utf-8")
+    (refs_dir / "reading-power-taxonomy.md").write_text("## urban\n- oldcategory", encoding="utf-8")
 
     state = {
-        "project": {"genre": "都市"},
-        "protagonist_state": {"name": "林默"},
+        "project": {"genre": "urban"},
+        "protagonist_state": {"name": "Lin Mo"},
         "chapter_meta": {},
         "disambiguation_warnings": [],
         "disambiguation_pending": [],
@@ -347,8 +347,8 @@ def test_context_manager_prefers_contract_route_over_legacy_genre_profile(temp_p
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "都市异能"},
-                "master_constraints": {"core_tone": "先压后爆"},
+                "route": {"primary_genre": "urban-fantasy"},
+                "master_constraints": {"core_tone": "pressure before release"},
             },
             ensure_ascii=False,
         ),
@@ -358,7 +358,7 @@ def test_context_manager_prefers_contract_route_over_legacy_genre_profile(temp_p
     manager = ContextManager(temp_project)
     payload = manager.build_context(3, use_snapshot=False, save_snapshot=False)
 
-    assert payload["sections"]["story_contract"]["content"]["master"]["route"]["primary_genre"] == "都市异能"
+    assert payload["sections"]["story_contract"]["content"]["master"]["route"]["primary_genre"] == "urban-fantasy"
     assert payload["sections"]["runtime_status"]["content"]["fallback_sources"] == ["missing_volume_contract", "missing_chapter_contract", "missing_review_contract", "missing_accepted_commit"]
 ```
 
@@ -372,9 +372,9 @@ def test_commit_chapter_delegates_to_chapter_commit_mainline(tmp_path):
         3,
         {
             "review_result": {"blocking_count": 0},
-            "fulfillment_result": {"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []},
+            "fulfillment_result": {"planned_nodes": ["discover the trap"], "covered_nodes": ["discover the trap"], "missed_nodes": [], "extra_nodes": []},
             "disambiguation_result": {"pending": []},
-            "extraction_result": {"state_deltas": [], "entity_deltas": [], "accepted_events": [], "summary_text": "本章摘要"},
+            "extraction_result": {"state_deltas": [], "entity_deltas": [], "accepted_events": [], "summary_text": "chapter summary"},
         },
     )
 
@@ -391,9 +391,9 @@ def test_render_text_contains_runtime_status_section(tmp_path):
     text = _render_text(
         {
             "chapter": 3,
-            "outline": "测试大纲",
+            "outline": "testoutlines",
             "previous_summaries": [],
-            "state_summary": "旧状态摘要",
+            "state_summary": "old state summary",
             "context_contract_version": "v2",
             "reader_signal": {},
             "genre_profile": {},
@@ -407,7 +407,7 @@ def test_render_text_contains_runtime_status_section(tmp_path):
     )
 
     assert "## Runtime Status" in text
-    assert "- 写后事实入口: chapter_commit" in text
+    assert "- post-writing fact entry point: chapter_commit" in text
     assert "- Legacy Fallback: missing_accepted_commit" in text
 ```
 
@@ -502,13 +502,13 @@ def commit_chapter(self, chapter: int, result: dict) -> CommitResult:
 ```python
 # webnovel-writer/scripts/extract_chapter_context.py
 def _render_text(payload: Dict[str, Any]) -> str:
-    lines = [f"# 第{payload.get('chapter', 0)}章上下文"]
+    lines = [f"# Chapter {payload.get('chapter', 0)} context"]
     runtime_status = payload.get("runtime_status") or {}
     latest_commit = payload.get("latest_commit") or {}
     lines.extend(
         [
             "## Runtime Status",
-            f"- 写后事实入口: {runtime_status.get('primary_write_source', 'unknown')}",
+            f"- post-writing fact entry point: {runtime_status.get('primary_write_source', 'unknown')}",
             f"- Legacy Fallback: {', '.join(runtime_status.get('fallback_sources') or ['none'])}",
             f"- Latest Commit: {(latest_commit.get('meta') or {}).get('status', 'missing')}",
         ]
@@ -562,7 +562,7 @@ def test_webnovel_write_skill_uses_chapter_commit_as_step5_mainline():
 def test_data_agent_is_described_as_extraction_only_not_direct_write_mainline():
     text = (AGENTS_DIR / "data-agent.md").read_text(encoding="utf-8")
     assert "chapter-commit" in text
-    assert "直接写入 index.db 和 state.json" not in text
+    assert "write directly index.db and state.json" not in text
 
 
 def test_webnovel_query_skill_prefers_story_system_and_memory_contract():

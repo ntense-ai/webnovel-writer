@@ -36,12 +36,12 @@ def test_migrate_state_missing_file(tmp_path):
 def test_migrate_state_to_sqlite_flow(temp_project):
     state = {
         "entities_v3": {
-            "角色": {
+            "character": {
                 "xiaoyan": {
-                    "canonical_name": "萧炎",
-                    "tier": "核心",
-                    "desc": "主角",
-                    "current": {"realm": "斗者"},
+                    "canonical_name": "Xiao Yan",
+                    "tier": "core",
+                    "desc": "protagonist",
+                    "current": {"realm": "Dou Zhe"},
                     "first_appearance": 1,
                     "last_appearance": 2,
                     "is_protagonist": True,
@@ -49,23 +49,23 @@ def test_migrate_state_to_sqlite_flow(temp_project):
             }
         },
         "alias_index": {
-            "萧炎": [{"type": "角色", "id": "xiaoyan"}]
+            "Xiao Yan": [{"type": "character", "id": "xiaoyan"}]
         },
         "state_changes": [
-            {"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师", "reason": "突破", "chapter": 2}
+            {"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi", "reason": "Breakthrough", "chapter": 2}
         ],
         "structured_relationships": [
-            {"from_entity": "xiaoyan", "to_entity": "yaolao", "type": "师徒", "description": "收徒", "chapter": 1}
+            {"from_entity": "xiaoyan", "to_entity": "yaolao", "type": "mentor-student", "description": "Accept apprentice", "chapter": 1}
         ],
         "world_settings": {
-            "power_system": [{"name": "斗者"}, {"name": "斗师"}],
-            "factions": [{"name": "天云宗", "type": "宗门"}],
-            "locations": [{"name": "天云宗"}],
+            "power_system": [{"name": "Dou Zhe"}, {"name": "Dou Shi"}],
+            "factions": [{"name": "Skycloud Sect", "type": "sect"}],
+            "locations": [{"name": "Skycloud Sect"}],
         },
         "plot_threads": {"active_threads": [], "foreshadowing": []},
         "relationships": {},
         "review_checkpoints": [],
-        "project_info": {"title": "测试书名"},
+        "project_info": {"title": "Test novel title"},
     }
     temp_project.state_file.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -76,12 +76,12 @@ def test_migrate_state_to_sqlite_flow(temp_project):
     stats = migrate_state_to_sqlite(temp_project, dry_run=False, backup=False, verbose=False)
     assert stats["entities"] == 1
 
-    # state.json 被精简
+    # state.json reduced
     saved = json.loads(temp_project.state_file.read_text(encoding="utf-8"))
     assert saved.get("_migrated_to_sqlite") is True
     assert "entities_v3" not in saved
 
-    # SQLite 中可查询实体
+    # SQLite can query entities in
     idx = IndexManager(temp_project)
     entity = idx.get_entity("xiaoyan")
     assert entity is not None
@@ -89,12 +89,12 @@ def test_migrate_state_to_sqlite_flow(temp_project):
 
 def test_slim_helpers():
     world = {
-        "power_system": [{"name": "斗者"}],
-        "factions": [{"name": "天云宗", "type": "宗门"}],
-        "locations": [{"name": "天云宗"}],
+        "power_system": [{"name": "Dou Zhe"}],
+        "factions": [{"name": "Skycloud Sect", "type": "sect"}],
+        "locations": [{"name": "Skycloud Sect"}],
     }
     slim = _slim_world_settings(world)
-    assert slim["power_system"][0] == "斗者"
+    assert slim["power_system"][0] == "Dou Zhe"
 
     rels = _slim_relationships({"a": 1})
     assert rels["a"] == 1
@@ -145,14 +145,14 @@ def test_migrate_state_cli_main(tmp_path, monkeypatch, capsys):
 def test_migrate_state_backup_and_skips(temp_project):
     state = {
         "entities_v3": {
-            "角色": {
-                "good": {"canonical_name": "好人"},
+            "character": {
+                "good": {"canonical_name": "Good person"},
                 "bad": "not-dict",
             }
         },
         "alias_index": {
-            "好人": [{"type": "角色", "id": "good"}],
-            "坏条目": ["oops", {"type": "角色"}],
+            "Good person": [{"type": "character", "id": "good"}],
+            "bad entry": ["oops", {"type": "character"}],
         },
         "state_changes": ["bad", {"field": "realm"}],
         "structured_relationships": ["bad", {"from_entity": "", "to_entity": ""}],
@@ -176,13 +176,13 @@ def test_migrate_state_error_branches(tmp_path, monkeypatch, capsys):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     state = {
-        "entities_v3": {"角色": {"boom": {"canonical_name": "爆"}}},
-        "alias_index": {"爆": [{"type": "角色", "id": "boom"}]},
+        "entities_v3": {"character": {"boom": {"canonical_name": "eruption"}}},
+        "alias_index": {"eruption": [{"type": "character", "id": "boom"}]},
         "state_changes": [
-            {"entity_id": "boom", "field": "realm", "old": "", "new": "斗者", "reason": "测试", "chapter": 1}
+            {"entity_id": "boom", "field": "realm", "old": "", "new": "Dou Zhe", "reason": "Test", "chapter": 1}
         ],
         "structured_relationships": [
-            {"from_entity": "boom", "to_entity": "yao", "type": "相识", "description": "测试", "chapter": 1}
+            {"from_entity": "boom", "to_entity": "yao", "type": "acquaintance", "description": "Test", "chapter": 1}
         ],
         "relationships": {},
         "world_settings": {},
@@ -220,7 +220,7 @@ def test_migrate_cli_preserves_state_fields_on_partial_failure(tmp_path, monkeyp
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     state = {
-        "entities_v3": {"角色": {"boom": {"canonical_name": "爆"}}},
+        "entities_v3": {"character": {"boom": {"canonical_name": "eruption"}}},
         "alias_index": {},
         "state_changes": [],
         "structured_relationships": [],

@@ -3,51 +3,51 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "审查第4章正文。chapter=4, chapter_file='正文/第0004章-迦南学院的考验.md', project_root='agents/evals/files/test-project', scripts_dir 为本插件的 scripts 目录。",
-      "expected_output": "输出结构化 JSON 问题清单，并对 5 个维度逐项给出结论（dimension_results）",
+      "prompt": "Review the prose of Chapter 4. chapter=4, chapter_file='chapters/chapter-0004-the-trial-at-jianan-academy.md', project_root='agents/evals/files/test-project'; scripts_dir is this plugin's scripts directory.",
+      "expected_output": "Return a structured JSON issue list and a conclusion for each of five dimensions (dimension_results).",
       "files": [
-        "agents/evals/files/test-project/正文/第0004章-迦南学院的考验.md",
+        "agents/evals/files/test-project/chapters/chapter-0004-the-trial-at-jianan-academy.md",
         "agents/evals/files/test-project/.webnovel/state.json",
         "agents/evals/files/test-project/.webnovel/summaries/ch0003.md",
         "agents/evals/files/test-project/.webnovel/memory_scratchpad.json"
       ],
       "expectations": [
-        "输出是合法 JSON，包含 issues 数组和 summary 字符串",
-        "包含 dimension_results，逐项覆盖 setting/timeline/continuity/character/logic 五个维度",
-        "每个维度的 conclusion 非空（无问题时为 pass）",
-        "每个 issue 的 category 属于 setting/timeline/continuity/character/logic/pacing/other 之一",
-        "每个 issue 都有 severity、category、location、description 字段",
-        "每个 issue 都有 evidence 字段且非空",
-        "没有输出 overall_score（reviewer 不评分）",
-        "没有输出 pass/fail 判定（reviewer 只列问题）"
+        "Output valid JSON containing an issues array and a summary string.",
+        "Include dimension_results covering setting, timeline, continuity, character, and logic individually.",
+        "Each dimension has a nonempty conclusion (pass when no issue exists).",
+        "Each issue category is one of setting/timeline/continuity/character/logic/pacing/other.",
+        "Every issue includes severity, category, location, and description.",
+        "Every issue includes nonempty evidence.",
+        "Do not output overall_score; the reviewer does not assign scores.",
+        "Do not output an overall pass/fail verdict; the reviewer only lists issues."
       ]
     },
     {
       "id": 2,
-      "prompt": "审查第4章正文，检查设定一致性。chapter=4, chapter_file='正文/第0004章-迦南学院的考验.md', project_root='agents/evals/files/test-project', scripts_dir 为本插件的 scripts 目录。",
-      "expected_output": "识别出正文中萧炎使用了'吸力控制'（药老指导），这与设定一致；但不应报告虚假的设定冲突",
+      "prompt": "Review Chapter 4 for setting consistency. chapter=4, chapter_file='chapters/chapter-0004-the-trial-at-jianan-academy.md', project_root='agents/evals/files/test-project'; scripts_dir is this plugin's scripts directory.",
+      "expected_output": "Recognize that Xiao Yan uses suction control under Yao Lao's guidance consistently with the setting; do not report nonexistent setting conflicts.",
       "files": [
-        "agents/evals/files/test-project/正文/第0004章-迦南学院的考验.md",
+        "agents/evals/files/test-project/chapters/chapter-0004-the-trial-at-jianan-academy.md",
         "agents/evals/files/test-project/.webnovel/state.json",
-        "agents/evals/files/test-project/设定集/世界观.md"
+        "agents/evals/files/test-project/settings/worldbuilding.md"
       ],
       "expectations": [
-        "输出是合法 JSON",
-        "不会把萧炎的斗者九星报告为设定冲突（与 state.json 一致）",
-        "不会虚构 state.json 中不存在的信息来报告问题"
+        "Output valid JSON.",
+        "Do not report Xiao Yan being a nine-star Dou Zhe as a setting conflict; it matches state.json.",
+        "Do not invent information absent from state.json to justify an issue."
       ]
     },
     {
       "id": 3,
-      "prompt": "审查第4章正文，检查连贯性。chapter=4, chapter_file='正文/第0004章-迦南学院的考验.md', project_root='agents/evals/files/test-project', scripts_dir 为本插件的 scripts 目录。上一章摘要在 .webnovel/summaries/ch0003.md。",
-      "expected_output": "检查与上章的衔接，上章结尾在迦南学院演武场、黄昏，本章开头在'晨光'，时间有跳跃需要标注",
+      "prompt": "Review Chapter 4 for continuity. chapter=4, chapter_file='chapters/chapter-0004-the-trial-at-jianan-academy.md', project_root='agents/evals/files/test-project'; scripts_dir is this plugin's scripts directory. The previous chapter summary is .webnovel/summaries/ch0003.md.",
+      "expected_output": "Check the transition: the previous chapter ends at dusk on Jia Nan Academy's training ground, while this chapter opens in morning light. Flag the time jump.",
       "files": [
-        "agents/evals/files/test-project/正文/第0004章-迦南学院的考验.md",
+        "agents/evals/files/test-project/chapters/chapter-0004-the-trial-at-jianan-academy.md",
         "agents/evals/files/test-project/.webnovel/summaries/ch0003.md"
       ],
       "expectations": [
-        "输出是合法 JSON",
-        "至少有 1 个 continuity 或 timeline 类型的 issue 提到时间跳跃（上章黄昏，本章晨光）"
+        "Output valid JSON.",
+        "Include at least one continuity or timeline issue mentioning the jump from dusk in the previous chapter to morning light in this one."
       ]
     }
   ]

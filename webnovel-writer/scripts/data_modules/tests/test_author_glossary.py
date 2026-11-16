@@ -15,8 +15,8 @@ def test_author_glossary_loads_single_source():
     terms = load_terms()
 
     assert default_glossary_path().is_file()
-    assert terms["projection"].author == "更新故事资料"
-    assert terms["mainline_ready"].author == "这本书的档案是否就绪"
+    assert terms["projection"].author == "Update story data"
+    assert terms["mainline_ready"].author == "Whether the book records are ready"
     assert terms["write-gate"].explanation
 
 
@@ -25,8 +25,8 @@ def test_author_glossary_lookup_is_case_insensitive():
 
     found = lookup("chapter_commit", terms=terms)
     assert found is not None
-    assert found.author == "本章事实存档"
-    assert author_label("CHAPTER_COMMIT", terms=terms) == "本章事实存档"
+    assert found.author == "Chapter fact archive"
+    assert author_label("CHAPTER_COMMIT", terms=terms) == "Chapter fact archive"
 
 
 def test_author_glossary_unknown_term_falls_back_to_original():

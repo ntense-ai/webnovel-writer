@@ -37,20 +37,20 @@ def _ensure_scripts_path():
 
 
 _RAG_TRIGGER_KEYWORDS = (
-    "关系",
-    "恩怨",
-    "冲突",
-    "敌对",
-    "同盟",
-    "师徒",
-    "身份",
-    "线索",
-    "伏笔",
-    "回收",
-    "地点",
-    "势力",
-    "真相",
-    "来历",
+    "relationship",
+    "grievance",
+    "conflict",
+    "hostile",
+    "alliance",
+    "mentor-student",
+    "identity",
+    "clue",
+    "foreshadowing",
+    "payoff",
+    "location",
+    "faction",
+    "truth",
+    "origin",
     "relationship", "relationships", "feud", "feuds", "conflict", "conflicts",
     "enemy", "enemies", "hostility", "alliance", "alliances", "mentor", "mentors",
     "identity", "identities", "clue", "clues", "foreshadowing", "payoff", "payoffs",
@@ -68,7 +68,7 @@ def _contains_keyword(text: str, keywords: tuple[str, ...]) -> bool:
 
 
 def find_project_root(start_path: Path | None = None) -> Path:
-    """解析真实书项目根（包含 `.webnovel/state.json` 的目录）。"""
+    'Resolve the actual book project root containing .webnovel/state.json.'
     from project_locator import resolve_project_root
 
     if start_path is None:
@@ -88,7 +88,7 @@ def _load_summary_file(project_root: Path, chapter_num: int) -> str:
         return ""
 
     text = summary_path.read_text(encoding="utf-8")
-    summary_match = re.search(r"##[ \t]*(?:剧情摘要|Plot summary|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", text, re.DOTALL | re.IGNORECASE)
+    summary_match = re.search(r"##[ \t]*(?:Plot summary|Plot summary|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", text, re.DOTALL | re.IGNORECASE)
     if summary_match:
         return summary_match.group(1).strip()
     return ""
@@ -106,11 +106,11 @@ def extract_chapter_summary(project_root: Path, chapter_num: int) -> str:
 
     content = chapter_file.read_text(encoding="utf-8")
 
-    summary_match = re.search(r"##[ \t]*(?:本章摘要|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
+    summary_match = re.search(r"##[ \t]*(?:Chapter summary|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
     if summary_match:
         return summary_match.group(1).strip()
 
-    stats_match = re.search(r"##[ \t]*(?:本章统计|Chapter statistics|Statistics)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
+    stats_match = re.search(r"##[ \t]*(?:Chapter statistics|Chapter statistics|Statistics)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
     if stats_match:
         return f"[No summary; statistics only]\n{stats_match.group(1).strip()}"
 
@@ -162,7 +162,7 @@ def extract_state_summary(project_root: Path) -> str:
     plot_threads = state.get("plot_threads", {}) if isinstance(state.get("plot_threads"), dict) else {}
     foreshadowing = plot_threads.get("foreshadowing", [])
     if isinstance(foreshadowing, list) and foreshadowing:
-        active = [row for row in foreshadowing if row.get("status") in {"active", "未回收"}]
+        active = [row for row in foreshadowing if row.get("status") in {"active", "unresolved"}]
         urgent = [row for row in active if row.get("urgency", 0) > 50]
         if urgent:
             urgent_list = [
@@ -191,12 +191,12 @@ def _build_rag_query(outline: str, chapter_num: int, min_chars: int, max_chars: 
     if not _contains_keyword(plain, _RAG_TRIGGER_KEYWORDS):
         return ""
 
-    if _contains_keyword(plain, ("关系", "师徒", "敌对", "同盟", "relationship", "relationships",
+    if _contains_keyword(plain, ("relationship", "mentor-student", "hostile", "alliance", "relationship", "relationships",
                                  "mentor", "mentors", "enemy", "enemies", "hostility", "alliance", "alliances")):
         topic = "Character relationships and motivations"
-    elif _contains_keyword(plain, ("地点", "势力", "location", "locations", "faction", "factions")):
+    elif _contains_keyword(plain, ("location", "faction", "location", "locations", "faction", "factions")):
         topic = "Locations, factions, and scene constraints"
-    elif _contains_keyword(plain, ("伏笔", "线索", "回收", "foreshadowing", "clue", "clues", "payoff", "payoffs")):
+    elif _contains_keyword(plain, ("foreshadowing", "clue", "payoff", "foreshadowing", "clue", "clues", "payoff", "payoffs")):
         topic = "Foreshadowing and clues"
     else:
         topic = "Key plot evidence"
@@ -369,7 +369,7 @@ def build_chapter_context_payload(project_root: Path, chapter_num: int) -> Dict[
 
 
 def _render_text(payload: Dict[str, Any]) -> str:
-    """JSON 序列化输出，text 渲染由 context-agent 负责。"""
+    'Serialize as JSON; context-agent handles text rendering.'
     return json.dumps(payload, ensure_ascii=False, indent=2)
 
 

@@ -36,14 +36,14 @@ class PrewriteValidator:
             ]
         blocking_reasons = []
         if pending:
-            blocking_reasons.append("存在高优先级 disambiguation_pending")
+            blocking_reasons.append("High-priority disambiguation_pending items exist")
         if missing_contracts:
             blocking_reasons.append(
-                "缺少 Story System 合同: " + ", ".join(missing_contracts)
+                "Missing Story System contracts: " + ", ".join(missing_contracts)
             )
         related_placeholders = self._related_placeholders(story_contract)
         if related_placeholders:
-            blocking_reasons.append("当前章节相关设定存在未补齐占位")
+            blocking_reasons.append("Settings relevant to this chapter contain unfilled placeholders")
         return {
             "chapter": chapter,
             "blocking": bool(pending) or bool(missing_contracts) or bool(related_placeholders),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""memory_cli.py 测试。"""
+"""memory_cli.py Test。"""
 from __future__ import annotations
 
 import json
@@ -68,8 +68,8 @@ def test_query_entity_found(tmp_path, capsys):
     project = _make_project(tmp_path)
     state = {
         "entities_v3": {
-            "角色": {
-                "xiaoyan": {"name": "萧炎", "tier": "核心", "aliases": [], "first_appearance": 1, "last_appearance": 10}
+            "character": {
+                "xiaoyan": {"name": "Xiao Yan", "tier": "core", "aliases": [], "first_appearance": 1, "last_appearance": 10}
             }
         }
     }
@@ -83,7 +83,7 @@ def test_query_entity_found(tmp_path, capsys):
         sys.argv = old_argv
 
     output = json.loads(capsys.readouterr().out)
-    assert output["name"] == "萧炎"
+    assert output["name"] == "Xiao Yan"
 
 
 def test_query_rules_empty(tmp_path, capsys):
@@ -124,7 +124,7 @@ def test_read_summary_exists(tmp_path, capsys):
     import memory_cli
 
     project = _make_project(tmp_path)
-    (project / ".webnovel" / "summaries" / "ch0005.md").write_text("第5章摘要", encoding="utf-8")
+    (project / ".webnovel" / "summaries" / "ch0005.md").write_text("Chapter 5 summary", encoding="utf-8")
 
     old_argv = sys.argv
     sys.argv = ["memory_cli", "--project-root", str(project), "read-summary", "--chapter", "5"]
@@ -134,7 +134,7 @@ def test_read_summary_exists(tmp_path, capsys):
         sys.argv = old_argv
 
     output = json.loads(capsys.readouterr().out)
-    assert "第5章摘要" in output["summary"]
+    assert "Chapter 5 summary" in output["summary"]
 
 
 def test_get_open_loops_empty(tmp_path, capsys):

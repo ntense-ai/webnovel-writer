@@ -1,30 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-migrate_state_to_sqlite.py - 数据迁移脚本 (v5.4)
-
-将 state.json 中的大数据迁移到 SQLite (index.db):
-- entities_v3 → entities 表
-- alias_index → aliases 表
-- state_changes → state_changes 表
-- structured_relationships → relationships 表
-
-迁移后 state.json 只保留精简数据 (< 5KB):
-- progress
-- protagonist_state
-- strand_tracker
-- disambiguation_warnings/pending
-- project_info
-- world_settings (骨架)
-- plot_threads
-- relationships (简化版)
-- review_checkpoints
-
-用法:
-    python -m data_modules.migrate_state_to_sqlite --project-root "D:/wk/斗破苍穹"
-    python -m data_modules.migrate_state_to_sqlite --project-root "." --dry-run
-    python -m data_modules.migrate_state_to_sqlite --project-root "." --backup
-"""
+'migrate_state_to_sqlite.py: data migration script (v5.4). Move large state.json collections to index.db: entities_v3 to entities, alias_index to aliases, state_changes to state_changes, and structured_relationships to relationships. Keep state.json lean (under 5 KB), retaining progress, protagonist_state, strand_tracker, disambiguation_warnings/pending, project_info, a world_settings skeleton, plot_threads, simplified relationships, and review_checkpoints. Usage: python -m data_modules.migrate_state_to_sqlite --project-root "D:/wk/my-novel"; add --dry-run for analysis only or --backup to preserve state.json first.'
 
 import json
 import shutil
@@ -43,17 +19,7 @@ def migrate_state_to_sqlite(
     backup: bool = True,
     verbose: bool = True
 ) -> Dict[str, int]:
-    """
-    执行迁移
-
-    参数:
-    - config: 配置对象
-    - dry_run: 只分析不实际写入
-    - backup: 迁移前备份 state.json
-    - verbose: 打印详细日志
-
-    返回: 迁移统计
-    """
+    'Run migration. Args: config is the configuration object; dry_run analyzes without writing; backup saves state.json before migration; verbose prints detailed logs. Return migration statistics.'
     stats = {
         "entities": 0,
         "aliases": 0,
@@ -63,7 +29,7 @@ def migrate_state_to_sqlite(
         "errors": 0
     }
 
-    # 读取 state.json
+    # Read state.json.
     state_file = config.state_file
     if not state_file.exists():
         if verbose:
@@ -77,17 +43,17 @@ def migrate_state_to_sqlite(
         file_size = state_file.stat().st_size / 1024
         print(f"📄 Reading state.json ({file_size:.1f} KB)")
 
-    # 备份
+    # Back up.
     if backup and not dry_run:
         backup_file = state_file.with_suffix(f".json.backup-{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         shutil.copy(state_file, backup_file)
         if verbose:
             print(f"💾 Backed up to: {backup_file}")
 
-    # 初始化 SQLStateManager
+    # Initialize SQLStateManager.
     sql_manager = SQLStateManager(config)
 
-    # 1. 迁移 entities_v3
+    # 1. Migrate entities_v3.
     entities_v3 = state.get("entities_v3", {})
     if verbose:
         print(f"\n🔄 Migrating entities_v3...")
@@ -106,10 +72,10 @@ def migrate_state_to_sqlite(
                     id=entity_id,
                     type=entity_type,
                     name=entity_data.get("canonical_name", entity_data.get("name", entity_id)),
-                    tier=entity_data.get("tier", "装饰"),
+                    tier=entity_data.get("tier", "decorative"),
                     desc=entity_data.get("desc", ""),
                     current=entity_data.get("current", {}),
-                    aliases=[],  # 别名单独处理
+                    aliases=[],  # Handle aliases separately.
                     first_appearance=entity_data.get("first_appearance", 0),
                     last_appearance=entity_data.get("last_appearance", 0),
                     is_protagonist=entity_data.get("is_protagonist", False)
@@ -130,7 +96,7 @@ def migrate_state_to_sqlite(
     if verbose:
         print(f"  ✅ Entities: {stats['entities']}")
 
-    # 2. 迁移 alias_index
+    # 2. Migrate alias_index.
     alias_index = state.get("alias_index", {})
     if verbose:
         print(f"\n🔄 Migrating alias_index...")
@@ -163,7 +129,7 @@ def migrate_state_to_sqlite(
     if verbose:
         print(f"  ✅ Aliases: {stats['aliases']}")
 
-    # 3. 迁移 state_changes
+    # 3. Migrate state_changes.
     state_changes = state.get("state_changes", [])
     if verbose:
         print(f"\n🔄 Migrating state_changes...")
@@ -198,7 +164,7 @@ def migrate_state_to_sqlite(
     if verbose:
         print(f"  ✅ State changes: {stats['state_changes']}")
 
-    # 4. 迁移 structured_relationships
+    # 4. Migrate structured_relationships.
     relationships = state.get("structured_relationships", [])
     if verbose:
         print(f"\n🔄 Migrating structured_relationships...")
@@ -219,7 +185,7 @@ def migrate_state_to_sqlite(
                 sql_manager.upsert_relationship(
                     from_entity=from_entity,
                     to_entity=to_entity,
-                    type=rel.get("type", "相识"),
+                    type=rel.get("type", "acquaintance"),
                     description=rel.get("description", ""),
                     chapter=rel.get("chapter", 0)
                 )
@@ -233,7 +199,7 @@ def migrate_state_to_sqlite(
     if verbose:
         print(f"  ✅ Relationships: {stats['relationships']}")
 
-    # 5. 精简 state.json（移除已迁移字段）
+    # 5. Reduce state.json by removing migrated fields.
     if stats["errors"]:
         if verbose:
             print("\n⚠️ Migration errors occurred; original fields preserved")
@@ -241,7 +207,7 @@ def migrate_state_to_sqlite(
         if verbose:
             print(f"\n🔄 Compacting state.json...")
 
-        # 保留字段
+        # Retained fields
         slim_state = {
             "project_info": state.get("project_info", {}),
             "progress": state.get("progress", {}),
@@ -250,10 +216,10 @@ def migrate_state_to_sqlite(
             "world_settings": _slim_world_settings(state.get("world_settings", {})),
             "plot_threads": state.get("plot_threads", {}),
             "relationships": _slim_relationships(state.get("relationships", {})),
-            "review_checkpoints": state.get("review_checkpoints", [])[-10:],  # 只保留最近10个
+            "review_checkpoints": state.get("review_checkpoints", [])[-10:],  # Keep only the latest ten.
             "disambiguation_warnings": state.get("disambiguation_warnings", [])[-20:],
             "disambiguation_pending": state.get("disambiguation_pending", [])[-10:],
-            # v5.1 引入标记
+            # Marker introduced in v5.1
             "_migrated_to_sqlite": True,
             "_migration_timestamp": datetime.now().isoformat()
         }
@@ -264,7 +230,7 @@ def migrate_state_to_sqlite(
         if verbose:
             print(f"  ✅ After compaction: {new_size:.1f} KB")
 
-    # 打印统计
+    # Print statistics.
     if verbose:
         print(f"\n" + "=" * 50)
         print(f"📊 Migration statistics:")
@@ -281,47 +247,47 @@ def migrate_state_to_sqlite(
 
 
 def _slim_world_settings(world_settings: Dict) -> Dict:
-    """精简 world_settings，只保留骨架"""
+    'Reduce world_settings to its skeleton.'
     if not isinstance(world_settings, dict):
         return {}
 
     slim = {}
 
-    # power_system: 只保留等级名称
+    # power_system: retain only level names.
     power_system = world_settings.get("power_system", [])
     if isinstance(power_system, list):
         slim["power_system"] = [
             p.get("name") if isinstance(p, dict) else p
-            for p in power_system[:20]  # 最多20个等级
+            for p in power_system[:20]  # At most 20 levels
         ]
 
-    # factions: 只保留名称和简述
+    # factions: retain only names and brief descriptions.
     factions = world_settings.get("factions", [])
     if isinstance(factions, list):
         slim["factions"] = [
             {"name": f.get("name"), "type": f.get("type")}
             if isinstance(f, dict) else f
-            for f in factions[:30]  # 最多30个势力
+            for f in factions[:30]  # At most 30 factions
         ]
 
-    # locations: 只保留名称
+    # locations: retain only names.
     locations = world_settings.get("locations", [])
     if isinstance(locations, list):
         slim["locations"] = [
             loc.get("name") if isinstance(loc, dict) else loc
-            for loc in locations[:50]  # 最多50个地点
+            for loc in locations[:50]  # At most 50 locations
         ]
 
     return slim
 
 
 def _slim_relationships(relationships: Dict) -> Dict:
-    """精简 relationships，只保留核心关系"""
+    'Reduce relationships to core relationships.'
     if not isinstance(relationships, dict):
         return {}
 
-    # 只保留 relationships 字典本身，不做额外精简
-    # 因为这个字段本身应该比较小
+    # Retain the relationships dictionary itself without further reduction,
+    # because this field should already be relatively small.
     return relationships
 
 
@@ -339,7 +305,7 @@ def main():
 
     args = parser.parse_args()
 
-    # 允许传入“工作区根目录”，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+    # Accept a workspace root and resolve it to the actual book project_root, which must contain .webnovel/state.json.
     from project_locator import resolve_project_root
 
     resolved_root = resolve_project_root(args.project_root)

@@ -314,7 +314,7 @@ Examples:
 - `Yao Lao | develops toward Xiao Yan | clear interest`
 - `Xiao Yan | realizes | the academy assessment is far harsher than expected`
 
-Field meanings (English labels are the default; the parser also accepts legacy Chinese labels):
+Field meanings (use these English labels):
 - `CBN` (chapter beginning node): exactly one per chapter; connects to the previous CEN.
 - `CPNs` (progression nodes): 2–4 per chapter, in chronological order.
 - `CEN` (chapter ending node): exactly one per chapter; lands on the unresolved ending question.

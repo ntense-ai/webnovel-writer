@@ -25,7 +25,7 @@ class EntityNew(BaseModel):
     suggested_id: str
     name: str
     type: str
-    tier: str = "装饰"
+    tier: str = "decorative"
 
 
 class StateChange(BaseModel):
@@ -140,9 +140,9 @@ def validate_data_agent_output(payload: Dict[str, Any]) -> DataAgentOutput:
 def format_validation_error(exc: ValidationError) -> Dict[str, Any]:
     return {
         "code": "SCHEMA_VALIDATION_FAILED",
-        "message": "数据结构校验失败",
+        "message": "data structure validation failed",
         "details": {"errors": exc.errors()},
-        "suggestion": "请检查 data-agent 输出字段是否完整且类型正确",
+        "suggestion": "Check that data-agent output fields are complete and correctly typed",
     }
 
 
@@ -150,7 +150,7 @@ def normalize_data_agent_output(payload: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         return {}
 
-    # 操作副本，避免修改调用方原始数据
+    # Work on a copy so the caller's original data is unchanged.
     payload = dict(payload)
 
     def _ensure_list(key: str):

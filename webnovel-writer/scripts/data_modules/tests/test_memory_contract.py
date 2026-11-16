@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""记忆契约类型与 Protocol 测试。"""
+"""Memory contract types and Protocol Test。"""
 from __future__ import annotations
 
 from dataclasses import asdict
@@ -19,7 +19,7 @@ from data_modules.memory_contract import (
 
 
 # ---------------------------------------------------------------------------
-# 类型实例化 + 序列化
+# Type instantiation + Serialization
 # ---------------------------------------------------------------------------
 
 class TestContractTypes:
@@ -38,28 +38,28 @@ class TestContractTypes:
 
     def test_entity_snapshot_roundtrip(self):
         e = EntitySnapshot(
-            id="xiaoyan", name="萧炎", type="角色", tier="核心",
-            aliases=["他"], attributes={"realm": "斗帝"},
+            id="xiaoyan", name="Xiao Yan", type="character", tier="core",
+            aliases=["he"], attributes={"realm": "Dou Di"},
             first_appearance=1, last_appearance=100,
-            recent_state_changes=[{"field": "realm", "old": "斗圣", "new": "斗帝"}],
+            recent_state_changes=[{"field": "realm", "old": "Battle Saint", "new": "Dou Di"}],
         )
         d = e.to_dict()
         assert d["id"] == "xiaoyan"
-        assert d["aliases"] == ["他"]
+        assert d["aliases"] == ["he"]
         assert len(d["recent_state_changes"]) == 1
 
     def test_rule_to_dict(self):
-        r = Rule(id="r1", subject="异火", field="数量", value="23种", domain="力量体系", source_chapter=1)
+        r = Rule(id="r1", subject="exotic flame", field="quantity", value="23kinds", domain="power-system", source_chapter=1)
         d = r.to_dict()
-        assert d["domain"] == "力量体系"
+        assert d["domain"] == "power-system"
 
     def test_open_loop_defaults(self):
-        o = OpenLoop(id="ol1", content="三年之约")
+        o = OpenLoop(id="ol1", content="three-year challenge")
         assert o.status == "active"
         assert o.urgency == 0.0
 
     def test_timeline_event_to_dict(self):
-        t = TimelineEvent(event="萧炎突破斗帝", chapter=1500, time_hint="大结局", event_type="突破")
+        t = TimelineEvent(event="Xiao Yan reaches Battle Emperor", chapter=1500, time_hint="Finale", event_type="Breakthrough")
         d = t.to_dict()
         assert d["chapter"] == 1500
 
@@ -76,11 +76,11 @@ class TestContractTypes:
 
 
 # ---------------------------------------------------------------------------
-# Protocol 结构检查
+# Protocol Structural checks
 # ---------------------------------------------------------------------------
 
 class _FakeMemory:
-    """满足 MemoryContract Protocol 的最小实现。"""
+    """satisfies MemoryContract Protocol minimal implementation of。"""
     def commit_chapter(self, chapter: int, result: dict) -> CommitResult:
         return CommitResult(chapter=chapter)
     def load_context(self, chapter: int, budget_tokens: int = 4000) -> ContextPack:

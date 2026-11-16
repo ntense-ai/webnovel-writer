@@ -14,9 +14,9 @@ from runtime_compat import enable_windows_utf8_stdio
 
 
 REQUIRED_VOLUME_ARTIFACTS = (
-    "第{volume}卷-节拍表.md",
-    "第{volume}卷-时间线.md",
-    "第{volume}卷-详细大纲.md",
+    "volume-{volume}-beats.md",
+    "volume-{volume}-timeline.md",
+    "volume-{volume}-outline.md",
 )
 
 
@@ -38,7 +38,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _require_current_volume_artifacts(project_root: Path, volume: int) -> list[str]:
     missing: list[str] = []
-    outline_dir = project_dir(project_root, "大纲")
+    outline_dir = project_dir(project_root, "outlines")
     for pattern in REQUIRED_VOLUME_ARTIFACTS:
         path = project_path(project_root, Path("outlines") / pattern.format(volume=volume))
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
@@ -56,7 +56,7 @@ def _resolve_writeback_source(
     volume: int,
     writeback_file: str | Path | None,
 ) -> Path:
-    expected = project_path(project_root, f"outlines/第{volume}卷-总纲写回.json").resolve()
+    expected = project_path(project_root, f"outlines/volume-{volume}-master-outline-update.json").resolve()
     if writeback_file:
         candidate = Path(writeback_file)
         if not candidate.is_absolute():
@@ -89,7 +89,7 @@ def _normalize_anchor(payload: dict[str, Any], expected_volume: int) -> dict[str
     if not isinstance(raw, dict):
         raise MasterOutlineSyncError("writeback JSON missing object field: next_volume_anchor")
 
-    volume_value = raw.get("volume") or raw.get("volume_id") or raw.get("卷号") or expected_volume
+    volume_value = raw.get("volume") or raw.get("volume_id") or raw.get("volume") or expected_volume
     try:
         volume = int(volume_value)
     except (TypeError, ValueError) as exc:
@@ -97,9 +97,9 @@ def _normalize_anchor(payload: dict[str, Any], expected_volume: int) -> dict[str
     if volume != expected_volume:
         raise MasterOutlineSyncError(f"next_volume_anchor.volume must be {expected_volume}, got {volume}")
 
-    name = raw.get("volume_name") or raw.get("name") or raw.get("卷名")
-    conflict = raw.get("core_conflict") or raw.get("核心冲突")
-    climax = raw.get("volume_end_climax") or raw.get("end_climax") or raw.get("卷末高潮")
+    name = raw.get("volume_name") or raw.get("name") or raw.get("volume-title")
+    conflict = raw.get("core_conflict") or raw.get("core_conflict")
+    climax = raw.get("volume_end_climax") or raw.get("end_climax") or raw.get("volume_end_climax")
     if not all(_cell(v) for v in (name, conflict, climax)):
         raise MasterOutlineSyncError(
             "next_volume_anchor requires volume_name, core_conflict, and volume_end_climax"
@@ -109,13 +109,13 @@ def _normalize_anchor(payload: dict[str, Any], expected_volume: int) -> dict[str
         "volume_name": _cell(name),
         "core_conflict": _cell(conflict),
         "volume_end_climax": _cell(climax),
-        "chapters_range": _cell(raw.get("chapters_range") or raw.get("章节范围") or ""),
+        "chapters_range": _cell(raw.get("chapters_range") or raw.get("chapters_range") or ""),
     }
 
 
 def _update_volume_table(text: str, anchor: dict[str, str]) -> tuple[str, bool]:
     lines = text.splitlines()
-    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| 卷号", "| volume"))), None)
+    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| volume", "| volume"))), None)
     new_row = _render_row(
         [
             anchor["volume"],
@@ -174,15 +174,15 @@ def _structured_writeback_items(payload: dict[str, Any]) -> list[dict[str, str]]
         for raw in raw_items:
             if not isinstance(raw, dict):
                 raise MasterOutlineSyncError(f"{field} entries must be objects")
-            content = raw.get("content") or raw.get("text") or raw.get("伏笔内容")
+            content = raw.get("content") or raw.get("text") or raw.get("foreshadowing")
             if not _cell(content):
                 continue
             items.append(
                 {
                     "content": _cell(content),
-                    "buried_chapter": _cell(raw.get("buried_chapter") or raw.get("bury_chapter") or raw.get("埋设章") or ""),
-                    "payoff_chapter": _cell(raw.get("payoff_chapter") or raw.get("recover_chapter") or raw.get("回收章") or ""),
-                    "level": _cell(raw.get("level") or raw.get("层级") or default_level),
+                    "buried_chapter": _cell(raw.get("buried_chapter") or raw.get("bury_chapter") or raw.get("buried_chapter") or ""),
+                    "payoff_chapter": _cell(raw.get("payoff_chapter") or raw.get("recover_chapter") or raw.get("payoff_chapter") or ""),
+                    "level": _cell(raw.get("level") or raw.get("level") or default_level),
                 }
             )
     return items
@@ -193,7 +193,7 @@ def _append_foreshadow_rows(text: str, items: list[dict[str, str]]) -> tuple[str
         return text, 0
 
     lines = text.splitlines()
-    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| 伏笔内容", "| foreshadowing"))), None)
+    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| foreshadowing", "| foreshadowing"))), None)
     if header_idx is None:
         lines.extend(
             [
@@ -251,7 +251,7 @@ def sync_master_outline(
 
     _require_current_volume_artifacts(root, volume)
 
-    outline_dir = project_dir(root, "大纲")
+    outline_dir = project_dir(root, "outlines")
     master_path = project_path(root, "outlines/master-outline.md")
     if not master_path.is_file():
         raise MasterOutlineSyncError(f"missing master outline: {master_path.relative_to(root).as_posix()}")

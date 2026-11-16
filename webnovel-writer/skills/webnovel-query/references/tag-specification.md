@@ -30,12 +30,12 @@ This file is an XML tag format reference.
 ## Attribute details
 
 ### tier (importance tier)
-- **核心** (core): affects the main plot; must track.
-- **支线** (subplot): enriches the plot; should track.
-- **装饰** (decorative): adds realism; tracking optional.
+- **core** (core): affects the main plot; must track.
+- **subplot** (subplot): enriches the plot; should track.
+- **decorative** (decorative): adds realism; tracking optional.
 
 ### type (entity type)
-Runtime values: 角色 / 地点 / 物品 / 势力 / 招式 (character / location / item / faction / move).
+Runtime values: character / location / item / faction / combat-move (character / location / item / faction / move).
 
 ### id / ref (entity reference)
 - **id (recommended)**: stable unique identifier (facilitates later updates/alias additions).
@@ -65,11 +65,11 @@ Runtime values: 角色 / 地点 / 物品 / 势力 / 招式 (character / location
 Chapter prose...
 
 <!--
-<entity type="角色" id="luchen" name="Lu Chen" desc="Protagonist, awakened spacetime abilities" tier="核心"/>
+<entity type="character" id="luchen" name="Lu Chen" desc="Protagonist, awakened spacetime abilities" tier="core"/>
 <entity-alias id="luchen" alias="Captain Lu" context="After joining the special task force"/>
 <entity-update id="luchen"><set key="realm" value="F-rank Awakened" reason="Awakening completed"/></entity-update>
 <skill name="Time Rewind" level="1" desc="Return ten seconds into the past" cooldown="24 hours"/>
-<foreshadow content="The mysterious elder's jade pendant" tier="核心" target="50"/>
+<foreshadow content="The mysterious elder's jade pendant" tier="core" target="50"/>
 <relationship char1_id="luchen" char2_id="liwe" type="ally" intensity="60" desc="Initial cooperation"/>
 -->
 ```
@@ -82,9 +82,9 @@ Chapter prose...
 <input>Mark new characters</input>
 <output>
 ```xml
-<entity type="角色" id="luchen" name="Lu Chen" desc="Protagonist, university student with awakened spacetime abilities" tier="核心"/>
-<entity type="角色" id="liwe" name="Li Wei" desc="Heroine, campus beauty with a mysterious background" tier="核心"/>
-<entity type="角色" name="Cafe owner" desc="Apparently ordinary but concealing great ability" tier="装饰"/>
+<entity type="character" id="luchen" name="Lu Chen" desc="Protagonist, university student with awakened spacetime abilities" tier="core"/>
+<entity type="character" id="liwe" name="Li Wei" desc="Heroine, campus beauty with a mysterious background" tier="core"/>
+<entity type="character" name="Cafe owner" desc="Apparently ordinary but concealing great ability" tier="decorative"/>
 ```
 </output>
 </example>
@@ -126,9 +126,9 @@ Chapter prose...
 <input>Plant foreshadowing</input>
 <output>
 ```xml
-<foreshadow content="The jade pendant left by the mysterious elder starts glowing" tier="核心" target="50" location="Abandoned laboratory"/>
-<foreshadow content="The strange tattoo on Li Wei's wrist" tier="支线" target="30" characters="Li Wei,Lu Chen"/>
-<foreshadow content="The cafe owner's meaningful look" tier="装饰"/>
+<foreshadow content="The jade pendant left by the mysterious elder starts glowing" tier="core" target="50" location="Abandoned laboratory"/>
+<foreshadow content="The strange tattoo on Li Wei's wrist" tier="subplot" target="30" characters="Li Wei,Lu Chen"/>
+<foreshadow content="The cafe owner's meaningful look" tier="decorative"/>
 ```
 </output>
 </example>
@@ -146,9 +146,9 @@ Chapter prose...
 </examples>
 
 <errors>
-❌ `<entity type='角色' .../>` → ✅ Use double quotes `type="角色"`
-❌ `<entity type="角色" ...>` → ✅ Self-close with `.../>` or add `</entity>`
-❌ `<Entity type="角色" .../>` → ✅ Lowercase tag name `<entity`
+❌ `<entity type='character' .../>` → ✅ Use double quotes `type="character"`
+❌ `<entity type="character" ...>` → ✅ Self-close with `.../>` or add `</entity>`
+❌ `<Entity type="character" .../>` → ✅ Lowercase tag name `<entity`
 ❌ `[NEW_ENTITY: character, Lu Chen, ...]` → ✅ Use XML format
 ❌ `<entity-update ref="xxx"></entity-update>` → ✅ Include at least one `<set key="..." value="..."/>`
 </errors>

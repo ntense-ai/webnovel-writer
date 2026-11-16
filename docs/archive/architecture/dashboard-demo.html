@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PIXEL WRITER HUB - 500章 Demo</title>
+<title>PIXEL WRITER HUB - 500 chapters Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg-main:#fff7e8;--bg-panel:#fffdf6;--bg-card:#fffaf0;--bg-card-2:#fff3d5;--text-main:#2a220f;--text-sub:#5d5035;--text-mute:#8f7f5c;--accent-blue:#26a8ff;--accent-purple:#7f5af0;--accent-green:#2ec27e;--accent-amber:#f5a524;--accent-red:#d7263d;--accent-cyan:#00b8d4;--border-main:#2a220f;--border-soft:#8f7f5c;--shadow-main:6px 6px 0 #2a220f;--shadow-soft:3px 3px 0 #8f7f5c;--font-display:'Press Start 2P',monospace;--font-body:'Noto Sans SC','Microsoft YaHei',sans-serif}
@@ -44,14 +44,14 @@ tr:hover td{background:#fff4d8}
 .page{display:none}.page.active{display:block}
 .legend-dot{display:inline-block;width:12px;height:12px;border:2px solid var(--border-main);margin-right:4px;vertical-align:-1px}
 
-/* === 翻页控制条 === */
+/* === Pagination controls === */
 .pager{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .pager-btn{border:2px solid var(--border-main);background:#fff8e6;color:var(--text-main);font-family:var(--font-body);font-size:13px;font-weight:600;padding:4px 10px;cursor:pointer;box-shadow:2px 2px 0 var(--border-main)}
 .pager-btn:hover:not(:disabled){background:#e6f7ff;border-color:var(--accent-blue)}
 .pager-btn:disabled{opacity:.4;cursor:not-allowed}
 .pager-info{font-size:13px;font-weight:600;color:var(--text-sub)}
 
-/* === 像素柱状图 === */
+/* === Pixel bar chart === */
 .pixel-bars{display:flex;align-items:flex-end;gap:3px;height:120px;padding:14px 4px 0;overflow:hidden}
 .pixel-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .pixel-bar{width:100%;border:2px solid var(--border-main);min-width:4px;position:relative}
@@ -60,7 +60,7 @@ tr:hover td{background:#fff4d8}
 .pixel-bar-label{font-size:9px;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .bar-green{background:var(--accent-green)}.bar-amber{background:var(--accent-amber)}.bar-red{background:var(--accent-red)}
 
-/* === 热力格按卷分组 === */
+/* === Heatmap grouped by volume === */
 .heatmap-vol{margin-bottom:10px}
 .heatmap-vol-title{font-size:13px;font-weight:700;color:var(--text-sub);margin-bottom:4px}
 .heatmap-row{display:flex;gap:2px;flex-wrap:wrap}
@@ -68,7 +68,7 @@ tr:hover td{background:#fff4d8}
 .heat-cell:hover::after{content:attr(data-tip);position:absolute;bottom:22px;left:50%;transform:translateX(-50%);background:var(--text-main);color:#fff;font-size:11px;padding:2px 6px;white-space:nowrap;z-index:10;border:2px solid var(--border-main)}
 .h-high{background:#26a8ff}.h-mid{background:#a8d8ff}.h-low{background:#dff3ff}.h-vlow{background:#ffe0e5}.h-none{background:#f5f0e0}
 
-/* === 伏笔甘特 === */
+/* === Foreshadowing Gantt === */
 .gantt-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:13px}
 .gantt-label{width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;flex-shrink:0}
 .gantt-track{flex:1;height:14px;border:2px solid var(--border-soft);background:var(--bg-panel);position:relative}
@@ -82,7 +82,7 @@ tr:hover td{background:#fff4d8}
 .strand-bar .seg{height:100%}.sq{background:#26a8ff}.sf{background:#ff5c8a}.sc{background:#7f5af0}
 .strand-legend{display:flex;gap:14px;font-size:13px;color:var(--text-sub)}
 
-/* === 系统 === */
+/* === System === */
 .sys-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .status-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #d8ccb2;font-size:14px}
 .status-row:last-child{border:none}
@@ -96,14 +96,14 @@ tr:hover td{background:#fff4d8}
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="sidebar-hd"><h1>PIXEL WRITER HUB</h1><div class="sub">斗破苍穹</div></div>
+    <div class="sidebar-hd"><h1>PIXEL WRITER HUB</h1><div class="sub">Battle Through the Heavens</div></div>
     <div class="nav">
-      <button class="nav-btn active" onclick="showPage('overview',this)"><span class="ico">📊</span><span>总览</span></button>
-      <button class="nav-btn" onclick="showPage('pacing',this)"><span class="ico">📈</span><span>节奏雷达</span></button>
-      <button class="nav-btn" onclick="showPage('foreshadow',this)"><span class="ico">🔖</span><span>伏笔追踪</span></button>
-      <button class="nav-btn" onclick="showPage('system',this)"><span class="ico">⚙️</span><span>系统状态</span></button>
+      <button class="nav-btn active" onclick="showPage('overview',this)"><span class="ico">📊</span><span>Overview</span></button>
+      <button class="nav-btn" onclick="showPage('pacing',this)"><span class="ico">📈</span><span>Pacing radar</span></button>
+      <button class="nav-btn" onclick="showPage('foreshadow',this)"><span class="ico">🔖</span><span>Foreshadowing tracker</span></button>
+      <button class="nav-btn" onclick="showPage('system',this)"><span class="ico">⚙️</span><span>System status</span></button>
     </div>
-    <div class="live"><span class="live-dot"></span> 实时同步中</div>
+    <div class="live"><span class="live-dot"></span> Live synchronization</div>
   </aside>
   <main class="main">
     <div id="p-overview" class="page active"></div>
@@ -113,10 +113,10 @@ tr:hover td{background:#fff4d8}
   </main>
 </div>
 <script>
-// ========== 模拟 500 章数据 ==========
+// ========== Simulated 500  chapters of data ==========
 const TOTAL_CH = 487, TOTAL_VOL = 5;
 const VOL_RANGES = [[1,100],[101,200],[201,320],[321,420],[421,487]];
-const VOL_NAMES = ['第1卷 废材崛起','第2卷 迦南学院','第3卷 黑角域','第4卷 中州大陆','第5卷 星域之争'];
+const VOL_NAMES = ['Volume 1 Rise of the Underdog','Volume 2 Jia Nan Academy','Volume 3 Black-Corner Region','Volume 4 Central Continent','Volume 5 Star Realm Conflict'];
 
 function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function genChapters(){
@@ -134,7 +134,7 @@ function genChapters(){
 const DATA=genChapters();
 
 function genForeshadowing(){
-  const names=['三年之约','药老身世','萧家复仇','青莲地心火','灵根置换术','墨蛟契约','星陨阁秘密','魂殿暗线','迦南学院内鬼','炎帝传承','古河谷主的遗嘱','美杜莎蛇族','远古龙族血脉','虚无吞炎','净莲妖火','陀舍古帝遗迹','异火榜终极','联盟暗棋','萧炎父亲下落','荒古遗迹入口'];
+  const names=['The Three-Year Promise','The Elder Alchemist’s Past','The Xiao Clan’s Revenge','Azure Lotus Earth Flame','Spirit-Root Replacement','Black Serpent Contract','The Starfall Pavilion Secret','The Soul Hall’s Hidden Plot','The Traitor at Jia Nan Academy','Flame Emperor Legacy','The Valley Master’s Will','Medusa’s Serpent Clan','Ancient Dragon Bloodline','Void-Devouring Flame','Purifying Lotus Flame','The Ancient Emperor’s Ruins','The Ultimate Flame Ranking','The Alliance’s Hidden Agent','The Whereabouts of Xiao Yan’s Father','Ancient Ruins Entrance'];
   return names.map((n,i)=>{
     const planted=randInt(1,Math.min(400,TOTAL_CH-20));
     const target=planted+randInt(15,120);
@@ -145,7 +145,7 @@ function genForeshadowing(){
 }
 const FORESHADOWING=genForeshadowing();
 
-// ========== 柱状图 ==========
+// ========== Bar chart ==========
 let barPage=0;
 const BAR_SIZE=20;
 function renderBars(containerId){
@@ -155,27 +155,27 @@ function renderBars(containerId){
   const slice=DATA.slice(start-1,end);
   let html=`<div class="pager">
     <button class="pager-btn" onclick="barPage=Math.max(0,barPage-1);renderBars('${containerId}')" ${barPage<=0?'disabled':''}>◀</button>
-    <span class="pager-info">第 ${start}-${end} 章 / 共 ${TOTAL_CH} 章</span>
+    <span class="pager-info">Chapter ${start}-${end} / Total ${TOTAL_CH}  chapters</span>
     <button class="pager-btn" onclick="barPage=Math.min(${total-1},barPage+1);renderBars('${containerId}')" ${barPage>=total-1?'disabled':''}>▶</button>
-    <button class="pager-btn" onclick="barPage=${total-1};renderBars('${containerId}')">最新 ▶▶</button>
+    <button class="pager-btn" onclick="barPage=${total-1};renderBars('${containerId}')">Latest ▶▶</button>
   </div><div class="pixel-bars">`;
   slice.forEach(d=>{
     const cls=d.score>=80?'bar-green':d.score>=70?'bar-amber':'bar-red';
     html+=`<div class="pixel-bar-col"><div class="pixel-bar ${cls}" style="height:${d.score}%"><span class="bar-val">${d.score}</span></div><div class="pixel-bar-label">${d.ch}</div></div>`;
   });
-  html+=`</div><div style="margin-top:6px;font-size:12px;color:var(--text-mute)">🟢 ≥80　🟡 70-79　🔴 &lt;70　鼠标悬停看分数</div>`;
+  html+=`</div><div style="margin-top:6px;font-size:12px;color:var(--text-mute)">🟢 ≥80　🟡 70-79　🔴 &lt;70　Hover to see scores</div>`;
   document.getElementById(containerId).innerHTML=html;
 }
 
-// ========== 热力格按卷 ==========
+// ========== Heatmap by volume ==========
 function renderHeatmap(containerId){
   let html='';
   VOL_RANGES.forEach(([s,e],vi)=>{
-    html+=`<div class="heatmap-vol"><div class="heatmap-vol-title">${VOL_NAMES[vi]}（${s}-${e}章）</div><div class="heatmap-row">`;
+    html+=`<div class="heatmap-vol"><div class="heatmap-vol-title">${VOL_NAMES[vi]} (${s}-${e} chapters)</div><div class="heatmap-row">`;
     for(let i=s;i<=e;i++){
       const d=DATA[i-1];
       const cls=d.wc>=2500?'h-high':d.wc>=2000?'h-mid':d.wc>=1800?'h-low':d.wc>0?'h-vlow':'h-none';
-      html+=`<div class="heat-cell ${cls}" data-tip="第${d.ch}章 ${d.wc}字"></div>`;
+      html+=`<div class="heat-cell ${cls}" data-tip="Chapter ${d.ch} ${d.wc} words"></div>`;
     }
     html+=`</div></div>`;
   });
@@ -188,7 +188,7 @@ function renderHeatmap(containerId){
   document.getElementById(containerId).innerHTML=html;
 }
 
-// ========== 伏笔甘特 ==========
+// ========== Foreshadowing Gantt ==========
 let foreshadowFilter='all';
 function renderGantt(){
   const items=foreshadowFilter==='all'?FORESHADOWING:FORESHADOWING.filter(f=>f.status===foreshadowFilter);
@@ -197,17 +197,17 @@ function renderGantt(){
   const counts={done:FORESHADOWING.filter(f=>f.status==='done').length,active:FORESHADOWING.filter(f=>f.status==='active').length,urgent:FORESHADOWING.filter(f=>f.status==='urgent').length};
 
   let statsHtml=`<div class="stats" style="grid-template-columns:repeat(4,1fr)">
-    <div class="card stat"><div class="label">总伏笔</div><div class="val plain">${FORESHADOWING.length}</div></div>
-    <div class="card stat"><div class="label">活跃</div><div class="val" style="color:var(--accent-amber)">${counts.active}</div></div>
-    <div class="card stat"><div class="label">已回收</div><div class="val" style="color:var(--accent-green)">${counts.done}</div></div>
-    <div class="card stat"><div class="label">紧急</div><div class="val" style="color:var(--accent-red)">${counts.urgent}</div></div>
+    <div class="card stat"><div class="label">Total foreshadowing</div><div class="val plain">${FORESHADOWING.length}</div></div>
+    <div class="card stat"><div class="label">Active</div><div class="val" style="color:var(--accent-amber)">${counts.active}</div></div>
+    <div class="card stat"><div class="label">resolved</div><div class="val" style="color:var(--accent-green)">${counts.done}</div></div>
+    <div class="card stat"><div class="label">Urgent</div><div class="val" style="color:var(--accent-red)">${counts.urgent}</div></div>
   </div>`;
 
   let filterHtml=`<div class="pager" style="margin-bottom:10px">
-    <button class="pager-btn${foreshadowFilter==='all'?' active':''}" onclick="foreshadowFilter='all';renderGantt()" style="${foreshadowFilter==='all'?'background:#dff3ff;border-color:var(--accent-blue)':''}">全部</button>
-    <button class="pager-btn" onclick="foreshadowFilter='urgent';renderGantt()" style="${foreshadowFilter==='urgent'?'background:#ffe0e5;border-color:var(--accent-red)':''}">🔴 紧急</button>
-    <button class="pager-btn" onclick="foreshadowFilter='active';renderGantt()" style="${foreshadowFilter==='active'?'background:#fff1cd;border-color:var(--accent-amber)':''}">🟡 活跃</button>
-    <button class="pager-btn" onclick="foreshadowFilter='done';renderGantt()" style="${foreshadowFilter==='done'?'background:#dcfce7;border-color:var(--accent-green)':''}">🟢 已回收</button>
+    <button class="pager-btn${foreshadowFilter==='all'?' active':''}" onclick="foreshadowFilter='all';renderGantt()" style="${foreshadowFilter==='all'?'background:#dff3ff;border-color:var(--accent-blue)':''}">all</button>
+    <button class="pager-btn" onclick="foreshadowFilter='urgent';renderGantt()" style="${foreshadowFilter==='urgent'?'background:#ffe0e5;border-color:var(--accent-red)':''}">🔴 Urgent</button>
+    <button class="pager-btn" onclick="foreshadowFilter='active';renderGantt()" style="${foreshadowFilter==='active'?'background:#fff1cd;border-color:var(--accent-amber)':''}">🟡 Active</button>
+    <button class="pager-btn" onclick="foreshadowFilter='done';renderGantt()" style="${foreshadowFilter==='done'?'background:#dcfce7;border-color:var(--accent-green)':''}">🟢 resolved</button>
   </div>`;
 
   let ganttHtml='';
@@ -219,20 +219,20 @@ function renderGantt(){
   });
 
   document.getElementById('p-foreshadow').innerHTML=`
-    <div class="page-hd"><h2>🔖 伏笔追踪</h2><span class="badge b-cyan">当前第 ${TOTAL_CH} 章</span></div>
+    <div class="page-hd"><h2>🔖 Foreshadowing tracker</h2><span class="badge b-cyan">Current chapter ${TOTAL_CH}  chapters</span></div>
     ${statsHtml}
     ${filterHtml}
-    <div class="card"><div class="card-hd"><span class="card-title">伏笔时间线</span><span class="badge b-cyan">章节 1 — ${maxCh}</span></div>
+    <div class="card"><div class="card-hd"><span class="card-title">Foreshadowing timeline</span><span class="badge b-cyan">chapter 1 — ${maxCh}</span></div>
     ${ganttHtml}
     <div style="margin-top:8px;display:flex;gap:14px;font-size:12px">
-      <span><span class="legend-dot" style="background:var(--accent-green)"></span>已回收</span>
-      <span><span class="legend-dot" style="background:var(--accent-amber)"></span>活跃</span>
-      <span><span class="legend-dot" style="background:var(--accent-red)"></span>紧急</span>
-      <span style="color:var(--accent-blue)">｜ 蓝线 = 当前章</span>
+      <span><span class="legend-dot" style="background:var(--accent-green)"></span>resolved</span>
+      <span><span class="legend-dot" style="background:var(--accent-amber)"></span>Active</span>
+      <span><span class="legend-dot" style="background:var(--accent-red)"></span>Urgent</span>
+      <span style="color:var(--accent-blue)">｜ Blue line = Current chapter</span>
     </div></div>`;
 }
 
-// ========== 总览页 ==========
+// ========== Overview page ==========
 function renderOverview(){
   const totalWords=DATA.reduce((s,d)=>s+d.wc,0);
   const recent5=DATA.slice(-5);
@@ -241,28 +241,28 @@ function renderOverview(){
   const pct=(totalWords/1200000*100).toFixed(1);
 
   document.getElementById('p-overview').innerHTML=`
-    <div class="page-hd"><h2>📊 总览</h2><span class="badge b-blue">玄幻修仙 · 500章级</span></div>
+    <div class="page-hd"><h2>📊 Overview</h2><span class="badge b-blue">Cultivation fantasy · 500Chapter-level</span></div>
     <div class="stats">
-      <div class="card stat"><div class="label">总字数</div><div class="val">${(totalWords/10000).toFixed(1)} 万</div><div class="sub">目标 120 万 · ${pct}%</div><div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></div>
-      <div class="card stat"><div class="label">当前章节</div><div class="val plain">第 ${TOTAL_CH} 章</div><div class="sub">卷 ${TOTAL_VOL} · ${VOL_NAMES[TOTAL_VOL-1].split(' ')[1]}</div></div>
+      <div class="card stat"><div class="label">Total words</div><div class="val">${(totalWords/10000).toFixed(1)}  x10,000</div><div class="sub">Target 1.2M words · ${pct}%</div><div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div></div>
+      <div class="card stat"><div class="label">Current chapter</div><div class="val plain">Chapter ${TOTAL_CH}</div><div class="sub">Volume ${TOTAL_VOL} · ${VOL_NAMES[TOTAL_VOL-1].split(' ')[1]}</div></div>
       <div class="card stat"><div class="label">Story Runtime</div><div class="val plain" style="font-size:18px"><span class="badge b-green">Mainline ✓</span></div><div class="sub">accepted · no fallback</div></div>
-      <div class="card stat"><div class="label">审查均分</div><div class="val" style="color:${avgScore>=80?'var(--accent-green)':avgScore>=70?'var(--accent-amber)':'var(--accent-red)'}">${avgScore}</div><div class="sub">最近 5 章均分</div></div>
-      <div class="card stat"><div class="label">紧急伏笔</div><div class="val" style="color:var(--accent-amber)">${urgentCount}</div><div class="sub">总计 ${FORESHADOWING.length} 条伏笔</div></div>
+      <div class="card stat"><div class="label">Average review score</div><div class="val" style="color:${avgScore>=80?'var(--accent-green)':avgScore>=70?'var(--accent-amber)':'var(--accent-red)'}">${avgScore}</div><div class="sub">Recent 5  chapter average</div></div>
+      <div class="card stat"><div class="label">Urgent foreshadowing</div><div class="val" style="color:var(--accent-amber)">${urgentCount}</div><div class="sub">Total ${FORESHADOWING.length}  foreshadowing threads</div></div>
     </div>
-    <div class="card"><div class="card-hd"><span class="card-title">📊 审查得分</span></div><div id="overview-bars"></div></div>
-    <div class="card"><div class="card-hd"><span class="card-title">📝 字数热力图（按卷）</span></div><div id="overview-heat"></div></div>
+    <div class="card"><div class="card-hd"><span class="card-title">📊 Review score</span></div><div id="overview-bars"></div></div>
+    <div class="card"><div class="card-hd"><span class="card-title">📝 Word-count heatmap (By volume)</span></div><div id="overview-heat"></div></div>
     <div class="two-col">
       <div class="card">
-        <div class="card-hd"><span class="card-title">⚠️ 紧急伏笔</span></div>
-        <div class="tbl-wrap"><table><thead><tr><th>内容</th><th>状态</th><th>埋设</th><th>目标</th></tr></thead><tbody>
-        ${FORESHADOWING.filter(f=>f.status==='urgent').slice(0,5).map(f=>`<tr><td>${f.name}</td><td><span class="badge b-red">紧急</span></td><td>${f.planted}</td><td>${f.target}</td></tr>`).join('')}
+        <div class="card-hd"><span class="card-title">⚠️ Urgent foreshadowing</span></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Content</th><th>Status</th><th>Planted</th><th>Target</th></tr></thead><tbody>
+        ${FORESHADOWING.filter(f=>f.status==='urgent').slice(0,5).map(f=>`<tr><td>${f.name}</td><td><span class="badge b-red">Urgent</span></td><td>${f.planted}</td><td>${f.target}</td></tr>`).join('')}
         </tbody></table></div>
       </div>
       <div class="card">
-        <div class="card-hd"><span class="card-title">最近章节</span><span class="badge b-blue">LATEST</span></div>
+        <div class="card-hd"><span class="card-title">Recent chapters</span><span class="badge b-blue">LATEST</span></div>
         ${DATA.slice(-3).reverse().map(d=>{
           const cls=d.hook==='strong'?'b-green':d.hook==='medium'?'b-amber':'b-red';
-          return `<div class="ch-card"><div><div class="ch-title">📖 第${d.ch}章</div><div class="ch-meta">审查 ${d.score} · 字数 ${d.wc}</div></div><div style="text-align:right"><span class="badge ${cls}">${d.hook}</span></div></div>`;
+          return `<div class="ch-card"><div><div class="ch-title">📖 Chapter ${d.ch}</div><div class="ch-meta">Review ${d.score} · Word count ${d.wc}</div></div><div style="text-align:right"><span class="badge ${cls}">${d.hook}</span></div></div>`;
         }).join('')}
       </div>
     </div>`;
@@ -271,7 +271,7 @@ function renderOverview(){
   renderHeatmap('overview-heat');
 }
 
-// ========== 节奏雷达页 ==========
+// ========== Pacing radar page ==========
 let pacingPage=0;
 const PACING_SIZE=20;
 function renderPacing(){
@@ -282,9 +282,9 @@ function renderPacing(){
 
   let hookHtml=`<div class="pager">
     <button class="pager-btn" onclick="pacingPage=Math.max(0,pacingPage-1);renderPacing()" ${pacingPage<=0?'disabled':''}>◀</button>
-    <span class="pager-info">第 ${start}-${end} 章</span>
+    <span class="pager-info">Chapter ${start}-${end}</span>
     <button class="pager-btn" onclick="pacingPage=Math.min(${total-1},pacingPage+1);renderPacing()" ${pacingPage>=total-1?'disabled':''}>▶</button>
-    <button class="pager-btn" onclick="pacingPage=${total-1};renderPacing()">最新 ▶▶</button>
+    <button class="pager-btn" onclick="pacingPage=${total-1};renderPacing()">Latest ▶▶</button>
   </div>`;
   slice.forEach(d=>{
     const cls=d.hook==='strong'?'hb-strong':d.hook==='medium'?'hb-medium':'hb-weak';
@@ -301,43 +301,43 @@ function renderPacing(){
   });
 
   document.getElementById('p-pacing').innerHTML=`
-    <div class="page-hd"><h2>📈 节奏雷达</h2><span class="badge b-purple">共 ${TOTAL_CH} 章</span></div>
-    <div class="card"><div class="card-hd"><span class="card-title">钩子强度</span></div>${hookHtml}</div>
+    <div class="page-hd"><h2>📈 Pacing radar</h2><span class="badge b-purple">Total ${TOTAL_CH}  chapters</span></div>
+    <div class="card"><div class="card-hd"><span class="card-title">Hook strength</span></div>${hookHtml}</div>
     <div class="two-col">
-      <div class="card"><div class="card-hd"><span class="card-title">Strand 分布</span></div>${strandHtml}
+      <div class="card"><div class="card-hd"><span class="card-title">Strand Distribution</span></div>${strandHtml}
         <div class="strand-legend" style="margin-top:8px"><span>🔵 Quest</span><span>🔴 Fire</span><span>🟣 Constellation</span></div>
       </div>
-      <div class="card"><div class="card-hd"><span class="card-title">字数热力图</span></div><div id="pacing-heat"></div></div>
+      <div class="card"><div class="card-hd"><span class="card-title">Word-count heatmap</span></div><div id="pacing-heat"></div></div>
     </div>`;
   renderHeatmap('pacing-heat');
 }
 
-// ========== 系统页 ==========
+// ========== System page ==========
 function renderSystem(){
   document.getElementById('p-system').innerHTML=`
-    <div class="page-hd"><h2>⚙️ 系统状态</h2></div>
+    <div class="page-hd"><h2>⚙️ System status</h2></div>
     <div class="sys-grid">
       <div class="card"><div class="card-hd"><span class="card-title">Story Runtime</span><span class="badge b-green">Mainline ✓</span></div>
-        <div class="status-row"><span class="status-label">Latest Commit</span><span><span class="badge b-green">accepted</span> 第${TOTAL_CH}章</span></div>
+        <div class="status-row"><span class="status-label">Latest Commit</span><span><span class="badge b-green">accepted</span> Chapter ${TOTAL_CH}</span></div>
         <div class="status-row"><span class="status-label">Fallback</span><span>none</span></div></div>
-      <div class="card"><div class="card-hd"><span class="card-title">合同树</span></div>
-        <div class="status-row"><span class="status-label">MASTER_SETTING</span><span><span class="badge b-green">✓</span> 玄幻修仙</span></div>
-        <div class="status-row"><span class="status-label">Volume</span><span>${TOTAL_VOL} 份</span></div>
-        <div class="status-row"><span class="status-label">Chapter</span><span>${TOTAL_CH} 份</span></div>
-        <div class="status-row"><span class="status-label">Review</span><span>${TOTAL_CH} 份</span></div></div>
-      <div class="card"><div class="card-hd"><span class="card-title">最近 Commit</span></div>
-        <div class="tbl-wrap"><table><thead><tr><th>章</th><th>状态</th><th>state</th><th>index</th><th>summ</th><th>mem</th><th>vec</th></tr></thead><tbody>
+      <div class="card"><div class="card-hd"><span class="card-title">Contract tree</span></div>
+        <div class="status-row"><span class="status-label">MASTER_SETTING</span><span><span class="badge b-green">✓</span> Cultivation fantasy</span></div>
+        <div class="status-row"><span class="status-label">Volume</span><span>${TOTAL_VOL}  files</span></div>
+        <div class="status-row"><span class="status-label">Chapter</span><span>${TOTAL_CH}  files</span></div>
+        <div class="status-row"><span class="status-label">Review</span><span>${TOTAL_CH}  files</span></div></div>
+      <div class="card"><div class="card-hd"><span class="card-title">Recent Commit</span></div>
+        <div class="tbl-wrap"><table><thead><tr><th> chapters</th><th>Status</th><th>state</th><th>index</th><th>summ</th><th>mem</th><th>vec</th></tr></thead><tbody>
         ${DATA.slice(-5).reverse().map(d=>`<tr><td>${d.ch}</td><td><span class="badge b-green">accepted</span></td><td>done</td><td>done</td><td>done</td><td>done</td><td>done</td></tr>`).join('')}
         </tbody></table></div></div>
-      <div class="card"><div class="card-hd"><span class="card-title">RAG 环境</span></div>
+      <div class="card"><div class="card-hd"><span class="card-title">RAG environment</span></div>
         <div class="status-row"><span class="status-label">Embed Key</span><span><span class="badge b-green">✓</span></span></div>
-        <div class="status-row"><span class="status-label">Rerank Key</span><span><span class="badge b-amber">未配</span></span></div>
+        <div class="status-row"><span class="status-label">Rerank Key</span><span><span class="badge b-amber">not configured</span></span></div>
         <div class="status-row"><span class="status-label">Vector DB</span><span>24.3 MB</span></div>
         <div class="status-row"><span class="status-label">RAG Mode</span><span><span class="badge b-blue">vector_only</span></span></div></div>
     </div>`;
 }
 
-// ========== 页面切换 ==========
+// ========== Page switching ==========
 function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('p-'+id).classList.add('active');
@@ -349,7 +349,7 @@ function showPage(id,btn){
   if(id==='system')renderSystem();
 }
 
-// 初始渲染
+// Initial render
 renderOverview();
 </script>
 </body>

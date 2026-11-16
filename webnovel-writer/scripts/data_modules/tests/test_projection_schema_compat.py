@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Schema 兼容性测试：保护投影器在 LLM (DeepSeek v4pro) 实际输出 schema 下的行为。
+"""Schema compatibility tests：protect the projector under LLM (DeepSeek v4pro) actual output schema behavior under。
 
-背景：data-agent.md 提示词写的是 `{"field": "realm", "new": "..."}`，
-但 LLM 实际输出 `{"field_path": "physical.condition", "new_value": "..."}`，
-entity_deltas 用 `entity_type` 而非 `type`，open_loop_created 事件 payload 没有 `content`
-但有 `description/loop_type/unanswered_question`。
+background：data-agent.md the prompt specifies `{"field": "realm", "new": "..."}`，
+but LLM actual output `{"field_path": "physical.condition", "new_value": "..."}`，
+entity_deltas use `entity_type` instead of `type`，open_loop_created event payload absent `content`
+but contains `description/loop_type/unanswered_question`。
 
-这些测试用真实 DeepSeek v4pro 输出形态作为 fixture，确保投影器同时接受新旧 schema。
+these tests use real DeepSeek v4pro output format as fixture，ensure the projector accepts old and new forms schema。
 """
 
 import json
@@ -20,7 +20,7 @@ from data_modules.vector_projection_writer import VectorProjectionWriter
 
 
 # ============================================================
-# state_projection_writer：接受 field_path / new_value
+# state_projection_writer：accept field_path / new_value
 # ============================================================
 
 
@@ -36,8 +36,8 @@ def test_state_writer_accepts_field_path_alias(tmp_path):
                 {
                     "entity_id": "luming",
                     "field_path": "physical.condition",
-                    "old_value": "虚弱",
-                    "new_value": "虚弱（持续）",
+                    "old_value": "weak",
+                    "new_value": "weak（ongoing）",
                     "change_type": "confirmed",
                 }
             ],
@@ -46,12 +46,12 @@ def test_state_writer_accepts_field_path_alias(tmp_path):
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
     luming = payload["entity_state"]["luming"]
-    # 嵌套路径展开成字典
-    assert luming["physical"]["condition"] == "虚弱（持续）"
+    # expand dotted paths into nested dictionaries
+    assert luming["physical"]["condition"] == "weak（ongoing）"
 
 
 def test_state_writer_accepts_flat_field_legacy(tmp_path):
-    """既有 schema field/new 也必须继续工作（向后兼容）。"""
+    """existing schema field/new must keep working（backward compatible）。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
@@ -59,12 +59,12 @@ def test_state_writer_accepts_flat_field_legacy(tmp_path):
     writer.apply(
         {
             "meta": {"status": "accepted", "chapter": 3},
-            "state_deltas": [{"entity_id": "x", "field": "realm", "new": "斗师"}],
+            "state_deltas": [{"entity_id": "x", "field": "realm", "new": "Dou Shi"}],
         }
     )
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["entity_state"]["x"]["realm"] == "斗师"
+    assert payload["entity_state"]["x"]["realm"] == "Dou Shi"
 
 
 def test_state_writer_handles_array_value_in_field_path(tmp_path):
@@ -81,8 +81,8 @@ def test_state_writer_handles_array_value_in_field_path(tmp_path):
                     "field_path": "relationships.acquaintances",
                     "old_value": [],
                     "new_value": [
-                        {"entity_id": "liu_dazhu", "type": "同屋杂役"},
-                        {"entity_id": "sun_wang", "type": "同屋杂役"},
+                        {"entity_id": "liu_dazhu", "type": "fellow servant sharing the room"},
+                        {"entity_id": "sun_wang", "type": "fellow servant sharing the room"},
                     ],
                     "change_type": "initialize",
                 }
@@ -97,14 +97,14 @@ def test_state_writer_handles_array_value_in_field_path(tmp_path):
 
 
 def test_state_writer_mirrors_protagonist_state_when_entity_is_protagonist(tmp_path):
-    """主角实体的 state_delta 应同步到 state.json:protagonist_state，让旧读取路径仍可用。"""
+    """of the protagonist entity state_delta should synchronize to state.json:protagonist_state，keep the old read path available。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     initial = {
         "protagonist_state": {
-            "name": "陆鸣",
+            "name": "Lu Ming",
             "power": {"realm": "", "layer": 1},
             "location": {"current": "", "last_chapter": 0},
-            "golden_finger": {"name": "穿越者知识", "level": 1, "cooldown": 0, "skills": []},
+            "golden_finger": {"name": "transmigrator knowledge", "level": 1, "cooldown": 0, "skills": []},
             "attributes": {},
         }
     }
@@ -115,19 +115,19 @@ def test_state_writer_mirrors_protagonist_state_when_entity_is_protagonist(tmp_p
         {
             "meta": {"status": "accepted", "chapter": 2},
             "state_deltas": [
-                {"entity_id": "luming", "field_path": "power.realm", "new_value": "练气五层"},
+                {"entity_id": "luming", "field_path": "power.realm", "new_value": "Qi Refining Level Five"},
                 {
                     "entity_id": "luming",
                     "field_path": "location.current",
-                    "new_value": "青云宗杂役院",
+                    "new_value": "Azure Sect servants' courtyard",
                 },
             ],
             "entity_deltas": [
                 {
                     "entity_id": "luming",
-                    "canonical_name": "陆鸣",
-                    "entity_type": "角色",
-                    "tier": "核心",
+                    "canonical_name": "Lu Ming",
+                    "entity_type": "character",
+                    "tier": "core",
                     "is_protagonist": True,
                 }
             ],
@@ -135,18 +135,18 @@ def test_state_writer_mirrors_protagonist_state_when_entity_is_protagonist(tmp_p
     )
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["protagonist_state"]["power"]["realm"] == "练气五层"
-    assert payload["protagonist_state"]["location"]["current"] == "青云宗杂役院"
-    # name 不应被 delta 写回覆盖
-    assert payload["protagonist_state"]["name"] == "陆鸣"
+    assert payload["protagonist_state"]["power"]["realm"] == "Qi Refining Level Five"
+    assert payload["protagonist_state"]["location"]["current"] == "Azure Sect servants' courtyard"
+    # name must not be affected by delta writeback overwrites
+    assert payload["protagonist_state"]["name"] == "Lu Ming"
 
 
 def test_state_writer_recognizes_protagonist_via_tier_zhujue(tmp_path):
-    """实际 LLM 用 tier='主角' 标注，而不是 is_protagonist=True。"""
+    """actual LLM use tier='protagonist' annotate，rather than is_protagonist=True。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     initial = {
         "protagonist_state": {
-            "name": "陆鸣",
+            "name": "Lu Ming",
             "power": {"realm": "", "layer": 1},
         }
     }
@@ -157,27 +157,27 @@ def test_state_writer_recognizes_protagonist_via_tier_zhujue(tmp_path):
         {
             "meta": {"status": "accepted", "chapter": 1},
             "state_deltas": [
-                {"entity_id": "luming", "field_path": "power.realm", "new_value": "练气五层"},
+                {"entity_id": "luming", "field_path": "power.realm", "new_value": "Qi Refining Level Five"},
             ],
             "entity_deltas": [
                 {
                     "entity_id": "luming",
-                    "canonical_name": "陆鸣",
-                    "entity_type": "角色",
-                    "tier": "主角",
+                    "canonical_name": "Lu Ming",
+                    "entity_type": "character",
+                    "tier": "protagonist",
                 }
             ],
         }
     )
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["protagonist_state"]["power"]["realm"] == "练气五层"
+    assert payload["protagonist_state"]["power"]["realm"] == "Qi Refining Level Five"
 
 
 def test_state_writer_recognizes_protagonist_via_canonical_name_match(tmp_path):
-    """没有 tier 也没有 is_protagonist 时，按名字匹配 state.protagonist_state.name 兜底。"""
+    """absent tier also absent is_protagonist when，match by name state.protagonist_state.name fallback。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
-    initial = {"protagonist_state": {"name": "陆鸣", "power": {}}}
+    initial = {"protagonist_state": {"name": "Lu Ming", "power": {}}}
     (tmp_path / ".webnovel" / "state.json").write_text(json.dumps(initial), encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
 
@@ -185,25 +185,25 @@ def test_state_writer_recognizes_protagonist_via_canonical_name_match(tmp_path):
         {
             "meta": {"status": "accepted", "chapter": 1},
             "state_deltas": [
-                {"entity_id": "luming", "field_path": "power.realm", "new_value": "练气五层"},
+                {"entity_id": "luming", "field_path": "power.realm", "new_value": "Qi Refining Level Five"},
             ],
             "entity_deltas": [
-                {"entity_id": "luming", "canonical_name": "陆鸣", "entity_type": "角色"}
+                {"entity_id": "luming", "canonical_name": "Lu Ming", "entity_type": "character"}
             ],
         }
     )
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["protagonist_state"]["power"]["realm"] == "练气五层"
+    assert payload["protagonist_state"]["power"]["realm"] == "Qi Refining Level Five"
 
 
 # ============================================================
-# index_manager.apply_entity_delta：tier=主角 / entity_type 识别
+# index_manager.apply_entity_delta：tier=protagonist / entity_type recognize
 # ============================================================
 
 
 def test_index_manager_marks_protagonist_via_tier_zhujue(tmp_path):
-    """tier='主角' 时应自动设置 is_protagonist=True，让 get_protagonist 找得到。"""
+    """tier='protagonist' should automatically set is_protagonist=True，let get_protagonist can be found。"""
     from data_modules.index_manager import IndexManager
 
     cfg = DataModulesConfig.from_project_root(tmp_path)
@@ -214,20 +214,20 @@ def test_index_manager_marks_protagonist_via_tier_zhujue(tmp_path):
         {
             "entity_id": "luming",
             "action": "upsert",
-            "entity_type": "角色",
-            "tier": "主角",
+            "entity_type": "character",
+            "tier": "protagonist",
             "chapter": 1,
-            "payload": {"name": "陆鸣"},
+            "payload": {"name": "Lu Ming"},
         }
     )
 
     protagonist = manager.get_protagonist()
-    assert protagonist is not None, "tier=主角 should be recognized as protagonist"
+    assert protagonist is not None, "tier=protagonist should be recognized as protagonist"
     assert protagonist["id"] == "luming"
 
 
 def test_index_manager_preserves_entity_type_for_organization(tmp_path):
-    """entity_deltas 用 entity_type='组织' 时，索引里 type 也必须是 '组织' 而非默认 '角色'。"""
+    """entity_deltas use entity_type='organization' when，in the index type must also be 'organization' rather than default 'character'。"""
     from data_modules.index_manager import IndexManager
 
     cfg = DataModulesConfig.from_project_root(tmp_path)
@@ -238,20 +238,20 @@ def test_index_manager_preserves_entity_type_for_organization(tmp_path):
         {
             "entity_id": "qingyun_zong",
             "action": "upsert",
-            "entity_type": "组织",
-            "tier": "重要",
+            "entity_type": "organization",
+            "tier": "major",
             "chapter": 1,
-            "payload": {"name": "青云宗"},
+            "payload": {"name": "Azure Sect"},
         }
     )
 
     entity = manager.get_entity("qingyun_zong")
     assert entity is not None
-    assert entity["type"] == "组织", f"expected type=组织, got {entity['type']!r}"
+    assert entity["type"] == "organization", f"expected type=organization, got {entity['type']!r}"
 
 
 def test_index_manager_uses_payload_name_when_canonical_name_missing(tmp_path):
-    """LLM 实际输出常把名字放在 payload.name，而非顶层 canonical_name。"""
+    """LLM actual output often places the name in payload.name，rather than top-level canonical_name。"""
     from data_modules.index_manager import IndexManager
 
     cfg = DataModulesConfig.from_project_root(tmp_path)
@@ -262,56 +262,56 @@ def test_index_manager_uses_payload_name_when_canonical_name_missing(tmp_path):
         {
             "entity_id": "lu_ming",
             "action": "upsert",
-            "entity_type": "角色",
-            "tier": "主角",
+            "entity_type": "character",
+            "tier": "protagonist",
             "chapter": 1,
-            "payload": {"name": "陆鸣"},
+            "payload": {"name": "Lu Ming"},
         }
     )
 
     entity = manager.get_entity("lu_ming")
     assert entity is not None
-    assert entity["canonical_name"] == "陆鸣", (
-        f"expected canonical_name=陆鸣, got {entity['canonical_name']!r}"
+    assert entity["canonical_name"] == "Lu Ming", (
+        f"expected canonical_name=Lu Ming, got {entity['canonical_name']!r}"
     )
 
 
 def test_index_manager_corrects_entity_type_on_re_upsert(tmp_path):
-    """已有实体被旧版本误标为 '角色' 时，重放新 commit 必须能把 type 修正为 '组织' 等。"""
+    """existing entity was misclassified by an old version as 'character' when，replay new commit must be able to type correct to 'organization' etc.。"""
     from data_modules.index_manager import IndexManager
 
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     manager = IndexManager(cfg)
 
-    # 模拟旧 bug：先以 type='角色' 落库（默认兜底）
+    # simulate old bug：first use type='character' persist（default fallback）
     manager.apply_entity_delta(
         {
             "entity_id": "qingyun_zong",
-            "tier": "重要",
+            "tier": "major",
             "chapter": 1,
-            "payload": {"name": "青云宗"},
+            "payload": {"name": "Azure Sect"},
         }
     )
     entity = manager.get_entity("qingyun_zong")
-    assert entity["type"] == "角色"
+    assert entity["type"] == "character"
 
-    # 修复后重放 commit，明确传 entity_type='组织'
+    # repair and replay commit，explicitly pass entity_type='organization'
     manager.apply_entity_delta(
         {
             "entity_id": "qingyun_zong",
-            "entity_type": "组织",
-            "tier": "重要",
+            "entity_type": "organization",
+            "tier": "major",
             "chapter": 1,
-            "payload": {"name": "青云宗"},
+            "payload": {"name": "Azure Sect"},
         }
     )
     entity = manager.get_entity("qingyun_zong")
-    assert entity["type"] == "组织", f"expected type=组织 after re-upsert, got {entity['type']!r}"
+    assert entity["type"] == "organization", f"expected type=organization after re-upsert, got {entity['type']!r}"
 
 
 def test_index_manager_resolves_underscored_id_to_compact_entity(tmp_path):
-    """实体登记为 'luming' 时，查询 'lu_ming' 也应能找到（LLM 命名风格不一致兜底）。"""
+    """entity registered as 'luming' when，query 'lu_ming' should also be found（LLM fallback for inconsistent naming）。"""
     from data_modules.index_manager import IndexManager
 
     cfg = DataModulesConfig.from_project_root(tmp_path)
@@ -321,28 +321,28 @@ def test_index_manager_resolves_underscored_id_to_compact_entity(tmp_path):
     manager.apply_entity_delta(
         {
             "entity_id": "luming",
-            "entity_type": "角色",
-            "tier": "主角",
+            "entity_type": "character",
+            "tier": "protagonist",
             "chapter": 1,
-            "payload": {"name": "陆鸣"},
+            "payload": {"name": "Lu Ming"},
         }
     )
 
-    # 直接查 — 已经能工作
+    # directly query — already works
     assert manager.get_entity("luming")["id"] == "luming"
-    # 反向兜底 — 带下划线变体
+    # reverse fallback — underscore variant
     found = manager.get_entity("lu_ming")
     assert found is not None, "lu_ming should resolve to luming"
     assert found["id"] == "luming"
 
 
 # ============================================================
-# memory_writer：接受 entity_type / field_path / loop description
+# memory_writer：accept entity_type / field_path / loop description
 # ============================================================
 
 
 def test_memory_writer_preserves_entity_type_for_organization(tmp_path):
-    """entity_deltas 用 entity_type 字段时，组织不能被误标为'角色'。"""
+    """entity_deltas use entity_type when the field，organization must not be misclassified as'character'。"""
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     writer = MemoryProjectionWriter(tmp_path)
@@ -354,9 +354,9 @@ def test_memory_writer_preserves_entity_type_for_organization(tmp_path):
                 {
                     "entity_id": "qingyun_zong",
                     "action": "upsert",
-                    "entity_type": "组织",
-                    "tier": "重要",
-                    "payload": {"name": "青云宗"},
+                    "entity_type": "organization",
+                    "tier": "major",
+                    "payload": {"name": "Azure Sect"},
                 }
             ],
             "state_deltas": [],
@@ -368,8 +368,8 @@ def test_memory_writer_preserves_entity_type_for_organization(tmp_path):
     chars = store.query(category="character_state", status="active")
     qingyun = [x for x in chars if x.subject == "qingyun_zong"]
     assert qingyun, "qingyun_zong entity should be recorded"
-    assert qingyun[0].payload.get("type") == "组织", (
-        f"expected type=组织, got {qingyun[0].payload.get('type')!r}"
+    assert qingyun[0].payload.get("type") == "organization", (
+        f"expected type=organization, got {qingyun[0].payload.get('type')!r}"
     )
 
 
@@ -385,8 +385,8 @@ def test_memory_writer_accepts_field_path_in_state_delta(tmp_path):
                 {
                     "entity_id": "luming",
                     "field_path": "physical.condition",
-                    "old_value": "虚弱",
-                    "new_value": "虚弱（持续）",
+                    "old_value": "weak",
+                    "new_value": "weak（ongoing）",
                 }
             ],
             "entity_deltas": [],
@@ -402,7 +402,7 @@ def test_memory_writer_accepts_field_path_in_state_delta(tmp_path):
 
 
 def test_memory_writer_extracts_open_loop_from_description_when_no_content(tmp_path):
-    """open_loop_created 事件 payload 没有 content 时，应从 description / unanswered_question 取。"""
+    """open_loop_created event payload absent content when，should come from description / unanswered_question take。"""
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     writer = MemoryProjectionWriter(tmp_path)
@@ -419,9 +419,9 @@ def test_memory_writer_extracts_open_loop_from_description_when_no_content(tmp_p
                     "event_type": "open_loop_created",
                     "subject": "luming",
                     "payload": {
-                        "description": "陆鸣发现借据'一式三份'条款，保人身份成谜",
-                        "loop_type": "身份悬疑",
-                        "unanswered_question": "保人是谁？谁带原身去签的借据？",
+                        "description": "Lu Ming discovers the promissory note'three copies'terms，mysterious guarantor identity",
+                        "loop_type": "identity mystery",
+                        "unanswered_question": "who is the guarantor？who brought the original host to sign the note？",
                         "narrative_weight": "major",
                     },
                 }
@@ -432,15 +432,15 @@ def test_memory_writer_extracts_open_loop_from_description_when_no_content(tmp_p
     store = ScratchpadManager(cfg)
     loops = store.query(category="open_loop", status="active")
     assert loops, "open_loop should be recorded"
-    # subject 应是有意义的悬念内容，不应是 'luming'（来自 event.subject 的兜底）
+    # subject must contain meaningful suspense，must not be 'luming'（from event.subject fallback）
     contents = [x.subject for x in loops]
-    assert any("保人" in c or "借据" in c or "身份" in c for c in contents), (
+    assert any("guarantor" in c or "promissory note" in c or "identity" in c for c in contents), (
         f"expected meaningful loop content, got {contents}"
     )
 
 
 def test_memory_writer_extracts_world_rule_from_rule_content(tmp_path):
-    """world_rule_revealed 事件用 rule_content / description 时，应能落入 world_rule 记忆。"""
+    """world_rule_revealed event uses rule_content / description when，should fall into world_rule memory。"""
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     writer = MemoryProjectionWriter(tmp_path)
@@ -457,9 +457,9 @@ def test_memory_writer_extracts_world_rule_from_rule_content(tmp_path):
                     "event_type": "world_rule_revealed",
                     "subject": "luming",
                     "payload": {
-                        "description": "青云城借贷市场三大空白",
-                        "rule_category": "金融/经济",
-                        "rule_content": "利率垄断、无信用体系、暴力收债",
+                        "description": "three gaps in Azure City lending market",
+                        "rule_category": "finance/economy",
+                        "rule_content": "interest-rate monopoly、no credit system、violent debt collection",
                     },
                 }
             ],
@@ -470,13 +470,13 @@ def test_memory_writer_extracts_world_rule_from_rule_content(tmp_path):
     rules = store.query(category="world_rule", status="active")
     assert rules
     rule_texts = [x.value for x in rules]
-    assert any("利率" in r or "信用" in r or "金融" in r or "借贷" in r for r in rule_texts), (
+    assert any("interest rate" in r or "credit" in r or "finance" in r or "lending" in r for r in rule_texts), (
         f"expected meaningful rule text, got {rule_texts}"
     )
 
 
 # ============================================================
-# vector_projection_writer：接受 description / new_state
+# vector_projection_writer：accept description / new_state
 # ============================================================
 
 
@@ -487,32 +487,32 @@ def test_vector_writer_handles_character_state_changed_with_description():
         "chapter": 2,
         "subject": "luming",
         "payload": {
-            "description": "陆鸣意识到自己是这个世界唯一懂金融的人",
-            "previous_state": "刚穿越的茫然",
-            "new_state": "认知激活",
+            "description": "Lu Ming realizes he alone understands finance in this world",
+            "previous_state": "confusion after transmigration",
+            "new_state": "activate understanding",
             "narrative_weight": "pivotal",
         },
     }
     text = writer._event_to_text(event)
     assert text, "should produce non-empty text"
-    assert "第2章" in text
-    assert "luming" in text or "陆鸣" in text or "认知" in text or "金融" in text
+    assert "Chapter 2" in text
+    assert "luming" in text or "Lu Ming" in text or "understanding" in text or "finance" in text
 
 
 # ============================================================
-# 集成：用真实 DeepSeek 输出 commit payload 走完整投影链
+# integration：use real DeepSeek output commit payload run the complete projection chain
 # ============================================================
 
 
 def test_integration_real_deepseek_commit_projects_full_state(tmp_path):
-    """端到端：组合 state + memory 投影器处理真实 commit payload，确认所有数据都落到对应位置。"""
+    """end-to-end：combination state + memory projector handles real commit payload，confirm all data reaches its destination。"""
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     (tmp_path / ".webnovel" / "state.json").write_text(
         json.dumps(
             {
                 "protagonist_state": {
-                    "name": "陆鸣",
+                    "name": "Lu Ming",
                     "power": {"realm": "", "layer": 1},
                     "location": {"current": ""},
                 }
@@ -521,22 +521,22 @@ def test_integration_real_deepseek_commit_projects_full_state(tmp_path):
         encoding="utf-8",
     )
 
-    # 真实 DeepSeek v4pro 输出片段
+    # real DeepSeek v4pro output excerpt
     real_payload = {
         "meta": {"status": "accepted", "chapter": 2},
         "state_deltas": [
             {
                 "entity_id": "luming",
                 "field_path": "physical.condition",
-                "old_value": "虚弱",
-                "new_value": "虚弱（持续）",
+                "old_value": "weak",
+                "new_value": "weak（ongoing）",
                 "change_type": "confirmed",
             },
             {
                 "entity_id": "luming",
                 "field_path": "knowledge.lending_ecosystem",
-                "old_value": "仅知有阎王债",
-                "new_value": "完整市场图谱",
+                "old_value": "knows only of the Underworld Debt",
+                "new_value": "complete market graph",
                 "change_type": "initialize",
             },
         ],
@@ -544,24 +544,24 @@ def test_integration_real_deepseek_commit_projects_full_state(tmp_path):
             {
                 "entity_id": "luming",
                 "action": "upsert",
-                "entity_type": "角色",
-                "tier": "核心",
+                "entity_type": "character",
+                "tier": "core",
                 "is_protagonist": True,
-                "payload": {"name": "陆鸣"},
+                "payload": {"name": "Lu Ming"},
             },
             {
                 "entity_id": "qingyun_zong",
                 "action": "upsert",
-                "entity_type": "组织",
-                "tier": "重要",
-                "payload": {"name": "青云宗"},
+                "entity_type": "organization",
+                "tier": "major",
+                "payload": {"name": "Azure Sect"},
             },
             {
                 "entity_id": "heishi_fangshi",
                 "action": "upsert",
-                "entity_type": "地点",
-                "tier": "重要",
-                "payload": {"name": "黑石坊市"},
+                "entity_type": "location",
+                "tier": "major",
+                "payload": {"name": "Blackstone Market"},
             },
         ],
         "accepted_events": [
@@ -571,9 +571,9 @@ def test_integration_real_deepseek_commit_projects_full_state(tmp_path):
                 "event_type": "open_loop_created",
                 "subject": "luming",
                 "payload": {
-                    "description": "保人身份不明",
-                    "loop_type": "身份悬疑",
-                    "unanswered_question": "保人是谁？",
+                    "description": "unknown guarantor identity",
+                    "loop_type": "identity mystery",
+                    "unanswered_question": "who is the guarantor？",
                 },
             }
         ],
@@ -583,20 +583,20 @@ def test_integration_real_deepseek_commit_projects_full_state(tmp_path):
     MemoryProjectionWriter(tmp_path).apply(real_payload)
 
     state = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    # entity_state 必须有内容（不能再是 {}）
+    # entity_state must contain content（must no longer be {}）
     assert state["entity_state"], "entity_state should not be empty"
     assert "luming" in state["entity_state"]
-    # 主角字段镜像到 protagonist_state 不丢
-    assert state["protagonist_state"]["name"] == "陆鸣"
+    # mirror protagonist fields to protagonist_state preserve
+    assert state["protagonist_state"]["name"] == "Lu Ming"
 
-    # memory_scratchpad：组织和地点不能被误标
+    # memory_scratchpad：organizations and locations must not be misclassified
     store = ScratchpadManager(cfg)
     chars = store.query(category="character_state", status="active")
     by_id = {x.subject: x for x in chars}
-    assert by_id["qingyun_zong"].payload.get("type") == "组织"
-    assert by_id["heishi_fangshi"].payload.get("type") == "地点"
+    assert by_id["qingyun_zong"].payload.get("type") == "organization"
+    assert by_id["heishi_fangshi"].payload.get("type") == "location"
 
-    # open_loop 必须有有意义内容（不能是 'luming'）
+    # open_loop must contain meaningful content（cannot be 'luming'）
     loops = store.query(category="open_loop", status="active")
     contents = [x.subject for x in loops]
-    assert any("保人" in c or "身份悬疑" in c for c in contents), contents
+    assert any("guarantor" in c or "identity mystery" in c for c in contents), contents

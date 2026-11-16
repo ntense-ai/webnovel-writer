@@ -1,6 +1,6 @@
-const RESOLVED_STATUS = new Set(['已回收', '已完成', '已解决', 'resolved', 'done', 'complete'])
-const CORE_TIER = new Set(['核心', 'core', 'main'])
-const DECOR_TIER = new Set(['装饰', 'decor', 'decoration', 'decorative'])
+const RESOLVED_STATUS = new Set(['resolved', 'done', 'complete'])
+const CORE_TIER = new Set(['core', 'main'])
+const DECOR_TIER = new Set(['decorative', 'decor', 'decoration'])
 
 function toPositiveInt(value) {
     if (value === null || value === undefined || value === '' || value === false) return null

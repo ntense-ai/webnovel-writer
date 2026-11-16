@@ -30,7 +30,7 @@
 - Modify: `webnovel-writer/scripts/backup_manager.py:150-166, 228-254`
 - Test: `webnovel-writer/scripts/tests/test_backup_manager.py`
 
-- [x] **Step 1: Write a failing test**: intentionally leave `user.name/user.email` unset in a temporary Git repository (`git config --local --unset` or `-c user.useConfigOnly=true`), call `backup()`, and assert failure, output containing the exact message `备份失败` (“backup failed”), and no `ch{N}` tag.
+- [x] **Step 1: Write a failing test**: intentionally leave `user.name/user.email` unset in a temporary Git repository (`git config --local --unset` or `-c user.useConfigOnly=true`), call `backup()`, and assert failure, output containing the exact message `backup failed` (“backup failed”), and no `ch{N}` tag.
 - [x] **Step 2: Run to confirm the false-success behavior** (currently prints ✅ and tags the old HEAD).
 - [x] **Step 3: Fix `_run_git_command`**: change the `check=False` branch to return `(result.returncode == 0, stdout, stderr)`; callers use the real exit code. Detect “nothing to commit” from stdout/stderr text (the current `:233` `if not success and "nothing to commit"` is permanently false dead code; remove and rewrite it):
 
@@ -42,7 +42,7 @@ def _run_git_command(self, args, check=True):
     )
     ok = result.returncode == 0
     if check and not ok:
-        raise BackupError(f"git {' '.join(args)} 失败: {result.stderr.strip()}")
+        raise BackupError(f"git {' '.join(args)} failed: {result.stderr.strip()}")
     return ok, result.stdout, result.stderr
 ```
 
@@ -63,13 +63,13 @@ def rollback(self, chapter: int) -> bool:
     tag = f"ch{chapter}"
     ok, _, _ = self._run_git_command(["rev-parse", "--verify", tag], check=False)
     if not ok:
-        print(f"❌ 备份点 {tag} 不存在"); return False
+        print(f"❌ backup point {tag} does not exist"); return False
     ok, _, err = self._run_git_command(["checkout", tag, "--", "."], check=False)
     if not ok:
-        print(f"❌ 回滚失败: {err}"); return False
+        print(f"❌ restore failed: {err}"); return False
     self._run_git_command(["add", "-A"], check=False)
     ok, _, err = self._run_git_command(
-        ["commit", "-m", f"rollback: 恢复到 {tag} 备份点"], check=False)
+        ["commit", "-m", f"rollback: restore to {tag} backup point"], check=False)
     # If the working tree already matches the tag, "nothing to commit" counts as success
     return True
 ```
@@ -83,8 +83,8 @@ def rollback(self, chapter: int) -> bool:
 - Modify: `webnovel-writer/scripts/backup_manager.py:175-195`
 - Test: `webnovel-writer/scripts/tests/test_backup_manager.py`
 
-- [x] **Step 1: Write test**: simulate unavailable Git (monkeypatch `_git_available` to False), with `正文/第0001章-x.md` in the project. After `backup()`, assert a copy of that manuscript exists in the backup directory.
-- [x] **Step 2: Implement**: in degraded mode, copy `正文/`, `大纲/`, `设定集/`, and `.webnovel/state.json` using `shutil.copytree/copy2` into `.webnovel/backups/snapshot_ch{N}_{ts}/`. Explicitly list what was backed up. Retain count-based rotation (maximum ten snapshots).
+- [x] **Step 1: Write test**: simulate unavailable Git (monkeypatch `_git_available` to False), with `chapters/Chapter 0001-x.md` in the project. After `backup()`, assert a copy of that manuscript exists in the backup directory.
+- [x] **Step 2: Implement**: in degraded mode, copy `chapters/`, `outlines/`, `settings/`, and `.webnovel/state.json` using `shutil.copytree/copy2` into `.webnovel/backups/snapshot_ch{N}_{ts}/`. Explicitly list what was backed up. Retain count-based rotation (maximum ten snapshots).
 - [x] **Step 3: Commit** `fix: degraded backup covers manuscript files`.
 
 ### Task 4: Rerunning init must not silently overwrite corrupt state.json

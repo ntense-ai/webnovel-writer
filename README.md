@@ -5,7 +5,7 @@
 This `ntense` branch is the English-first fork of the Claude Code edition (v6), maintained in `ezhomelabs/webnovel-writer`. Use the branch-pinned Quick Start below, not the upstream/default-branch installer. The v8 links above refer to the separate upstream product, not this fork.
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-6.2.1-brightgreen.svg)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-6.3.0-brightgreen.svg)](.claude-plugin/marketplace.json)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-purple.svg)](https://claude.ai/claude-code)
 [![Marketplace](https://img.shields.io/badge/Claude%20Code-Marketplace-black.svg)](.claude-plugin/marketplace.json)
@@ -22,7 +22,7 @@ In short, this is a consistency system for long-running serial fiction, not a on
 >
 > | Branch | Version | Status |
 > |---|---|---|
-> | `ntense` (this fork) | v6 · English Claude Code plugin | English defaults, legacy-project compatibility, and portable host adapters |
+> | `ntense` (this fork) | v6 · English Claude Code plugin | English-only new projects and portable host adapters |
 > | `master` (upstream) | v6 · Claude Code plugin | Maintenance mode (critical bugs only); Claude Code users should use this edition |
 > | `v7` | v7 · Multi-host CLI rewrite | Frozen and unreleased; retained as a development archive |
 > | [v8](https://github.com/lingfengQAQ/webnovel-writer/tree/v8) | v8 · Writing workspace based on [DeepSeek Harness](https://www.deepseek.com/harness/) | Stable release; [product website and tutorials](https://lingfengqaq.github.io/webnovel-writer/) |
@@ -56,13 +56,11 @@ This system turns those constraints into steps Claude Code executes automaticall
 
 ## English projects and other hosts
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`, with English
-starter files, prompts, CLI reports, and dashboard labels. Existing Chinese book
-layouts remain readable and are not automatically renamed. Internal legacy schema
-values and compatibility fixtures are retained; these are not translated in place.
-English prose uses word counts rather than character counts. See the
-[English compatibility guide](docs/english-compatibility.md) for filenames,
-reference retrieval, and preserved internal identifiers.
+This branch creates new projects with English paths, filenames, schema identifiers,
+reference data, prompts, reports, and dashboard labels. It does not migrate or
+support old project layouts or schemas. Unicode story text and names remain
+supported. English prose uses word counts. See the
+[English project guide](docs/english-compatibility.md) for the project contract.
 
 For **Codex and Antigravity**, see the [project-local skill adapters](integrations/README.md).
 These reuse the engine without changing the Claude Code plugin. The adapter
@@ -148,9 +146,12 @@ project-root/
 └── reviews/              # Chapter review reports
 ```
 
-New projects use the English directory names shown above. Existing books using `正文/`, `大纲/`, `设定集/`, and `审查报告/` remain supported: tools resolve their actual directories and do not rename files or create parallel copies. The corresponding pairs are `chapters` / `正文`, `outlines` / `大纲`, `settings` / `设定集`, and `reviews` / `审查报告`.
-
-New books also use English filenames, for example `outlines/master-outline.md`, `settings/worldbuilding.md`, `chapters/chapter-0001.md`, and `reviews/chapter-1-review.md`. Existing filenames such as `总纲.md`, `世界观.md`, and `第0001章.md` remain supported without renaming. Generated prose and author-facing reports default to English unless requested otherwise.
+New projects use the English layout above and filenames such as
+`outlines/master-outline.md`, `outlines/volume-1-outline.md`,
+`settings/worldbuilding.md`, `chapters/chapter-0001.md`, and
+`reviews/chapter-1-review.md`. Start a new book with this version; no migration or
+legacy-path mapping is provided. Prose defaults to English, while Unicode story
+content remains supported.
 
 Inspect a book's resolved directories with:
 
@@ -359,11 +360,12 @@ Useful areas for contributions:
 
 ## Release Highlights
 
-The current-release marker `(当前)` is retained for compatibility with the version synchronization tool.
+The current release is marked `(current)`.
 
 | Version | Main changes |
 |------|----------|
-| **v6.2.1 (当前)** | Fix intermittent Windows chapter-commit access denial (WinError 5): automatically retry briefly locked data files |
+| **v6.3.0 (current)** | English-only project schemas, reference corpus, and portable Codex/Antigravity skills for new books |
+| **v6.2.1** | Fix intermittent Windows chapter-commit access denial (WinError 5): automatically retry briefly locked data files |
 | **v6.2.0** | Clearer writing results and better recovery after failure |
 | **v6.1.0** | Runtime hardening: doctor/project-status/write-gate/projection replay, hooks, behavioral evals, and release checks |
 | **v6.0.0** | Full Story System pipeline: contract seeds, runtime contracts, chapter commits, event audits, and integration tests |

@@ -1,6 +1,6 @@
 # Review Critical Fixes Implementation Plan
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -265,8 +265,8 @@ def test_apply_projections_updates_state_for_rejected_commit(tmp_path):
         chapter=7,
         review_result={"blocking_count": 1},
         fulfillment_result={
-            "planned_nodes": ["进入坊市"],
-            "covered_nodes": ["进入坊市"],
+            "planned_nodes": ["enter the market"],
+            "covered_nodes": ["enter the market"],
             "missed_nodes": [],
             "extra_nodes": [],
         },
@@ -472,11 +472,11 @@ Replace inserts with:
 ```python
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "同门", 20),
+        ("hanli", "Chen Qiaoqian", "fellow-disciple", 20),
     )
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "合作", 45),
+        ("hanli", "Chen Qiaoqian", "cooperation", 45),
     )
 ```
 
@@ -571,7 +571,7 @@ def test_set_chapter_status_preserves_existing_disk_state(temp_project):
         json.dumps(
             {
                 "progress": {"current_chapter": 4, "chapter_status": {"4": "chapter_committed"}},
-                "disambiguation_warnings": [{"chapter": 4, "mention": "宗主"}],
+                "disambiguation_warnings": [{"chapter": 4, "mention": "sect leader"}],
             },
             ensure_ascii=False,
         ),
@@ -584,7 +584,7 @@ def test_set_chapter_status_preserves_existing_disk_state(temp_project):
     saved = json.loads(temp_project.state_file.read_text(encoding="utf-8"))
     assert saved["progress"]["chapter_status"]["4"] == "chapter_committed"
     assert saved["progress"]["chapter_status"]["5"] == "chapter_drafted"
-    assert saved["disambiguation_warnings"] == [{"chapter": 4, "mention": "宗主"}]
+    assert saved["disambiguation_warnings"] == [{"chapter": 4, "mention": "sect leader"}]
 ```
 
 - [ ] **Step 2: Run status tests before implementation**
@@ -689,10 +689,10 @@ def test_collect_chunks_includes_summary_and_scenes():
     writer = VectorProjectionWriter.__new__(VectorProjectionWriter)
     payload = {
         "meta": {"chapter": 47, "status": "accepted"},
-        "summary_text": "韩立在坊市发现丹方线索。",
+        "summary_text": "Han Lidiscovers a pill-formula clue at the market。",
         "scenes": [
-            {"index": 1, "summary": "韩立入坊市观察摊位", "location": "坊市"},
-            {"scene_index": 2, "content": "陈巧倩暗中提醒韩立有人跟踪。"},
+            {"index": 1, "summary": "Han Lienters the market and observes stalls", "location": "market"},
+            {"scene_index": 2, "content": "Chen QiaoqiansecretlyreminderHan Lisomeone is following。"},
         ],
         "accepted_events": [],
         "entity_deltas": [],
@@ -900,7 +900,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rev
   --chapter {chapter_num} \
   --review-results "${PROJECT_ROOT}/.webnovel/tmp/review_results.json" \
   --metrics-out "${PROJECT_ROOT}/.webnovel/tmp/review_metrics.json" \
-  --report-file "审查报告/第{chapter_num}章审查报告.md" \
+  --report-file "reviews/Chapter {chapter_num}reviews.md" \
   --save-metrics
 ```
 
@@ -1022,7 +1022,7 @@ In `file_read()`, before `read_text`, add:
 ```python
         max_bytes = 2 * 1024 * 1024
         if resolved.stat().st_size > max_bytes:
-            raise HTTPException(413, "文件过大，无法预览")
+            raise HTTPException(413, "file too large，cannot preview")
 ```
 
 - [ ] **Step 4: Add backup gitignore test**
@@ -1107,7 +1107,7 @@ def test_style_sampler_ignores_corrupt_tag_json(temp_project):
             (id, chapter, scene_type, content, score, tags, created_at)
             VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             """,
-            ("bad-tags", 1, SceneType.BATTLE.value, "战斗描写" * 50, 0.8, "[bad-json"),
+            ("bad-tags", 1, SceneType.BATTLE.value, "combatdescription" * 50, 0.8, "[bad-json"),
         )
         conn.commit()
 

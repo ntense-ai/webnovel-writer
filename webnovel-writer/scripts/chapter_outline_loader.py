@@ -80,10 +80,6 @@ def _find_split_outline_file(outline_dir: Path, chapter_num: int) -> Path | None
         f"chapter-{chapter_num:04d}*.md",
         f"chapter-{chapter_num:03d}*.md",
         f"chapter-{chapter_num}*.md",
-        f"第{chapter_num}章*.md",
-        f"第{chapter_num:02d}章*.md",
-        f"第{chapter_num:03d}章*.md",
-        f"第{chapter_num:04d}章*.md",
     ]
     for pattern in patterns:
         matches = sorted(outline_dir.glob(pattern))
@@ -95,22 +91,17 @@ def _find_split_outline_file(outline_dir: Path, chapter_num: int) -> Path | None
 
 
 def _find_volume_outline_file(project_root: Path, chapter_num: int) -> Path | None:
-    outline_dir = project_dir(project_root, "大纲")
+    outline_dir = project_dir(project_root, "outlines")
     volume_num = volume_num_for_chapter_from_state(project_root, chapter_num) or volume_num_for_chapter(chapter_num)
     candidates = [
         outline_dir / f"volume-{volume_num}-outline.md",
-        outline_dir / f"第{volume_num}卷-详细大纲.md",
-        outline_dir / f"第{volume_num}卷 - 详细大纲.md",
-        outline_dir / f"第{volume_num}卷 详细大纲.md",
     ]
     return next((path for path in candidates if path.exists()), None)
 
 
 def _extract_outline_section(content: str, chapter_num: int) -> str | None:
     patterns = [
-        rf"^#{{1,6}}\s*Chapter\s+0*{chapter_num}\s*[:：]\s*(.+?)(?=^#{{1,6}}\s*(?:Chapter\s+\d+|第\s*\d+\s*章)|\Z)",
-        rf"###\s*第\s*{chapter_num}\s*章[：:]\s*(.+?)(?=###\s*第\s*\d+\s*章|##\s|\Z)",
-        rf"###\s*第{chapter_num}章[：:]\s*(.+?)(?=###\s*第\d+章|##\s|\Z)",
+        rf"^#{{1,6}}\s*Chapter\s+0*{chapter_num}\s*[:：]\s*(.+?)(?=^#{{1,6}}\s*Chapter\s+\d+|\Z)",
     ]
     for pattern in patterns:
         match = re.search(pattern, content, re.DOTALL | re.MULTILINE | re.IGNORECASE)
@@ -119,35 +110,10 @@ def _extract_outline_section(content: str, chapter_num: int) -> str | None:
     return None
 
 
-def _parse_chinese_chapter_num(value: str) -> int | None:
-    text = str(value or "").strip()
-    if not text:
-        return None
-    if text.isdigit():
-        return int(text)
-    if text in _CHINESE_NUMERAL_DIGITS:
-        return _CHINESE_NUMERAL_DIGITS[text]
-    if text == "十":
-        return 10
-    if "十" in text:
-        left, _, right = text.partition("十")
-        tens = _CHINESE_NUMERAL_DIGITS.get(left, 1 if not left else 0)
-        ones = _CHINESE_NUMERAL_DIGITS.get(right, 0) if right else 0
-        parsed = tens * 10 + ones
-        return parsed or None
-    parsed = 0
-    for char in text:
-        digit = _CHINESE_NUMERAL_DIGITS.get(char)
-        if digit is None:
-            return None
-        parsed = parsed * 10 + digit
-    return parsed or None
-
-
 def _extract_directive_section(content: str, chapter_num: int) -> str | None:
     matches = list(_CHAPTER_HEADING_RE.finditer(content))
     for index, match in enumerate(matches):
-        parsed = _parse_chinese_chapter_num(match.group(2) or match.group(3))
+        parsed = int(match.group(2))
         if parsed != chapter_num:
             continue
         end = matches[index + 1].start() if index + 1 < len(matches) else len(content)
@@ -156,7 +122,7 @@ def _extract_directive_section(content: str, chapter_num: int) -> str | None:
 
 
 def load_chapter_outline(project_root: Path, chapter_num: int, max_chars: int | None = 1500) -> str:
-    outline_dir = project_dir(project_root, "大纲")
+    outline_dir = project_dir(project_root, "outlines")
 
     split_outline = _find_split_outline_file(outline_dir, chapter_num)
     if split_outline is not None:
@@ -183,29 +149,11 @@ _PLOT_SECTION_FIELD_MAP = {
     "cbn": "cbn",
     "cpns": "cpns",
     "cen": "cen",
-    "必须覆盖节点": "mandatory_nodes",
-    "本章禁区": "prohibitions",
 }
 
 _CHAPTER_HEADING_RE = re.compile(
-    r"^(#{1,6})\s*(?:第\s*([0-9零〇一二两三四五六七八九十]+)\s*章\b|Chapter\s+(\d+)\b).*$",
-    re.MULTILINE | re.IGNORECASE,
+    r"^(#{1,6})\s*Chapter\s+(\d+)\b.*$", re.MULTILINE | re.IGNORECASE,
 )
-
-_CHINESE_NUMERAL_DIGITS = {
-    "零": 0,
-    "〇": 0,
-    "一": 1,
-    "二": 2,
-    "两": 2,
-    "三": 3,
-    "四": 4,
-    "五": 5,
-    "六": 6,
-    "七": 7,
-    "八": 8,
-    "九": 9,
-}
 
 _DIRECTIVE_FIELD_MAP = {
     "goal": "goal", "chapter goal": "goal", "obstacles": "obstacles",
@@ -217,31 +165,10 @@ _DIRECTIVE_FIELD_MAP = {
     "chapter-end open question": "chapter_end_open_question",
     "hook type": "hook_type", "hook strength": "hook_strength",
     "key entities": "key_entities", "antagonist tier": "antagonist_tier",
-    "目标": "goal",
-    "本章目标": "goal",
-    "章目标": "goal",
-    "阻力": "obstacles",
-    "障碍": "obstacles",
-    "代价": "cost",
-    "时间锚点": "time_anchor",
-    "时间": "time_anchor",
-    "章内跨度": "chapter_span",
-    "章节跨度": "chapter_span",
-    "倒计时状态": "countdown",
-    "倒计时": "countdown",
     "cbn": "cbn",
     "cpns": "cpns",
     "cen": "cen",
-    "必须覆盖节点": "must_cover_nodes",
-    "本章禁区": "forbidden_zones",
-    "章末未闭合问题": "chapter_end_open_question",
-    "章末问题": "chapter_end_open_question",
-    "钩子类型": "hook_type",
-    "钩子强度": "hook_strength",
-    "关键实体": "key_entities",
-    "涉及实体": "key_entities",
     "strand": "strand",
-    "反派层级": "antagonist_tier",
 }
 
 _DIRECTIVE_LIST_FIELDS = {"cpns", "must_cover_nodes", "forbidden_zones", "key_entities"}
@@ -402,7 +329,7 @@ def parse_chapter_execution_directive(outline_text: str) -> Dict[str, Any]:
 
 
 def load_chapter_execution_directive(project_root: Path, chapter_num: int) -> Dict[str, Any]:
-    outline_dir = project_dir(project_root, "大纲")
+    outline_dir = project_dir(project_root, "outlines")
     split_outline = _find_split_outline_file(outline_dir, chapter_num)
     if split_outline is not None:
         return parse_chapter_execution_directive(split_outline.read_text(encoding="utf-8"))

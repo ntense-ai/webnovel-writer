@@ -220,9 +220,7 @@ def _eval_dashboard_read_only(root: Path, case: dict[str, Any]) -> dict[str, Any
     text = _read(path)
     forbidden = re.findall(r"@app\.(post|put|delete|patch)\b", text)
     get_only = 'allow_methods=["GET"]' in text or 'allow_methods=[\n        "GET"' in text
-    ok = not forbidden and get_only and "strictly read" not in text.lower()
-    # The module's Chinese docstring is the authoritative local signal.
-    ok = ok or (not forbidden and "仅提供 GET 接口" in text)
+    ok = not forbidden and get_only
     return _result(
         case,
         passed=ok,

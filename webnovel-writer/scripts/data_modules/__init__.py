@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Data Modules - 数据链模块包。
+"""Data pipeline package with lazy public exports.
 
-注意：
-- 这里采用延迟导入（lazy import），避免在执行 `python -m data_modules.xxx` 时，
-  因包级 __init__ 提前导入子模块而触发 runpy 的 RuntimeWarning。
-- 推荐用法永远安全：
-    from data_modules.index_manager import IndexManager
-  但为了兼容历史代码，也保留：
-    from data_modules import IndexManager
+Lazy imports avoid runpy warnings when executing a submodule with python -m.
+Direct imports such as ``from data_modules.index_manager import IndexManager``
+are preferred. Package-level exports remain available for API consumers.
 """
 
 from __future__ import annotations

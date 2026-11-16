@@ -1,47 +1,5 @@
 #!/usr/bin/env python3
-"""
-安全的 state.json 更新脚本
-
-功能：
-1. 提供结构化的 state.json 更新接口
-2. 自动验证 JSON 格式和数据完整性
-3. 自动备份（带时间戳）
-4. 支持部分更新（不影响其他字段）
-5. 原子性操作（要么全部成功，要么全部回滚）
-
-使用方式：
-  # 更新主角状态
-  python update_state.py --protagonist-power "金丹" 3 "雷劫"
-
-  # 更新人际关系
-  python update_state.py --relationship "李雪" affection 95
-
-  # 记录伏笔
-  python update_state.py --add-foreshadowing "神秘玉佩的秘密" "未回收"
-
-  # 回收伏笔
-  python update_state.py --resolve-foreshadowing "天雷果的下落" 45
-
-  # 更新进度
-  python update_state.py --progress 45 198765
-
-  # 标记卷已规划
-  python update_state.py --volume-planned 1 --chapters-range 1-100
-
-  # 组合更新（原子性）
-  python update_state.py \
-    --protagonist-power "金丹" 3 "雷劫" \
-    --progress 45 198765 \
-    --relationship "李雪" affection 95 \
-    --add-foreshadowing "神秘玉佩" "未回收"
-
-安全特性：
-  - 自动备份原文件（.backup_TIMESTAMP.json）
-  - JSON 格式验证
-  - Schema 完整性检查
-  - 原子性操作（失败自动回滚）
-  - Dry-run 模式（--dry-run）
-"""
+'Safely update state.json.\n\nProvide structured partial updates, validate JSON and schema integrity, back up with timestamps, and write atomically without affecting unrelated fields. Dry-run mode previews changes.\n\nUsage:\n  python update_state.py --protagonist-power "Golden Core" 3 "Lightning Tribulation"\n  python update_state.py --relationship "Li Xue" affection 95\n  python update_state.py --add-foreshadowing "The jade pendant\'s secret" active\n  python update_state.py --resolve-foreshadowing "The thunder fruit\'s location" 45\n  python update_state.py --progress 45 198765\n  python update_state.py --volume-planned 1 --chapters-range 1-100\n\nCombine update flags for one write. Backups use .backup_TIMESTAMP.json; failed writes support recovery through backups.'
 
 import json
 import os
@@ -55,7 +13,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # ============================================================================
-# 安全修复：导入安全工具函数（P1 MEDIUM）
+# Security fix: import secure utility functions (P1 MEDIUM).
 # ============================================================================
 from security_utils import create_secure_directory, atomic_write_json, restore_from_backup
 from project_locator import resolve_state_file
@@ -64,12 +22,12 @@ from data_modules.state_validator import (
     normalize_state_runtime_sections,
 )
 
-# Windows 编码兼容性修复
+# Windows encoding compatibility.
 if sys.platform == "win32":
     enable_windows_utf8_stdio()
 
 class StateUpdater:
-    """state.json 安全更新器"""
+    'Safely update state.json.'
 
     def __init__(self, state_file: str, dry_run: bool = False):
         self.state_file = state_file
@@ -78,7 +36,7 @@ class StateUpdater:
         self.state = None
 
     def _validate_schema(self, state: Dict) -> bool:
-        """验证 state.json 的基本结构（v5.0 引入，v5.4 沿用）"""
+        'Validate the basic state.json structure (introduced in v5.0; retained in v5.4).'
         required_keys = [
             "project_info",
             "progress",
@@ -94,23 +52,23 @@ class StateUpdater:
                 print(f"❌ Missing required field: {key}")
                 return False
 
-        # 验证嵌套结构（支持两种格式：嵌套和平铺）
+        # Validate nested structures, accepting both nested and flat formats.
         ps = state["protagonist_state"]
-        # power 字段：支持 power.realm 或直接 realm
+        # Power supports power.realm or a direct realm field.
         has_nested_power = "power" in ps and isinstance(ps.get("power"), dict)
         has_flat_power = "realm" in ps
         if not (has_nested_power or has_flat_power):
             print(f"❌ Missing protagonist_state.power or protagonist_state.realm")
             return False
 
-        # location 字段：支持 location.current 或直接 location
+        # Location supports location.current or a direct location field.
         has_nested_location = isinstance(ps.get("location"), dict) and "current" in ps.get("location", {})
         has_flat_location = isinstance(ps.get("location"), str)
         if not (has_nested_location or has_flat_location):
             print(f"❌ Missing protagonist_state.location")
             return False
 
-        # 验证并补全 strand_tracker 结构（兼容旧 state.json）
+        # Validate and complete strand_tracker for older state.json files.
         tracker = state.get("strand_tracker")
         if tracker is None or not isinstance(tracker, dict):
             if tracker is None:
@@ -137,7 +95,7 @@ class StateUpdater:
         return True
 
     def load(self) -> bool:
-        """加载并验证 state.json"""
+        'Load and validate state.json.'
         if not os.path.exists(self.state_file):
             print(f"❌ State file not found: {self.state_file}")
             return False
@@ -157,13 +115,13 @@ class StateUpdater:
             return False
 
     def backup(self) -> bool:
-        """备份当前 state.json"""
+        'Back up the current state.json.'
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_dir = Path(self.state_file).parent / "backups"
         # ============================================================================
-        # 安全修复：使用安全目录创建函数（P1 MEDIUM）
-        # 原代码: backup_dir.mkdir(exist_ok=True)
-        # 漏洞: 未设置权限，使用OS默认（可能为755，允许同组用户读取）
+        # Security fix: create directories securely (P1 MEDIUM).
+        # Previous code: backup_dir.mkdir(exist_ok=True)
+        # Vulnerability: OS-default permissions could be 755, exposing data to other users.
         # ============================================================================
         create_secure_directory(str(backup_dir))
 
@@ -178,7 +136,7 @@ class StateUpdater:
             return False
 
     def save(self) -> bool:
-        """保存更新后的 state.json（原子化写入）"""
+        'Save updated state.json atomically.'
         if self.dry_run:
             print("\n⚠️  Dry-run mode; no files will be written")
             print("\n📄 Preview updated content：")
@@ -186,54 +144,54 @@ class StateUpdater:
             return True
 
         try:
-            # 使用集中式原子写入（带 filelock + 自动备份）
+            # Use centralized atomic writes with filelock and automatic backups.
             atomic_write_json(self.state_file, self.state, use_lock=True, backup=True)
             print(f"✅ Saved atomically: {self.state_file}")
             return True
 
         except Exception as e:
             print(f"❌ Save failed: {e}")
-            # 尝试从备份恢复
+            # Attempt restoration from backup.
             if restore_from_backup(self.state_file):
                 print(f"✅ Restored from backup")
             return False
 
     def update_protagonist_power(self, realm: str, layer: int, bottleneck: str):
-        """更新主角实力（支持嵌套和平铺两种格式）"""
+        'Update protagonist power in nested or flat format.'
         ps = self.state["protagonist_state"]
-        # 检测当前格式
+        # Detect the current format.
         if "power" in ps and isinstance(ps.get("power"), dict):
-            # 嵌套格式
+            # Nested format.
             ps["power"] = {
                 "realm": realm,
                 "layer": layer,
                 "bottleneck": bottleneck if bottleneck != "null" else None
             }
         else:
-            # 平铺格式
+            # Flat format.
             ps["realm"] = realm
             ps["layer"] = layer
             ps["bottleneck"] = bottleneck if bottleneck != "null" else None
         print(f"📝 Update protagonist power: {realm}, level {layer}, bottleneck: {bottleneck}")
 
     def update_protagonist_location(self, location: str, chapter: int):
-        """更新主角位置（支持嵌套和平铺两种格式）"""
+        'Update protagonist location in nested or flat format.'
         ps = self.state["protagonist_state"]
-        # 检测当前格式
+        # Detect the current format.
         if isinstance(ps.get("location"), dict):
-            # 嵌套格式
+            # Nested format.
             ps["location"] = {
                 "current": location,
                 "last_chapter": chapter
             }
         else:
-            # 平铺格式
+            # Flat format.
             ps["location"] = location
             ps["location_since_chapter"] = chapter
         print(f"📝 Update protagonist location: {location} (chapter {chapter})")
 
     def update_golden_finger(self, name: str, level: int, cooldown: int):
-        """更新金手指状态"""
+        "Update the protagonist's special-advantage state."
         ps = self.state.setdefault("protagonist_state", {})
         golden_finger = ps.get("golden_finger")
         if not isinstance(golden_finger, dict):
@@ -247,25 +205,25 @@ class StateUpdater:
         print(f"📝 Update special ability: {name} Lv.{level}, cooldown: {cooldown} days")
 
     def update_relationship(self, char_name: str, key: str, value: Any):
-        """更新人际关系"""
+        'Update relationships.'
         if char_name not in self.state["relationships"]:
             self.state["relationships"][char_name] = {}
 
         self.state["relationships"][char_name][key] = value
         print(f"📝 Update relationship: {char_name}.{key} = {value}")
 
-    def add_foreshadowing(self, content: str, status: str = "未回收"):
-        """添加伏笔"""
+    def add_foreshadowing(self, content: str, status: str = "unresolved"):
+        'Add foreshadowing.'
         if "foreshadowing" not in self.state["plot_threads"]:
             self.state["plot_threads"]["foreshadowing"] = []
 
-        # 检查是否已存在
+        # Check whether the entry already exists.
         for item in self.state["plot_threads"]["foreshadowing"]:
             if item.get("content") == content:
                 print(f"⚠️  Foreshadowing already exists: {content}")
                 return
 
-        # 归一化状态，避免 "待回收/进行中/active/pending" 等混用导致下游过滤漏掉
+        # Normalize status aliases such as active and pending so downstream filters do not miss entries.
         status = normalize_foreshadowing_status(status)
 
         planted_chapter = int(self.state.get("progress", {}).get("current_chapter", 0) or 0)
@@ -281,19 +239,19 @@ class StateUpdater:
             "added_at": datetime.now().strftime("%Y-%m-%d"),
             "planted_chapter": planted_chapter,
             "target_chapter": target_chapter,
-            "tier": "支线"
+            "tier": "subplot"
         })
         print(f"📝 Add foreshadowing: {content} ({status})")
 
     def resolve_foreshadowing(self, content: str, chapter: int):
-        """回收伏笔"""
+        'Resolve foreshadowing.'
         if "foreshadowing" not in self.state["plot_threads"]:
             print(f"❌ Foreshadowing list not found")
             return
 
         for item in self.state["plot_threads"]["foreshadowing"]:
             if item.get("content") == content:
-                item["status"] = "已回收"
+                item["status"] = "resolved"
                 item["resolved_chapter"] = chapter
                 item["resolved_at"] = datetime.now().strftime("%Y-%m-%d")
                 normalize_state_runtime_sections(self.state)
@@ -303,18 +261,18 @@ class StateUpdater:
         print(f"⚠️  Foreshadowing not found: {content}")
 
     def update_progress(self, current_chapter: int, total_words: int):
-        """更新创作进度"""
+        'Update writing progress.'
         self.state["progress"]["current_chapter"] = current_chapter
         self.state["progress"]["total_words"] = total_words
         self.state["progress"]["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"📝 Update progress: chapter {current_chapter}, total words: {total_words}")
 
     def mark_volume_planned(self, volume: int, chapters_range: str):
-        """标记卷已规划"""
+        'Mark a volume as planned.'
         if "volumes_planned" not in self.state["progress"]:
             self.state["progress"]["volumes_planned"] = []
 
-        # 检查是否已存在
+        # Check whether the entry already exists.
         for item in self.state["progress"]["volumes_planned"]:
             if item.get("volume") == volume:
                 print(f"⚠️  Volume {volume} already planned; updating chapter range")
@@ -330,7 +288,7 @@ class StateUpdater:
         print(f"📝 Mark volume {volume} planned: chapters {chapters_range}")
 
     def add_review_checkpoint(self, chapters_range: str, report_file: str):
-        """添加审查记录"""
+        'Add a review record.'
         if "review_checkpoints" not in self.state:
             self.state["review_checkpoints"] = []
 
@@ -342,8 +300,8 @@ class StateUpdater:
         print(f"📝 Add review record: chapters {chapters_range} → {report_file}")
 
     def update_strand_tracker(self, strand: str, chapter: int):
-        """更新主导情节线（Strand Weave系统）"""
-        # 验证 strand 参数
+        'Update the dominant plot strand in Strand Weave.'
+        # Validate the strand argument.
         valid_strands = ["quest", "fire", "constellation"]
         if strand.lower() not in valid_strands:
             print(f"❌ Invalid strand: {strand} (valid: quest, fire, constellation)")
@@ -351,7 +309,7 @@ class StateUpdater:
 
         strand = strand.lower()
 
-        # 初始化 strand_tracker（如果不存在）
+        # Initialize strand_tracker if absent.
         if "strand_tracker" not in self.state:
             self.state["strand_tracker"] = {
                 "last_quest_chapter": 0,
@@ -364,23 +322,23 @@ class StateUpdater:
 
         tracker = self.state["strand_tracker"]
 
-        # 更新对应 strand 的最后章节
+        # Update this strand's latest chapter.
         tracker[f"last_{strand}_chapter"] = chapter
 
-        # 判断是否切换 strand
+        # Determine whether the strand changed.
         if tracker.get("current_dominant") != strand:
             tracker["current_dominant"] = strand
             tracker["chapters_since_switch"] = 1
         else:
             tracker["chapters_since_switch"] += 1
 
-        # 添加到历史记录
+        # Append to history.
         tracker["history"].append({
             "chapter": chapter,
             "dominant": strand
         })
 
-        # 只保留最近50章的历史（避免文件过大）
+        # Retain only the last 50 chapters to limit file growth.
         if len(tracker["history"]) > 50:
             tracker["history"] = tracker["history"][-50:]
 
@@ -421,7 +379,7 @@ Examples:
         help='Preview without writing files'
     )
 
-    # 主角状态更新
+    # Update protagonist state.
     parser.add_argument(
         '--protagonist-power',
         nargs=3,
@@ -443,7 +401,7 @@ Examples:
         help='Update special ability (name, level, cooldown days)'
     )
 
-    # 人际关系更新
+    # Update relationships.
     parser.add_argument(
         '--relationship',
         nargs=3,
@@ -452,7 +410,7 @@ Examples:
         help='Update relationship (character, property, value)'
     )
 
-    # 伏笔管理
+    # Manage foreshadowing.
     parser.add_argument(
         '--add-foreshadowing',
         nargs=2,
@@ -467,7 +425,7 @@ Examples:
         help='Resolve foreshadowing (content, chapter)'
     )
 
-    # 进度更新
+    # Update progress.
     parser.add_argument(
         '--progress',
         nargs=2,
@@ -476,7 +434,7 @@ Examples:
         help='Update progress (current chapter, total words)'
     )
 
-    # 卷规划
+    # Plan volumes.
     parser.add_argument(
         '--volume-planned',
         type=int,
@@ -490,7 +448,7 @@ Examples:
         help='Chapter range (e.g. "1-100")'
     )
 
-    # 审查记录
+    # Review records.
     parser.add_argument(
         '--add-review',
         nargs=2,
@@ -498,7 +456,7 @@ Examples:
         help='Add review record (chapter range, report file)'
     )
 
-    # Strand Tracker 更新
+    # Update Strand Tracker.
     parser.add_argument(
         '--strand-dominant',
         nargs=2,
@@ -508,7 +466,7 @@ Examples:
 
     args = parser.parse_args()
 
-    # 如果没有任何更新参数，显示帮助并退出
+    # Show help and exit when no update arguments were supplied.
     if not any([
         args.protagonist_power,
         args.protagonist_location,
@@ -524,24 +482,24 @@ Examples:
         parser.print_help()
         sys.exit(1)
 
-    # 解析 state.json 路径（支持从仓库根目录运行）
+    # Resolve state.json, including when run from the repository root.
     state_file_path = resolve_state_file(args.state_file, explicit_project_root=args.project_root)
 
-    # 创建更新器
+    # Create the updater.
     updater = StateUpdater(str(state_file_path), args.dry_run)
 
-    # 加载状态文件
+    # Load the state file.
     if not updater.load():
         sys.exit(1)
 
-    # 备份（除非是 dry-run）
+    # Back up unless this is a dry run.
     if not args.dry_run:
         if not updater.backup():
             sys.exit(1)
 
     print("\n📝 Updating...")
 
-    # 执行更新操作
+    # Perform updates.
     try:
         if args.protagonist_power:
             realm, layer, bottleneck = args.protagonist_power
@@ -557,7 +515,7 @@ Examples:
 
         if args.relationship:
             for char_name, key, value in args.relationship:
-                # 尝试转换为数字
+                # Try converting to a number.
                 try:
                     value = int(value)
                 except ValueError:
@@ -586,12 +544,12 @@ Examples:
             chapters_range, report_file = args.add_review
             updater.add_review_checkpoint(chapters_range, report_file)
 
-        # Strand Tracker 更新
+        # Update Strand Tracker.
         if args.strand_dominant:
             strand, chapter = args.strand_dominant
             updater.update_strand_tracker(strand, int(chapter))
 
-        # 保存更新
+        # Save updates.
         if not updater.save():
             sys.exit(1)
 

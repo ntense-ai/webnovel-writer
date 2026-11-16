@@ -12,7 +12,7 @@ from security_utils import AtomicWriteError, atomic_write_json, read_json_safe
 
 
 def test_atomic_write_retries_transient_permission_error(tmp_path, monkeypatch):
-    """瞬时占用（WinError 5）在退避重试窗口内自愈——issue #125 主场景。"""
+    """A transient WinError 5 clears within the backoff window: the main issue #125 scenario."""
     target = tmp_path / "memory_scratchpad.json"
     target.write_text('{"old": true}', encoding="utf-8")
 
@@ -22,7 +22,7 @@ def test_atomic_write_retries_transient_permission_error(tmp_path, monkeypatch):
     def flaky_replace(src, dst):
         calls["n"] += 1
         if calls["n"] <= 2:
-            raise PermissionError(5, "拒绝访问。")
+            raise PermissionError(5, "Access denied.")
         return real_replace(src, dst)
 
     sleeps: list[float] = []
@@ -33,18 +33,18 @@ def test_atomic_write_retries_transient_permission_error(tmp_path, monkeypatch):
 
     assert read_json_safe(target) == {"new": 1}
     assert calls["n"] == 3
-    assert sleeps == [0.02, 0.04]  # 指数退避
-    assert not list(tmp_path.glob("*.tmp"))  # 成功后无临时文件残留
+    assert sleeps == [0.02, 0.04]  # Exponential backoff
+    assert not list(tmp_path.glob("*.tmp"))  # No temporary files remain after success
 
 
 def test_atomic_write_raises_when_target_stays_locked(tmp_path, monkeypatch):
-    """持续占用：重试穷尽后如实抛 AtomicWriteError（生产模式），原文件不被破坏。"""
+    """Persistent contention raises AtomicWriteError after retries in production mode, preserving the original."""
     monkeypatch.delenv("WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE", raising=False)
     target = tmp_path / "state.json"
     target.write_text("{}", encoding="utf-8")
 
     def always_denied(src, dst):
-        raise PermissionError(5, "拒绝访问。")
+        raise PermissionError(5, "Access denied.")
 
     monkeypatch.setattr(security_utils.os, "replace", always_denied)
     monkeypatch.setattr(security_utils.time, "sleep", lambda _s: None)
@@ -53,17 +53,17 @@ def test_atomic_write_raises_when_target_stays_locked(tmp_path, monkeypatch):
         atomic_write_json(target, {"x": 1}, use_lock=False, backup=False)
 
     assert read_json_safe(target) == {}
-    assert not list(tmp_path.glob("*.tmp"))  # 失败路径清理了临时文件
+    assert not list(tmp_path.glob("*.tmp"))  # Failure cleans temporary files
 
 
 def test_atomic_write_relaxed_fallback_still_writes(tmp_path, monkeypatch):
-    """测试沙箱降级分支（WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE=1）行为保持：穷尽后覆写成功。"""
+    """The test-sandbox fallback with WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE=1 overwrites after exhausted retries."""
     monkeypatch.setenv("WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE", "1")
     target = tmp_path / "state.json"
     target.write_text("{}", encoding="utf-8")
 
     def always_denied(src, dst):
-        raise PermissionError(5, "拒绝访问。")
+        raise PermissionError(5, "Access denied.")
 
     monkeypatch.setattr(security_utils.os, "replace", always_denied)
     monkeypatch.setattr(security_utils.time, "sleep", lambda _s: None)
@@ -73,10 +73,10 @@ def test_atomic_write_relaxed_fallback_still_writes(tmp_path, monkeypatch):
     assert read_json_safe(target) == {"x": 1}
 
 
-@pytest.mark.skipif(sys.platform != "win32", reason="Windows 独有的 replace 共享冲突")
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific replace sharing conflict")
 def test_atomic_write_survives_real_windows_file_hold(tmp_path):
-    """真实复现 issue #125：另一线程 open 持有目标文件（无 FILE_SHARE_DELETE），
-    句柄释放前 os.replace 报 WinError 5，退避重试窗口内自愈。"""
+    """Reproduce issue #125: another thread holds the target open without FILE_SHARE_DELETE;
+    os.replace raises WinError 5 until the handle is released within the backoff window."""
     target = tmp_path / "memory_scratchpad.json"
     target.write_text('{"old": true}', encoding="utf-8")
 

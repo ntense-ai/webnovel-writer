@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-长期记忆预算分配。
-"""
+'Long-term memory budget allocation.'
 from __future__ import annotations
 
 from typing import Dict
@@ -21,7 +19,7 @@ def get_budget(task_type: str = "write") -> Dict[str, float]:
 
 
 def allocate_limits(max_items: int, task_type: str = "write") -> Dict[str, int]:
-    """按任务类型分配 working/episodic/semantic 的条目预算。"""
+    'Allocate working, episodic, and semantic entry budgets by task type.'
     max_items = max(1, int(max_items or 1))
     budget = get_budget(task_type)
     wr = float(budget.get("working_ratio", 0.45))
@@ -39,7 +37,7 @@ def allocate_limits(max_items: int, task_type: str = "write") -> Dict[str, int]:
     s = int(max_items * sr)
     used = w + e + s
 
-    # 把余数按语义层优先分配，保证总和等于 max_items。
+    # Assign the remainder to the semantic layer first so the total equals max_items.
     while used < max_items:
         if s <= w:
             s += 1

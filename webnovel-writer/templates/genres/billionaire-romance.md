@@ -1,0 +1,204 @@
+# Wealthy-Family CEO Romance Template
+
+> Runtime preset identifier: `billionaire-romance` (English taxonomy and initialization preset).
+
+> **Core appeal**: Power imbalance + contractual relationships + emotional push and pull. A modern Cinderella-and-prince story, choosing between money and genuine affection.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack F07
+- General overlay: Pack U01
+
+## 1. Core Subgenres
+
+### Contract Marriage
+- **Features**: A contract signed for practical reasons becomes real love.
+- **Core payoffs**: Identity reversals, genuine feelings, choices when the contract expires.
+- **Representative works**: *The CEO's Substitute Ex-Wife*, *Elite Contract: The CEO's Secret Lover*.
+
+### Marriage Before Love
+- **Features**: Marry first, develop feelings afterward.
+- **Core payoffs**: Affection through familiarity, a warm heart beneath a cold face, exclusive devotion.
+- **Representative works**: *Young Master Pei's Hundred-Billion Bride*, *The CEO's Priceless Sweet Wife*.
+
+### Wealthy-Family Struggles
+- **Features**: Entanglement in an elite family's internal conflicts.
+- **Core payoffs**: Outsmart opponents, gain a foothold, rise in status.
+- **Representative works**: *Lavish Love in a Wealthy Family*, *Warm Marriage in an Elite Family*.
+
+### Revenge and Anguished Love
+- **Features**: Approach with an ulterior motive but develop real feelings.
+- **Core payoffs**: Identity revelations, painful reversals, reconciliation.
+- **Representative works**: *The CEO's Revenge Bride*, *Wealthy-Family Feuds*.
+
+---
+
+## 2. Worldbuilding: Elite Society
+
+### Wealth Tiers
+| Tier | Features | Assets |
+|------|------|----------|
+| Top conglomerate | Controls vital industries | Hundreds of billions |
+| First-tier family | Industry leader | Tens of billions |
+| Second-tier family | Regional giant | Billions |
+| Newly rich | Emerging wealthy | Hundreds of millions |
+| Ordinary wealthy | Modest fortune | Tens of millions |
+
+### Elite-Family Rules
+- **Matching status**: Marriage is an alliance of interests.
+- **Legitimacy matters**: Children born outside marriage have lower status.
+- **Inheritance struggles**: Family assets are the central conflict.
+- **Public image**: Appearances matter more than truth.
+
+### Faction Landscape
+- **Family elders**: Hold power and must be won over.
+- **Main-line children**: Legitimate heirs.
+- **Secondary/illegitimate children**: Marginalized, potentially embittered.
+- **Marriage candidates**: Political bargaining chips.
+- **Family businesses**: Vehicles of power.
+
+---
+
+## 3. Character Design
+
+### Male Lead Types
+| Type | Features | Attitude toward heroine |
+|------|------|-----------|
+| Cold-faced CEO | Cold outside, warm inside | Tender only to her |
+| Calculating CEO | Deeply strategic | Protects her secretly |
+| Domineering CEO | Forceful and possessive | Strong exclusivity |
+| Obsessive CEO | Fixated | Extreme devotion |
+
+### Heroine Types
+| Type | Features | Interaction with male lead |
+|------|------|-----------|
+| Cinderella | Ordinary origins | Drawn in unwillingly |
+| Fallen heiress | Formerly wealthy | Equal footing |
+| Independent woman | Self-respecting, self-reliant | Neither submissive nor arrogant |
+| Hidden identity | Keeps secrets | Surprising revelation |
+
+### Classic Supporting Cast
+| Role | Function | Outcome |
+|------|------|------|
+| False innocent | Outwardly kind | Exposed |
+| Malicious female rival | Open wrongdoing | Humbled |
+| Ex-partner | Conflict | Rejected |
+| Mother-in-law | Makes things difficult | Won over |
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Identity Reversal
+- **Scene**: A dismissed heroine actually has an astonishing identity.
+- **Payoff**: Truth silences everyone.
+- **Example**: The mocked poor relative is secretly a wealthy heiress.
+
+### Exclusive Protection
+- **Scene**: Someone bullies the heroine.
+- **Payoff**: The male lead forcefully protects her and humiliates the bully publicly.
+- **Key**: Establish groundwork; avoid abruptness.
+
+### Contract Reversal
+- **Scene**: The contract expires and separation is due.
+- **Payoff**: He refuses to let go and confesses genuine love.
+- **Key**: Establish the emotional development.
+
+### Family Acceptance
+- **Scene**: Elders create obstacles.
+- **Payoff**: Her ability/sincerity wins them over.
+- **Key**: Show her admirable qualities.
+
+---
+
+## 5. Outline Structure (Standard: 800,000 Chinese Characters)
+
+### Volume One: Meeting (Chapters 1-50)
+- **Core**: Meet and establish a contractual relationship.
+- **Relationship**: Strangers → contract partners.
+- **Climax**: Sign the contract and begin living together.
+
+### Volume Two: Romantic Ambiguity (Chapters 51-120)
+- **Core**: Daily interaction brings emerging feelings.
+- **Relationship**: Contract → attraction.
+- **Climax**: First romantic spark/jealousy.
+
+### Volume Three: Trials (Chapters 121-200)
+- **Core**: The relationship is tested.
+- **Relationship**: Attraction → crisis.
+- **Climax**: Misunderstanding/separation.
+
+### Volume Four: Commitment (Chapters 201-280)
+- **Core**: Resolve misunderstandings and confirm feelings.
+- **Relationship**: Crisis → lovers.
+- **Climax**: Officially become a couple.
+
+### Volume Five: Fulfillment (Chapters 281-350)
+- **Core**: Gain acceptance and lasting union.
+- **Relationship**: Lovers → spouses.
+- **Climax**: Grand wedding.
+
+---
+
+## 6. Contract Design
+
+### Contract Types
+| Type | Reason | Duration |
+|------|------|------|
+| Fake marriage | Appease the family | 1-3 years |
+| Surrogacy | Need an heir | Pregnancy |
+| Lover | Business requirements | Variable |
+| Assistant | Work relationship | Contract term |
+
+### Common Clauses
+- Must not fall in love.
+- Must not interfere in private life.
+- Leave without assets when the term ends.
+- Confidentiality.
+
+---
+
+## 7. Conflict Design
+
+### Internal Conflicts
+| Conflict | Source | Resolution |
+|------|------|------|
+| Status gap | Mismatched backgrounds | Prove herself |
+| Contractual limits | Genuine feelings forbidden | Break the contract |
+| Self-respect | Refuses charity | Independence |
+
+### External Conflicts
+| Conflict | Source | Resolution |
+|------|------|------|
+| Family opposition | Elders | Earn acceptance |
+| Romantic rival | Ex/other suitor | Firm choice |
+| Business crisis | Company | Face it together |
+| Family-origin secret | Past | Reveal truth |
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ Forced anguish for its own sake.
+- ❌ A stereotyped, flawless CEO.
+- ❌ An excessively naive heroine.
+- ❌ Trivial misunderstandings.
+
+### Recommended Practices
+- ✅ Measured anguish and genuine sweetness.
+- ✅ A human side to the CEO.
+- ✅ A heroine with opinions and boundaries.
+- ✅ Plausible misunderstandings.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="clan" name="Clan name" desc="Industry" tier="level" assets="asset" power="Authority"/>
+<entity type="contract" name="Contract type" desc="Terms" tier="level" duration="Duration" penalty="Breach penalty"/>
+<entity type="relationship" name="personA-personB" desc="Relationship nature" tier="level" stage="Stage" obstacle="Obstacle"/>
+<entity type="secret" name="Secret content" desc="Informed parties" tier="level" impact="Impact" reveal="Reveal timing"/>
+```

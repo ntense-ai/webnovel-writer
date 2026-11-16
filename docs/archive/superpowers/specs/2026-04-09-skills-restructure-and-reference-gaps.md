@@ -149,21 +149,21 @@ This historical design serves Chinese web-fiction writing; documentation should 
 
 Existing `genres/` uses English names (`xuanhuan`, `realistic`, etc.); this round standardizes on Chinese genre names. **The first version uses Fanqie Novel's taxonomy as the default mapping baseline**, with extensible platform mappings later.
 
-**Male-oriented categories:** 都市, 玄幻, 仙侠, 奇幻, 武侠, 历史, 军事, 科幻, 悬疑, 游戏, 体育, 轻小说 (urban, xuanhuan, xianxia, fantasy, wuxia, history, military, science fiction, mystery, gaming, sports, light novels).
-**Female-oriented categories:** 现言, 古言, 幻言, 悬疑, 轻小说 (contemporary romance, historical romance, fantasy romance, mystery, light novels).
+**Male-oriented categories:** Urban, xuanhuan, xianxia, fantasy, wuxia, history, military, science fiction, mystery, gaming, sports, and light novels.
+**Female-oriented categories:** Contemporary romance, historical romance, fantasy romance, mystery, and light novels.
 
-The CSV `适用题材` column uses these exact Chinese names. `全部` means all genres.
+The CSV `applicable_genres` column uses these exact Chinese names. `all` means all genres.
 
 Existing directory mappings:
 
 | Current directory | Fanqie genre identifiers |
 |-----------|------------|
-| `xuanhuan/` | 玄幻 |
-| `realistic/` | 都市 |
-| `dog-blood-romance/` | 现言 |
-| `rules-mystery/` | 悬疑 |
-| `period-drama/` | 古言, 历史 |
-| `zhihu-short/` | 短篇 / 轻小说 (temporary mapping) |
+| `xuanhuan/` | xuanhuan |
+| `realistic/` | urban |
+| `dog-blood-romance/` | contemporary-romance |
+| `rules-mystery/` | mystery |
+| `period-drama/` | historical-romance, historical |
+| `zhihu-short/` | short-fiction / light novel (temporary mapping) |
 
 ---
 
@@ -394,12 +394,12 @@ Exact Chinese query/table literals are retained for compatibility with the knowl
 
 | Step | Trigger | Arguments |
 |------|---------|---------|
-| Step 2 | New character first appears | `--skill write --table 命名规则 --query "角色命名" --genre {题材}` |
-| Step 2 | Combat/confrontation | `--skill write --query "战斗描写" --genre {题材}` |
-| Step 2 | Multi-character dialogue | `--skill write --query "对话声线 口吻区分"` |
-| Step 2 | Emotional/psychological description | `--skill write --query "情感描写 心理"` |
-| Step 2 | Frequently used plot situation | `--skill write --table 场景写法 --query "{桥段类型}"` |
-| Step 4 | ai_flavor issue exists | `--skill write --query "AI味 反例 替换"` |
+| Step 2 | New character first appears | `--skill write --table naming --query "characternaming" --genre {genre}` |
+| Step 2 | Combat/confrontation | `--skill write --query "combatdescription" --genre {genre}` |
+| Step 2 | Multi-character dialogue | `--skill write --query "conversationvoice distinguishing voices"` |
+| Step 2 | Emotional/psychological description | `--skill write --query "emotional-relationshipsdescription psychological"` |
+| Step 2 | Frequently used plot situation | `--skill write --table scenes --query "{tropetype}"` |
+| Step 4 | ai_flavor issue exists | `--skill write --query "AIstylistic traces negative_example replace"` |
 
 #### Script needs
 - No new script prerequisite now.
@@ -448,7 +448,7 @@ Retain:
 
 | Step | Trigger | Arguments |
 |------|---------|---------|
-| Step 4 (call reviewer) | ≥3 ai_flavor issues | `--skill review --query "AI味 反例 替换"` |
+| Step 4 (call reviewer) | ≥3 ai_flavor issues | `--skill review --query "AIstylistic traces negative_example replace"` |
 
 #### Script needs
 - No new mainline script.
@@ -498,8 +498,8 @@ Retain:
 
 | Step | Trigger | Arguments |
 |------|---------|---------|
-| Volume planning | Every run | `--skill plan --table 场景写法 --query "卷级结构 叙事功能"` |
-| Chapter breakdown | New character | `--skill plan --table 命名规则 --query "角色命名" --genre {题材}` |
+| Volume planning | Every run | `--skill plan --table scenes --query "volumestructure narrationfunction"` |
+| Chapter breakdown | New character | `--skill plan --table naming --query "characternaming" --genre {genre}` |
 
 #### Script needs
 - None now.
@@ -544,7 +544,7 @@ Retain:
 
 | Step | Trigger | Arguments |
 |------|---------|---------|
-| Naming collection | User begins character/book/faction naming | `--skill init --table 命名规则 --query "{命名对象} {题材}" --genre {题材}` |
+| Naming collection | User begins character/book/faction naming | `--skill init --table naming --query "{naming_target} {genre}" --genre {genre}` |
 
 Note: `title-patterns-and-anti-patterns.md` and `protagonist-flaw-patterns.md` are not included in this round's gap list; restore them only if testing reveals persistent weaknesses.
 
@@ -616,7 +616,7 @@ Use **two tracks**: workflow-required Markdown + writing knowledge base (CSV + s
 | Track | Format | Loading | Content | Examples |
 |------|------|---------|---------|------|
 | **Workflow-required** | `.md` | Direct `Read` at specified step | Gates, schemas, core constraints, review criteria | `core-constraints.md`, `review-schema.md`, `polish-guide.md` |
-| **Writing knowledge base** | `.csv` + Python search | Script called for specific scenarios; matching entries only | Techniques, genre methods, scene inspiration, naming, examples/counterexamples | `写作技法.csv`, `命名规则.csv`, `场景写法.csv` |
+| **Writing knowledge base** | `.csv` + Python search | Script called for specific scenarios; matching entries only | Techniques, genre methods, scene inspiration, naming, examples/counterexamples | `techniques.csv`, `naming.csv`, `scenes.csv` |
 
 Boundary:
 - **Workflow/contracts/gates/schemas** → Markdown (read fully, not fragments).
@@ -629,9 +629,9 @@ Boundary:
 ```
 webnovel-writer/
   data/                          # CSV knowledge-base root
-    写作技法.csv
-    命名规则.csv
-    场景写法.csv
+    techniques.csv
+    naming.csv
+    scenes.csv
   scripts/
     reference_search.py          # Unified BM25 search
 ```
@@ -646,51 +646,51 @@ Exact schema names and machine values remain Chinese.
 
 | Column | Type | Meaning | Examples |
 |------|------|------|-------|
-| `编号` | string | Unique ID, table-specific prefix | `WT-001`, `NR-012`, `SP-003` |
-| `适用技能` | string | Coarse filter, comma-separated | `write`, `init,plan`, `init,plan,write` |
-| `分类` | string | Broad scenario category | `战斗`, `对话`, `命名`, `情感`, `场景` (combat/dialogue/naming/emotion/scene) |
-| `层级` | string | Three-layer marker | `提醒` / `缺陷补偿` / `知识补充` (reminder/compensation/supplement) |
-| `关键词` | string | Comma-separated BM25 keywords | `打斗,武斗,对决,境界压制` |
-| `适用题材` | string | Comma-separated Fanqie genre names | `全部` or `玄幻,仙侠` |
+| `id` | string | Unique ID, table-specific prefix | `WT-001`, `NR-012`, `SP-003` |
+| `applicable_skills` | string | Coarse filter, comma-separated | `write`, `init,plan`, `init,plan,write` |
+| `category` | string | Broad scenario category | `combat`, `conversation`, `naming`, `emotional-relationships`, `scene` (combat/dialogue/naming/emotion/scene) |
+| `level` | string | Three-layer marker | `reminder` / `defect-compensation` / `knowledge` (reminder/compensation/supplement) |
+| `keywords` | string | Comma-separated BM25 keywords | `combat,physical combat,duel,realm suppression` |
+| `applicable_genres` | string | Comma-separated Fanqie genre names | `all` or `xuanhuan,xianxia` |
 
-#### Writing techniques (`写作技法.csv`)
+#### Writing techniques (`techniques.csv`)
 
 | Column | Meaning |
 |------|------|
 | (Common columns) | |
-| `技法名称` | Short technique name |
-| `说明` | Technique description |
-| `正例` | Positive example; long excerpts allowed (200–500 Chinese characters) |
-| `反例` | Counterexample; long excerpts allowed |
-| `修复建议` | Direction for revising counterexample into positive example |
+| `technique_name` | Short technique name |
+| `description` | Technique description |
+| `positive_example` | Positive example; long excerpts allowed (200–500 Chinese characters) |
+| `negative_example` | Counterexample; long excerpts allowed |
+| `fix recommendation` | Direction for revising counterexample into positive example |
 
 Example row (original runtime CSV sample retained):
 
 ```
-编号,适用技能,分类,层级,关键词,适用题材,技法名称,说明,正例,反例,修复建议
-WT-001,write,对话,缺陷补偿,"口吻趋同,对话区分,角色声线",全部,对话声线差异化,不同角色的对话应有可辨识的口语特征和节奏差异,"老张头叼着烟袋锅子，""嘿，你小子又来蹭饭？""...","两人对话风格完全一致，都是标准书面语",给每个角色设定 1-2 个口语标记词和句式习惯
+id,applicable_skills,category,level,keywords,applicable_genres,technique_name,description,positive_example,negative_example,fix recommendation
+WT-001,write,conversation,defect-compensation,"converging voices,conversationdistinguish,charactervoice",all,conversationvoice differentiation,differentcharacterofconversationshould have distinctive spoken features andpacingdifferences,"Old Zhang held his pipe between his teeth，""Hey，You rascal, here for another free meal？""...","the two peopleconversationhave identical styles，both use standard written language",give eachcharactersetting 1-2 spoken markers and habitual sentence patterns
 ```
 
-#### Naming rules (`命名规则.csv`)
+#### Naming rules (`naming.csv`)
 
 | Column | Meaning |
 |------|------|
 | (Common columns) | |
-| `命名对象` | `角色` / `地点` / `势力` / `功法` / `道具` / `书名` (character/location/faction/technique/item/book title) |
-| `规则` | Rule description |
-| `正例` | Positive example |
-| `反例` | Counterexample |
+| `naming_target` | `character` / `location` / `faction` / `cultivation technique` / `item` / `book-title` (character/location/faction/technique/item/book title) |
+| `rule` | Rule description |
+| `positive_example` | Positive example |
+| `negative_example` | Counterexample |
 
-#### Scene techniques (`场景写法.csv`)
+#### Scene techniques (`scenes.csv`)
 
 | Column | Meaning |
 |------|------|
 | (Common columns) | |
-| `场景类型` | `告白`, `打脸`, `觉醒`, `战斗`, `谈判`, `追逐`, `日常`, `离别`, etc. (confession/comeuppance/awakening/combat/negotiation/chase/daily life/farewell) |
-| `模式名称` | Pattern name |
-| `说明` | Pattern description |
-| `示例片段` | Long excerpts allowed (200–500 characters) |
-| `反面写法` | Approaches to avoid |
+| `scene_type` | `confession`, `vindication`, `awakening`, `combat`, `negotiation`, `chase`, `everyday-life`, `farewell`, etc. (confession/comeuppance/awakening/combat/negotiation/chase/daily life/farewell) |
+| `pattern_name` | Pattern name |
+| `description` | Pattern description |
+| `example_excerpt` | Long excerpts allowed (200–500 characters) |
+| `negative examples` | Approaches to avoid |
 
 ### 7.3 Search script
 
@@ -700,29 +700,29 @@ WT-001,write,对话,缺陷补偿,"口吻趋同,对话区分,角色声线",全部
 # Basic: search by current skill and keywords
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" \
   --skill write \
-  --query "战斗描写 境界压制" \
+  --query "combatdescription realm suppression" \
   --max-results 3
 
 # Genre filter
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" \
   --skill write \
-  --query "命名 角色" \
-  --genre "玄幻" \
+  --query "naming character" \
+  --genre "xuanhuan" \
   --max-results 5
 
 # Specific table
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" \
   --skill plan \
-  --table 命名规则 \
-  --query "跨卷 角色命名" \
+  --table naming \
+  --query "cross-volume characternaming" \
   --max-results 3
 ```
 
 #### Retrieval flow
 
 ```
-1. Coarse-filter by 适用技能 (applicable skill)
-2. Optionally filter by 适用题材 (genre), when --genre is specified
+1. Coarse-filter by applicable_skills (applicable skill)
+2. Optionally filter by applicable_genres (genre), when --genre is specified
 3. BM25 keyword search within filtered results
 4. Format and return top N entries
 ```
@@ -769,17 +769,17 @@ Migrate or create:
 
 | Existing Markdown | CSV destination | Markdown afterward |
 |-------------|-----------|--------------|
-| `writing/combat-scenes.md` | `场景写法.csv` (`场景类型=战斗`) | Delete or retain redirect shell |
-| `writing/dialogue-writing.md` | `写作技法.csv` (`分类=对话`) | Same |
-| `writing/emotion-psychology.md` | `写作技法.csv` (`分类=情感`) | Same |
-| `writing/scene-description.md` | `写作技法.csv` (`分类=场景`) | Same |
-| `writing/desire-description.md` | `写作技法.csv` (`分类=情感`) | Same |
-| `writing/genre-hook-payoff-library.md` | `场景写法.csv` (`场景类型=钩子/兑现`) | Same |
-| New: naming rules | `命名规则.csv` | No existing file |
-| New: differentiated dialogue voices | `写作技法.csv` (`分类=对话`, `层级=缺陷补偿`) | No existing file |
-| New: anti-template plot situations | `场景写法.csv` (`层级=缺陷补偿`) | No existing file |
-| New: AI-flavor examples/counterexamples | `写作技法.csv` (`分类=AI味`, `层级=缺陷补偿`) | No existing file |
-| New: volume-level narrative-function patterns | `场景写法.csv` (`场景类型=卷级结构`, `适用技能=plan`) | No existing file |
+| `writing/combat-scenes.md` | `scenes.csv` (`scene_type=combat`) | Delete or retain redirect shell |
+| `writing/dialogue-writing.md` | `techniques.csv` (`category=conversation`) | Same |
+| `writing/emotion-psychology.md` | `techniques.csv` (`category=emotional-relationships`) | Same |
+| `writing/scene-description.md` | `techniques.csv` (`category=scene`) | Same |
+| `writing/desire-description.md` | `techniques.csv` (`category=emotional-relationships`) | Same |
+| `writing/genre-hook-payoff-library.md` | `scenes.csv` (`scene_type=hook/payoff`) | Same |
+| New: naming rules | `naming.csv` | No existing file |
+| New: differentiated dialogue voices | `techniques.csv` (`category=conversation`, `level=defect-compensation`) | No existing file |
+| New: anti-template plot situations | `scenes.csv` (`level=defect-compensation`) | No existing file |
+| New: AI-flavor examples/counterexamples | `techniques.csv` (`category=AIstylistic traces`, `level=defect-compensation`) | No existing file |
+| New: volume-level narrative-function patterns | `scenes.csv` (`scene_type=volumestructure`, `applicable_skills=plan`) | No existing file |
 
 ### 7.6 Filtered-out proposals
 
@@ -787,7 +787,7 @@ Not included now, but not permanently excluded. Restore if testing shows unrelia
 
 | Proposal | Current reason for exclusion | Restoration condition |
 |--------|------------|---------|
-| `init/title-patterns-and-anti-patterns.md` | Book titles fit a few `命名规则.csv` entries (`命名对象=书名`) | If too few rows cannot cover persistent template-like titles, expand into an independent entry group |
+| `init/title-patterns-and-anti-patterns.md` | Book titles fit a few `naming.csv` entries (`naming_target=book-title`) | If too few rows cannot cover persistent template-like titles, expand into an independent entry group |
 | `init/protagonist-flaw-patterns.md` | General model ability suffices | Add CSV entries if flaw design stays vague/label-like in practice |
 | `query/entity-alias-resolution.md` | Alias resolution is code logic (entity_linker.py) | Add reference for frequent semantic ambiguity beyond code coverage |
 | `query/foreshadowing-urgency-rules.md` | Urgency sorting already in context-agent | Add if explanations are unstable |

@@ -24,7 +24,7 @@ class RuntimeContractBuilder:
         volume_brief = VolumeBrief.model_validate(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "VOLUME_BRIEF"},
-                "volume_goal": {"summary": f"第{volume}卷延续 {master.route.get('primary_genre', '')} 的主冲突"},
+                "volume_goal": {"summary": f"Volume {volume} continues the main {master.route.get('primary_genre', '')} conflict"},
                 "selected_tropes": [master.route.get("primary_genre", "")],
                 "selected_pacing": {"wave": master.master_constraints.get("pacing_strategy", "")},
                 "selected_scenes": list(plot.get("cpns") or []),

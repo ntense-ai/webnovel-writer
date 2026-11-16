@@ -48,11 +48,11 @@ def test_state_projection_writer_applies_accepted_commit(tmp_path):
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
     result = writer.apply(
-        _commit_payload(state_deltas=[{"entity_id": "x", "field": "realm", "new": "斗者"}])
+        _commit_payload(state_deltas=[{"entity_id": "x", "field": "realm", "new": "Dou Zhe"}])
     )
     assert result["applied"] is True
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["entity_state"]["x"]["realm"] == "斗者"
+    assert payload["entity_state"]["x"]["realm"] == "Dou Zhe"
     assert payload["progress"]["chapter_status"]["3"] == "chapter_committed"
     assert payload["progress"]["current_chapter"] == 3
     assert payload["progress"]["last_updated"]
@@ -67,10 +67,10 @@ def test_accepted_chapter_commits_advance_progress_and_word_count(tmp_path):
         ),
         encoding="utf-8",
     )
-    chapters_dir = tmp_path / "正文"
+    chapters_dir = tmp_path / "chapters"
     chapters_dir.mkdir(parents=True, exist_ok=True)
-    (chapters_dir / "第0001章.md").write_text("第一章正文内容", encoding="utf-8")
-    (chapters_dir / "第0002章.md").write_text("第二章正文内容更多", encoding="utf-8")
+    (chapters_dir / "chapter-0001.md").write_text("chapter one prose", encoding="utf-8")
+    (chapters_dir / "chapter-0002.md").write_text("more chapter two prose", encoding="utf-8")
 
     service = ChapterCommitService(tmp_path)
     for chapter in (1, 2):
@@ -100,9 +100,9 @@ def test_reapplying_accepted_chapter_commit_does_not_double_count_words(tmp_path
         ),
         encoding="utf-8",
     )
-    chapters_dir = tmp_path / "正文"
+    chapters_dir = tmp_path / "chapters"
     chapters_dir.mkdir(parents=True, exist_ok=True)
-    (chapters_dir / "第0001章.md").write_text("第一章正文内容", encoding="utf-8")
+    (chapters_dir / "chapter-0001.md").write_text("chapter one prose", encoding="utf-8")
 
     payload = _commit_payload(chapter=1)
     writer = StateProjectionWriter(tmp_path)
@@ -129,7 +129,7 @@ def test_state_projection_writer_derives_delta_from_power_breakthrough_event(tmp
                     "chapter": 3,
                     "event_type": "power_breakthrough",
                     "subject": "xiaoyan",
-                    "payload": {"from": "斗者", "to": "斗师"},
+                    "payload": {"from": "Dou Zhe", "to": "Dou Shi"},
                 }
             ],
         )
@@ -137,7 +137,7 @@ def test_state_projection_writer_derives_delta_from_power_breakthrough_event(tmp
 
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
     assert result["applied"] is True
-    assert payload["entity_state"]["xiaoyan"]["realm"] == "斗师"
+    assert payload["entity_state"]["xiaoyan"]["realm"] == "Dou Shi"
 
 
 def test_state_projection_writer_updates_strand_tracker(tmp_path):
@@ -188,14 +188,14 @@ def test_accepted_commit_updates_state_json_end_to_end(tmp_path):
     commit_payload = service.build_commit(
         chapter=3,
         review_result={"blocking_count": 0},
-        fulfillment_result={"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []},
+        fulfillment_result={"planned_nodes": ["discovers the trap"], "covered_nodes": ["discovers the trap"], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
-        extraction_result={"state_deltas": [{"entity_id": "x", "field": "realm", "new": "斗者"}], "entity_deltas": [], "accepted_events": []},
+        extraction_result={"state_deltas": [{"entity_id": "x", "field": "realm", "new": "Dou Zhe"}], "entity_deltas": [], "accepted_events": []},
     )
 
     StateProjectionWriter(tmp_path).apply(commit_payload)
     payload = json.loads((tmp_path / ".webnovel" / "state.json").read_text(encoding="utf-8"))
-    assert payload["entity_state"]["x"]["realm"] == "斗者"
+    assert payload["entity_state"]["x"]["realm"] == "Dou Zhe"
 
 
 def test_index_projection_writer_applies_entity_delta(tmp_path):
@@ -208,9 +208,9 @@ def test_index_projection_writer_applies_entity_delta(tmp_path):
             entity_deltas=[
                 {
                     "entity_id": "xiaoyan",
-                    "canonical_name": "萧炎",
-                    "type": "角色",
-                    "current": {"realm": "斗者"},
+                    "canonical_name": "Xiao Yan",
+                    "type": "character",
+                    "current": {"realm": "Dou Zhe"},
                     "chapter": 3,
                 }
             ],
@@ -219,8 +219,8 @@ def test_index_projection_writer_applies_entity_delta(tmp_path):
 
     entity = IndexManager(cfg).get_entity("xiaoyan")
     assert result["applied"] is True
-    assert entity["canonical_name"] == "萧炎"
-    assert entity["current_json"]["realm"] == "斗者"
+    assert entity["canonical_name"] == "Xiao Yan"
+    assert entity["current_json"]["realm"] == "Dou Zhe"
 
 
 def test_index_projection_writer_registers_stable_protagonist_aliases(tmp_path):
@@ -234,9 +234,9 @@ def test_index_projection_writer_registers_stable_protagonist_aliases(tmp_path):
             entity_deltas=[
                 {
                     "entity_id": "lu_ming",
-                    "canonical_name": "陆鸣",
-                    "type": "角色",
-                    "tier": "核心",
+                    "canonical_name": "Lu Ming",
+                    "type": "character",
+                    "tier": "core",
                     "chapter": 1,
                     "is_protagonist": True,
                 }
@@ -246,8 +246,8 @@ def test_index_projection_writer_registers_stable_protagonist_aliases(tmp_path):
 
     manager = IndexManager(cfg)
     assert result["applied"] is True
-    assert manager.get_entity("lu_ming")["canonical_name"] == "陆鸣"
-    assert manager.get_entity("陆鸣")["id"] == "lu_ming"
+    assert manager.get_entity("lu_ming")["canonical_name"] == "Lu Ming"
+    assert manager.get_entity("Lu Ming")["id"] == "lu_ming"
     assert manager.get_entity("protagonist")["id"] == "lu_ming"
     assert manager.get_entity("luming")["id"] == "lu_ming"
 
@@ -259,9 +259,9 @@ def test_entity_delta_without_protagonist_flag_preserves_existing_protagonist(tm
     manager.apply_entity_delta(
         {
             "entity_id": "lu_ming",
-            "canonical_name": "陆鸣",
-            "type": "角色",
-            "tier": "核心",
+            "canonical_name": "Lu Ming",
+            "type": "character",
+            "tier": "core",
             "chapter": 1,
             "is_protagonist": True,
         }
@@ -270,12 +270,12 @@ def test_entity_delta_without_protagonist_flag_preserves_existing_protagonist(tm
     manager.apply_entity_delta(
         {
             "entity_id": "lu_ming",
-            "canonical_name": "陆鸣",
-            "type": "角色",
-            "tier": "核心",
+            "canonical_name": "Lu Ming",
+            "type": "character",
+            "tier": "core",
             "chapter": 2,
             "field": "realm",
-            "new": "炼气二层",
+            "new": "Qi Refining Level Two",
         }
     )
 
@@ -299,8 +299,8 @@ def test_index_projection_writer_derives_relationship_from_event(tmp_path):
                     "subject": "xiaoyan",
                     "payload": {
                         "to_entity": "yaolao",
-                        "relationship_type": "师徒",
-                        "description": "关系正式确立",
+                        "relationship_type": "mentor-student",
+                        "description": "relationship formally established",
                     },
                 }
             ],
@@ -309,7 +309,7 @@ def test_index_projection_writer_derives_relationship_from_event(tmp_path):
 
     rels = IndexManager(cfg).get_relationship_between("xiaoyan", "yaolao")
     assert result["applied"] is True
-    assert rels[0]["type"] == "师徒"
+    assert rels[0]["type"] == "mentor-student"
 
 
 def test_index_projection_writer_derives_artifact_entity_from_event(tmp_path):
@@ -324,10 +324,10 @@ def test_index_projection_writer_derives_artifact_entity_from_event(tmp_path):
                     "event_id": "evt-002",
                     "chapter": 3,
                     "event_type": "artifact_obtained",
-                    "subject": "黑戒",
+                    "subject": "black ring",
                     "payload": {
                         "artifact_id": "black_ring",
-                        "name": "黑戒",
+                        "name": "black ring",
                         "owner": "xiaoyan",
                     },
                 }
@@ -337,7 +337,7 @@ def test_index_projection_writer_derives_artifact_entity_from_event(tmp_path):
 
     entity = IndexManager(cfg).get_entity("black_ring")
     assert result["applied"] is True
-    assert entity["canonical_name"] == "黑戒"
+    assert entity["canonical_name"] == "black ring"
     assert entity["current_json"]["holder"] == "xiaoyan"
 
 
@@ -345,9 +345,9 @@ def test_accepted_commit_writes_chapter_index_tables(tmp_path):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
-    chapters_dir = tmp_path / "正文"
+    chapters_dir = tmp_path / "chapters"
     chapters_dir.mkdir(parents=True, exist_ok=True)
-    (chapters_dir / "第0003章.md").write_text("第三章正文内容", encoding="utf-8")
+    (chapters_dir / "chapter-0003.md").write_text("chapter three prose", encoding="utf-8")
 
     service = ChapterCommitService(tmp_path)
     payload = service.build_commit(
@@ -356,17 +356,17 @@ def test_accepted_commit_writes_chapter_index_tables(tmp_path):
         fulfillment_result={"planned_nodes": [], "covered_nodes": [], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
         extraction_result={
-            "summary_text": "本章摘要",
-            "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师"}],
+            "summary_text": "chapter summary",
+            "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}],
             "entity_deltas": [],
-            "entities_appeared": [{"id": "xiaoyan", "mentions": ["萧炎"], "confidence": 0.95}],
+            "entities_appeared": [{"id": "xiaoyan", "mentions": ["Xiao Yan"], "confidence": 0.95}],
             "scenes": [
                 {
                     "index": 1,
                     "start_line": 1,
                     "end_line": 12,
-                    "location": "山门",
-                    "summary": "萧炎完成突破",
+                    "location": "sect gate",
+                    "summary": "Xiao Yan completes a breakthrough",
                     "characters": ["xiaoyan"],
                 }
             ],
@@ -378,9 +378,9 @@ def test_accepted_commit_writes_chapter_index_tables(tmp_path):
     manager = IndexManager(cfg)
 
     assert result["projection_status"]["index"] == "done"
-    assert manager.get_chapter(3)["summary"] == "本章摘要"
+    assert manager.get_chapter(3)["summary"] == "chapter summary"
     assert manager.get_chapter_appearances(3)[0]["entity_id"] == "xiaoyan"
-    assert manager.get_scenes(3)[0]["location"] == "山门"
+    assert manager.get_scenes(3)[0]["location"] == "sect gate"
     changes = manager.get_chapter_state_changes(3)
     assert len(changes) == 1
     assert changes[0]["entity_id"] == "xiaoyan"
@@ -391,9 +391,9 @@ def test_index_projection_writer_is_idempotent_for_replay(tmp_path):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
-    chapters_dir = tmp_path / "正文"
+    chapters_dir = tmp_path / "chapters"
     chapters_dir.mkdir(parents=True, exist_ok=True)
-    (chapters_dir / "第0003章.md").write_text("第三章正文内容", encoding="utf-8")
+    (chapters_dir / "chapter-0003.md").write_text("chapter three prose", encoding="utf-8")
 
     service = ChapterCommitService(tmp_path)
     payload = service.build_commit(
@@ -402,24 +402,24 @@ def test_index_projection_writer_is_idempotent_for_replay(tmp_path):
         fulfillment_result={"planned_nodes": [], "covered_nodes": [], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
         extraction_result={
-            "summary_text": "本章摘要",
-            "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师"}],
+            "summary_text": "chapter summary",
+            "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}],
             "entity_deltas": [
                 {
                     "entity_id": "xiaoyan",
-                    "canonical_name": "萧炎",
-                    "entity_type": "角色",
-                    "tier": "核心",
+                    "canonical_name": "Xiao Yan",
+                    "entity_type": "character",
+                    "tier": "core",
                 }
             ],
-            "entities_appeared": [{"id": "xiaoyan", "mentions": ["萧炎"], "confidence": 0.95}],
+            "entities_appeared": [{"id": "xiaoyan", "mentions": ["Xiao Yan"], "confidence": 0.95}],
             "scenes": [
                 {
                     "index": 1,
                     "start_line": 1,
                     "end_line": 12,
-                    "location": "山门",
-                    "summary": "萧炎完成突破",
+                    "location": "sect gate",
+                    "summary": "Xiao Yan completes a breakthrough",
                     "characters": ["xiaoyan"],
                 }
             ],
@@ -432,11 +432,11 @@ def test_index_projection_writer_is_idempotent_for_replay(tmp_path):
     writer.apply(payload)
 
     manager = IndexManager(cfg)
-    assert manager.get_chapter(3)["summary"] == "本章摘要"
+    assert manager.get_chapter(3)["summary"] == "chapter summary"
     assert len(manager.get_chapter_appearances(3)) == 1
     assert len(manager.get_scenes(3)) == 1
     assert len(manager.get_chapter_state_changes(3)) == 1
-    assert manager.get_entity("xiaoyan")["canonical_name"] == "萧炎"
+    assert manager.get_entity("xiaoyan")["canonical_name"] == "Xiao Yan"
 
 
 def test_index_projection_writer_records_state_change_from_event(tmp_path):
@@ -452,7 +452,7 @@ def test_index_projection_writer_records_state_change_from_event(tmp_path):
                     "chapter": 3,
                     "event_type": "character_state_changed",
                     "subject": "xiaoyan",
-                    "payload": {"field": "mood", "old": "躁动", "new": "冷静"},
+                    "payload": {"field": "mood", "old": "restless", "new": "calm"},
                 }
             ],
         )
@@ -471,27 +471,27 @@ def test_summary_projection_writer_writes_summary_markdown(tmp_path):
     writer = SummaryProjectionWriter(tmp_path)
 
     result = writer.apply(
-        _commit_payload(summary_text="本章主角发现陷阱并决定隐忍。")
+        _commit_payload(summary_text="the protagonist discovers the trap and decides to endure quietly。")
     )
 
     summary_path = tmp_path / ".webnovel" / "summaries" / "ch0003.md"
     assert result["applied"] is True
     assert summary_path.is_file()
-    assert "剧情摘要" in summary_path.read_text(encoding="utf-8")
+    assert "Plot Summary" in summary_path.read_text(encoding="utf-8")
 
 
 def test_summary_projection_writer_replay_overwrites_not_appends(tmp_path):
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     writer = SummaryProjectionWriter(tmp_path)
-    payload = _commit_payload(summary_text="本章主角发现陷阱并决定隐忍。")
+    payload = _commit_payload(summary_text="the protagonist discovers the trap and decides to endure quietly。")
 
     writer.apply(payload)
     writer.apply(payload)
 
     summary_path = tmp_path / ".webnovel" / "summaries" / "ch0003.md"
     text = summary_path.read_text(encoding="utf-8")
-    assert text.count("本章主角发现陷阱并决定隐忍。") == 1
+    assert text.count("the protagonist discovers the trap and decides to endure quietly。") == 1
 
 
 def test_memory_projection_writer_maps_commit_into_scratchpad(tmp_path):
@@ -502,7 +502,7 @@ def test_memory_projection_writer_maps_commit_into_scratchpad(tmp_path):
     result = writer.apply(
         _commit_payload(
             state_deltas=[
-                {"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师"}
+                {"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}
             ],
         )
     )
@@ -519,7 +519,7 @@ def test_memory_projection_writer_is_idempotent_for_replay(tmp_path):
     writer = MemoryProjectionWriter(tmp_path)
     payload = _commit_payload(
         state_deltas=[
-            {"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师"}
+            {"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}
         ],
     )
 
@@ -547,12 +547,12 @@ def test_vector_projection_writer_is_idempotent_for_replay(tmp_path, monkeypatch
     cfg.ensure_dirs()
     writer = VectorProjectionWriter(tmp_path)
     payload = _commit_payload(
-        summary_text="本章主角发现陷阱并决定隐忍。",
+        summary_text="the protagonist discovers the trap and decides to endure quietly。",
         entity_deltas=[
             {
                 "entity_id": "xiaoyan",
-                "canonical_name": "萧炎",
-                "type": "角色",
+                "canonical_name": "Xiao Yan",
+                "type": "character",
                 "chapter": 3,
             }
         ],
@@ -562,14 +562,14 @@ def test_vector_projection_writer_is_idempotent_for_replay(tmp_path, monkeypatch
                 "chapter": 3,
                 "event_type": "power_breakthrough",
                 "subject": "xiaoyan",
-                "payload": {"to": "斗师"},
+                "payload": {"to": "Dou Shi"},
             }
         ],
         scenes=[
             {
                 "index": 1,
-                "location": "山门",
-                "summary": "萧炎完成突破",
+                "location": "sect gate",
+                "summary": "Xiao Yan completes a breakthrough",
             }
         ],
     )
@@ -599,8 +599,8 @@ def test_memory_projection_writer_maps_open_loop_event_into_scratchpad(tmp_path)
                     "event_id": "evt-001",
                     "chapter": 3,
                     "event_type": "open_loop_created",
-                    "subject": "三年之约",
-                    "payload": {"content": "三年之约"},
+                    "subject": "three-year challenge",
+                    "payload": {"content": "three-year challenge"},
                 }
             ],
         )
@@ -609,11 +609,11 @@ def test_memory_projection_writer_maps_open_loop_event_into_scratchpad(tmp_path)
     store = ScratchpadManager(cfg)
     loops = store.query(category="open_loop", status="active")
     assert result["applied"] is True
-    assert any("三年之约" in x.subject for x in loops)
+    assert any("three-year challenge" in x.subject for x in loops)
 
 
 def test_memory_projection_closes_open_loop_without_reopening_on_replay(tmp_path):
-    """issue #197：open_loop_closed 必须让记忆台账不再把该伏笔当作 active。"""
+    """issue #197：open_loop_closed memory ledger must stop treating this foreshadowing as active。"""
     cfg = DataModulesConfig.from_project_root(tmp_path)
     cfg.ensure_dirs()
     writer = MemoryProjectionWriter(tmp_path)
@@ -623,17 +623,17 @@ def test_memory_projection_closes_open_loop_without_reopening_on_replay(tmp_path
             accepted_events=[
                 _loop_event(
                     "open_loop_created",
-                    "三年之约提及",
+                    "three-year challenge mentioned",
                     urgency="high",
                     planted_chapter=5,
-                    expected_payoff="三年后兑现",
+                    expected_payoff="payoff three years later",
                 )
             ],
         )
     )
     close_payload = _commit_payload(
         chapter=28,
-        accepted_events=[_loop_event("open_loop_closed", "三年之约提及")],
+        accepted_events=[_loop_event("open_loop_closed", "three-year challenge mentioned")],
     )
     result = writer.apply(close_payload)
     writer.apply(close_payload)
@@ -641,11 +641,11 @@ def test_memory_projection_closes_open_loop_without_reopening_on_replay(tmp_path
     store = ScratchpadManager(cfg)
     assert result["applied"] is True
     assert store.query(category="open_loop", status="active") == []
-    retired = store.query(category="open_loop", subject="三年之约提及", status="outdated")
+    retired = store.query(category="open_loop", subject="three-year challenge mentioned", status="outdated")
     assert len(retired) == 1
     assert retired[0].payload["urgency"] == 100.0
     assert retired[0].payload["planted_chapter"] == 5
-    assert retired[0].payload["expected_payoff"] == "三年后兑现"
+    assert retired[0].payload["expected_payoff"] == "payoff three years later"
     assert retired[0].payload["status"] == "resolved"
     assert retired[0].payload["resolved_chapter"] == 28
     assert retired[0].source_chapter == 5
@@ -656,10 +656,10 @@ def test_memory_projection_closes_open_loop_without_reopening_on_replay(tmp_path
             accepted_events=[
                 _loop_event(
                     "open_loop_created",
-                    "三年之约提及",
+                    "three-year challenge mentioned",
                     urgency="high",
                     planted_chapter=5,
-                    expected_payoff="三年后兑现",
+                    expected_payoff="payoff three years later",
                 )
             ],
         )
@@ -675,15 +675,15 @@ def test_memory_projection_same_commit_close_wins_and_spares_other_loops(tmp_pat
         _commit_payload(
             chapter=8,
             accepted_events=[
-                _loop_event("open_loop_closed", "黑棺来历"),
-                _loop_event("open_loop_created", "黑棺来历"),
-                _loop_event("open_loop_created", "神秘戒指"),
+                _loop_event("open_loop_closed", "origin of the black coffin"),
+                _loop_event("open_loop_created", "origin of the black coffin"),
+                _loop_event("open_loop_created", "mysterious ring"),
             ],
         )
     )
     store = ScratchpadManager(cfg)
-    assert [item.subject for item in store.query(category="open_loop", status="active")] == ["神秘戒指"]
-    retired = store.query(category="open_loop", subject="黑棺来历", status="outdated")
+    assert [item.subject for item in store.query(category="open_loop", status="active")] == ["mysterious ring"]
+    retired = store.query(category="open_loop", subject="origin of the black coffin", status="outdated")
     assert len(retired) == 1
     assert retired[0].payload["status"] == "resolved"
     assert retired[0].payload["resolved_chapter"] == 8
@@ -696,7 +696,7 @@ def test_memory_projection_orphan_close_adds_no_active_loop(tmp_path):
     writer.apply(
         _commit_payload(
             chapter=9,
-            accepted_events=[_loop_event("open_loop_closed", "从未登记过的旧约")],
+            accepted_events=[_loop_event("open_loop_closed", "an old agreement never registered")],
         )
     )
     store = ScratchpadManager(cfg)
@@ -717,7 +717,7 @@ def _read_state(tmp_path):
 
 
 def test_state_writer_aggregates_foreshadowing_from_open_loop_events(tmp_path):
-    """issue #130：open_loop 事件必须聚合进 plot_threads.foreshadowing。"""
+    """issue #130：open_loop events must aggregate into plot_threads.foreshadowing。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
@@ -726,14 +726,14 @@ def test_state_writer_aggregates_foreshadowing_from_open_loop_events(tmp_path):
         _commit_payload(
             chapter=5,
             accepted_events=[
-                _loop_event("open_loop_created", "三年之约提及", target_chapter=30, tier="major")
+                _loop_event("open_loop_created", "three-year challenge mentioned", target_chapter=30, tier="major")
             ],
         )
     )
     rows = _read_state(tmp_path)["plot_threads"]["foreshadowing"]
     assert len(rows) == 1
     row = rows[0]
-    assert row["content"] == "三年之约提及"
+    assert row["content"] == "three-year challenge mentioned"
     assert row["status"] == "active"
     assert row["planted_chapter"] == 5
     assert row["target_chapter"] == 30
@@ -742,7 +742,7 @@ def test_state_writer_aggregates_foreshadowing_from_open_loop_events(tmp_path):
     writer.apply(
         _commit_payload(
             chapter=28,
-            accepted_events=[_loop_event("open_loop_closed", "三年之约提及")],
+            accepted_events=[_loop_event("open_loop_closed", "three-year challenge mentioned")],
         )
     )
     rows = _read_state(tmp_path)["plot_threads"]["foreshadowing"]
@@ -753,13 +753,13 @@ def test_state_writer_aggregates_foreshadowing_from_open_loop_events(tmp_path):
 
 
 def test_state_writer_foreshadowing_replay_is_idempotent(tmp_path):
-    """projections replay 重放同章不得产生重复伏笔条目。"""
+    """projections replay replaying a chapter must not duplicate foreshadowing。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
     payload = _commit_payload(
         chapter=7,
-        accepted_events=[_loop_event("open_loop_created", "黑色棺材的来历")],
+        accepted_events=[_loop_event("open_loop_created", "origin of the black coffin")],
     )
     writer.apply(payload)
     writer.apply(payload)
@@ -769,14 +769,14 @@ def test_state_writer_foreshadowing_replay_is_idempotent(tmp_path):
 
 
 def test_state_writer_foreshadowing_orphan_close_keeps_record(tmp_path):
-    """closed 事件找不到对应 active 条目时保留为 resolved 记录，不丢数据。"""
+    """closed event has no corresponding active retain entries as resolved record，preserve data。"""
     (tmp_path / ".webnovel").mkdir(parents=True, exist_ok=True)
     (tmp_path / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
     writer = StateProjectionWriter(tmp_path)
     writer.apply(
         _commit_payload(
             chapter=9,
-            accepted_events=[_loop_event("open_loop_closed", "从未登记过的旧约")],
+            accepted_events=[_loop_event("open_loop_closed", "an old agreement never registered")],
         )
     )
     rows = _read_state(tmp_path)["plot_threads"]["foreshadowing"]
@@ -786,7 +786,7 @@ def test_state_writer_foreshadowing_orphan_close_keeps_record(tmp_path):
 
 
 def test_router_routes_open_loop_events_to_state(tmp_path):
-    """issue #130：open_loop 事件必须进 state 投影，否则伏笔无人聚合。"""
+    """issue #130：open_loop events must enter state projection，otherwise nobody aggregates foreshadowing。"""
     from data_modules.event_projection_router import EventProjectionRouter
 
     router = EventProjectionRouter()

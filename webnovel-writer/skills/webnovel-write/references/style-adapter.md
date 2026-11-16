@@ -1,7 +1,7 @@
 ## Role
 Step 4 style-adaptation reference: rewrite chapter prose in web-fiction style and remove AI traces.
 
-**Chinese-first principle**: all rewrite explanations, rewrite logs, and change summaries in this step must use Simplified Chinese. Retain English only for immutable machine identifiers such as CLI flags, checker IDs, and JSON keys.
+**English-first principle**: rewrite explanations, logs, and change summaries use English by default. Preserve machine identifiers such as CLI flags, checker IDs, and JSON keys exactly.
 
 **Responsibilities**: style conversion + AI-trace removal: sentence restructuring, abstract-to-concrete conversion, web-fiction readability, and replacement of generic adverbs/expression templates.
 

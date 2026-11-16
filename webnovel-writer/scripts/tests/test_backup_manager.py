@@ -54,13 +54,13 @@ def test_backup_aborts_when_git_commit_fails_without_identity(tmp_path, monkeypa
     _run_git(project_root, "config", "--local", "--unset", "user.name")
     _run_git(project_root, "config", "--local", "--unset", "user.email")
 
-    manuscript_dir = project_root / "正文"
+    manuscript_dir = project_root / "chapters"
     manuscript_dir.mkdir()
-    (manuscript_dir / "第0001章-test.md").write_text("正文", encoding="utf-8")
+    (manuscript_dir / "chapter-0001-test.md").write_text("chapters", encoding="utf-8")
 
     manager = GitBackupManager(str(project_root))
 
-    assert manager.backup(1, "身份缺失") is False
+    assert manager.backup(1, "Missing identity") is False
 
     output = capsys.readouterr().out
     assert "Backup failed" in output
@@ -73,16 +73,16 @@ def test_rollback_restores_files_on_current_branch_with_new_commit(tmp_path):
     assert _run_git(project_root, "init", "-b", "main").returncode == 0
     _configure_git_identity(project_root)
 
-    manuscript_dir = project_root / "正文"
+    manuscript_dir = project_root / "chapters"
     manuscript_dir.mkdir()
-    chapter_file = manuscript_dir / "第0001章-test.md"
+    chapter_file = manuscript_dir / "chapter-0001-test.md"
 
-    chapter_file.write_text("第一版", encoding="utf-8")
+    chapter_file.write_text("First version", encoding="utf-8")
     assert _run_git(project_root, "add", ".").returncode == 0
     assert _run_git(project_root, "commit", "-m", "Chapter 1").returncode == 0
     assert _run_git(project_root, "tag", "ch0001").returncode == 0
 
-    chapter_file.write_text("第二版", encoding="utf-8")
+    chapter_file.write_text("Second version", encoding="utf-8")
     assert _run_git(project_root, "add", ".").returncode == 0
     assert _run_git(project_root, "commit", "-m", "Chapter 2").returncode == 0
     assert _run_git(project_root, "tag", "ch0002").returncode == 0
@@ -93,7 +93,7 @@ def test_rollback_restores_files_on_current_branch_with_new_commit(tmp_path):
     assert manager.rollback(1) is True
 
     assert _run_git(project_root, "symbolic-ref", "--short", "HEAD").stdout.strip() == "main"
-    assert chapter_file.read_text(encoding="utf-8") == "第一版"
+    assert chapter_file.read_text(encoding="utf-8") == "First version"
     after_count = int(_run_git(project_root, "rev-list", "--count", "HEAD").stdout.strip())
     assert after_count == before_count + 1
     assert "rollback: restore backup ch0001" in _run_git(project_root, "log", "-1", "--format=%s").stdout
@@ -103,17 +103,17 @@ def test_local_backup_copies_manuscript_when_git_unavailable(tmp_path, monkeypat
     monkeypatch.setattr(backup_manager, "is_git_available", lambda: False)
 
     webnovel_dir = tmp_path / ".webnovel"
-    manuscript_dir = tmp_path / "正文"
-    outline_dir = tmp_path / "大纲"
-    settings_dir = tmp_path / "设定集"
+    manuscript_dir = tmp_path / "chapters"
+    outline_dir = tmp_path / "outlines"
+    settings_dir = tmp_path / "settings"
     webnovel_dir.mkdir()
     manuscript_dir.mkdir()
     outline_dir.mkdir()
     settings_dir.mkdir()
     (webnovel_dir / "state.json").write_text('{"current_chapter": 1}', encoding="utf-8")
-    (manuscript_dir / "第0001章-x.md").write_text("正文内容", encoding="utf-8")
-    (outline_dir / "第0001章.md").write_text("大纲内容", encoding="utf-8")
-    (settings_dir / "人物.md").write_text("设定内容", encoding="utf-8")
+    (manuscript_dir / "chapter-0001-x.md").write_text("Chapter prose", encoding="utf-8")
+    (outline_dir / "chapter-0001.md").write_text("Outline content", encoding="utf-8")
+    (settings_dir / "person.md").write_text("Setting content", encoding="utf-8")
 
     manager = GitBackupManager(str(tmp_path))
 
@@ -122,9 +122,9 @@ def test_local_backup_copies_manuscript_when_git_unavailable(tmp_path, monkeypat
     snapshots = sorted((webnovel_dir / "backups").glob("snapshot_ch0001_*"))
     assert len(snapshots) == 1
     snapshot = snapshots[0]
-    assert (snapshot / "正文" / "第0001章-x.md").read_text(encoding="utf-8") == "正文内容"
-    assert (snapshot / "大纲" / "第0001章.md").read_text(encoding="utf-8") == "大纲内容"
-    assert (snapshot / "设定集" / "人物.md").read_text(encoding="utf-8") == "设定内容"
+    assert (snapshot / "chapters" / "chapter-0001-x.md").read_text(encoding="utf-8") == "Chapter prose"
+    assert (snapshot / "outlines" / "chapter-0001.md").read_text(encoding="utf-8") == "Outline content"
+    assert (snapshot / "settings" / "person.md").read_text(encoding="utf-8") == "Setting content"
     assert (snapshot / ".webnovel" / "state.json").read_text(encoding="utf-8") == '{"current_chapter": 1}'
 
     for chapter in range(2, 13):

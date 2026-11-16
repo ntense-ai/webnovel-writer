@@ -25,8 +25,8 @@
 | webnovel-init | Step 5 | Creative block | `skills/webnovel-init/references/creativity/inspiration-collection.md` | Section | Required collection section |
 | webnovel-init | Step 5 | Genre mapping match | `skills/webnovel-init/references/creativity/anti-trope-*.md` | Section | Relevant anti-trope entry |
 | webnovel-init | Step 6 | always | `skills/webnovel-init/references/worldbuilding/setting-consistency.md` | Section | Consistency-validation section |
-| webnovel-plan | Step 4 | always | `templates/output/大纲-卷节拍表.md` | Full | — |
-| webnovel-plan | Step 5 | always | `templates/output/大纲-卷时间线.md` | Full | — |
+| webnovel-plan | Step 4 | always | `templates/output/outlines-volume-beats.md` | Full | — |
+| webnovel-plan | Step 5 | always | `templates/output/outlines-volume-timeline.md` | Full | — |
 | webnovel-plan | Step 6 | always | `references/genre-profiles.md` | Section | One `### 2.x` section for the current genre; add `## I. Profile Fields` as needed |
 | webnovel-plan | Step 6 | always | `references/shared/strand-weave-pattern.md` | Full | — |
 | webnovel-plan | Chapter-outline breakdown | always | `references/outlining/plot-signal-vs-spoiler.md` | Full | — |
@@ -54,22 +54,22 @@
 
 | Skill | Stage | Trigger | Actual call |
 |-------|------|------|----------|
-| webnovel-init | Character/book/faction setup | User begins naming | `--skill init --table 命名规则 --query "{命名对象} {题材}" --genre {题材}` |
-| webnovel-plan | Volume planning | always | `--skill plan --table 场景写法 --query "卷级结构 叙事功能"` |
-| webnovel-plan | Volume planning | Payoff/conflict design needed | `--skill plan --table 爽点与节奏 --query "{卷级核心冲突}" --genre "${GENRE}"` |
-| webnovel-plan | Volume planning | Plot template needed | `--skill plan --table 桥段套路 --query "{卷级核心冲突}" --genre "${GENRE}"` |
-| webnovel-plan | Chapter-outline breakdown | New character appears | `--skill plan --table 命名规则 --query "角色命名" --genre {题材}` |
-| webnovel-write | Step 2 | First appearance of new character | `--skill write --table 命名规则 --query "角色命名" --genre {题材}` |
-| webnovel-write | Step 2 | Combat/confrontation scene | `--skill write --table 场景写法 --query "战斗描写" --genre {题材}` |
-| webnovel-write | Step 2 | Multi-character dialogue | `--skill write --table 写作技法 --query "对话声线 口吻区分" --genre {题材}` |
-| webnovel-write | Step 2 | Emotional/psychological description | `--skill write --table 写作技法 --query "情感描写 心理" --genre {题材}` |
-| webnovel-write | Step 2 | Common trope | `--skill write --table 场景写法 --query "{桥段类型}" --genre {题材}` |
+| webnovel-init | Character/book/faction setup | User begins naming | `--skill init --table naming --query "{naming_target} {genre}" --genre {genre}` |
+| webnovel-plan | Volume planning | always | `--skill plan --table scenes --query "volumestructure narrationfunction"` |
+| webnovel-plan | Volume planning | Payoff/conflict design needed | `--skill plan --table pacing --query "{volumecoreconflict}" --genre "${GENRE}"` |
+| webnovel-plan | Volume planning | Plot template needed | `--skill plan --table tropes --query "{volumecoreconflict}" --genre "${GENRE}"` |
+| webnovel-plan | Chapter-outline breakdown | New character appears | `--skill plan --table naming --query "characternaming" --genre {genre}` |
+| webnovel-write | Step 2 | First appearance of new character | `--skill write --table naming --query "characternaming" --genre {genre}` |
+| webnovel-write | Step 2 | Combat/confrontation scene | `--skill write --table scenes --query "combatdescription" --genre {genre}` |
+| webnovel-write | Step 2 | Multi-character dialogue | `--skill write --table techniques --query "conversationvoice distinguishing voices" --genre {genre}` |
+| webnovel-write | Step 2 | Emotional/psychological description | `--skill write --table techniques --query "emotional-relationshipsdescription psychological" --genre {genre}` |
+| webnovel-write | Step 2 | Common trope | `--skill write --table scenes --query "{tropetype}" --genre {genre}` |
 
 ## CSV Retrieval: Indirect Consumption Through `story-system`
 
 | Entry skill | Stage | Trigger | Indirect consumption |
 |------------|------|------|----------|
-| webnovel-init | Story System initialization | After init: `story-system "${GENRE}" --genre "${GENRE}" --persist --format json` | Route through `题材与调性推理.csv`; retrieve base/dynamic tables from `推荐基础检索表`/`推荐动态检索表`; `裁决规则.csv` injects style/pacing/anti-pattern decisions |
+| webnovel-init | Story System initialization | After init: `story-system "${GENRE}" --genre "${GENRE}" --persist --format json` | Route through `genre-routing.csv`; retrieve base/dynamic tables from `recommended_base_tables`/`recommended_dynamic_tables`; `adjudication.csv` injects style/pacing/anti-pattern decisions |
 | webnovel-plan | Runtime contract refresh | When planning reaches concrete chapters: `--persist --emit-runtime-contracts --chapter {chapter_num}` | As above; `RuntimeContractBuilder` generates volume/chapter/review contracts |
 | webnovel-write | Preparation | Before drafting: `--persist --emit-runtime-contracts --chapter {chapter_num}` | As above; `chapter_focus` in `chapter_{NNN}.json` is CSV reference only; the outline still defines chapter goals |
 | webnovel-review | Step 1 | Fill missing runtime contracts for the target chapter | As above; review prioritizes `.story-system/reviews/chapter_{NNN}.review.json` and the latest accepted commit |
@@ -78,9 +78,9 @@ Actual `StorySystemEngine` data flow:
 
 | Step | Source | Description |
 |------|--------|------|
-| `_route()` | `题材与调性推理.csv` | Select route using query, explicit genre, genre aliases, and canonical genre |
+| `_route()` | `genre-routing.csv` | Select route using query, explicit genre, genre aliases, and canonical genre |
 | `_collect_tables()` | Base/dynamic tables recommended by the route | Calls `reference_search.search()` with `skill="write"`; knowledge rows in recommended tables must therefore be visible to write |
-| `_load_reasoning()` | `裁决规则.csv` | Load style priorities, default pacing, anti-pattern weights, and conflict decisions by canonical genre |
+| `_load_reasoning()` | `adjudication.csv` | Load style priorities, default pacing, anti-pattern weights, and conflict decisions by canonical genre |
 | `_apply_reasoning()` | Base/dynamic retrieval results + decision rules | Prioritize results to order contract injection |
 | `_rank_anti_patterns()` | Route anti-patterns + recommended-table anti-patterns + decision anti-patterns | Merge and rank `anti_patterns.json` |
 
@@ -98,10 +98,10 @@ These files exist but current `SKILL.md` files do not explicitly require direct 
 | File | Status |
 |------|------|
 | `skills/webnovel-write/references/style-variants.md` | Not directly loaded by the current write workflow |
-| `skills/webnovel-write/references/writing/combat-scenes.md` | Stub; content moved to CSV `场景写法` |
-| `skills/webnovel-write/references/writing/dialogue-writing.md` | Stub; content moved to CSV `写作技法` |
-| `skills/webnovel-write/references/writing/emotion-psychology.md` | Stub; content moved to CSV `写作技法` |
-| `skills/webnovel-write/references/writing/scene-description.md` | Stub; content moved to CSV `写作技法` |
+| `skills/webnovel-write/references/writing/combat-scenes.md` | Stub; content moved to CSV `scenes` |
+| `skills/webnovel-write/references/writing/dialogue-writing.md` | Stub; content moved to CSV `techniques` |
+| `skills/webnovel-write/references/writing/emotion-psychology.md` | Stub; content moved to CSV `techniques` |
+| `skills/webnovel-write/references/writing/scene-description.md` | Stub; content moved to CSV `techniques` |
 | `skills/webnovel-write/references/writing/desire-description.md` | Original retained conservatively; CSV does not yet cover desire-description details; not directly loaded by SKILL.md |
 | `skills/webnovel-write/references/writing/genre-hook-payoff-library.md` | Original retained conservatively; CSV covers only some hook/payoff entries; not directly loaded by SKILL.md |
 | `skills/webnovel-review/references/common-mistakes.md` | Not directly loaded by the current review workflow |

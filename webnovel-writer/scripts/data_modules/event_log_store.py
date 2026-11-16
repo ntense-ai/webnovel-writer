@@ -20,7 +20,7 @@ class EventLogStore:
 
     @contextmanager
     def _connect(self, *, row_factory: bool = False) -> Iterator[sqlite3.Connection]:
-        """统一 SQLite 连接管理，确保连接始终关闭。"""
+        'Manage SQLite connections consistently and ensure they are always closed.'
         db_path = self.project_root / ".webnovel" / "index.db"
         db_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(db_path))

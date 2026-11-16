@@ -255,7 +255,7 @@ Content layer, the outline itself:
   "chapter_goal": "The protagonist passes the trial and enters Jia Nan Academy",
   "must_payoff": ["The pill foreshadowing planted in chapter 3"],
   "forbidden_turns": ["The protagonist must not directly reveal the hidden identity"],
-  "narrative_role_in_arc": "承",
+  "narrative_role_in_arc": "continuation",
   "strand_profile": "main_heavy",
   "time_pressure_source": "Enrollment deadline"
 }

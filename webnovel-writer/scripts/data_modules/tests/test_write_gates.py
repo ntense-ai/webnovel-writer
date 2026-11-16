@@ -29,7 +29,7 @@ def _write_valid_artifacts(project_root: Path) -> None:
     _write_json(project_root / ".webnovel" / "tmp" / "disambiguation_result.json", {"pending": []})
     _write_json(
         project_root / ".webnovel" / "tmp" / "extraction_result.json",
-        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "summary"},
     )
 
 
@@ -49,7 +49,7 @@ def test_prewrite_gate_wraps_existing_prewrite_validator_blocking(tmp_path):
     _make_contracts(tmp_path, chapter=1)
     state_path = tmp_path / ".webnovel" / "state.json"
     state = json.loads(state_path.read_text(encoding="utf-8"))
-    state["disambiguation_pending"] = [{"mention": "宗主"}]
+    state["disambiguation_pending"] = [{"mention": "sect leader"}]
     state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
 
     report = run_write_gate(tmp_path, chapter=1, stage="prewrite")
@@ -62,7 +62,7 @@ def test_prewrite_gate_wraps_existing_prewrite_validator_blocking(tmp_path):
 def test_precommit_gate_reports_missing_artifacts(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
 
     report = run_write_gate(tmp_path, chapter=1, stage="precommit")
 
@@ -73,7 +73,7 @@ def test_precommit_gate_reports_missing_artifacts(tmp_path):
 def test_precommit_gate_accepts_valid_artifacts(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
     _write_valid_artifacts(tmp_path)
 
     report = run_write_gate(tmp_path, chapter=1, stage="precommit")
@@ -85,7 +85,7 @@ def test_precommit_gate_accepts_valid_artifacts(tmp_path):
 def test_precommit_gate_rejects_fulfillment_missing_missed_nodes(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
     _write_valid_artifacts(tmp_path)
     _write_json(
         tmp_path / ".webnovel" / "tmp" / "fulfillment_result.json",
@@ -102,7 +102,7 @@ def test_precommit_gate_rejects_fulfillment_missing_missed_nodes(tmp_path):
 def test_precommit_gate_rejects_disambiguation_missing_pending(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
     _write_valid_artifacts(tmp_path)
     _write_json(tmp_path / ".webnovel" / "tmp" / "disambiguation_result.json", {"warnings": []})
 
@@ -116,11 +116,11 @@ def test_precommit_gate_rejects_disambiguation_missing_pending(tmp_path):
 def test_precommit_gate_rejects_extraction_missing_accepted_events(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
     _write_valid_artifacts(tmp_path)
     _write_json(
         tmp_path / ".webnovel" / "tmp" / "extraction_result.json",
-        {"state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        {"state_deltas": [], "entity_deltas": [], "summary_text": "summary"},
     )
 
     report = run_write_gate(tmp_path, chapter=1, stage="precommit")
@@ -133,7 +133,7 @@ def test_precommit_gate_rejects_extraction_missing_accepted_events(tmp_path):
 def test_precommit_gate_blocks_projection_failed_phase(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
     _write_valid_artifacts(tmp_path)
     _write_json(
         tmp_path / ".story-system" / "commits" / "chapter_001.commit.json",
@@ -167,7 +167,7 @@ def test_postcommit_gate_reports_projection_failure(tmp_path):
                 "accepted_events": [],
                 "state_deltas": [],
                 "entity_deltas": [],
-                "summary_text": "摘要",
+                "summary_text": "summary",
             },
             "projection_status": {"state": "done", "index": "failed:locked", "summary": "skipped"},
         },
@@ -195,7 +195,7 @@ def test_postcommit_gate_prefers_projection_log_failure(tmp_path):
             "accepted_events": [],
             "state_deltas": [],
             "entity_deltas": [],
-            "summary_text": "摘要",
+            "summary_text": "summary",
         },
         "projection_status": {"state": "done", "index": "done", "vector": "done"},
     }
@@ -231,7 +231,7 @@ def test_postcommit_gate_requires_five_projection_statuses_from_projection_log(t
             "accepted_events": [],
             "state_deltas": [],
             "entity_deltas": [],
-            "summary_text": "摘要",
+            "summary_text": "summary",
         },
         "projection_status": {
             "state": "done",
@@ -276,7 +276,7 @@ def test_postcommit_gate_accepts_done_or_skipped_projection(tmp_path):
                 "accepted_events": [],
                 "state_deltas": [],
                 "entity_deltas": [],
-                "summary_text": "摘要",
+                "summary_text": "summary",
             },
             "projection_status": {
                 "state": "done",

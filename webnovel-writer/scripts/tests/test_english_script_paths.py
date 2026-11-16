@@ -1,4 +1,4 @@
-"""English project directories and unchanged legacy project compatibility."""
+"""English project directories, writing conventions, and Unicode prose."""
 from pathlib import Path
 
 import pytest
@@ -12,7 +12,7 @@ from update_master_outline import _require_current_volume_artifacts, _resolve_wr
 
 
 @pytest.mark.parametrize('chapters,outlines,reviews', [
-    ('chapters', 'outlines', 'reviews'), ('正文', '大纲', '审查报告'),
+    ('chapters', 'outlines', 'reviews'),
 ])
 def test_chapter_and_outline_paths_reuse_existing_layout(tmp_path, chapters, outlines, reviews):
     chapter_dir = tmp_path / chapters
@@ -20,16 +20,16 @@ def test_chapter_and_outline_paths_reuse_existing_layout(tmp_path, chapters, out
     chapter_dir.mkdir()
     outline_dir.mkdir()
     (tmp_path / reviews).mkdir()
-    outline = outline_dir / '第1卷-详细大纲.md'
-    outline.write_text('### 第1章：Arrival\nA traveler arrives.\n', encoding='utf-8')
+    outline = outline_dir / 'volume-1-outline.md'
+    outline.write_text('### Chapter 1: Arrival\nA traveler arrives.\n', encoding='utf-8')
     assert 'A traveler arrives.' in load_chapter_outline(tmp_path, 1)
     assert extract_chapter_title(tmp_path, 1) == 'Arrival'
     draft = default_chapter_draft_path(tmp_path, 1)
-    assert draft == chapter_dir / ('chapter-0001-Arrival.md' if chapters == 'chapters' else '第0001章-Arrival.md')
+    assert draft == chapter_dir / ('chapter-0001-Arrival.md' if chapters == 'chapters' else 'chapter-0001-Arrival.md')
     draft.write_text('Chapter prose')
     assert find_chapter_file(tmp_path, 1) == draft
-    assert default_chapter_draft_path(tmp_path, 2, use_volume_layout=True).parent == chapter_dir / ('volume-1' if chapters == 'chapters' else '第1卷')
-    assert _resolve_report_path(tmp_path, '审查报告/review.md') == tmp_path / reviews / 'review.md'
+    assert default_chapter_draft_path(tmp_path, 2, use_volume_layout=True).parent == chapter_dir / ('volume-1' if chapters == 'chapters' else 'volume-1')
+    assert _resolve_report_path(tmp_path, 'reviews/review.md') == tmp_path / reviews / 'review.md'
     assert _resolve_report_path(tmp_path, 'reviews/review.md') == tmp_path / reviews / 'review.md'
 
 
@@ -37,17 +37,17 @@ def test_new_draft_defaults_to_english_directory(tmp_path):
     assert default_chapter_draft_path(tmp_path, 1) == tmp_path / 'chapters/chapter-0001.md'
 
 
-@pytest.mark.parametrize('folder', ['outlines', '大纲'])
+@pytest.mark.parametrize('folder', ['outlines'])
 def test_master_outline_artifacts_and_writeback_resolve_both_layouts(tmp_path, folder):
     outlines = tmp_path / folder
     outlines.mkdir()
-    names = ['第1卷-节拍表.md', '第1卷-时间线.md', '第1卷-详细大纲.md']
+    names = ['volume-1-beats.md', 'volume-1-timeline.md', 'volume-1-outline.md']
     for name in names:
         (outlines / name).write_text('complete')
     assert _require_current_volume_artifacts(tmp_path, 1) == names
-    expected = outlines / ('volume-1-master-outline-update.json' if folder == 'outlines' else '第1卷-总纲写回.json')
-    assert _resolve_writeback_source(tmp_path, outlines, 1, 'outlines/第1卷-总纲写回.json') == expected
-    assert _resolve_writeback_source(tmp_path, outlines, 1, '大纲/第1卷-总纲写回.json') == expected
+    expected = outlines / ('volume-1-master-outline-update.json' if folder == 'outlines' else 'volume-1-master-outline-update.json')
+    assert _resolve_writeback_source(tmp_path, outlines, 1, 'outlines/volume-1-master-outline-update.json') == expected
+    assert _resolve_writeback_source(tmp_path, outlines, 1, 'outlines/volume-1-master-outline-update.json') == expected
 
 
 def test_review_path_mapping_does_not_allow_traversal(tmp_path):
@@ -57,7 +57,7 @@ def test_review_path_mapping_does_not_allow_traversal(tmp_path):
 
 def test_local_backup_preserves_both_directory_spellings(tmp_path, monkeypatch):
     monkeypatch.setattr(backup_manager, 'is_git_available', lambda: False)
-    names = ('chapters', 'outlines', 'settings', 'reviews', '正文', '大纲', '设定集', '审查报告')
+    names = ('chapters', 'outlines', 'settings', 'reviews')
     for name in names:
         (tmp_path / name).mkdir()
         (tmp_path / name / 'content.md').write_text(name, encoding='utf-8')
@@ -99,7 +99,7 @@ def test_review_metrics_reference_actual_english_report(tmp_path):
     from review_pipeline import build_review_artifacts, write_review_report
     source = tmp_path / 'review.json'
     source.write_text('{"issues": [], "summary": "Clear"}')
-    payload = build_review_artifacts(tmp_path, 1, source, '审查报告/第1章审查报告.md')
+    payload = build_review_artifacts(tmp_path, 1, source, 'reviews/chapter-1-review.md')
     assert payload['metrics']['report_file'] == 'reviews/chapter-1-review.md'
     report = write_review_report(tmp_path, payload['metrics']['report_file'], payload)
     assert report.is_file()
@@ -109,8 +109,8 @@ def test_review_metrics_reference_actual_english_report(tmp_path):
 
 @pytest.mark.parametrize('text,expected', [
     ('Hello, world!', 2), ("Don't stop the well-known traveler.", 5),
-    ('### Chapter 1: Arrival', 3), ('   ', 0), ('山川异域。', 5),
-    ('A traveler named 李 arrived.', 5),
+    ('### Chapter 1: Arrival', 3), ('   ', 0), ('αβγδε', 1),
+    ('A traveler named Léa arrived.', 5),
 ])
 def test_language_aware_word_counts(text, expected):
     from text_metrics import count_words
@@ -142,4 +142,4 @@ def test_english_master_outline_sync_is_idempotent(tmp_path):
     assert 'The lost key' in first
     sync_master_outline(tmp_path, 1)
     assert master.read_text() == first
-    assert not (tmp_path / '大纲').exists()
+    assert (tmp_path / 'outlines').exists()

@@ -23,7 +23,7 @@ export default function ChartWrapper({
             showLoading={loading}
             notMerge
             lazyUpdate
-            opts={{ renderer: 'canvas' }}
+            opts={{ renderer: 'canvas', locale: 'EN' }}
             onChartReady={onChartReady}
         />
     )

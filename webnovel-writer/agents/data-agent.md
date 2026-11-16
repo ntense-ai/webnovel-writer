@@ -10,7 +10,7 @@ color: green
 
 ## 1. Identity
 
-Use English for generated prose, summaries, reports, and author-facing explanations unless the user requests another language; keep machine-readable schema keys and enum values unchanged. Project paths supplied by the caller are authoritative. New-book directory examples use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing books may use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. If direct file access is needed, resolve the actual book directories with `scripts/project_paths.py` against the supplied project root. Do not rename directories or create parallel copies. Read-only and artifact-only ownership rules still apply to both layouts.
+Use English for generated prose, summaries, reports, and explanations unless another language is requested. Keep English schema keys and enums exact. This branch supports newly created English-layout projects only; it does not migrate old projects. Caller-supplied paths are authoritative. Resolve paths using `scripts/project_paths.py` with the supplied project root. Never automatically rename, merge, or overwrite existing books. Unicode story content is supported. Read-only and artifact-only ownership rules remain mandatory.
 
 Extract structured information from chapter prose and generate artifacts required by chapter-commit. This file is the single schema source of truth for those three artifacts.
 
@@ -42,18 +42,18 @@ time: "The previous night"
 location: "Xiao Yan's room"
 characters: ["Xiao Yan", "Yao Lao"]
 state_changes: ["Xiao Yan: Dou Zhe level 9 → preparing for a breakthrough"]
-hook_type: "危机钩"
+hook_type: "crisis"
 hook_strength: "strong"
 ---
-## 剧情摘要
-{100-150字}
-## 伏笔
-- [埋设] The three-year agreement is mentioned
-## 承接点
-{30字}
+## Plot Summary
+{100-150 words}
+## foreshadowing
+- [Planted] The three-year agreement is mentioned
+## Continuation
+{30 words}
 ```
 
-The Chinese headings and markers above are retained as compatibility tokens for the existing summary format.
+Use the English summary headings and markers shown above.
 
 Long-term memory extracts only facts reusable across chapters, converted into events/deltas in extraction_result. Every planted foreshadowing item in the summary must also have an `accepted_events[].event_type == "open_loop_created"` entry; paid-off threads use `promise_paid_off` or the corresponding closing event.
 
@@ -83,9 +83,9 @@ The three artifacts use the following top-level structures. Projectors recognize
 ### 7.1 Field Naming
 
 - **state_deltas entries**: `entity_id` + `field` + `old` + `new`. Use simple names directly (`realm`) and dots for nesting (`power.realm`, `location.current`); the projector expands them automatically.
-- **entity_deltas entries**: `entity_id` + `action` + `entity_type` (value `角色|组织|地点|物品|势力`; do not assume the default `"角色"`) + `payload`. Put entity metadata in `payload`: `name`, `desc`, `tier` (`核心|重要|次要|装饰`), `is_protagonist`, `is_archived`. `is_protagonist: true` marks the protagonist (synced to `state.protagonist_state`); `tier: "主角"` is also supported. Explicit `is_protagonist: false` overrides tier/name inference. These Chinese enum values are required by the unchanged runtime.
+- **entity_deltas entries**: `entity_id` + `action` + `entity_type` (value `character|organization|location|item|faction`; do not assume the default `"character"`) + `payload`. Put entity metadata in `payload`: `name`, `desc`, `tier` (`core|major|minor|decorative`), `is_protagonist`, `is_archived`. `is_protagonist: true` marks the protagonist (synced to `state.protagonist_state`); `tier: "protagonist"` is also supported. Explicit `is_protagonist: false` overrides tier/name inference. Use these English enum values exactly.
 - **Incremental entity updates**: Include only fields confirmed in this chapter. Omitted metadata preserves existing values; defaults apply only to new entities. Explicit `desc: ""` clears the description; `is_archived: false` unarchives. Compatibility inputs allow top-level metadata, `canonical_name`/`name`, `desc`/`description`, and `type`/`entity_type`. Top-level fields override `payload`, including empty values and `false`.
-- **accepted_events entries**: Each requires `event_id` (stable within the chapter, e.g. `evt-ch100-001`) + `chapter` (current chapter number) + `event_type` (enumeration below) + `subject` (subject entity_id, not a Chinese display name) + `payload`.
+- **accepted_events entries**: Each requires `event_id` (stable within the chapter, e.g. `evt-ch100-001`) + `chapter` (current chapter number) + `event_type` (enumeration below) + `subject` (subject entity_id, not a display name) + `payload`.
 - **event_type enumeration**: `character_state_changed`, `power_breakthrough`, `relationship_changed`, `world_rule_revealed`, `world_rule_broken`, `open_loop_created`, `open_loop_closed`, `promise_created`, `promise_paid_off`, `artifact_obtained`.
 - **Required payload fields by event_type**:
   - `character_state_changed`: `field` + `old` + `new` (matching state_deltas).
@@ -100,8 +100,8 @@ The three artifacts use the following top-level structures. Projectors recognize
 {
   "accepted_events": [{"event_id": "evt-ch100-001", "chapter": 100, "event_type": "open_loop_created", "subject": "three_year_promise", "payload": {"content": "The three-year agreement is mentioned"}}],
   "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}],
-  "entity_deltas": [{"entity_id": "hongyi_girl", "action": "upsert", "entity_type": "角色", "payload": {"name": "Woman in red", "desc": "An unidentified woman in red", "tier": "重要", "is_protagonist": false, "is_archived": false}}],
-  "entities_appeared": [{"id": "xiaoyan", "type": "角色", "mentions": ["Xiao Yan"], "confidence": 0.95}],
+  "entity_deltas": [{"entity_id": "hongyi_girl", "action": "upsert", "entity_type": "character", "payload": {"name": "Woman in red", "desc": "An unidentified woman in red", "tier": "major", "is_protagonist": false, "is_archived": false}}],
+  "entities_appeared": [{"id": "xiaoyan", "type": "character", "mentions": ["Xiao Yan"], "confidence": 0.95}],
   "scenes": [{"index": 1, "start_line": 1, "end_line": 30, "location": "Xiao Yan's room", "summary": "Yao Lao reminds him of the three-year agreement", "characters": ["xiaoyan", "yaolao"]}],
   "summary_text": "Summary"
 }

@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-审查结果 schema（v6）。
-
-替代原 checker-output-schema.md 的评分制，改为结构化问题清单。
-"""
+"Review-result schema v6. Replaces the scoring system in checker-output-schema.md with a structured issue list."
 from __future__ import annotations
 
 import json

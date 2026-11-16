@@ -4,13 +4,13 @@ import { buildForeshadowingRecords } from './foreshadowing.js'
 import { entityTypeLabel } from './entityTypes.js'
 import { formatNumber, formatChapterLabel, formatTableValue } from './format.js'
 
-test('legacy and English foreshadowing fields share classifications and weights', () => {
+test('Canonical and case-varied foreshadowing fields share classifications and weights', () => {
     const records = buildForeshadowingRecords({
         progress: { current_chapter: 5 },
         plot_threads: { foreshadowing: [
-            { tier: '核心', status: '已回收', planted_chapter: 1, target_chapter: 9 },
+            { tier: 'CORE', status: 'RESOLVED', planted_chapter: 1, target_chapter: 9 },
             { tier: 'core', status: 'resolved', planted_chapter: 1, target_chapter: 9 },
-            { tier: '装饰', planted_chapter: 1, target_chapter: 9 },
+            { tier: 'decorative', planted_chapter: 1, target_chapter: 9 },
             { tier: 'Decorative', planted_chapter: 1, target_chapter: 9 },
         ] },
     })
@@ -24,13 +24,13 @@ test('legacy and English foreshadowing fields share classifications and weights'
     assert.equal(records[2].tier, 'Decorative')
 })
 
-test('legacy entity types render English without changing unknown user types', () => {
-    for (const [legacy, modern, label] of [
-        ['角色', 'character', 'Character'], ['势力', 'faction', 'Faction'],
-        ['地点', 'location', 'Location'], ['法宝', 'artifact', 'Artifact'],
+test('Canonical entity types render English without changing unknown user types', () => {
+    for (const [capitalized, canonical, label] of [
+        ['Character', 'character', 'Character'], ['Faction', 'faction', 'Faction'],
+        ['Location', 'location', 'Location'], ['Artifact', 'artifact', 'Artifact'],
     ]) {
-        assert.equal(entityTypeLabel(legacy), label)
-        assert.equal(entityTypeLabel(modern), label)
+        assert.equal(entityTypeLabel(capitalized), label)
+        assert.equal(entityTypeLabel(canonical), label)
     }
     assert.equal(entityTypeLabel('Custom type'), 'Custom type')
     assert.equal(entityTypeLabel(null), 'Unknown')

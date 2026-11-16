@@ -12,7 +12,7 @@ argument-hint: "[--chapter N] [--deep]"
 
 Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+New projects use English-only paths, filenames, schema keys, and enum identifiers. Use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Resolve paths with `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"`; resolve individual files with `--path outlines/master-outline.md` or the corresponding English relative path. Pass resolved paths to subagents. This branch targets newly created projects and does not migrate or support old project layouts or schemas. Do not rename, overwrite, or merge existing book content automatically. Story prose and names may contain Unicode characters; that does not change the English project schema.
 
 ## Goal
 
@@ -22,7 +22,7 @@ Diagnose the current book project without modifying it: verify that the director
 
 1. Read-only diagnosis: do not write project files, automatically repair anything, install dependencies, or start the Dashboard.
 2. Run `project-status` first for a short status report, then `doctor` for phase-aware checks.
-3. Consistently use `python -X utf8` to avoid encoding issues with Chinese paths.
+3. Consistently use `python -X utf8` to support Unicode story content consistently.
 4. Explain the impact of missing items and suggested repairs according to the phase inferred by the runtime. Do not check a freshly initialized project as though it already had multiple written chapters.
 
 ## Execution

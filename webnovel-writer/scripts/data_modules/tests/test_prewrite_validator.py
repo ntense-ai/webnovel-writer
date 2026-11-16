@@ -13,15 +13,15 @@ def test_prewrite_validator_builds_disambiguation_domain_and_fulfillment_seed(tm
         json.dumps(
             {
                 "disambiguation_pending": [],
-                "disambiguation_warnings": [{"mention": "宗主"}],
+                "disambiguation_warnings": [{"mention": "sect leader"}],
                 "chapter_meta": {},
             },
             ensure_ascii=False,
         ),
         encoding="utf-8",
     )
-    review_contract = {"must_check": ["发现陷阱"], "blocking_rules": ["不可提前摊牌"]}
-    plot_structure = {"mandatory_nodes": ["发现陷阱"], "prohibitions": ["不可提前摊牌"]}
+    review_contract = {"must_check": ["discovers the trap"], "blocking_rules": ["do not reveal the plan early"]}
+    plot_structure = {"mandatory_nodes": ["discovers the trap"], "prohibitions": ["do not reveal the plan early"]}
 
     payload = PrewriteValidator(project_root).build(
         chapter=3,
@@ -30,7 +30,7 @@ def test_prewrite_validator_builds_disambiguation_domain_and_fulfillment_seed(tm
     )
 
     assert payload["blocking"] is False
-    assert payload["fulfillment_seed"]["planned_nodes"] == ["发现陷阱"]
+    assert payload["fulfillment_seed"]["planned_nodes"] == ["discovers the trap"]
     assert payload["disambiguation_domain"]["pending_count"] == 0
 
 
@@ -80,10 +80,10 @@ def test_prewrite_validator_blocks_related_entity_placeholders(tmp_path):
         ),
         encoding="utf-8",
     )
-    settings_dir = project_root / "设定集"
+    settings_dir = project_root / "settings"
     settings_dir.mkdir(parents=True, exist_ok=True)
-    (settings_dir / "苏云.md").write_text("苏云：第一位女主（暂名）\n", encoding="utf-8")
-    (settings_dir / "远期角色.md").write_text("后续兄弟：[待补充]\n", encoding="utf-8")
+    (settings_dir / "Su Yun.md").write_text("Su Yun：first heroine(working title)\n", encoding="utf-8")
+    (settings_dir / "future character.md").write_text("later siblings：[To be completed]\n", encoding="utf-8")
 
     payload = PrewriteValidator(project_root).build(
         chapter=8,
@@ -91,12 +91,12 @@ def test_prewrite_validator_blocks_related_entity_placeholders(tmp_path):
         plot_structure={},
         story_contract={
             "master_setting": {"ok": True},
-            "chapter_brief": {"chapter_directive": {"key_entities": ["苏云"]}},
+            "chapter_brief": {"chapter_directive": {"key_entities": ["Su Yun"]}},
             "volume_brief": {"ok": True},
             "review_contract": {"ok": True},
         },
     )
 
     assert payload["blocking"] is True
-    assert any("占位" in reason for reason in payload["blocking_reasons"])
-    assert [item["file"] for item in payload["related_placeholders"]] == ["设定集/苏云.md"]
+    assert any("placeholder" in reason for reason in payload["blocking_reasons"])
+    assert [item["file"] for item in payload["related_placeholders"]] == ["settings/Su Yun.md"]

@@ -51,19 +51,19 @@ INIT_REQUIRED_DIRS = (
     ".webnovel/backups",
     ".webnovel/archive",
     ".webnovel/summaries",
-    "设定集",
-    "大纲",
-    "正文",
-    "审查报告",
+    "settings",
+    "outlines",
+    "chapters",
+    "reviews",
 )
 
 INIT_REQUIRED_FILES = (
     ".webnovel/state.json",
-    "设定集/世界观.md",
-    "设定集/力量体系.md",
-    "设定集/主角卡.md",
-    "设定集/反派设计.md",
-    "大纲/总纲.md",
+    "settings/worldbuilding.md",
+    "settings/power-system.md",
+    "settings/protagonist.md",
+    "settings/antagonist.md",
+    "outlines/master-outline.md",
     ".env.example",
 )
 
@@ -232,11 +232,11 @@ def _latest_draft_chapter(project_root: Path) -> int:
         return 0
     chapters: list[int] = []
     for path in chapters_dir.rglob("*.md"):
-        match = re.search(r"^(?:第0*(\d+)章|chapter-0*(\d+)(?:[-.]|$))", path.name, re.IGNORECASE)
+        match = re.search(r"^chapter-0*(\d+)(?:[-.]|$)", path.name, re.IGNORECASE)
         if not match:
             continue
         try:
-            chapters.append(int(match.group(1) or match.group(2)))
+            chapters.append(int(match.group(1)))
         except ValueError:
             continue
     return max(chapters or [0])
@@ -379,7 +379,7 @@ def resolve_project_phase(project_root: str | Path | None, chapter: int | None =
         phase = PHASE_DRAFT_IN_PROGRESS
     elif not contract_missing:
         phase = PHASE_CHAPTER_CONTRACT_READY
-    elif (root / ".story-system" / "MASTER_SETTING.json").is_file() or any(project_dir(root, "outlines").glob("第*卷*大纲.md")) or any(project_dir(root, "outlines").glob("volume-*-outline.md")):
+    elif (root / ".story-system" / "MASTER_SETTING.json").is_file() or any(project_dir(root, "outlines").glob("volume-*-outline.md")):
         phase = PHASE_PLAN_IN_PROGRESS
     else:
         phase = PHASE_INIT_READY

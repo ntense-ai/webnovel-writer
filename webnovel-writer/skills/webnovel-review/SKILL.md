@@ -11,7 +11,7 @@ argument-hint: "[chapter number or range, e.g. 5 or 1-5]"
 
 Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
 
-New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+New projects use English-only paths, filenames, schema keys, and enum identifiers. Use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Resolve paths with `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"`; resolve individual files with `--path outlines/master-outline.md` or the corresponding English relative path. Pass resolved paths to subagents. This branch targets newly created projects and does not migrate or support old project layouts or schemas. Do not rename, overwrite, or merge existing book content automatically. Story prose and names may contain Unicode characters; that does not change the English project schema.
 
 ## Goals
 
@@ -41,7 +41,7 @@ export REVIEWS_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "$
 
 ### Step 2: Refresh runtime contracts if the target chapter lacks them
 
-If the target chapter lacks runtime contracts, first refresh them using the actual chapter goal from the detailed outline (`CHAPTER_GOAL` must not contain placeholder text such as `{章纲目标}` / `第N章章纲目标`):
+If the target chapter lacks runtime contracts, first refresh them using the actual chapter goal from the detailed outline (`CHAPTER_GOAL` must not contain placeholder text such as `{chapter-outlinegoal}` / `Chapter Nchapter-outlinegoal`):
 
 ```bash
 GENRE="$(python -X utf8 -c "import json; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"

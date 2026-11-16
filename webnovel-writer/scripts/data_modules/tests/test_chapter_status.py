@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""章节状态模型测试"""
+"""Chapter status model tests"""
 import json
 import sys
 import pytest

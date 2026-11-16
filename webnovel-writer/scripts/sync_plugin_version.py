@@ -14,10 +14,10 @@ README_PATH = ROOT / "README.md"
 PLUGIN_NAME = "webnovel-writer"
 VERSION_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
 README_ROW_PATTERN = re.compile(
-    r"^\| \*\*v(?P<version>[^\s*]+)(?P<current> \(当前\))?\*\* \| (?P<notes>.*) \|$"
+    r"^\| \*\*v(?P<version>[^\s*]+)(?P<current> \(current\))?\*\* \| (?P<notes>.*) \|$"
 )
 README_BADGE_PATTERN = re.compile(r"(badge/version-)(?P<version>\d+\.\d+\.\d+)(-brightgreen\.svg)")
-README_HEADERS = {"| 版本 | 说明 |", "| 版本 | 主要变化 |"}
+README_HEADERS = {"| Version | Description |", "| Version | Main changes |"}
 README_SEPARATORS = {"|------|------|", "|------|----------|"}
 
 
@@ -66,7 +66,7 @@ def parse_readme_rows(lines: list[str]) -> list[dict[str, Any]]:
 
 
 def format_readme_row(version: str, notes: str, is_current: bool) -> str:
-    marker = " (当前)" if is_current else ""
+    marker = " (current)" if is_current else ""
     return f"| **v{version}{marker}** | {notes.strip()} |"
 
 

@@ -1,0 +1,248 @@
+# High-Concept Mystery Template
+
+> Runtime preset identifier: `speculative-mystery` (English taxonomy and initialization preset).
+
+> **Core appeal**: Logical deduction + rule-based contests + intelligent reversals. Reveal truths behind layers of mystery by interweaving rules and reasoning.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint packs: Pack M06 / Pack M07
+- General overlay: Pack U02
+
+## 1. Core Subgenres
+
+### Rule-Based Deduction
+- **Features**: Reasoning under specific rules.
+- **Core payoffs**: Rule discovery, deduction, turning rules against enemies.
+- **Representative works**: *Lord of Mysteries*, *Kaleidoscope of Death*, *Global Examination*.
+
+### Escape Room
+- **Features**: Trapped in a defined space; solve puzzles to escape.
+- **Core payoffs**: Finding clues, solving puzzles, desperate escapes.
+- **Representative works**: *Ten Deadly Sins*, *Psychological Crime*, *Burning Ice*.
+
+### Information Games
+- **Features**: Intellectual duels under asymmetric information.
+- **Core payoffs**: Exploiting information gaps, psychological contests, revelations.
+- **Representative works**: *Liar Game*, *Kaiji*, and Werewolf-game stories.
+
+### Time/Space Tricks
+- **Features**: Deceptions exploiting time or space.
+- **Core payoffs**: Exposing tricks, coherent logic, overturned perceptions.
+- **Representative works**: *The Devotion of Suspect X*, *Journey Under the Midnight Sun*, *Malice*.
+
+---
+
+## 2. Worldbuilding: High-Concept Mystery Society
+
+### Rule Types
+| Type | Features | Example |
+|------|------|------|
+| Game rules | Explicit rules of play | Werewolf/battle royale |
+| Supernatural rules | Rules governing uncanny phenomena | Curses/strange tales |
+| Social rules | Hidden social conventions | Unwritten rules/conspiracies |
+| Logical rules | Pure deduction | Locked rooms/impossible crimes |
+
+### Information Levels
+| Level | Knowledge | Role |
+|------|----------|------|
+| Omniscient | Knows everything | Mastermind |
+| Well-informed | Knows most things | Core participant |
+| Partially informed | Knows some things | Ordinary participant |
+| Uninformed | Knows nothing | Deceived person |
+
+### Deduction Elements
+| Element | Description | Function |
+|------|------|------|
+| Clue | Discoverable information | Foundation for reasoning |
+| Foreshadowing | Hidden information | Sets up reversals |
+| Misdirection | Wrong direction | Increases difficulty |
+| Truth | Final answer | Target of revelation |
+
+---
+
+## 3. Deduction System Design
+
+### Clue Design
+```
+Visible clues (30%):
+- Directly visible.
+- Easy to discover.
+- Point to the surface explanation.
+
+Hidden clues (50%):
+- Require analysis.
+- Easy to overlook.
+- Point to the truth.
+
+Misleading clues (20%):
+- Deliberately planted.
+- Point the wrong way.
+- Increase difficulty.
+```
+
+### Forms of Reasoning
+| Type | Features | Example |
+|------|------|------|
+| Deduction | General to particular | Rule → conclusion |
+| Induction | Particular to general | Phenomena → pattern |
+| Abduction | Result to cause | Outcome → cause |
+| Analogy | Similarity-based | A resembles B |
+
+### Reversal Design
+```
+Identity reversals:
+- An unexpected person is the culprit.
+- The victim is the culprit.
+- The detective is the culprit.
+
+Motive reversals:
+- The apparent motive is false.
+- The true motive is unexpected.
+- A crime without motive.
+
+Truth reversals:
+- The case itself is fabricated.
+- Multiple truths.
+- Reality is more complex than expected.
+```
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Decoding Rules
+- **Scene**: Discover a loophole or the truth behind a rule.
+- **Payoff**: Exploit it to defeat the enemy/escape.
+- **Key**: Rules and solutions must be coherent.
+
+### Deduction Duel
+- **Scene**: Face an opponent in an intellectual contest.
+- **Payoff**: Superior reasoning defeats them.
+- **Key**: Both sides must be intelligent.
+
+### Revealing Truth
+- **Scene**: Truth emerges from layers of mystery.
+- **Payoff**: Realization connects earlier and later details.
+- **Key**: Use foreshadowing and consistent logic.
+
+### Desperate Reversal
+- **Scene**: An apparently fatal situation turns around.
+- **Payoff**: A thrilling escape from danger.
+- **Key**: Establish the reversal beforehand.
+
+---
+
+## 5. Outline Structure (Standard: 1 Million Chinese Characters)
+
+### Volume One: Entering the Game (Chapters 1-50)
+- **Core**: Enter the mystery world and learn its rules.
+- **State**: Confusion/learning.
+- **Climax**: Solve the first puzzle.
+
+### Volume Two: Growth (Chapters 51-120)
+- **Core**: Improve deduction skills.
+- **State**: Growth/accumulation.
+- **Climax**: Solve a major case.
+
+### Volume Three: Going Deeper (Chapters 121-200)
+- **Core**: Encounter the central mystery.
+- **State**: Deeper involvement/danger.
+- **Climax**: Discover a crucial clue.
+
+### Volume Four: Showdown (Chapters 201-280)
+- **Core**: Confront the mastermind.
+- **State**: Confrontation/strategic contest.
+- **Climax**: Expose the mastermind.
+
+### Volume Five: Endgame (Chapters 281-350)
+- **Core**: Final truth and ultimate confrontation.
+- **State**: Decisive battle/revelation.
+- **Climax**: Satisfying resolution.
+
+---
+
+## 6. Character Design
+
+### Protagonist Types
+| Type | Features | Strength |
+|------|------|------|
+| Logical | Rigorous reasoning | Misses no clues |
+| Intuitive | Keen perception | Notices anomalies |
+| Observant | Attention to detail | Spots planted hints |
+| Psychological | Understands people | Sees through lies |
+
+### Opponent Design
+| Type | Features | Threat |
+|------|------|------|
+| Intelligent criminal | Meticulous plans | Difficult to solve |
+| Rule-maker | Controls rules | Information advantage |
+| Peer rival | Comparable abilities | Mutual strategic contest |
+| Hidden enemy | Unknown identity | Hard to guard against |
+
+### Supporting Characters
+| Role | Function | Relationship to protagonist |
+|------|------|-----------|
+| Assistant | Helps deduction | Complementary |
+| Informant | Provides clues | Cooperative |
+| Suspect | Creates mystery | Uncertain |
+| Victim | Drives the plot | Protection/investigation |
+
+---
+
+## 7. Building Suspense
+
+### Information Control
+```
+Release cadence:
+- Present a puzzle at the opening.
+- Gradually release clues in the middle.
+- Reveal truth at the climax.
+
+Concealment techniques:
+- Restricted viewpoint.
+- Narrative tricks.
+- Temporal displacement.
+```
+
+### Creating Tension
+| Technique | Effect | Example |
+|------|------|------|
+| Time pressure | Urgency | Countdown |
+| Threat to life | Crisis | Death game |
+| Trust crisis | Unease | Insider traitor |
+| Overturned perception | Shock | Reversal |
+
+### Fair-Play Principles
+- Share all clues with the reader.
+- Make the reasoning reproducible.
+- Truth cannot appear from nowhere.
+- Foreshadow reversals.
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ Unfair clues.
+- ❌ Leaps in reasoning.
+- ❌ Inadequate final explanations.
+- ❌ Self-contradictory rules.
+
+### Recommended Practices
+- ✅ Fair, traceable clues.
+- ✅ Rigorous deduction.
+- ✅ Complete revelation of the truth.
+- ✅ Internally consistent rules.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="clue" name="Clue content" desc="Type" tier="level" location="Discovery location" pointer="Points toward" revealed="Reveal chapter"/>
+<entity type="rule" name="Rule content" desc="Effect" tier="level" loophole="Loophole" penalty="Violation penalty"/>
+<entity type="puzzle" name="Puzzle content" desc="Type" tier="level" answer="Answer" clues="Related clues"/>
+<entity type="reversal" name="Reversal content" desc="Type" tier="level" foreshadow="foreshadowing" chapter="Reveal chapter"/>
+```

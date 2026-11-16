@@ -10,12 +10,12 @@ import re
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 
-FORESHADOWING_STATUS_PENDING = "未回收"
-FORESHADOWING_STATUS_RESOLVED = "已回收"
+FORESHADOWING_STATUS_PENDING = "unresolved"
+FORESHADOWING_STATUS_RESOLVED = "resolved"
 
-FORESHADOWING_TIER_CORE = "核心"
-FORESHADOWING_TIER_SUB = "支线"
-FORESHADOWING_TIER_DECOR = "装饰"
+FORESHADOWING_TIER_CORE = "core"
+FORESHADOWING_TIER_SUB = "subplot"
+FORESHADOWING_TIER_DECOR = "decorative"
 
 FORESHADOWING_PLANTED_KEYS = [
     "planted_chapter",
@@ -33,11 +33,11 @@ FORESHADOWING_TARGET_KEYS = [
     "target",
 ]
 
-_PENDING_STATUS_TEXT = {"未回收", "待回收", "进行中", "未解决", "pending", "active"}
-_RESOLVED_STATUS_TEXT = {"已回收", "已完成", "已解决", "完成", "resolved", "done", "complete"}
+_PENDING_STATUS_TEXT = {"unresolved", "in progress", "pending", "active"}
+_RESOLVED_STATUS_TEXT = {"resolved", "completed", "done", "complete"}
 
-_TIER_CORE_TEXT = {"核心", "主线", "core", "main"}
-_TIER_DECOR_TEXT = {"装饰", "次要", "decor", "decoration"}
+_TIER_CORE_TEXT = {"core", "main", "core", "main"}
+_TIER_DECOR_TEXT = {"decorative", "minor", "decor", "decoration"}
 
 _PATTERN_FIELDS = [
     "coolpoint_patterns",
@@ -110,7 +110,6 @@ def normalize_foreshadowing_status(
     if (
         text in _RESOLVED_STATUS_TEXT
         or text_lower in _RESOLVED_STATUS_TEXT
-        or FORESHADOWING_STATUS_RESOLVED in text
     ):
         return FORESHADOWING_STATUS_RESOLVED
 

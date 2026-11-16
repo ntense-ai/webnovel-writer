@@ -54,7 +54,7 @@ bootstrap literally; use the resolved paths above instead.
   adapter. Execute every explicit preflight, write gate, review artifact check,
   fact extraction, state projection, and backup step in the original workflow.
   Never bypass a gate merely because a host hook is absent.
-- Preserve project schemas and legacy aliases. Use `project_paths.py` to resolve
+- Preserve the English project schema; legacy aliases are not supported. Use `project_paths.py` to resolve
   existing books. Generate new content in English unless requested otherwise.
 - Keep approvals, sandboxing, and user instructions in force. Do not disable host
   safeguards, start persistent background processes, install packages, or add

@@ -85,9 +85,9 @@ def test_save_archive_uses_atomic_write_json(archive_env, monkeypatch):
 
     monkeypatch.setattr(module, "atomic_write_json", fake_atomic_write_json)
 
-    manager.save_archive(manager.characters_archive, [{"name": "李雪"}])
+    manager.save_archive(manager.characters_archive, [{"name": "Li Xue"}])
 
-    assert calls == [(manager.characters_archive, [{"name": "李雪"}], True, True, 2)]
+    assert calls == [(manager.characters_archive, [{"name": "Li Xue"}], True, True, 2)]
 
 
 def test_restore_character_keeps_archive_when_sqlite_restore_fails(archive_env, monkeypatch):
@@ -96,8 +96,8 @@ def test_restore_character_keeps_archive_when_sqlite_restore_fails(archive_env, 
     archived = [
         {
             "id": "li_xue",
-            "name": "李雪",
-            "tier": "支线",
+            "name": "Li Xue",
+            "tier": "subplot",
             "archived_at": "2026-06-10T00:00:00",
         }
     ]
@@ -109,7 +109,7 @@ def test_restore_character_keeps_archive_when_sqlite_restore_fails(archive_env, 
 
     monkeypatch.setattr(manager._index_manager, "update_entity_field", fail_restore)
 
-    assert manager.restore_character("李雪") is False
+    assert manager.restore_character("Li Xue") is False
     assert manager.characters_archive.read_text(encoding="utf-8") == before
 
 
@@ -119,8 +119,8 @@ def test_restore_character_deletes_archive_after_sqlite_restore_succeeds(archive
     archived = [
         {
             "id": "li_xue",
-            "name": "李雪",
-            "tier": "支线",
+            "name": "Li Xue",
+            "tier": "subplot",
             "archived_at": "2026-06-10T00:00:00",
         }
     ]
@@ -132,7 +132,7 @@ def test_restore_character_deletes_archive_after_sqlite_restore_succeeds(archive
 
     monkeypatch.setattr(manager._index_manager, "update_entity_field", restore_status)
 
-    assert manager.restore_character("李雪") is True
+    assert manager.restore_character("Li Xue") is True
     assert calls == [("li_xue", "status", "active")]
     assert json.loads(manager.characters_archive.read_text(encoding="utf-8")) == []
 

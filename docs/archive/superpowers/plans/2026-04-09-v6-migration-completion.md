@@ -395,7 +395,7 @@ def test_set_chapter_status_monotonic(state_project):
     sm._load_state()
     sm.set_chapter_status(5, "chapter_reviewed")
     # must not regress to drafted
-    with pytest.raises(ValueError, match="不可回退"):
+    with pytest.raises(ValueError, match="cannot regress"):
         sm.set_chapter_status(5, "chapter_drafted")
 
 
@@ -440,7 +440,7 @@ def get_chapter_status(self, chapter: int) -> Optional[str]:
 def set_chapter_status(self, chapter: int, status: str) -> None:
     """Set chapter status (monotonic progression; no regression)."""
     if status not in self.CHAPTER_STATUS_ORDER:
-        raise ValueError(f"无效状态: {status}，有效值: {self.CHAPTER_STATUS_ORDER}")
+        raise ValueError(f"invalid status: {status}，valid values: {self.CHAPTER_STATUS_ORDER}")
 
     current = self.get_chapter_status(chapter)
     if current is not None:
@@ -448,7 +448,7 @@ def set_chapter_status(self, chapter: int, status: str) -> None:
         new_idx = self.CHAPTER_STATUS_ORDER.index(status)
         if new_idx < current_idx:
             raise ValueError(
-                f"章节 {chapter} 状态不可回退: {current} -> {status}"
+                f"chapter {chapter} status cannot regress: {current} -> {status}"
             )
         if new_idx == current_idx:
             return  # idempotent

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-补全 store CLI, compactor 边界, cli_args 解析, webnovel 路由 的测试覆盖。
+Coverage store CLI, compactor Boundary, cli_args Parse, webnovel Routing test coverage for。
 """
 
 import json
@@ -37,7 +37,7 @@ def _make_item(id, category="character_state", subject="x", field="f", value="v"
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 1. cli_args 补全
+# 1. cli_args Coverage
 # ═══════════════════════════════════════════════════════════════════════
 
 def test_extract_flag_value_equals_form():
@@ -127,7 +127,7 @@ def test_load_json_arg_none_raises():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 2. compactor 边界补全
+# 2. compactor Boundary coverage
 # ═══════════════════════════════════════════════════════════════════════
 
 def test_key_for_unknown_category_falls_back_to_id():
@@ -147,86 +147,86 @@ def test_is_resolved_open_loop_various_statuses():
 
 
 def test_compactor_dedup_outdated_keeps_latest():
-    """步骤1: 同key的outdated只保留最新一条。"""
+    """Step1: samekeyofoutdatedretain only the newest entry。"""
     data = ScratchpadData.empty()
-    # 3 items: 2 outdated (同key) + 1 active → dedup后变2 items, <= max_items=3
+    # 3 items: 2 outdated (samekey) + 1 active → dedupbecomes afterward2 items, <= max_items=3
     data.character_state = [
         _make_item("a1", subject="x", field="realm", value="v1", status="outdated", updated_at="2026-01-01T00:00:00"),
         _make_item("a2", subject="x", field="realm", value="v2", status="outdated", updated_at="2026-02-01T00:00:00"),
         _make_item("a3", subject="x", field="realm", value="v3", status="active"),
     ]
-    # 需1个额外item让总数=4 > max_items=3，触发压缩入口
+    # require1extraitembring the total to=4 > max_items=3，trigger the compaction entry point
     data.world_rules.append(_make_item("wr0", category="world_rule", subject="r0", field="f0", value="v0", chapter=1))
     result = compact_scratchpad(data, max_items=3)
     outdated = [r for r in result.character_state if r.status == "outdated"]
-    # dedup去掉a1，保留a2（更新），压缩后总数=3（a2+a3+wr0）刚好 <= max_items
+    # dedupremovea1，retaina2 (Update)，total after compaction=3 (a2+a3+wr0)exactly <= max_items
     assert len(outdated) == 1
     assert outdated[0].value == "v2"
 
 
 def test_compactor_cleans_resolved_open_loops():
-    """步骤2: 已resolved的open_loop被清除。"""
+    """Step2: alreadyresolvedofopen_loopremoved。"""
     data = ScratchpadData.empty()
     data.open_loops = [
-        _make_item("ol1", category="open_loop", subject="伏笔A", field="status", value="A", payload={"status": "resolved"}),
-        _make_item("ol2", category="open_loop", subject="伏笔B", field="status", value="B", payload={"status": "active"}),
+        _make_item("ol1", category="open_loop", subject="foreshadowingA", field="status", value="A", payload={"status": "resolved"}),
+        _make_item("ol2", category="open_loop", subject="foreshadowingB", field="status", value="B", payload={"status": "active"}),
     ]
-    # 补2个填充项让总数=4 > max_items=3
+    # add2filler entries to bring the total to=4 > max_items=3
     data.world_rules.append(_make_item("wr0", category="world_rule", subject="r0", field="f0", value="v0", chapter=1))
     data.world_rules.append(_make_item("wr1", category="world_rule", subject="r1", field="f1", value="v1", chapter=1))
     result = compact_scratchpad(data, max_items=3)
     loop_subjects = [r.subject for r in result.open_loops]
-    assert "伏笔A" not in loop_subjects
-    assert "伏笔B" in loop_subjects
+    assert "foreshadowingA" not in loop_subjects
+    assert "foreshadowingB" in loop_subjects
 
 
 def test_compactor_replaces_existing_timeline_summary():
-    """步骤3的timeline summary只保留一条，即使field值随章节变化。"""
+    """Step3oftimeline summaryretain only one，even iffieldvalue changes with chapter。"""
     data = ScratchpadData.empty()
     # pre-existing summary with old field value
     data.story_facts = [
-        _make_item("sf-old", category="story_fact", subject="timeline_summary", field="<=ch5", value="旧摘要"),
+        _make_item("sf-old", category="story_fact", subject="timeline_summary", field="<=ch5", value="Old summary"),
     ]
     # old timeline entries (>50 chapters from latest)
     for i in range(3):
-        data.timeline.append(_make_item(f"t-old-{i}", category="timeline", subject=f"旧事件{i}", field="event", value=f"旧事件{i}", chapter=i+1))
+        data.timeline.append(_make_item(f"t-old-{i}", category="timeline", subject=f"Old event{i}", field="event", value=f"Old event{i}", chapter=i+1))
     # fresh timeline
-    data.timeline.append(_make_item("t-fresh", category="timeline", subject="新事件", field="event", value="新事件", chapter=60))
+    data.timeline.append(_make_item("t-fresh", category="timeline", subject="New event", field="event", value="New event", chapter=60))
 
-    # max_items 设足够大，让 step 4 不截断，只测 step 3 的替换逻辑
+    # max_items Set sufficiently high，let step 4 without truncation，Test only step 3 replacement logic
     result = compact_scratchpad(data, max_items=4)
     summaries = [r for r in result.story_facts if r.subject == "timeline_summary"]
-    # 旧 summary (field="<=ch5") 应被新 summary (field="<=ch3") 替换，而非共存
+    # old summary (field="<=ch5") should be replaced by the new summary (field="<=ch3") replace，instead of coexistence
     assert len(summaries) == 1
-    assert "旧事件" in summaries[0].value
-    assert summaries[0].field != "<=ch5"  # 旧field已被覆盖
+    assert "Old event" in summaries[0].value
+    assert summaries[0].field != "<=ch5"  # oldfieldalready covered
 
 
 def test_compactor_resolved_open_loop_integration(tmp_path):
-    """集成测试: compactor通过store.save()触发时正确清除resolved open_loop。"""
+    """Integration tests: compactorpassstore.save()correctly clears when triggeredresolved open_loop。"""
     cfg = _cfg(tmp_path)
     cfg.memory_compactor_enabled = True
     cfg.memory_compactor_threshold = 3
     manager = ScratchpadManager(cfg)
 
-    # 插入一个resolved open_loop
-    manager.upsert_item(_make_item("ol-resolved", category="open_loop", subject="伏笔已解",
-                                   field="status", value="已解伏笔", payload={"status": "resolved"}))
-    # 插入一个active open_loop
-    manager.upsert_item(_make_item("ol-active", category="open_loop", subject="伏笔未解",
-                                   field="status", value="未解伏笔", payload={"status": "active"}))
-    # 再插入几条让总数超过threshold触发compaction
+    # Insert oneresolved open_loop
+    manager.upsert_item(_make_item("ol-resolved", category="open_loop", subject="Resolved foreshadowing",
+                                   field="status", value="Resolved foreshadowing", payload={"status": "resolved"}))
+    # Insert oneactive open_loop
+    manager.upsert_item(_make_item("ol-active", category="open_loop", subject="Unresolved foreshadowing",
+                                   field="status", value="Unresolved foreshadowing", payload={"status": "active"}))
+    # Insert additional entries to exceed the total limitthresholdTriggercompaction
     manager.upsert_item(_make_item("w1", category="world_rule", subject="r1", field="f1", value="v1"))
     manager.upsert_item(_make_item("w2", category="world_rule", subject="r2", field="f2", value="v2"))
 
     data = manager.load()
     loop_subjects = [r.subject for r in data.open_loops]
-    assert "伏笔已解" not in loop_subjects
-    assert "伏笔未解" in loop_subjects
+    assert "Resolved foreshadowing" not in loop_subjects
+    assert "Unresolved foreshadowing" in loop_subjects
 
 
 def test_memory_item_key_shared_function():
-    """验证 schema.memory_item_key 与 compactor._key_for / store._key_for 一致。"""
+    """Verify schema.memory_item_key and compactor._key_for / store._key_for consistent。"""
     item = _make_item("x1", category="character_state", subject="hero", field="realm")
     assert memory_item_key(item) == ("hero", "realm")
     assert _key_for(item) == memory_item_key(item)
@@ -240,7 +240,7 @@ def test_memory_item_key_shared_function():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 3. store CLI 补全
+# 3. store CLI Coverage
 # ═══════════════════════════════════════════════════════════════════════
 
 def test_store_cli_stats(tmp_path, monkeypatch, capsys):
@@ -280,7 +280,7 @@ def test_store_cli_conflicts(tmp_path, monkeypatch, capsys):
 def test_store_cli_query(tmp_path, monkeypatch, capsys):
     cfg = _cfg(tmp_path)
     manager = ScratchpadManager(cfg)
-    manager.upsert_item(_make_item("c1", subject="hero", field="realm", value="斗者"))
+    manager.upsert_item(_make_item("c1", subject="hero", field="realm", value="Dou Zhe"))
 
     monkeypatch.setattr(sys, "argv", [
         "store", "--project-root", str(tmp_path),
@@ -296,7 +296,7 @@ def test_store_cli_query(tmp_path, monkeypatch, capsys):
 def test_store_cli_update(tmp_path, monkeypatch, capsys):
     cfg = _cfg(tmp_path)
     payload = json.dumps({
-        "state_changes": [{"entity_id": "hero", "field": "realm", "old": "斗者", "new": "斗师"}],
+        "state_changes": [{"entity_id": "hero", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}],
     })
     monkeypatch.setattr(sys, "argv", [
         "store", "--project-root", str(tmp_path),
@@ -310,7 +310,7 @@ def test_store_cli_update(tmp_path, monkeypatch, capsys):
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 4. webnovel 路由补全
+# 4. webnovel Routing coverage
 # ═══════════════════════════════════════════════════════════════════════
 
 def _load_webnovel_module():
@@ -547,7 +547,7 @@ def test_webnovel_run_script_missing_script():
 def test_webnovel_run_data_module_no_main():
     module = _load_webnovel_module()
     with pytest.raises(RuntimeError, match="has no callable main"):
-        module._run_data_module("schemas", [])  # schemas 没有 main()
+        module._run_data_module("schemas", [])  # schemas without main()
 
 
 def test_webnovel_preflight_json_format(monkeypatch, tmp_path, capsys):

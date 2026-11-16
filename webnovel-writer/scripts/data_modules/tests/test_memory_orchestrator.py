@@ -28,9 +28,9 @@ def test_build_memory_pack_empty(tmp_path):
 def test_build_memory_pack_filter_and_budget(tmp_path):
     cfg = _cfg(tmp_path)
     cfg.memory_orchestrator_max_items = 1
-    outline_dir = cfg.project_root / "大纲"
+    outline_dir = cfg.project_root / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷 详细大纲.md").write_text("### 第10章：萧炎突破\n", encoding="utf-8")
+    (outline_dir / "volume-1-outline.md").write_text("### Chapter 10: Xiao Yan advances\n", encoding="utf-8")
 
     store = ScratchpadManager(cfg)
     store.upsert_item(
@@ -38,9 +38,9 @@ def test_build_memory_pack_filter_and_budget(tmp_path):
             id="m1",
             layer="semantic",
             category="character_state",
-            subject="萧炎",
+            subject="Xiao Yan",
             field="realm",
-            value="斗师",
+            value="Dou Shi",
             source_chapter=9,
         )
     )
@@ -51,7 +51,7 @@ def test_build_memory_pack_filter_and_budget(tmp_path):
             category="story_fact",
             subject="chapter_hook",
             field="9",
-            value="神秘强者出现",
+            value="a mysterious powerhouse appears",
             source_chapter=9,
         )
     )

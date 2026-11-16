@@ -13,11 +13,11 @@ def test_init_skips_dead_templates_and_empty_libraries_for_single_protagonist(tm
 
     init_project_module.init_project(
         str(project_root),
-        title="测试书",
-        genre="仙侠",
-        protagonist_name="陆鸣",
-        protagonist_structure="单主角+辅助视角",
-        heroine_config="无女主",
+        title="Test Book",
+        genre="xianxia",
+        protagonist_name="Lu Ming",
+        protagonist_structure="single protagonist with supporting viewpoints",
+        heroine_config="none",
         target_chapters=50,
     )
 
@@ -40,9 +40,9 @@ def test_init_master_outline_does_not_prefill_future_volume_rows(tmp_path, monke
 
     init_project_module.init_project(
         str(project_root),
-        title="测试书",
-        genre="仙侠",
-        protagonist_name="陆鸣",
+        title="Test Book",
+        genre="xianxia",
+        protagonist_name="Lu Ming",
         target_chapters=600,
     )
 
@@ -60,12 +60,12 @@ def test_init_generates_conditional_protagonist_group_and_heroine(tmp_path, monk
 
     init_project_module.init_project(
         str(project_root),
-        title="测试书",
-        genre="仙侠",
-        protagonist_name="陆鸣",
-        protagonist_structure="双主角",
-        heroine_config="单女主",
-        heroine_names="苏云",
+        title="Test Book",
+        genre="xianxia",
+        protagonist_name="Lu Ming",
+        protagonist_structure="dual",
+        heroine_config="single",
+        heroine_names="Eve",
         target_chapters=50,
     )
 
@@ -81,23 +81,23 @@ def test_init_persists_canonical_genre_and_template_tags(tmp_path, monkeypatch):
 
     init_project_module.init_project(
         str(project_root),
-        title="测试书",
-        genre="知乎短篇风的规则怪谈",
-        protagonist_name="陆鸣",
+        title="Test Book",
+        genre="rules-horror+zhihu-short-fiction",
+        protagonist_name="Lu Ming",
         target_chapters=50,
     )
 
     state = json.loads((project_root / ".webnovel" / "state.json").read_text(encoding="utf-8"))
     project_info = state["project_info"]
-    assert project_info["genre"] == "悬疑"
-    assert project_info["genre_label"] == "知乎短篇风的规则怪谈"
-    assert project_info["genre_tags"]["route"] == ["规则怪谈"]
-    assert project_info["genre_tags"]["format"] == ["知乎短篇"]
-    assert project_info["genre_tags"]["templates"] == ["规则怪谈", "知乎短篇"]
+    assert project_info["genre"] == "mystery"
+    assert project_info["genre_label"] == "rules-horror+zhihu-short-fiction"
+    assert project_info["genre_tags"]["route"] == ["rules-horror"]
+    assert project_info["genre_tags"]["format"] == ["zhihu-short-fiction"]
+    assert project_info["genre_tags"]["templates"] == ["rules-horror", "zhihu-short-fiction"]
 
     worldview = (project_root / "settings" / "worldbuilding.md").read_text(encoding="utf-8")
-    assert "规则怪谈" in worldview
-    assert "知乎短篇" in worldview
+    assert "rules-horror" in worldview
+    assert "zhihu-short-fiction" in worldview
 
 
 def test_init_accepts_english_genre_and_preserves_stable_schema(tmp_path, monkeypatch):
@@ -110,9 +110,9 @@ def test_init_accepts_english_genre_and_preserves_stable_schema(tmp_path, monkey
         protagonist_name="Alice", target_chapters=50,
     )
     state = json.loads((project_root / ".webnovel" / "state.json").read_text())
-    assert state["project_info"]["genre"] == "悬疑"
+    assert state["project_info"]["genre"] == "mystery"
     assert state["project_info"]["genre_label"] == "rules horror"
-    assert state["project_info"]["genre_tags"]["route"] == ["规则怪谈"]
+    assert state["project_info"]["genre_tags"]["route"] == ["rules-horror"]
     assert (project_root / "settings" / "worldbuilding.md").is_file()
 
 
@@ -128,9 +128,9 @@ def test_init_preserves_corrupt_state_json_before_rebuilding(tmp_path, monkeypat
 
     init_project_module.init_project(
         str(project_root),
-        title="测试书",
-        genre="仙侠",
-        protagonist_name="陆鸣",
+        title="Test Book",
+        genre="xianxia",
+        protagonist_name="Lu Ming",
         target_chapters=50,
     )
 
@@ -140,21 +140,21 @@ def test_init_preserves_corrupt_state_json_before_rebuilding(tmp_path, monkeypat
     assert "Warning: damaged state.json" in capsys.readouterr().out
 
 
-def test_init_reuses_existing_legacy_directories_without_moving_user_files(tmp_path, monkeypatch):
+def test_init_reuses_existing_directories_without_moving_user_files(tmp_path, monkeypatch):
     import init_project as init_project_module
 
     monkeypatch.setattr(init_project_module, "is_git_available", lambda: False)
-    project_root = tmp_path / "legacy-book"
-    for name in ("设定集", "大纲", "正文", "审查报告"):
+    project_root = tmp_path / "existing-book"
+    for name in ("settings", "outlines", "chapters", "reviews"):
         (project_root / name).mkdir(parents=True)
-    existing = project_root / "设定集" / "世界观.md"
+    existing = project_root / "settings" / "worldbuilding.md"
     existing.write_text("My existing world", encoding="utf-8")
     init_project_module.init_project(
-        str(project_root), title="Legacy book", genre="fantasy",
+        str(project_root), title="Existing book", genre="fantasy",
         protagonist_name="Alice", target_chapters=50,
     )
     assert existing.read_text(encoding="utf-8") == "My existing world"
-    assert (project_root / "设定集" / "主角卡.md").is_file()
-    assert (project_root / "大纲" / "总纲.md").is_file()
+    assert (project_root / "settings" / "protagonist.md").is_file()
+    assert (project_root / "outlines" / "master-outline.md").is_file()
     for name in ("settings", "outlines", "chapters", "reviews"):
-        assert not (project_root / name).exists()
+        assert (project_root / name).is_dir()

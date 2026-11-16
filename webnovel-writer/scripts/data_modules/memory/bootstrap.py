@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-从 index.db 回填初始长期记忆。
-"""
+'Backfill initial long-term memory from index.db.'
 from __future__ import annotations
 
 import re
@@ -14,15 +12,12 @@ from .schema import MemoryItem
 from .store import ScratchpadManager
 
 
-FORESHADOWING_SECTION_RE = re.compile(r"##\s*伏笔\s*\r?\n(.*?)(?=\r?\n##|\Z)", re.DOTALL)
+FORESHADOWING_SECTION_RE = re.compile(r"##\s*foreshadowing\s*\r?\n(.*?)(?=\r?\n##|\Z)", re.DOTALL)
 FORESHADOWING_BULLET_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*$", re.MULTILINE)
 
 
 def _extract_chapter_from_name(name: str) -> int:
     m = re.search(r"(?:ch|chapter-)(\d{1,6})", name, re.IGNORECASE)
-    if m:
-        return int(m.group(1))
-    m = re.search(r"第\s*(\d+)\s*章", name)
     if m:
         return int(m.group(1))
     return 0
@@ -53,7 +48,7 @@ def bootstrap_from_index(config: DataModulesConfig | None = None) -> Dict[str, A
     created = 0
     by_category: Dict[str, int] = {}
 
-    for entity in idx.get_entities_by_type("角色", include_archived=True):
+    for entity in idx.get_entities_by_type("character", include_archived=True):
         entity_id = str(entity.get("id", "") or "").strip()
         current = entity.get("current_json") or {}
         if not entity_id or not isinstance(current, dict):
@@ -74,7 +69,7 @@ def bootstrap_from_index(config: DataModulesConfig | None = None) -> Dict[str, A
             created += 1
             by_category["character_state"] = by_category.get("character_state", 0) + 1
 
-    # 回填状态变化：最新值 active，历史值 outdated。
+    # Backfill state changes: the latest value is active; historical values are outdated.
     changes = idx.get_recent_state_changes(limit=5000)
     changes_sorted = sorted(
         changes,
@@ -156,7 +151,7 @@ def bootstrap_from_index(config: DataModulesConfig | None = None) -> Dict[str, A
         created += 1
         by_category["relationship"] = by_category.get("relationship", 0) + 1
 
-    # 从 summaries 中抽取“伏笔”区块回填 open_loop。
+    # Extract the foreshadowing section from summaries to backfill open_loop entries.
     summaries_dir = cfg.webnovel_dir / "summaries"
     if summaries_dir.exists():
         for path in sorted(summaries_dir.glob("*.md")):

@@ -41,5 +41,5 @@ def test_run_log_redacts_env_values(tmp_path: Path) -> None:
 
 def test_redact_helpers_keep_non_sensitive_content() -> None:
     assert redact_text("foo=bar") == "foo=bar"
-    payload = redact_payload({"title": "测试书", "api_key": "secret"})
-    assert payload == {"title": "测试书", "api_key": "<redacted>"}
+    payload = redact_payload({"title": "Test Book", "api_key": "secret"})
+    assert payload == {"title": "Test Book", "api_key": "<redacted>"}

@@ -44,7 +44,7 @@ def _make_init_ready(project_root: Path) -> None:
             _write_json(
                 path,
                 {
-                    "project_info": {"title": "测试书", "genre": "玄幻"},
+                    "project_info": {"title": "Test Book", "genre": "xuanhuan"},
                     "progress": {"current_chapter": 0},
                 },
             )
@@ -95,7 +95,7 @@ def test_project_phase_detects_chapter_contract_ready(tmp_path):
 def test_project_phase_detects_draft_and_ready_to_commit(tmp_path):
     _make_init_ready(tmp_path)
     _make_contracts(tmp_path, chapter=1)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文草稿\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapter draft\n", encoding="utf-8")
 
     draft_snapshot = resolve_project_phase(tmp_path)
     assert draft_snapshot.phase == PHASE_DRAFT_IN_PROGRESS

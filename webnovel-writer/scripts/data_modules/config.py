@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Data Modules - 配置文件
-
-API 配置通过环境变量读取（支持 .env 文件）：
-- EMBED_BASE_URL, EMBED_MODEL, EMBED_API_KEY
-- RERANK_BASE_URL, RERANK_MODEL, RERANK_API_KEY
-"""
+'Data Modules configuration. API settings are read from environment variables, with .env support: EMBED_BASE_URL, EMBED_MODEL, EMBED_API_KEY, RERANK_BASE_URL, RERANK_MODEL, RERANK_API_KEY.'
 
 import os
 from pathlib import Path
@@ -41,7 +35,7 @@ def _load_dotenv_file(env_path: Path, *, override: bool = False) -> bool:
                     value = value.strip()
                     if not key:
                         continue
-                    # 默认不覆盖已有环境变量（保持“显式 > .env”优先级）
+                    # Do not overwrite existing environment variables by default: explicit settings take precedence over .env.
                     if override or key not in os.environ:
                         os.environ[key] = value
         return True
@@ -50,26 +44,17 @@ def _load_dotenv_file(env_path: Path, *, override: bool = False) -> bool:
 
 
 def _load_dotenv():
-    """
-    加载 .env 文件（best-effort）。
-
-    约定：
-    - 项目级 `.env`（当前工作目录下）优先；
-    - 全局 `.env` 作为兜底：`~/.claude/webnovel-writer/.env`
-    """
-    # 1) 当前目录（常见：用户从项目根目录执行）
+    'Load .env on a best-effort basis. A project-level .env in the current working directory takes priority; ~/.claude/webnovel-writer/.env is the global fallback.'
+    # 1) Current directory, typically when the user runs from the project root.
     _load_dotenv_file(Path.cwd() / ".env", override=False)
 
-    # 2) 用户级全局（常见：skills/agents 全局安装，API key 放这里最省心）
+    # 2) User-level global configuration, convenient for API keys with globally installed skills/agents.
     global_env = _get_user_claude_root() / "webnovel-writer" / ".env"
     _load_dotenv_file(global_env, override=False)
 
 
 def _load_project_dotenv(project_root: Path) -> None:
-    """
-    加载某个项目根目录下的 `.env`（best-effort）。
-    注意：不覆盖已存在环境变量，避免意外串台。
-    """
+    'Load .env from a specific project root on a best-effort basis. Preserve existing environment variables to avoid unintended configuration crossover.'
     try:
         _load_dotenv_file(Path(project_root) / ".env", override=False)
     except Exception:
@@ -90,9 +75,9 @@ def _default_context_template_weights_dynamic() -> dict[str, dict[str, dict[str,
 
 @dataclass
 class DataModulesConfig:
-    """数据模块配置"""
+    'Data module configuration.'
 
-    # ================= 项目路径 =================
+    # ================= Project paths =================
     project_root: Path = field(default_factory=lambda: Path.cwd())
 
     @property
@@ -111,7 +96,7 @@ class DataModulesConfig:
     def index_db(self) -> Path:
         return self.webnovel_dir / "index.db"
 
-    # v5.1 引入: alias_index_file 已废弃，别名存储在 index.db aliases 表
+    # Since v5.1, alias_index_file is deprecated; aliases live in the index.db aliases table.
 
     @property
     def chapters_dir(self) -> Path:
@@ -142,7 +127,7 @@ class DataModulesConfig:
         return self.story_system_dir / "anti_patterns.json"
 
 
-    # ================= Embedding API 配置 =================
+    # ================= Embedding API configuration =================
     embed_api_type: str = "openai"
     embed_base_url: str = field(default_factory=lambda: os.getenv("EMBED_BASE_URL", "https://api-inference.modelscope.cn/v1"))
     embed_model: str = field(default_factory=lambda: os.getenv("EMBED_MODEL", "Qwen/Qwen3-Embedding-8B"))
@@ -152,7 +137,7 @@ class DataModulesConfig:
     def embed_url(self) -> str:
         return self.embed_base_url
 
-    # ================= Rerank API 配置 =================
+    # ================= Reranking API configuration =================
     rerank_api_type: str = "openai"
     rerank_base_url: str = field(default_factory=lambda: os.getenv("RERANK_BASE_URL", "https://api.jina.ai/v1"))
     rerank_model: str = field(default_factory=lambda: os.getenv("RERANK_MODEL", "jina-reranker-v3"))
@@ -162,20 +147,20 @@ class DataModulesConfig:
     def rerank_url(self) -> str:
         return self.rerank_base_url
 
-    # ================= 并发配置 =================
+    # ================= Concurrency configuration =================
     embed_concurrency: int = 64
     rerank_concurrency: int = 32
     embed_batch_size: int = 64
 
-    # ================= 超时配置 =================
+    # ================= Timeout configuration =================
     cold_start_timeout: int = 300
     normal_timeout: int = 180
 
-    # ================= 重试配置 =================
-    api_max_retries: int = 3  # 最大重试次数
-    api_retry_delay: float = 1.0  # 初始重试延迟（秒），使用指数退避
+    # ================= Retry configuration =================
+    api_max_retries: int = 3  # Maximum retry count
+    api_retry_delay: float = 1.0  # Initial retry delay in seconds, with exponential backoff
 
-    # ================= 检索配置 =================
+    # ================= Retrieval configuration =================
     vector_top_k: int = 30
     bm25_top_k: int = 20
     rerank_top_n: int = 10
@@ -185,7 +170,7 @@ class DataModulesConfig:
     vector_prefilter_bm25_candidates: int = 200
     vector_prefilter_recent_candidates: int = 200
 
-    # ================= Graph-RAG 配置 =================
+    # ================= Graph-RAG configuration =================
     graph_rag_enabled: bool = False
     graph_rag_expand_hops: int = 1
     graph_rag_max_expanded_entities: int = 30
@@ -196,11 +181,11 @@ class DataModulesConfig:
 
     relationship_graph_from_index_enabled: bool = True
 
-    # ================= 实体提取配置 =================
+    # ================= Entity extraction configuration =================
     extraction_confidence_high: float = 0.8
     extraction_confidence_medium: float = 0.5
 
-    # ================= 列表截断限制 =================
+    # ================= List truncation limits =================
     max_disambiguation_warnings: int = 500
     max_disambiguation_pending: int = 1000
     max_state_changes: int = 2000
@@ -220,12 +205,12 @@ class DataModulesConfig:
     context_ranker_hook_bonus: float = 0.2
     context_ranker_length_bonus_cap: float = 0.2
     context_ranker_alert_critical_keywords: tuple[str, ...] = (
-        "冲突",
-        "矛盾",
+        "conflict",
+        "contradiction",
         "critical",
         "break",
-        "违规",
-        "断裂",
+        "violation",
+        "discontinuity",
     )
     context_ranker_debug: bool = False
     context_reader_signal_enabled: bool = True
@@ -287,13 +272,13 @@ class DataModulesConfig:
     export_recent_changes_slice: int = 20
     export_disambiguation_slice: int = 20
 
-    # ================= 查询默认限制 =================
+    # ================= Default query limits =================
     query_recent_chapters_limit: int = 10
     query_scenes_by_location_limit: int = 20
     query_entity_appearances_limit: int = 50
     query_recent_appearances_limit: int = 20
 
-    # ================= 伏笔紧急度 =================
+    # ================= Foreshadowing urgency =================
     foreshadowing_urgency_pending_high: int = 100
     foreshadowing_urgency_pending_medium: int = 50
     foreshadowing_urgency_target_proximity: int = 5
@@ -307,12 +292,12 @@ class DataModulesConfig:
     foreshadowing_tier_weight_sub: float = 2.0
     foreshadowing_tier_weight_decor: float = 1.0
 
-    # ================= 角色活跃度 =================
+    # ================= Character activity =================
     character_absence_warning: int = 30
     character_absence_critical: int = 100
     character_candidates_limit: int = 800
 
-    # ================= Strand Weave 节奏 =================
+    # ================= Strand Weave pacing =================
     strand_quest_max_consecutive: int = 5
     strand_fire_max_gap: int = 10
     strand_constellation_max_gap: int = 15
@@ -324,13 +309,13 @@ class DataModulesConfig:
     strand_constellation_ratio_min: int = 10
     strand_constellation_ratio_max: int = 20
 
-    # ================= 爽点节奏 =================
+    # ================= Payoff pacing =================
     pacing_segment_size: int = 100
     pacing_words_per_point_excellent: int = 1000
     pacing_words_per_point_good: int = 1500
     pacing_words_per_point_acceptable: int = 2000
 
-    # ================= RAG 存储 =================
+    # ================= RAG storage =================
     @property
     def rag_db(self) -> Path:
         return self.webnovel_dir / "rag.db"
@@ -345,7 +330,7 @@ class DataModulesConfig:
     @classmethod
     def from_project_root(cls, project_root: str | Path) -> "DataModulesConfig":
         root = normalize_windows_path(project_root).expanduser().resolve()
-        # 在构造配置前加载项目级 `.env`，以确保 EMBED_*/RERANK_* 等字段可生效
+        # Load the project-level .env before constructing configuration so EMBED_*/RERANK_* fields take effect.
         _load_project_dotenv(root)
         return cls(project_root=root)
 
@@ -358,11 +343,11 @@ def get_config(project_root: Optional[Path] = None) -> DataModulesConfig:
     if project_root is not None:
         return DataModulesConfig.from_project_root(project_root)
     if _default_config is None:
-        # 默认不要盲目以 CWD 作为 project_root（很容易写到错误目录）。
-        # 使用统一的 project_locator 自动探测：
-        # - 支持 WEBNOVEL_PROJECT_ROOT
-        # - 支持 `.claude/.webnovel-current-project` 指针文件
-        # - 支持从当前目录/父目录寻找 `.webnovel/state.json`
+        # Do not blindly default project_root to CWD; this can write to the wrong directory.
+        # Use the shared project_locator for automatic discovery:
+        # - Supports WEBNOVEL_PROJECT_ROOT
+        # - Supports the .claude/.webnovel-current-project pointer file
+        # - Searches the current directory and parents for .webnovel/state.json
         from project_locator import resolve_project_root
 
         root = resolve_project_root()

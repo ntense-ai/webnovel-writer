@@ -21,10 +21,7 @@ REQUIRED_RELEASE_HEADINGS = (
     "## For Maintainers",
     "## Verification",
 )
-LEGACY_RELEASE_HEADINGS = (
-    "## 发版范围", "## 给作者看的变化", "## 是否需要改旧项目", "## 给维护者", "## 验证",
-)
-AUTHOR_WORDS = ("author", "chapter", "webnovel", "story", "prose", "作者", "写章", "网文", "故事", "正文")
+AUTHOR_WORDS = ("author", "chapter", "webnovel", "story", "prose", "chapters")
 
 
 def _issue(code: str, *, message: str, path: str = "", repair: str = "") -> dict[str, str]:
@@ -126,8 +123,8 @@ def validate_release_notes(
                     repair="Use '# vX.Y.Z - A one-sentence user benefit' as the title.",
                 )
             )
-        for heading, legacy in zip(REQUIRED_RELEASE_HEADINGS, LEGACY_RELEASE_HEADINGS):
-            if heading not in release_text and legacy not in release_text:
+        for heading in REQUIRED_RELEASE_HEADINGS:
+            if heading not in release_text:
                 issues.append(
                     _issue(
                         "release_note.heading",

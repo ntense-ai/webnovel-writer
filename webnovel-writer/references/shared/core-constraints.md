@@ -37,7 +37,7 @@ Current rule: Prose no longer requires XML tags:
 - The chapter must be readable: readers can answer "what happened / who is doing what / why."
 - It must make clear progress: at least one identifiable problem, goal, cost, relationship change, or information change.
 - If the previous chapter made an explicit promise (hook/unresolved question), respond to it. Partial fulfillment is allowed; full settlement is not required.
-- Never output placeholder prose (such as `[待补充]`, `[TODO]`, or `...（省略）...`).
+- Never output placeholder prose (such as `[To be completed]`, `[TODO]`, or `...（omitted）...`).
 
 ### Soft (Recommended)
 
@@ -77,7 +77,7 @@ Current rule: Prose no longer requires XML tags:
 
 ## Prohibitions
 
-- `[待补充]`, `[TODO]`, `...（省略）...` → Write the content in full.
+- `[To be completed]`, `[TODO]`, `...（omitted）...` → Write the content in full.
 - Battles without aftermath descriptions (urban supernatural fiction).
 
 </instructions>

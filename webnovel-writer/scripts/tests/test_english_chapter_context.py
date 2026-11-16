@@ -12,7 +12,7 @@ import extract_chapter_context as context
     ("The factions contest a new location beyond the mountains.", "Locations, factions"),
     ("Recover the clues hidden in the library for a later payoff.", "Foreshadowing and clues"),
     ("The truth of the ancient conflict becomes clear at last.", "Key plot evidence"),
-    ("主角终于发现师徒关系的秘密，并在敌对势力的同盟中寻找答案。", "Character relationships"),
+    ("The protagonist discovers the secret of a mentor relationship and seeks answers among hostile allies.", "Character relationships"),
 ])
 def test_bilingual_rag_query(outline, topic):
     query = context._build_rag_query(outline, 12, min_chars=20, max_chars=120)
@@ -25,7 +25,7 @@ def test_rag_avoids_english_substring_false_positive():
     assert not context._build_rag_query("clue", 1, 20, 120)
 
 
-@pytest.mark.parametrize("heading", ["Plot summary", "CHAPTER SUMMARY", "Summary", "剧情摘要"])
+@pytest.mark.parametrize("heading", ["Plot summary", "CHAPTER SUMMARY", "Summary", "Plot summary"])
 def test_saved_summary_heading(tmp_path, heading):
     folder = tmp_path / ".webnovel" / "summaries"
     folder.mkdir(parents=True)
@@ -33,7 +33,7 @@ def test_saved_summary_heading(tmp_path, heading):
     assert context.extract_chapter_summary(tmp_path, 1) == "Alice finds a clue."
 
 
-@pytest.mark.parametrize("heading", ["Chapter summary", "本章摘要"])
+@pytest.mark.parametrize("heading", ["Chapter summary", "Chapter summary"])
 def test_body_summary_heading(tmp_path, monkeypatch, heading):
     chapter = tmp_path / "chapter.md"
     chapter.write_text(f"# Chapter 1\nText.\n## {heading}\nThe answer.\n## Notes\nExcluded.")

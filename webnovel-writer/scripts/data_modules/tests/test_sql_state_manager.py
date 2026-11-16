@@ -28,20 +28,20 @@ def test_sql_state_manager_entity_and_alias(temp_project):
     manager = SQLStateManager(temp_project)
     entity = EntityData(
         id="xiaoyan",
-        type="角色",
-        name="萧炎",
-        tier="核心",
-        current={"realm": "斗师"},
-        aliases=["炎帝", "小炎子"],
+        type="character",
+        name="Xiao Yan",
+        tier="core",
+        current={"realm": "Dou Shi"},
+        aliases=["Flame Emperor", "Young Yan"],
         is_protagonist=True,
     )
     assert manager.upsert_entity(entity) is True
     assert manager.upsert_entity(entity) is False
 
     fetched = manager.get_entity("xiaoyan")
-    assert "炎帝" in fetched["aliases"]
+    assert "Flame Emperor" in fetched["aliases"]
 
-    by_type = manager.get_entities_by_type("角色")
+    by_type = manager.get_entities_by_type("character")
     assert any(e["id"] == "xiaoyan" for e in by_type)
 
     core = manager.get_core_entities()
@@ -50,25 +50,25 @@ def test_sql_state_manager_entity_and_alias(temp_project):
     protagonist = manager.get_protagonist()
     assert protagonist["id"] == "xiaoyan"
 
-    resolved = manager.resolve_alias("炎帝")
+    resolved = manager.resolve_alias("Flame Emperor")
     assert any(r["id"] == "xiaoyan" for r in resolved)
 
-    assert manager.update_entity_current("xiaoyan", {"realm": "斗王"}) is True
+    assert manager.update_entity_current("xiaoyan", {"realm": "Dou Wang"}) is True
     updated = manager.get_entity("xiaoyan")
-    assert updated["current_json"]["realm"] == "斗王"
+    assert updated["current_json"]["realm"] == "Dou Wang"
 
 
 def test_sql_state_manager_state_changes_and_relationships(temp_project):
     manager = SQLStateManager(temp_project)
     manager.upsert_entity(
-        EntityData(id="xiaoyan", type="角色", name="萧炎", current={})
+        EntityData(id="xiaoyan", type="character", name="Xiao Yan", current={})
     )
     change_id = manager.record_state_change(
         entity_id="xiaoyan",
         field="realm",
-        old_value="斗者",
-        new_value="斗师",
-        reason="突破",
+        old_value="Dou Zhe",
+        new_value="Dou Shi",
+        reason="breakthrough",
         chapter=2,
     )
     assert change_id > 0
@@ -79,8 +79,8 @@ def test_sql_state_manager_state_changes_and_relationships(temp_project):
     assert manager.upsert_relationship(
         from_entity="xiaoyan",
         to_entity="yaolao",
-        type="师徒",
-        description="收徒",
+        type="mentor-student",
+        description="accept a disciple",
         chapter=1,
     )
     rels = manager.get_entity_relationships("xiaoyan", direction="from")
@@ -94,15 +94,15 @@ def test_sql_state_manager_process_chapter_entities_and_exports(temp_project):
     manager = SQLStateManager(temp_project)
     stats = manager.process_chapter_entities(
         chapter=10,
-        entities_appeared=[{"id": "xiaoyan", "mentions": ["萧炎"], "confidence": 0.9}],
+        entities_appeared=[{"id": "xiaoyan", "mentions": ["Xiao Yan"], "confidence": 0.9}],
         entities_new=[
-            {"suggested_id": "yaolao", "name": "药老", "type": "角色", "tier": "重要"}
+            {"suggested_id": "yaolao", "name": "Yao Lao", "type": "character", "tier": "major"}
         ],
         state_changes=[
-            {"entity_id": "yaolao", "field": "status", "old": "", "new": "出场", "reason": "登场"}
+            {"entity_id": "yaolao", "field": "status", "old": "", "new": "appearance", "reason": "enters"}
         ],
         relationships_new=[
-            {"from": "xiaoyan", "to": "yaolao", "type": "师徒", "description": "收徒"}
+            {"from": "xiaoyan", "to": "yaolao", "type": "mentor-student", "description": "accept a disciple"}
         ],
     )
     assert stats["entities_created"] >= 1
@@ -111,7 +111,7 @@ def test_sql_state_manager_process_chapter_entities_and_exports(temp_project):
     assert len(rel_events) >= 1
 
     entities_v3 = manager.export_to_entities_v3_format()
-    assert "角色" in entities_v3
+    assert "character" in entities_v3
 
     alias_index = manager.export_to_alias_index_format()
     assert isinstance(alias_index, dict)
@@ -120,18 +120,18 @@ def test_sql_state_manager_process_chapter_entities_and_exports(temp_project):
 def test_sql_state_manager_existing_entity_updates_and_stats(temp_project):
     manager = SQLStateManager(temp_project)
     manager.upsert_entity(
-        EntityData(id="xiaoyan", type="角色", name="萧炎", current={"hp": 5})
+        EntityData(id="xiaoyan", type="character", name="Xiao Yan", current={"hp": 5})
     )
 
     stats = manager.process_chapter_entities(
         chapter=3,
-        entities_appeared=[{"id": "xiaoyan", "mentions": ["萧炎"], "confidence": 0.9}],
+        entities_appeared=[{"id": "xiaoyan", "mentions": ["Xiao Yan"], "confidence": 0.9}],
         entities_new=[],
         state_changes=[
-            {"entity_id": "xiaoyan", "field": "hp", "old": 5, "new": 0, "reason": "受伤"}
+            {"entity_id": "xiaoyan", "field": "hp", "old": 5, "new": 0, "reason": "injured"}
         ],
         relationships_new=[
-            {"from_entity": "xiaoyan", "to_entity": "yaolao", "type": "师徒", "description": "收徒"}
+            {"from_entity": "xiaoyan", "to_entity": "yaolao", "type": "mentor-student", "description": "accept a disciple"}
         ],
     )
     assert stats["entities_updated"] >= 1
@@ -147,17 +147,17 @@ def test_sql_state_manager_existing_entity_updates_and_stats(temp_project):
     assert "entities" in stats_summary
 
     exported = manager.export_to_entities_v3_format()
-    assert exported["角色"]["xiaoyan"]["canonical_name"] == "萧炎"
+    assert exported["character"]["xiaoyan"]["canonical_name"] == "Xiao Yan"
 
 
 def test_sql_state_manager_process_chapter_skips_and_existing(temp_project):
     manager = SQLStateManager(temp_project)
-    manager.upsert_entity(EntityData(id="xiaoyan", type="角色", name="萧炎"))
+    manager.upsert_entity(EntityData(id="xiaoyan", type="character", name="Xiao Yan"))
 
     stats = manager.process_chapter_entities(
         chapter=1,
-        entities_appeared=[{"mentions": ["无ID"]}, {"id": "xiaoyan", "mentions": ["萧炎"]}],
-        entities_new=[{"name": "无ID"}, {"suggested_id": "xiaoyan", "name": "萧炎"}],
+        entities_appeared=[{"mentions": ["noneID"]}, {"id": "xiaoyan", "mentions": ["Xiao Yan"]}],
+        entities_new=[{"name": "noneID"}, {"suggested_id": "xiaoyan", "name": "Xiao Yan"}],
         state_changes=[{"field": "realm"}, {"entity_id": "xiaoyan", "field": "hp", "old": 1, "new": 1}],
         relationships_new=[{"from": "xiaoyan", "to": ""}],
     )
@@ -177,14 +177,14 @@ def test_sql_state_manager_export_protagonist_and_cli(temp_project, monkeypatch,
     assert out.get("status") == "error"
 
     manager.upsert_entity(
-        EntityData(id="xiaoyan", type="角色", name="萧炎", is_protagonist=True)
+        EntityData(id="xiaoyan", type="character", name="Xiao Yan", is_protagonist=True)
     )
     exported = manager.export_to_entities_v3_format()
-    assert exported["角色"]["xiaoyan"]["is_protagonist"] is True
+    assert exported["character"]["xiaoyan"]["is_protagonist"] is True
 
     out = run_cli(["sql_state_manager", "--project-root", str(temp_project.project_root), "get-protagonist"])
     assert out["status"] == "success"
-    assert out["data"].get("canonical_name") == "萧炎"
+    assert out["data"].get("canonical_name") == "Xiao Yan"
 
     out = run_cli(["sql_state_manager", "--project-root", str(temp_project.project_root), "stats"])
     assert out["status"] == "success"
@@ -195,7 +195,7 @@ def test_sql_state_manager_export_protagonist_and_cli(temp_project, monkeypatch,
 
     out = run_cli(["sql_state_manager", "--project-root", str(temp_project.project_root), "export-entities-v3"])
     assert out["status"] == "success"
-    assert "角色" in out.get("data", {})
+    assert "character" in out.get("data", {})
 
     out = run_cli(["sql_state_manager", "--project-root", str(temp_project.project_root), "export-alias-index"])
     assert out["status"] == "success"

@@ -29,25 +29,25 @@ def _make_project(project_root: Path) -> None:
         ".webnovel/backups",
         ".webnovel/archive",
         ".webnovel/summaries",
-        "设定集",
-        "大纲",
-        "正文",
-        "审查报告",
+        "settings",
+        "outlines",
+        "chapters",
+        "reviews",
     ):
         (project_root / rel).mkdir(parents=True, exist_ok=True)
     _write_json(
         project_root / ".webnovel" / "state.json",
         {
-            "project_info": {"title": "测试书", "genre": "玄幻"},
+            "project_info": {"title": "Test Book", "genre": "xuanhuan"},
             "progress": {"current_chapter": 0},
         },
     )
     for rel in (
-        "设定集/世界观.md",
-        "设定集/力量体系.md",
-        "设定集/主角卡.md",
-        "设定集/反派设计.md",
-        "大纲/总纲.md",
+        "settings/worldbuilding.md",
+        "settings/power-system.md",
+        "settings/protagonist.md",
+        "settings/antagonist.md",
+        "outlines/master-outline.md",
         ".env.example",
     ):
         path = project_root / rel
@@ -62,16 +62,16 @@ def _write_review(project_root: Path, *, chapter: int = 1, blocking_count: int =
         "issues_count": 0,
         "blocking_count": blocking_count,
         "has_blocking": blocking_count > 0,
-        "summary": "可继续" if blocking_count == 0 else "有阻断",
+        "summary": "can continue" if blocking_count == 0 else "blocking issues present",
     }
     if blocking_count:
         review["issues"] = [
             {
                 "severity": "critical",
                 "category": "timeline",
-                "location": "第2段",
-                "description": "时间线断裂",
-                "fix_hint": "补过渡",
+                "location": "Chapter2paragraph",
+                "description": "timeline discontinuity",
+                "fix_hint": "add a transition",
                 "blocking": True,
             }
         ]
@@ -87,12 +87,12 @@ def _write_review(project_root: Path, *, chapter: int = 1, blocking_count: int =
             "end_chapter": chapter,
             "issues_count": review["issues_count"],
             "blocking_count": blocking_count,
-            "report_file": f"审查报告/第{chapter}章审查报告.md",
+            "report_file": f"reviews/Chapter{chapter}chapter review report.md",
         },
     )
-    report_path = project_root / "审查报告" / f"第{chapter}章审查报告.md"
+    report_path = project_root / "reviews" / f"Chapter{chapter}chapter review report.md"
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text("# 审查报告\n", encoding="utf-8")
+    report_path.write_text("# reviews\n", encoding="utf-8")
 
 
 def _write_data_artifacts(project_root: Path) -> None:
@@ -103,7 +103,7 @@ def _write_data_artifacts(project_root: Path) -> None:
     _write_json(project_root / ".webnovel" / "tmp" / "disambiguation_result.json", {"pending": []})
     _write_json(
         project_root / ".webnovel" / "tmp" / "extraction_result.json",
-        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "summary"},
     )
 
 
@@ -113,7 +113,7 @@ def _commit_payload(*, chapter: int = 1, status: str = "accepted", projection_st
         "review_result": {"blocking_count": 0},
         "fulfillment_result": {"planned_nodes": [], "covered_nodes": [], "missed_nodes": [], "extra_nodes": []},
         "disambiguation_result": {"pending": []},
-        "extraction_result": {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        "extraction_result": {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "summary"},
         "projection_status": projection_status
         or {"state": "done", "index": "skipped", "summary": "skipped", "memory": "skipped", "vector": "skipped"},
     }
@@ -128,7 +128,7 @@ def _write_commit(project_root: Path, payload: dict) -> Path:
 
 def _write_success_case(project_root: Path, *, chapter: int = 1) -> None:
     _make_project(project_root)
-    (project_root / "正文" / f"第{chapter:04d}章.md").write_text("正文\n", encoding="utf-8")
+    (project_root / "chapters" / f"chapter-{chapter:04d}.md").write_text("chapters\n", encoding="utf-8")
     _write_review(project_root, chapter=chapter)
     _write_data_artifacts(project_root)
     _write_commit(project_root, _commit_payload(chapter=chapter))
@@ -245,7 +245,7 @@ def test_render_review_report_blocking(tmp_path: Path) -> None:
 
 def test_missing_artifact_does_not_crash_and_is_not_completed(tmp_path: Path) -> None:
     _make_project(tmp_path)
-    (tmp_path / "正文" / "第0001章.md").write_text("正文\n", encoding="utf-8")
+    (tmp_path / "chapters" / "chapter-0001.md").write_text("chapters\n", encoding="utf-8")
 
     report = build_user_report(tmp_path, stage="write", chapter=1)
     text = render_user_report_text(report)

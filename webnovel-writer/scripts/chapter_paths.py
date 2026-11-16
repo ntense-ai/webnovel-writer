@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Chapter file path helpers.
-
-This project has seen multiple chapter filename conventions:
-1) English layout: chapters/chapter-0007.md or chapters/volume-1/chapter-0007-title.md
-2) Legacy layout: 正文/第0007章.md or 正文/第1卷/第007章-章节标题.md
-
-To keep scripts robust, always resolve chapter files via these helpers instead of hardcoding a format.
-"""
+'Chapter file path helpers.\n\nSupported conventions include English paths such as chapters/chapter-0007.md and chapters/volume-1/chapter-0007-title.md, using a consistent English filename convention.\n\nAlways resolve chapter files through these helpers rather than hardcoding a format.'
 
 from __future__ import annotations
 
@@ -18,9 +10,9 @@ from project_paths import project_dir
 from typing import Optional
 
 
-_CHAPTER_NUM_RE = re.compile(r"(?:第|chapter[-_ ]?)(?P<num>\d+)(?:章|(?=[-_. ]|$))", re.IGNORECASE)
-_OUTLINE_HEADING_RE = re.compile(r"^#{1,6}\s*(?:第\s*|Chapter\s+)(?P<num>\d+)\s*(?:章)?[：:]\s*(?P<title>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
-_SPLIT_OUTLINE_FILENAME_RE = re.compile(r"^(?:第|chapter[-_ ])0*(?P<num>\d+)(?:章)?[-—_ ]+(?P<title>.+?)\.md$", re.IGNORECASE)
+_CHAPTER_NUM_RE = re.compile(r"chapter[-_ ]?(?P<num>\d+)(?=[-_. ]|$)", re.IGNORECASE)
+_OUTLINE_HEADING_RE = re.compile(r"^#{1,6}\s*Chapter\s+(?P<num>\d+)\s*[：:]\s*(?P<title>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
+_SPLIT_OUTLINE_FILENAME_RE = re.compile(r"^chapter[-_ ]0*(?P<num>\d+)[-—_ ]+(?P<title>.+?)\.md$", re.IGNORECASE)
 
 
 def volume_num_for_chapter(chapter_num: int, *, chapters_per_volume: int = 50) -> int:
@@ -66,10 +58,6 @@ def _extract_title_from_split_outline_filename(outline_dir: Path, chapter_num: i
         f"chapter-{chapter_num:04d}*.md",
         f"chapter-{chapter_num:03d}*.md",
         f"chapter-{chapter_num}*.md",
-        f"第{chapter_num}章*.md",
-        f"第{chapter_num:02d}章*.md",
-        f"第{chapter_num:03d}章*.md",
-        f"第{chapter_num:04d}章*.md",
     ]
     for pattern in patterns:
         for path in sorted(outline_dir.glob(pattern)):
@@ -85,7 +73,7 @@ def _extract_title_from_split_outline_filename(outline_dir: Path, chapter_num: i
 
 
 def extract_chapter_title(project_root: Path, chapter_num: int) -> str:
-    """从详细大纲提取章节标题，用于生成更直观的章节文件名。"""
+    'Extract the chapter title from its detailed outline for a more descriptive filename.'
     try:
         from chapter_outline_loader import load_chapter_outline
     except ImportError:  # pragma: no cover
@@ -97,37 +85,28 @@ def extract_chapter_title(project_root: Path, chapter_num: int) -> str:
         if title:
             return title
 
-    outline_dir = project_dir(project_root, "大纲")
+    outline_dir = project_dir(project_root, "outlines")
     if outline_dir.exists():
         return _extract_title_from_split_outline_filename(outline_dir, chapter_num)
     return ""
 
 
 def _build_chapter_filename(project_root: Path, chapter_num: int, *, use_volume_layout: bool) -> str:
-    english = project_dir(project_root, "chapters").name == "chapters"
-    padded = f"{chapter_num:04d}" if english or not use_volume_layout else f"{chapter_num:03d}"
+    padded = f"{chapter_num:04d}"
     title = extract_chapter_title(project_root, chapter_num)
-    if english:
-        return f"chapter-{padded}-{title}.md" if title else f"chapter-{padded}.md"
-    if title:
-        return f"第{padded}章-{title}.md"
-    return f"第{padded}章.md"
+    return f"chapter-{padded}-{title}.md" if title else f"chapter-{padded}.md"
 
 
 def find_chapter_file(project_root: Path, chapter_num: int) -> Optional[Path]:
-    """
-    Find an existing chapter file for chapter_num under project_root/正文.
-    Returns the first match (stable sorted order) or None if not found.
-    """
-    chapters_dir = project_dir(project_root, "正文")
+    "Find an existing chapter file under the project's chapter directory.\nReturn the first match in stable sorted order, or None."
+    chapters_dir = project_dir(project_root, "chapters")
     if not chapters_dir.exists():
         return None
 
-    # Read both filename conventions, even inside a renamed directory.
-    for name in (f"chapter-{chapter_num:04d}.md", f"第{chapter_num:04d}章.md"):
-        candidate = chapters_dir / name
-        if candidate.is_file():
-            return candidate
+    # Prefer the canonical untitled filename, then discover titled files.
+    candidate = chapters_dir / f"chapter-{chapter_num:04d}.md"
+    if candidate.is_file():
+        return candidate
     candidates = sorted(chapters_dir.rglob("*.md"))
     for candidate in candidates:
         if candidate.is_file() and extract_chapter_num_from_filename(candidate.name) == chapter_num:
@@ -137,23 +116,13 @@ def find_chapter_file(project_root: Path, chapter_num: int) -> Optional[Path]:
 
 
 def default_chapter_draft_path(project_root: Path, chapter_num: int, *, use_volume_layout: bool = False) -> Path:
-    """
-    Preferred draft path when creating a new chapter file.
-
-    Args:
-        project_root: 项目根目录
-        chapter_num: 章节号
-        use_volume_layout: True 使用卷布局 (正文/第N卷/第NNN章-章节标题.md)，False 使用平坦布局 (正文/第NNNN章-章节标题.md)
-
-    Default is flat layout. If the detailed outline already has a chapter title,
-    append it to the filename for better discoverability.
-    """
+    'Choose a draft path for a new chapter.\n\nArgs:\n    project_root: Project root directory.\n    chapter_num: Chapter number.\n    use_volume_layout: Use volume subdirectories if True, otherwise a flat layout.\n\nThe default layout is flat. Append a title from the detailed outline when available to improve discoverability.'
     if use_volume_layout:
         chapters_dir = project_dir(project_root, "chapters")
         volume = volume_num_for_chapter(chapter_num)
-        volume_name = f"volume-{volume}" if chapters_dir.name == "chapters" else f"第{volume}卷"
+        volume_name = f"volume-{volume}"
         vol_dir = chapters_dir / volume_name
         return vol_dir / _build_chapter_filename(project_root, chapter_num, use_volume_layout=True)
     else:
-        return project_dir(project_root, "正文") / _build_chapter_filename(project_root, chapter_num, use_volume_layout=False)
+        return project_dir(project_root, "chapters") / _build_chapter_filename(project_root, chapter_num, use_volume_layout=False)
 

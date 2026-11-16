@@ -50,8 +50,8 @@ def _make_accepted_commit_with_event(project_root: Path, chapter: int) -> None:
                     "event_id": "evt-open-loop",
                     "event_type": "open_loop_created",
                     "chapter": chapter,
-                    "subject": "韩立",
-                    "payload": {"description": "神秘玉佩为何发热"},
+                    "subject": "Han Li",
+                    "payload": {"description": "why the mysterious jade pendant heats up"},
                 }
             ],
         },

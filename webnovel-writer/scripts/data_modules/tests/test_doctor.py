@@ -33,13 +33,13 @@ def test_doctor_init_ready_does_not_require_story_contracts(tmp_path, monkeypatc
 
 def test_doctor_missing_init_file_blocks_with_repair(tmp_path, monkeypatch):
     _make_init_ready(tmp_path)
-    (tmp_path / "大纲" / "总纲.md").unlink()
+    (tmp_path / "outlines" / "master-outline.md").unlink()
     monkeypatch.setattr(doctor_module, "_python_checks", lambda: [])
 
     report = doctor_module.build_doctor_report(tmp_path)
 
     assert report["ok"] is False
-    matches = [item for item in report["checks"] if item["id"] == "file.required.大纲/总纲.md"]
+    matches = [item for item in report["checks"] if item["id"] == "file.required.outlines/master-outline.md"]
     assert matches
     assert matches[0]["status"] == "error"
     assert matches[0]["repair"]

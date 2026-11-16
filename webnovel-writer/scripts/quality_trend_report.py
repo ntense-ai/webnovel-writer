@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-quality_trend_report.py - 生成章节Quality trend report（离线）
-
-数据来源：
-- index.db.review_metrics
-- index.db.writing_checklist_scores
-"""
+'Generate an offline chapter quality-trend report.\n\nSources: index.db.review_metrics and index.db.writing_checklist_scores.'
 
 from __future__ import annotations
 
@@ -213,7 +207,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.project_root:
-        # 允许传入“工作区根目录”，统一解析到真正的 book project_root
+        # Accept a workspace root and resolve it to the actual book project_root.
         project_root = resolve_project_root(args.project_root)
     else:
         project_root = resolve_project_root()

@@ -54,8 +54,8 @@ def run_prewrite_gate(project_root: Path, chapter: int) -> dict[str, Any]:
             issue(
                 "phase_not_ready_for_prewrite",
                 message=f"phase {snapshot.phase} is not ready for prewrite",
-                impact="写前合同或项目骨架不完整，继续写作容易使用旧上下文或缺失约束。",
-                repair="先运行 project-status/doctor，根据 next_action 补齐 init、plan 或 Story System 合同。",
+                impact="The prewrite contract or project scaffold is incomplete; continuing risks stale context or missing constraints.",
+                repair="Run project-status/doctor first, then follow next_action to complete initialization, planning, or Story System contracts.",
                 details=snapshot.to_dict(),
             )
         )
@@ -82,8 +82,8 @@ def run_prewrite_gate(project_root: Path, chapter: int) -> dict[str, Any]:
             issue(
                 "prewrite_validator_blocking",
                 message="prewrite validator reported blocking issue(s)",
-                impact="当前章节写作输入不可信。",
-                repair="按 blocking_reasons 补齐合同、消歧 pending 或相关占位符。",
+                impact="The current chapter writing input is not trustworthy.",
+                repair="Follow blocking_reasons to complete contracts, resolve pending disambiguation, and fill relevant placeholders.",
                 details=validation,
             )
         )
@@ -93,8 +93,8 @@ def run_prewrite_gate(project_root: Path, chapter: int) -> dict[str, Any]:
                 "story_runtime_fallback",
                 message="story runtime has fallback sources",
                 severity="warning",
-                impact="写作上下文可能缺少上一章 accepted commit。",
-                repair="确认这是第一章或补齐 accepted commit 后再写。",
+                impact="Writing context may lack the previous chapter's accepted commit.",
+                repair="Confirm this is the first chapter, or supply the missing accepted commit before writing.",
                 details=list(runtime.fallback_sources),
             )
         )

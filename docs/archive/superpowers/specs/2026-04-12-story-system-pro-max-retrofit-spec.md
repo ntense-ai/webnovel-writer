@@ -1,6 +1,6 @@
 # Webnovel Writer Story System Pro Max Architecture Retrofit Specification
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > Date: 2026-04-12
 > Status: Draft v1
@@ -118,10 +118,10 @@ Otherwise local settings can erase global settings and red lines.
 
 Existing reader-turn-off/pitfall fields differ, for example:
 
-- `场景写法.csv`: `反面写法`
-- `写作技法.csv`: `常见误区`
-- `爽点与节奏.csv`: `常见崩盘误区`
-- `人设与关系.csv`: `忌讳写法`
+- `scenes.csv`: `negative examples`
+- `techniques.csv`: `common pitfalls`
+- `pacing.csv`: `common failure modes`
+- `characters.csv`: `prohibited approaches`
 
 This is not inherently a problem.
 
@@ -139,28 +139,28 @@ The correct approach here is:
 
 `references/csv` currently contains:
 
-- `命名规则.csv`
-- `场景写法.csv`
-- `写作技法.csv`
-- `桥段套路.csv`
-- `人设与关系.csv`
-- `爽点与节奏.csv`
-- `金手指与设定.csv`
+- `naming.csv`
+- `scenes.csv`
+- `techniques.csv`
+- `tropes.csv`
+- `characters.csv`
+- `pacing.csv`
+- `powers.csv`
 
 ### 4.2 Common CSV Contract
 
 These shared columns are stable:
 
-- `编号`
-- `适用技能`
-- `分类`
-- `层级`
-- `关键词`
-- `意图与同义词`
-- `适用题材`
-- `大模型指令`
-- `核心摘要`
-- `详细展开`
+- `id`
+- `applicable_skills`
+- `category`
+- `level`
+- `keywords`
+- `intent_synonyms`
+- `applicable_genres`
+- `model_instruction`
+- `summary`
+- `details`
 
 New tables should follow this contract, not invent another column system.
 
@@ -174,13 +174,13 @@ The gap is not knowledge volume, but:
 
 ---
 
-## 5. New Data Structure: 题材与调性推理.csv
+## 5. New Data Structure: genre-routing.csv
 
 ### 5.1 Location
 
 Add:
 
-- `webnovel-writer/references/csv/题材与调性推理.csv`
+- `webnovel-writer/references/csv/genre-routing.csv`
 
 Suggested prefix:
 
@@ -204,28 +204,28 @@ Add these dedicated columns alongside the shared columns:
 
 | Column | Required | Description |
 |--------|----------|-------------|
-| `题材/流派` | Yes | Primary label, e.g. live-in-son-in-law stories, cyberpunk hackers, or a rules-based zoo |
-| `题材别名` | Yes | Synonyms, platform slang, and common names, separated by `|` |
-| `核心调性` | Yes | Global mood and atmosphere |
-| `节奏策略` | Yes | Opening pace, payoff cadence, and chapter beats |
-| `主冲突模板` | No | Default conflict skeleton |
-| `必选爽点` | No | Frequently required genre payoffs |
-| `强制禁忌/毒点` | Yes | Genre-level global red lines |
-| `推荐基础检索表` | Yes | E.g. `命名规则|人设与关系|金手指与设定` |
-| `推荐动态检索表` | Yes | E.g. `桥段套路|爽点与节奏|场景写法` |
-| `基础检索权重` | No | Base-table ranking hints |
-| `动态检索权重` | No | Dynamic-table ranking hints |
-| `默认查询词` | No | Default query expansions when user input is too vague |
+| `genre_route` | Yes | Primary label, e.g. live-in-son-in-law stories, cyberpunk hackers, or a rules-based zoo |
+| `genre_aliases` | Yes | Synonyms, platform slang, and common names, separated by `|` |
+| `core_tone` | Yes | Global mood and atmosphere |
+| `pacing_strategy` | Yes | Opening pace, payoff cadence, and chapter beats |
+| `main-conflict template` | No | Default conflict skeleton |
+| `requiredpayoff` | No | Frequently required genre payoffs |
+| `mandatory prohibitions/pitfalls` | Yes | Genre-level global red lines |
+| `recommended_base_tables` | Yes | E.g. `naming|characters|powers` |
+| `recommended_dynamic_tables` | Yes | E.g. `tropes|pacing|scenes` |
+| `base retrieval weights` | No | Base-table ranking hints |
+| `dynamic retrieval weights` | No | Dynamic-table ranking hints |
+| `default_query` | No | Default query expansions when user input is too vague |
 
 ### 5.4 Design Notes
 
 The table must serve three input types:
 
-1. Explicit genre input, e.g. `赘婿流` (live-in-son-in-law stories)
-2. Combined genre input, e.g. `赛博朋克黑客流` (cyberpunk hacker stories)
-3. Vague style input, e.g. `压抑一点，后面爆` (more restrained initially, explosive later)
+1. Explicit genre input, e.g. `marrying-into-the-family fiction` (live-in-son-in-law stories)
+2. Combined genre input, e.g. `cyberpunk hacker fiction` (cyberpunk hacker stories)
+3. Vague style input, e.g. `add some pressure，release it later` (more restrained initially, explosive later)
 
-Thus `题材别名` and `默认查询词` are necessary, not dispensable.
+Thus `genre_aliases` and `default_query` are necessary, not dispensable.
 
 ---
 
@@ -237,30 +237,30 @@ Use a mapping layer rather than forcing every table to rename fields:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
-    "场景写法": ["反面写法"],
-    "写作技法": ["常见误区"],
-    "爽点与节奏": ["常见崩盘误区"],
-    "人设与关系": ["忌讳写法"],
-    "桥段套路": ["忌讳写法"],
-    "题材与调性推理": ["强制禁忌/毒点"],
+    "scenes": ["negative examples"],
+    "techniques": ["common pitfalls"],
+    "pacing": ["common failure modes"],
+    "characters": ["prohibited approaches"],
+    "tropes": ["prohibited approaches"],
+    "genre-routing": ["mandatory prohibitions/pitfalls"],
 }
 ```
 
-### 6.2 Handling 桥段套路.csv
+### 6.2 Handling tropes.csv
 
-Currently `桥段套路.csv` has only:
+Currently `tropes.csv` has only:
 
-- `桥段名称`
-- `前置铺垫`
-- `核心爽点`
-- `转折设计`
-- `反套路变种`
+- `trope_name`
+- `setup`
+- `core_payoff`
+- `twist_design`
+- `subversive_variant`
 
-`反套路变种` describes trope subversions, not anti-patterns, and must not be treated as reader-turn-off data.
+`subversive_variant` describes trope subversions, not anti-patterns, and must not be treated as reader-turn-off data.
 
 Recommended change:
 
-- **Add** `忌讳写法` to `桥段套路.csv`.
+- **Add** `prohibited approaches` to `tropes.csv`.
 - Fill it progressively for new entries.
 - Allow existing entries to remain empty temporarily.
 
@@ -268,7 +268,7 @@ Recommended change:
 
 Rendered `Anti-Patterns` is the union of:
 
-1. Global turn-offs in `题材与调性推理.csv`
+1. Global turn-offs in `genre-routing.csv`
 2. Entry-level turn-offs from dynamic retrieval matches
 3. Chapter-local additions
 
@@ -310,11 +310,11 @@ It does not:
 Suggested CLI:
 
 ```bash
-python story_system.py "玄幻退婚流"
-python story_system.py "玄幻退婚流" --persist
-python story_system.py "拍卖会打脸" --persist --chapter chapter_015
-python story_system.py "压抑一点，后面爆" --genre 现言 --persist
-python story_system.py "规则动物园" --format json
+python story_system.py "broken-engagement-fantasy"
+python story_system.py "broken-engagement-fantasy" --persist
+python story_system.py "auction-room vindication" --persist --chapter chapter_015
+python story_system.py "add some pressure，release it later" --genre contemporary-romance --persist
+python story_system.py "rules-horror-zoo" --format json
 ```
 
 Suggested arguments:
@@ -335,7 +335,7 @@ Fix the `story_system.py` execution order as follows.
 
 #### Step 1: Genre Reasoning
 
-Search `题材与调性推理.csv` first using `query`:
+Search `genre-routing.csv` first using `query`:
 
 - Clear genre match → use the genre-routing result
 - Multiple matches → weighted ranking with a primary route and candidates
@@ -348,30 +348,30 @@ With no match, fall back in this order:
 1. Use explicitly supplied `--genre` as the primary genre.
 2. Extract from `query` the genre closest to frequent keywords in existing tables.
 3. If still unsuccessful, use general-writing routing:
-   - Default base tables: `命名规则|人设与关系|金手指与设定`
-   - Default dynamic tables: `桥段套路|爽点与节奏|场景写法`
+   - Default base tables: `naming|characters|powers`
+   - Default dynamic tables: `tropes|pacing|scenes`
 
 #### Step 3: Base-Table Retrieval
 
-Use `推荐基础检索表` from the genre-routing table:
+Use `recommended_base_tables` from the genre-routing table:
 
 - Take Top 1 from each base table.
 - Defaults:
-  - `命名规则`
-  - `人设与关系`
-  - `金手指与设定`
-  - Future extension: `题材与调性推理`
+  - `naming`
+  - `characters`
+  - `powers`
+  - Future extension: `genre-routing`
 
 #### Step 4: Dynamic-Table Retrieval
 
-Use `推荐动态检索表` from the genre-routing table:
+Use `recommended_dynamic_tables` from the genre-routing table:
 
 - Take Top 2 from each dynamic table.
 - Defaults:
-  - `桥段套路`
-  - `爽点与节奏`
-  - `场景写法`
-  - Optional addition: `写作技法`
+  - `tropes`
+  - `pacing`
+  - `scenes`
+  - Optional addition: `techniques`
 
 #### Step 5: Aggregate Anti-Patterns
 
@@ -443,18 +443,18 @@ Record global information that should not change casually:
 
 Store base-table results:
 
-- `命名规则`
-- `人设与关系`
-- `金手指与设定`
-- Optional `写作技法`
+- `naming`
+- `characters`
+- `powers`
+- Optional `techniques`
 
 #### `dynamic_context`
 
 Store dynamic-table results:
 
-- `桥段套路`
-- `爽点与节奏`
-- `场景写法`
+- `tropes`
+- `pacing`
+- `scenes`
 
 #### `anti_patterns`
 
@@ -463,9 +463,9 @@ Unified format:
 ```json
 [
   {
-    "source_table": "爽点与节奏",
+    "source_table": "pacing",
     "source_id": "PA-054",
-    "text": "质疑太弱没有压迫"
+    "text": "the challenge is too weak to create pressure"
   }
 ]
 ```
@@ -587,9 +587,9 @@ Suggested layout:
 ```text
 PROJECT_ROOT/
   .webnovel/
-  正文/
-  大纲/
-  设定集/
+  chapters/
+  outlines/
+  settings/
   .story-system/
     MASTER_SETTING.md
     MASTER_SETTING.json
@@ -718,7 +718,7 @@ Define only the **integration contract** here.
 
 Future integration must:
 
-1. Prefer `chapters/[当前章节].json` if it exists.
+1. Prefer `chapters/[currentchapter].json` if it exists.
 2. Prefer Chapter for `override_allowed` fields.
 3. Merge Chapter and Master for `append_only` fields.
 4. Read only Master for `locked` fields.
@@ -730,7 +730,7 @@ Suggested integration constraints:
 
 ```markdown
 [Core State Read Logic]
-1. If `.story-system/chapters/[当前章节].json` exists, read Chapter first.
+1. If `.story-system/chapters/[currentchapter].json` exists, read Chapter first.
 2. Chapter governs `override_allowed` fields.
 3. Merge `append_only` fields by union.
 4. `locked` fields obey only `.story-system/MASTER_SETTING.json`.
@@ -745,8 +745,8 @@ Suggested integration constraints:
 
 Deliver:
 
-1. New `题材与调性推理.csv`
-2. New `忌讳写法` column in `桥段套路.csv`
+1. New `genre-routing.csv`
+2. New `prohibited approaches` column in `tropes.csv`
 3. Updated `references/csv/README.md`
 
 This phase does not require bulk rewriting of existing table content.
@@ -792,7 +792,7 @@ Protect system contracts, not content details.
 Add at least these lightweight tests:
 
 1. **Genre routing**
-   - Explicit genres match `题材与调性推理.csv`.
+   - Explicit genres match `genre-routing.csv`.
    - Vague queries use fallback.
 2. **Aggregation structure**
    - All top-level `StorySystemDict` fields exist.
@@ -831,7 +831,7 @@ Avoid:
 1. Breaking `reference_search.py`
 2. Treating Markdown as source data
 3. Letting Chapter erase Master hard limits
-4. Mistaking `反套路变种` for a reader-turn-off field
+4. Mistaking `subversive_variant` for a reader-turn-off field
 
 ### 14.2 Data-Entry Constraints
 

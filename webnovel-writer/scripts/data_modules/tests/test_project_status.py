@@ -30,7 +30,7 @@ def test_project_status_json_shape(tmp_path):
     report = build_project_status(tmp_path)
 
     assert report["schema_version"] == SCHEMA_VERSION
-    assert report["project"] == "测试书"
+    assert report["project"] == "Test Book"
     assert report["phase"] == "chapter_contract_ready"
     assert report["target_chapter"] == 1
     assert report["next_action"] == "run /webnovel-write 1"

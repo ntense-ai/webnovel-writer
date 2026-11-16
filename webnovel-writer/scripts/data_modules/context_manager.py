@@ -94,7 +94,7 @@ class ContextManager:
         "preferences",
         "alerts",
     ]
-    SUMMARY_SECTION_RE = re.compile(r"##\s*剧情摘要\s*\r?\n(.*?)(?=\r?\n##|\Z)", re.DOTALL)
+    SUMMARY_SECTION_RE = re.compile(r"##\s*Plot Summary\s*\r?\n(.*?)(?=\r?\n##|\Z)", re.DOTALL)
 
     def __init__(self, config=None):
         self.config = config or get_config()
@@ -222,9 +222,9 @@ class ContextManager:
         latest_commit = runtime_sources.latest_commit or {}
 
         global_ctx = {
-            "worldview_skeleton": self._load_setting("世界观"),
-            "power_system_skeleton": self._load_setting("力量体系"),
-            "style_contract_ref": self._load_setting("风格契约"),
+            "worldview_skeleton": self._load_setting("worldbuilding"),
+            "power_system_skeleton": self._load_setting("power-system"),
+            "style_contract_ref": self._load_setting("style-guide"),
         }
 
         preferences = self._load_json_optional(self.config.webnovel_dir / "preferences.json")
@@ -519,7 +519,7 @@ class ContextManager:
                 if required:
                     completed_required += 1
             else:
-                pending_labels.append(str(item.get("label") or item.get("id") or "未命名项"))
+                pending_labels.append(str(item.get("label") or item.get("id") or "Unnamed item"))
 
         completion_rate = (completed_items / total_items) if total_items > 0 else 1.0
         weighted_rate = (completed_weight / total_weight) if total_weight > 0 else completion_rate
@@ -739,7 +739,7 @@ class ContextManager:
         matches = list(settings_dir.glob(f"*{keyword}*.md"))
         if matches:
             return matches[0].read_text(encoding="utf-8")
-        return f"[{keyword}设定未找到]"
+        return f"[{keyword} setting not found]"
 
     def _extract_summary_excerpt(self, text: str, max_chars: int) -> str:
         if not text:
@@ -802,7 +802,7 @@ def main():
 
     config = None
     if args.project_root:
-        # 允许传入"工作区根目录"，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+        # Accept a workspace root and resolve it to the actual book project_root, which must contain .webnovel/state.json.
         from project_locator import resolve_project_root
         from .config import DataModulesConfig
 
@@ -821,7 +821,7 @@ def main():
         except Exception as exc:
             logger.warning("failed to log successful tool call: %s", exc)
     except Exception as exc:
-        print_error("CONTEXT_BUILD_FAILED", str(exc), suggestion="请检查项目结构与依赖文件")
+        print_error("CONTEXT_BUILD_FAILED", str(exc), suggestion="Check the project structure and required files")
         try:
             manager.index_manager.log_tool_call(
                 "context_manager:build", False, error_code="CONTEXT_BUILD_FAILED", error_message=str(exc), chapter=args.chapter

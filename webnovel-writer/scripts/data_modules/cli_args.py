@@ -1,19 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-CLI 参数兼容工具。
-
-背景：
-- data_modules 下的 CLI 普遍使用 argparse + subparsers。
-- argparse 的全局参数（例如 --project-root）要求出现在子命令之前：
-    python -m data_modules.index_manager --project-root X get-core-entities
-  但实际写作流程里（skills/agents 文档、工具调用）经常把 --project-root 放在子命令之后：
-    python -m data_modules.index_manager get-core-entities --project-root X
-  这会直接报 "unrecognized arguments"（见 issues7 日志）。
-
-这里提供一个轻量的 argv 预处理：把 --project-root 从任意位置提取出来并前置，
-让原有 argparse 定义无需大改即可兼容两种写法。
-"""
+'CLI argument compatibility helpers. Most data_modules commands use argparse subparsers, whose global options must precede the subcommand: python -m data_modules.index_manager --project-root X get-core-entities. Writing workflows frequently put --project-root afterward: python -m data_modules.index_manager get-core-entities --project-root X. This normally raises "unrecognized arguments" (see the issues7 logs). Lightweight argv preprocessing extracts --project-root from any position and moves it to the front, supporting both forms without rewriting the parsers.'
 
 from __future__ import annotations
 
@@ -89,13 +76,7 @@ def _resolve_json_arg_file(target: str, *, base_dir: str | Path | None = None) -
 
 
 def load_json_arg(raw: str, *, base_dir: str | Path | None = None) -> Any:
-    """
-    解析 CLI 传入的 JSON 参数，支持两种形式：
-    - 直接 JSON 字符串：'{"a":1}'
-    - @ 文件路径：'@data.json'（从文件读取 JSON，避免 shell 引号地狱）
-      - 特例：'@-' 表示从 stdin 读取
-      - 当传入 base_dir 时，@ 文件必须位于 base_dir 内
-    """
+    'Parse a CLI JSON argument as either an inline JSON string such as \'{"a":1}\' or an @file path such as \'@data.json\', avoiding shell-quoting problems. The special value \'@-\' reads stdin. When base_dir is supplied, the referenced file must be inside that directory.'
     if raw is None:
         raise ValueError("missing json arg")
     text = str(raw).strip()

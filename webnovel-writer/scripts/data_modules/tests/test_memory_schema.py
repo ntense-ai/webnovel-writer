@@ -17,15 +17,15 @@ def test_memory_item_roundtrip_and_payload():
         category="character_state",
         subject="xiaoyan",
         field="realm",
-        value="筑基三层",
-        payload={"old_value": "筑基二层"},
+        value="Foundation Establishment Level Three",
+        payload={"old_value": "Foundation Establishment Level Two"},
         source_chapter=12,
         evidence=["state_change:xiaoyan:realm:12"],
     )
     raw = item.to_dict()
     rebuilt = MemoryItem.from_dict(raw)
-    assert rebuilt.value == "筑基三层"
-    assert rebuilt.payload.get("old_value") == "筑基二层"
+    assert rebuilt.value == "Foundation Establishment Level Three"
+    assert rebuilt.payload.get("old_value") == "Foundation Establishment Level Two"
     assert rebuilt.status == "active"
 
 

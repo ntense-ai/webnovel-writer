@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-scratchpad 持久化与查询。
-"""
+"Scratchpad persistence and querying."
 from __future__ import annotations
 
 from dataclasses import asdict
@@ -76,7 +74,7 @@ class ScratchpadManager:
             for row in rows:
                 row_key = self._key_for(row)
                 if row_key == target_key and row.id != normalized.id:
-                    # 同 key 旧值降级为 outdated，保留审计轨迹
+                    # Mark previous values with the same key outdated while preserving an audit trail.
                     if row.status != "outdated":
                         row = MemoryItem(**{**asdict(row), "status": "outdated", "updated_at": now_iso()})
                         outdated += 1

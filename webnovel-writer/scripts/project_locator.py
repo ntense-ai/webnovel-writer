@@ -24,11 +24,11 @@ from runtime_compat import normalize_windows_path
 DEFAULT_PROJECT_DIR_NAMES: tuple[str, ...] = ("webnovel-project",)
 CURRENT_PROJECT_POINTER_REL: Path = Path(".claude") / ".webnovel-current-project"
 
-# 用户级全局映射（当 skills/agents 安装在 ~/.claude 时，项目目录可能在任意盘符）
-# 该文件用于在“空上下文 + CWD 不在项目内”的情况下仍能定位到正确 project_root。
+# User-level mapping: globally installed skills/agents may serve projects on any drive.
+# This registry locates project_root even when context is empty and CWD is outside the project.
 GLOBAL_REGISTRY_REL: Path = Path("webnovel-writer") / "workspaces.json"
 
-# Claude Code 常见环境变量（存在时优先作为“工作区根目录”提示）
+# Prefer common Claude Code environment variables as workspace-root hints when present.
 ENV_CLAUDE_PROJECT_DIR = "CLAUDE_PROJECT_DIR"
 ENV_CLAUDE_HOME = "CLAUDE_HOME"
 ENV_WEBNOVEL_CLAUDE_HOME = "WEBNOVEL_CLAUDE_HOME"
@@ -47,11 +47,7 @@ def _now_iso() -> str:
 
 
 def _normcase_path_key(p: Path) -> str:
-    """
-    生成稳定的路径 key（Windows 下大小写/分隔符不敏感）。
-
-    注意：key 仅用于映射表索引，实际路径仍以原始绝对路径字符串存储。
-    """
+    'Generate a stable path key, ignoring case and separator differences on Windows.\n\nUse the key only for mapping lookup; retain the original absolute path string for actual paths.'
     try:
         resolved = p.expanduser().resolve()
     except Exception:
@@ -104,14 +100,14 @@ def _load_global_registry(path: Path) -> dict:
 
 
 def _save_global_registry(path: Path, data: dict) -> None:
-    # 写入是 best-effort：用户目录权限/只读盘符等情况不应阻断主流程。
+    # Writes are best-effort: permissions or read-only drives must not block the main workflow.
     try:
         from security_utils import atomic_write_json
 
         data["updated_at"] = _now_iso()
         atomic_write_json(path, data, backup=False)
     except Exception:
-        # 非阻断
+        # Non-blocking.
         return
 
 
@@ -121,13 +117,7 @@ def _resolve_project_root_from_global_registry(
     workspace_hint: Optional[Path] = None,
     allow_last_used_fallback: bool = False,
 ) -> Optional[Path]:
-    """
-    从用户级 registry 中解析 project_root。
-
-    安全策略：
-    - 优先使用 workspace_hint / CLAUDE_PROJECT_DIR 提示做匹配。
-    - 默认不使用 last_used 兜底，避免在“完全无上下文”时误命中错误项目。
-    """
+    'Resolve project_root from the user-level registry.\n\nPrefer workspace_hint or CLAUDE_PROJECT_DIR when matching. Disable last_used fallback by default to avoid selecting an unrelated project when no context is available.'
     reg_path = _global_registry_path()
     reg = _load_global_registry(reg_path)
     workspaces = reg.get("workspaces") or {}
@@ -142,7 +132,7 @@ def _resolve_project_root_from_global_registry(
         hints.append(workspace_hint)
     hints.append(base)
 
-    # 1) 精确匹配
+    # 1) Exact match.
     for hint in hints:
         key = _normcase_path_key(hint)
         entry = workspaces.get(key)
@@ -155,7 +145,7 @@ def _resolve_project_root_from_global_registry(
                 if _is_project_root(target):
                     return target.resolve()
 
-    # 2) 前缀匹配（从 workspace 子目录运行时）
+    # 2) Prefix match when running from a workspace subdirectory.
     for hint in hints:
         hint_key = _normcase_path_key(hint)
         best_key: Optional[str] = None
@@ -177,7 +167,7 @@ def _resolve_project_root_from_global_registry(
                     if target.is_absolute() and _is_project_root(target):
                         return target.resolve()
 
-    # 3) last_used（可选，默认关闭）
+    # 3) Optional last_used fallback, disabled by default.
     if allow_last_used_fallback:
         raw = reg.get("last_used_project_root")
         if isinstance(raw, str) and raw.strip():
@@ -193,11 +183,7 @@ def update_global_registry_current_project(
     workspace_root: Optional[Path],
     project_root: Path,
 ) -> Optional[Path]:
-    """
-    更新用户级 registry：workspace -> current_project_root 映射。
-
-    返回：registry 文件路径（写入失败则返回 None）。
-    """
+    'Update the user-level workspace-to-current_project_root registry.\n\nReturn the registry path, or None if writing fails.'
     root = normalize_windows_path(project_root).expanduser()
     try:
         root = root.resolve()
@@ -321,15 +307,15 @@ def write_current_project_pointer(project_root: Path, *, workspace_root: Optiona
     if ws_root is None:
         ws_root = _find_workspace_root_with_claude(Path.cwd().resolve())
     if ws_root is None:
-        # 兜底：若无法找到 `.claude/`，将项目父目录视为“工作区”候选，
-        # 仅用于写入用户级 registry（不创建 `.claude/` 目录，不写 pointer 文件）。
+        # If no .claude directory is found, use the project parent as a candidate workspace.
+        # This only updates the user registry; do not create .claude or a pointer file.
         ws_root = root.parent if root.parent != root else None
-    # 注意：ws_root 可能为 None（例如全局安装的 skills/agents，工作区内没有 `.claude/`）。
-    # 这类情况仍然需要写入用户级 registry，以支持后续“空上下文”定位。
+    # ws_root may be None, such as with globally installed skills/agents and no workspace .claude.
+    # Still write the user registry to support later resolution without context.
 
     pointer_file: Optional[Path] = None
     if ws_root is not None:
-        # 仅当工作区内已经存在 `.claude/` 时才写入指针，避免在任意目录下“凭空创建 .claude/”。
+        # Write a pointer only if .claude already exists in the workspace; do not create it arbitrarily.
         if (ws_root / ".claude").is_dir():
             try:
                 pointer_file = ws_root / CURRENT_PROJECT_POINTER_REL
@@ -337,7 +323,7 @@ def write_current_project_pointer(project_root: Path, *, workspace_root: Optiona
             except Exception:
                 pointer_file = None
 
-    # best-effort 更新用户级 registry（不阻断）
+    # Best-effort, non-blocking user registry update.
     try:
         update_global_registry_current_project(workspace_root=ws_root, project_root=root)
     except Exception:
@@ -367,8 +353,8 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
         if _is_project_root(root):
             return root
 
-        # 兼容：显式传入“工作区根目录”（含 `.claude/.webnovel-current-project` 指针）
-        # 例如：D:\wk\xiaoshuo 不是项目根，但其指针指向 D:\wk\xiaoshuo\<书名>
+        # Compatibility: accept an explicit workspace root containing a .claude/.webnovel-current-project pointer.
+        # Example: D:/wk/novels is a workspace whose pointer selects D:/wk/novels/book-title.
         pointer_root = _resolve_project_root_from_pointer(root, stop_at=_find_git_root(root))
         if pointer_root is not None:
             return pointer_root
@@ -377,8 +363,8 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
         if child_root is not None:
             return child_root
 
-        # 兼容：显式传入“工作区根目录”但其 `.claude/` 在用户目录（全局安装）时，
-        # workspace 内部可能没有指针文件。此时从用户级 registry 查找。
+        # Compatibility: a workspace with globally installed .claude may have no local pointer.
+        # In that case, resolve the workspace through the user-level registry.
         reg_root = _resolve_project_root_from_global_registry(
             root,
             workspace_hint=root,
@@ -404,9 +390,9 @@ def resolve_project_root(explicit_project_root: Optional[str] = None, *, cwd: Op
     if pointer_root is not None:
         return pointer_root
 
-    # 用户级 registry fallback（仅在“有上下文提示”时启用，避免误命中）
-    # - 若 CLAUDE_PROJECT_DIR 存在：认为 Claude Code 提供了工作区上下文
-    # - 否则仅在 base 位于某个已记录 workspace 内时启用（前缀匹配）
+    # Enable registry fallback only with contextual hints to avoid selecting the wrong project.
+    # CLAUDE_PROJECT_DIR indicates that Claude Code supplied workspace context.
+    # Otherwise require base to lie inside a registered workspace, using prefix matching.
     allow_last_used = bool(os.environ.get(ENV_CLAUDE_PROJECT_DIR))
     reg_root = _resolve_project_root_from_global_registry(
         base,

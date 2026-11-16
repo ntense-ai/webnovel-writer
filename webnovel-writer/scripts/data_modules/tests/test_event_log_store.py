@@ -25,7 +25,7 @@ def test_event_log_store_writes_per_chapter_file_and_sqlite_mirror(tmp_path):
                 "event_id": "evt-001",
                 "chapter": 3,
                 "event_type": "open_loop_created",
-                "subject": "三年之约",
+                "subject": "three-year challenge",
                 "payload": {},
             }
         ],
@@ -50,7 +50,7 @@ def test_event_log_store_generates_missing_event_id_and_chapter(tmp_path):
             {
                 "event_type": "open_loop_created",
                 "subject": "three_year_promise",
-                "payload": {"content": "三年之约提及"},
+                "payload": {"content": "mention of the three-year challenge"},
             }
         ],
     )
@@ -71,7 +71,7 @@ def test_event_log_store_normalizes_llm_alias_event_shape(tmp_path):
             {
                 "type": "scene_open",
                 "characters": ["xiaoyan"],
-                "payload": {"content": "萧炎推开石门，新的悬念出现"},
+                "payload": {"content": "Xiao Yan pushes open the stone door，a new mystery emerges"},
             }
         ],
     )
@@ -131,7 +131,7 @@ def test_event_log_store_rejects_blank_event_subject(tmp_path):
                 {
                     "event_type": "open_loop_created",
                     "subject": "   ",
-                    "payload": {"content": "三年之约提及"},
+                    "payload": {"content": "mention of the three-year challenge"},
                 }
             ],
         )
@@ -143,7 +143,7 @@ def test_event_log_store_ignores_duplicate_event_id(tmp_path):
         "event_id": "evt-001",
         "chapter": 3,
         "event_type": "open_loop_created",
-        "subject": "三年之约",
+        "subject": "three-year challenge",
         "payload": {},
     }
     store.write_events(3, [event])
@@ -166,8 +166,8 @@ def test_event_log_store_recent_and_health_use_sqlite_mirror(tmp_path):
                 "event_id": "evt-003",
                 "chapter": 3,
                 "event_type": "promise_created",
-                "subject": "救人承诺",
-                "payload": {"target": "小医仙"},
+                "subject": "promise to rescue someone",
+                "payload": {"target": "Little Immortal Healer"},
             }
         ],
     )
@@ -178,8 +178,8 @@ def test_event_log_store_recent_and_health_use_sqlite_mirror(tmp_path):
                 "event_id": "evt-004",
                 "chapter": 4,
                 "event_type": "promise_paid_off",
-                "subject": "救人承诺",
-                "payload": {"target": "小医仙"},
+                "subject": "promise to rescue someone",
+                "payload": {"target": "Little Immortal Healer"},
             }
         ],
     )
@@ -192,8 +192,8 @@ def test_event_log_store_recent_and_health_use_sqlite_mirror(tmp_path):
             "event_id": "evt-003",
             "chapter": 3,
             "event_type": "promise_created",
-            "subject": "救人承诺",
-            "payload": {"target": "小医仙"},
+            "subject": "promise to rescue someone",
+            "payload": {"target": "Little Immortal Healer"},
         }
     ]
 
@@ -219,7 +219,7 @@ def test_story_events_cli_reads_chapter_file(tmp_path, monkeypatch, capsys):
     events_dir = tmp_path / ".story-system" / "events"
     events_dir.mkdir(parents=True, exist_ok=True)
     (events_dir / "chapter_003.events.json").write_text(
-        '[{"event_id":"evt-001","chapter":3,"event_type":"open_loop_created","subject":"三年之约","payload":{}}]',
+        '[{"event_id":"evt-001","chapter":3,"event_type":"open_loop_created","subject":"three-year challenge","payload":{}}]',
         encoding="utf-8",
     )
 

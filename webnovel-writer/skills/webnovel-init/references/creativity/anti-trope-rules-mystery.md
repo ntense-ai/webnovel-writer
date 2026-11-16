@@ -165,15 +165,15 @@ Differentiation: A viewpoint reversal from victim to perpetrator
 
 ### 5.1 Basic Template
 
-Original placeholder tokens are preserved; the English labels explain their roles.
+Replace the English placeholders below with concrete story details.
 
 ```markdown
 [Rule Name]
-Trigger: {什么情况下规则生效}
-Requirement: {规则的具体要求}
-Penalty: {违反规则的后果}
-Hidden meaning: {规则的真正目的/深层含义}
-Exploitable opening: {主角可以利用的漏洞/边界}
+Trigger: {conditions that activate the rule}
+Requirement: {specific requirements of the rule}
+Penalty: {consequences of violating the rule}
+Hidden meaning: {true purpose or deeper meaning of the rule}
+Exploitable opening: {loophole or boundary the protagonist can exploit}
 ```
 
 ### 5.2 Design Principles

@@ -20,7 +20,7 @@
 | Field | Type | Description |
 |------|------|------|
 | `id` | string | Unique genre identifier (lowercase English) |
-| `name` | string | Chinese genre name (retained runtime value) |
+| `name` | string | English genre identifier |
 | `description` | string | One-sentence core selling point |
 | `tags` | string[] | Stackable genre tags (reserved for multi-tag support) |
 
@@ -71,30 +71,30 @@
 
 ## II. Built-in Genre Profiles
 
-Chinese `name`, hook, pattern, and micro-payoff values in YAML are retained runtime labels; explanations are in English.
+Use the English name, hook, pattern, and micro-payoff values shown in the YAML examples.
 
 ### 2.1 Wish Fulfillment / System Stories (shuangwen)
 
 ```yaml
 id: shuangwen
-name: 爽文/系统流
+name: payoff-driven fiction/system-fiction
 description: Special advantages, rapid progression, and repeated displays of strength and vindication
 tags: [shuangwen]
 
 hook_config:
-  preferred_types: [渴望钩, 危机钩, 情绪钩]
+  preferred_types: [desire, crisis, emotionhook]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [装逼打脸, 扮猪吃虎, 越级反杀, 迪化误解]
+  preferred_patterns: [flex-and-counter, underdog-reveal, underdog-victory, misunderstanding-elevation]
   density_per_chapter: high
   combo_interval: 5
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [能力兑现, 资源兑现, 认可兑现]
+  preferred_types: [ability-payoff, resource-payoff, recognition-payoff]
   min_per_chapter: 2
   transition_min: 1
 
@@ -123,24 +123,24 @@ override_config:
 
 ```yaml
 id: xianxia
-name: 修仙/玄幻
+name: cultivation/xuanhuan
 description: Defy fate amid harsh rules, opportunities, and conflict
 tags: [xianxia]
 
 hook_config:
-  preferred_types: [危机钩, 渴望钩, 选择钩]
+  preferred_types: [crisis, desire, choice-hook]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 3
 
 coolpoint_config:
-  preferred_patterns: [越级反杀, 扮猪吃虎, 身份掉马, 反派翻车]
+  preferred_patterns: [underdog-victory, underdog-reveal, identity-reveal, antagonistdownfall]
   density_per_chapter: high
   combo_interval: 5
   milestone_interval: 15
 
 micropayoff_config:
-  preferred_types: [能力兑现, 资源兑现, 信息兑现]
+  preferred_types: [ability-payoff, resource-payoff, information-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -168,24 +168,24 @@ override_config:
 
 ```yaml
 id: romance
-name: 言情/甜宠
+name: romance/sweet romance
 description: Emotional interaction and relationship progress, mixing attraction with heartbreak
 tags: [romance]
 
 hook_config:
-  preferred_types: [情绪钩, 渴望钩, 选择钩]
+  preferred_types: [emotionhook, desire, choice-hook]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [甜蜜超预期, 身份掉马, 迪化误解]
+  preferred_patterns: [sweet-surprise, identity-reveal, misunderstanding-elevation]
   density_per_chapter: medium
   combo_interval: 6
   milestone_interval: 12
 
 micropayoff_config:
-  preferred_types: [关系兑现, 情绪兑现, 认可兑现]
+  preferred_types: [relationshippayoff, emotionpayoff, recognition-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -212,24 +212,24 @@ override_config:
 
 ```yaml
 id: mystery
-name: 悬疑/推理
+name: mystery/deduction
 description: Puzzle-driven reasoning gradually reveals the truth
 tags: [mystery]
 
 hook_config:
-  preferred_types: [悬念钩, 危机钩, 选择钩]
+  preferred_types: [mystery, crisis, choice-hook]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [反派翻车, 身份掉马]
+  preferred_patterns: [antagonistdownfall, identity-reveal]
   density_per_chapter: low
   combo_interval: 10
   milestone_interval: 20
 
 micropayoff_config:
-  preferred_types: [信息兑现, 线索兑现]
+  preferred_types: [information-payoff, clue-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -256,24 +256,24 @@ override_config:
 
 ```yaml
 id: rules-mystery
-name: 规则怪谈
+name: rules-horror
 description: Uncanny rules, survival reasoning, and turning the tables on horror
 tags: [rules-mystery, horror]
 
 hook_config:
-  preferred_types: [危机钩, 悬念钩, 选择钩]
+  preferred_types: [crisis, mystery, choice-hook]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 1
 
 coolpoint_config:
-  preferred_patterns: [越级反杀, 反派翻车]
+  preferred_patterns: [underdog-victory, antagonistdownfall]
   density_per_chapter: medium
   combo_interval: 5
   milestone_interval: 8
 
 micropayoff_config:
-  preferred_types: [信息兑现, 线索兑现, 能力兑现]
+  preferred_types: [information-payoff, clue-payoff, ability-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -300,24 +300,24 @@ override_config:
 
 ```yaml
 id: urban-power
-name: 都市异能
+name: urban-fantasy
 description: Modern settings, hidden powers, understated strength, and industry maneuvering
 tags: [urban, power, industry]
 
 hook_config:
-  preferred_types: [危机钩, 渴望钩, 情绪钩]
+  preferred_types: [crisis, desire, emotionhook]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [扮猪吃虎, 装逼打脸, 身份掉马, 迪化误解]
+  preferred_patterns: [underdog-reveal, flex-and-counter, identity-reveal, misunderstanding-elevation]
   density_per_chapter: high
   combo_interval: 3
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [认可兑现, 能力兑现, 关系兑现]
+  preferred_types: [recognition-payoff, ability-payoff, relationshippayoff]
   min_per_chapter: 2
   transition_min: 1
 
@@ -346,24 +346,24 @@ override_config:
 
 ```yaml
 id: zhihu-short
-name: 知乎短篇
+name: zhihu-short-fiction
 description: Short and fast, strong reversals, emotional impact
 tags: [short, zhihu]
 
 hook_config:
-  preferred_types: [情绪钩, 悬念钩, 选择钩]
+  preferred_types: [emotionhook, mystery, choice-hook]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 0
 
 coolpoint_config:
-  preferred_patterns: [反派翻车, 身份掉马, 甜蜜超预期]
+  preferred_patterns: [antagonistdownfall, identity-reveal, sweet-surprise]
   density_per_chapter: high
   combo_interval: 2
   milestone_interval: 3
 
 micropayoff_config:
-  preferred_types: [情绪兑现, 信息兑现, 关系兑现]
+  preferred_types: [emotionpayoff, information-payoff, relationshippayoff]
   min_per_chapter: 2
   transition_min: 2
 
@@ -390,24 +390,24 @@ override_config:
 
 ```yaml
 id: substitute
-name: 替身文/虐文
+name: substitute-romance/angst fiction
 description: Emotional entanglement, misunderstandings, reversals, and painful attempts to win back a partner
 tags: [substitute, angst]
 
 hook_config:
-  preferred_types: [情绪钩, 选择钩, 悬念钩]
+  preferred_types: [emotionhook, choice-hook, mystery]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [身份掉马, 反派翻车, 甜蜜超预期]
+  preferred_patterns: [identity-reveal, antagonistdownfall, sweet-surprise]
   density_per_chapter: medium
   combo_interval: 5
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [情绪兑现, 关系兑现, 认可兑现]
+  preferred_types: [emotionpayoff, relationshippayoff, recognition-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -434,24 +434,24 @@ override_config:
 
 ```yaml
 id: esports
-name: 电竞
+name: esports
 description: Competitive strategy, team cohesion, comebacks, and championship pursuit
 tags: [esports, competition]
 
 hook_config:
-  preferred_types: [危机钩, 选择钩, 渴望钩]
+  preferred_types: [crisis, choice-hook, desire]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 1
 
 coolpoint_config:
-  preferred_patterns: [越级反杀, 反派翻车, 迪化误解]
+  preferred_patterns: [underdog-victory, antagonistdownfall, misunderstanding-elevation]
   density_per_chapter: high
   combo_interval: 4
   milestone_interval: 8
 
 micropayoff_config:
-  preferred_types: [信息兑现, 认可兑现, 关系兑现]
+  preferred_types: [information-payoff, recognition-payoff, relationshippayoff]
   min_per_chapter: 2
   transition_min: 1
 
@@ -478,24 +478,24 @@ override_config:
 
 ```yaml
 id: livestream
-name: 直播文
+name: livestream-fiction
 description: Platform-traffic competition driven by live feedback, public opinion, and commerce
 tags: [livestream, urban]
 
 hook_config:
-  preferred_types: [危机钩, 情绪钩, 选择钩]
+  preferred_types: [crisis, emotionhook, choice-hook]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 1
 
 coolpoint_config:
-  preferred_patterns: [装逼打脸, 反派翻车, 身份掉马]
+  preferred_patterns: [flex-and-counter, antagonistdownfall, identity-reveal]
   density_per_chapter: high
   combo_interval: 3
   milestone_interval: 6
 
 micropayoff_config:
-  preferred_types: [认可兑现, 资源兑现, 信息兑现]
+  preferred_types: [recognition-payoff, resource-payoff, information-payoff]
   min_per_chapter: 2
   transition_min: 1
 
@@ -522,24 +522,24 @@ override_config:
 
 ```yaml
 id: cosmic-horror
-name: 克苏鲁
+name: cosmic-horror
 description: Corrupted rules and collapsing reason; approaching truth raises the cost
 tags: [horror, mystery, cosmic]
 
 hook_config:
-  preferred_types: [悬念钩, 危机钩, 选择钩]
+  preferred_types: [mystery, crisis, choice-hook]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 1
 
 coolpoint_config:
-  preferred_patterns: [反派翻车, 迪化误解, 越级反杀]
+  preferred_patterns: [antagonistdownfall, misunderstanding-elevation, underdog-victory]
   density_per_chapter: medium
   combo_interval: 6
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [线索兑现, 信息兑现, 情绪兑现]
+  preferred_types: [clue-payoff, information-payoff, emotionpayoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -564,24 +564,24 @@ override_config:
 
 ```yaml
 id: history-travel
-name: 历史穿越
+name: historicaltransmigration
 description: A modern soul in ancient times changes history through knowledge, development, and prosperity
 tags: [history, travel, knowledge]
 
 hook_config:
-  preferred_types: [选择钩, 危机钩, 渴望钩]
+  preferred_types: [choice-hook, crisis, desire]
   strength_baseline: medium
   chapter_end_required: true
   transition_allowance: 2
 
 coolpoint_config:
-  preferred_patterns: [打脸权威, 扮猪吃虎, 反派翻车, 身份掉马]
+  preferred_patterns: [authority-challenge, underdog-reveal, antagonistdownfall, identity-reveal]
   density_per_chapter: medium
   combo_interval: 3
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [信息兑现, 资源兑现, 认可兑现]
+  preferred_types: [information-payoff, resource-payoff, recognition-payoff]
   min_per_chapter: 1
   transition_min: 1
 
@@ -610,24 +610,24 @@ override_config:
 
 ```yaml
 id: game-lit
-name: 游戏文
+name: game-litfiction
 description: Gamified worlds, system advantages, numerical feedback, and starkly contrasting starting conditions
 tags: [game, system, apocalypse]
 
 hook_config:
-  preferred_types: [危机钩, 渴望钩, 选择钩]
+  preferred_types: [crisis, desire, choice-hook]
   strength_baseline: strong
   chapter_end_required: true
   transition_allowance: 0
 
 coolpoint_config:
-  preferred_patterns: [越级反杀, 装逼打脸, 扮猪吃虎, 反派翻车]
+  preferred_patterns: [underdog-victory, flex-and-counter, underdog-reveal, antagonistdownfall]
   density_per_chapter: high
   combo_interval: 3
   milestone_interval: 10
 
 micropayoff_config:
-  preferred_types: [能力兑现, 资源兑现, 认可兑现]
+  preferred_types: [ability-payoff, resource-payoff, recognition-payoff]
   min_per_chapter: 2
   transition_min: 1
 

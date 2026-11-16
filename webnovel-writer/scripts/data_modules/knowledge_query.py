@@ -13,7 +13,7 @@ class KnowledgeQuery:
         self._db_path = self.project_root / ".webnovel" / "index.db"
 
     def entity_state_at_chapter(self, entity_id: str, chapter: int) -> Dict[str, Any]:
-        """查询实体在指定章节时的状态（从 state_changes 反推）。"""
+        "Query an entity's state at a specified chapter by reconstructing it from state_changes."
         conn = sqlite3.connect(str(self._db_path))
         conn.row_factory = sqlite3.Row
         try:
@@ -42,7 +42,7 @@ class KnowledgeQuery:
             conn.close()
 
     def entity_relationships_at_chapter(self, entity_id: str, chapter: int) -> Dict[str, Any]:
-        """查询实体在指定章节时的所有关系。"""
+        "Query all of an entity's relationships at a specified chapter."
         conn = sqlite3.connect(str(self._db_path))
         conn.row_factory = sqlite3.Row
         try:

@@ -1,7 +1,7 @@
 """
-Webnovel Dashboard - FastAPI 主应用
+Webnovel Dashboard - FastAPI application
 
-仅提供 GET 接口（严格只读）；所有文件读取经过 path_guard 防穿越校验。
+GET endpoints only (strictly read-only); path_guard validates every file read against traversal.
 """
 
 import asyncio
@@ -22,7 +22,7 @@ from .path_guard import safe_resolve
 from .watcher import FileWatcher
 
 # ---------------------------------------------------------------------------
-# 全局状态
+# Global state
 # ---------------------------------------------------------------------------
 _project_root: Path | None = None
 _watcher = FileWatcher()
@@ -250,7 +250,7 @@ def _projection_status_for_commit(project_root: Path, chapter: int, commit_paylo
 
 
 # ---------------------------------------------------------------------------
-# 应用工厂
+# Application factory
 # ---------------------------------------------------------------------------
 
 def create_app(project_root: str | Path | None = None) -> FastAPI:
@@ -286,12 +286,12 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
     )
 
     # ===========================================================
-    # API：项目元信息
+    # API：Project metadata
     # ===========================================================
 
     @app.get("/api/project/info")
     def project_info():
-        """返回 state.json 完整内容（只读）。"""
+        """Return all state.json content, read-only."""
         return _load_state_payload(required=True)
 
     @app.get("/api/story-runtime/health")
@@ -299,7 +299,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         return _build_story_runtime_health_report(_get_project_root())
 
     # ===========================================================
-    # API：实体数据库（index.db 只读查询）
+    # API：Entity database (read-only index.db queries)
     # ===========================================================
 
     def _get_db() -> sqlite3.Connection:
@@ -311,7 +311,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         return conn
 
     def _fetchall_safe(conn: sqlite3.Connection, query: str, params: tuple = ()) -> list[dict]:
-        """执行只读查询；若目标表不存在（旧库），返回空列表。"""
+        """Run a read-only query; return an empty list if the table is absent."""
         try:
             rows = conn.execute(query, params).fetchall()
             return [dict(r) for r in rows]
@@ -325,7 +325,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         entity_type: Optional[str] = Query(None, alias="type"),
         include_archived: bool = False,
     ):
-        """列出所有实体（可按类型过滤）。"""
+        """List entities, optionally filtering by type."""
         with closing(_get_db()) as conn:
             q = "SELECT * FROM entities"
             params: list = []
@@ -659,7 +659,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
             return [dict(r) for r in rows]
 
     # ===========================================================
-    # API：扩展表（v5.3+ / v5.4+）
+    # API：Additional tables（v5.3+ / v5.4+）
     # ===========================================================
 
     @app.get("/api/overrides")
@@ -854,7 +854,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         if resolved.stat().st_size > max_bytes:
             raise HTTPException(413, "File is too large to preview")
 
-        # 文本文件直接读；其他情况返回占位信息
+        # Read text files directly; otherwise return a placeholder.
         try:
             content = resolved.read_text(encoding="utf-8")
         except UnicodeDecodeError:
@@ -863,12 +863,12 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         return {"path": path, "content": content}
 
     # ===========================================================
-    # SSE：实时变更推送
+    # SSE：Live change notifications
     # ===========================================================
 
     @app.get("/api/events")
     async def sse():
-        """Server-Sent Events 端点，推送 .webnovel/.story-system 的文件变更。"""
+        """Server-Sent Events endpoint for .webnovel/.story-system file changes."""
         q = _watcher.subscribe()
 
         async def _gen():
@@ -884,7 +884,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         return StreamingResponse(_gen(), media_type="text/event-stream")
 
     # ===========================================================
-    # 前端静态文件托管
+    # Frontend static-file hosting
     # ===========================================================
 
     if STATIC_DIR.is_dir():
@@ -892,7 +892,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
 
         @app.get("/{full_path:path}")
         def serve_spa(full_path: str):
-            """SPA fallback：任何非 /api 路径都返回 index.html。"""
+            """SPA fallback: return index.html for paths outside /api."""
             if full_path.startswith("api/"):
                 raise HTTPException(404, "API route not found")
             index = STATIC_DIR / "index.html"
@@ -912,26 +912,12 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
 
 
 # ---------------------------------------------------------------------------
-# 辅助函数
+# Helper functions
 # ---------------------------------------------------------------------------
 
 def _document_folders(root: Path) -> list[Path]:
-    from project_paths import project_dir
-
-    folders = []
-    for canonical, legacy in (
-        ("chapters", "正文"), ("outlines", "大纲"),
-        ("settings", "设定集"), ("reviews", "审查报告"),
-    ):
-        selected = project_dir(root, canonical)
-        folders.append(selected)
-        # A mixed layout can contain both; expose actual paths, never rename or
-        # merge them, and don't conceal legacy documents behind an empty folder.
-        for name in (canonical, legacy):
-            candidate = root / name
-            if candidate != selected and candidate.is_dir():
-                folders.append(candidate)
-    return folders
+    """Return the canonical document directories allowed for browsing."""
+    return [root / name for name in ("chapters", "outlines", "settings", "reviews")]
 
 
 def _walk_tree(folder: Path, root: Path) -> list[dict]:

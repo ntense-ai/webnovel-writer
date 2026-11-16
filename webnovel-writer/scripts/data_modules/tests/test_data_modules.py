@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Data Modules 单元测试
+Data Modules Unit tests
 """
 
 import pytest
@@ -39,7 +39,7 @@ from project_locator import write_current_project_pointer
 
 @pytest.fixture
 def temp_project():
-    """创建临时项目目录"""
+    """Create a temporary project directory"""
     with tempfile.TemporaryDirectory() as tmpdir:
         config = DataModulesConfig.from_project_root(tmpdir)
         config.ensure_dirs()
@@ -57,41 +57,41 @@ def _ensure_project_state(config):
 
 
 class TestEntityLinker:
-    """实体链接器测试"""
+    """Entity linker tests"""
 
     def test_register_and_lookup_alias(self, temp_project):
         linker = EntityLinker(temp_project)
-        # 先注册实体，否则 aliases JOIN 不会返回
+        # Register the entity first，otherwise aliases JOIN will not return
         IndexManager(temp_project).upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
+                type="character",
+                canonical_name="Xiao Yan",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
             )
         )
 
-        # canonical_name 会在实体写入时自动注册为别名
-        assert linker.lookup_alias("萧炎") == "xiaoyan"
-        assert linker.register_alias("xiaoyan", "小炎子")
+        # canonical_name automatically registers as an alias when the entity is written
+        assert linker.lookup_alias("Xiao Yan") == "xiaoyan"
+        assert linker.register_alias("xiaoyan", "Young Yan")
 
-        # 查找
-        assert linker.lookup_alias("萧炎") == "xiaoyan"
-        assert linker.lookup_alias("小炎子") == "xiaoyan"
-        assert linker.lookup_alias("不存在") is None
+        # Lookup
+        assert linker.lookup_alias("Xiao Yan") == "xiaoyan"
+        assert linker.lookup_alias("Young Yan") == "xiaoyan"
+        assert linker.lookup_alias("nonexistent") is None
 
     def test_alias_one_to_many(self, temp_project):
-        """v5.0: 同一别名可映射多个实体（一对多）"""
+        """v5.0: one alias may map to multiple entities (one-to-many)"""
         linker = EntityLinker(temp_project)
 
         idx = IndexManager(temp_project)
         idx.upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
+                type="character",
+                canonical_name="Xiao Yan",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
@@ -100,18 +100,18 @@ class TestEntityLinker:
         idx.upsert_entity(
             EntityMeta(
                 id="other_person",
-                type="角色",
-                canonical_name="萧炎",
+                type="character",
+                canonical_name="Xiao Yan",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
             )
         )
 
-        # canonical_name 会自动作为别名；同一别名可绑定不同实体（一对多）
+        # canonical_name automatically becomes an alias; one alias may bind to different entities (one-to-many)
 
-        # 查找所有匹配
-        entries = linker.lookup_alias_all("萧炎")
+        # Find all matches
+        entries = linker.lookup_alias_all("Xiao Yan")
         assert len(entries) == 2
 
     def test_get_all_aliases(self, temp_project):
@@ -119,38 +119,38 @@ class TestEntityLinker:
         IndexManager(temp_project).upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
+                type="character",
+                canonical_name="Xiao Yan",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
             )
         )
 
-        linker.register_alias("xiaoyan", "萧炎")
-        linker.register_alias("xiaoyan", "小炎子")
-        linker.register_alias("xiaoyan", "炎哥")
+        linker.register_alias("xiaoyan", "Xiao Yan")
+        linker.register_alias("xiaoyan", "Young Yan")
+        linker.register_alias("xiaoyan", "Brother Yan")
 
         aliases = linker.get_all_aliases("xiaoyan")
         assert len(aliases) == 3
-        assert "萧炎" in aliases
+        assert "Xiao Yan" in aliases
 
     def test_confidence_evaluation(self, temp_project):
         linker = EntityLinker(temp_project)
 
-        # 高置信度
+        # High confidence
         action, adopt, warning = linker.evaluate_confidence(0.9)
         assert action == "auto"
         assert adopt is True
         assert warning is None
 
-        # 中置信度
+        # Medium confidence
         action, adopt, warning = linker.evaluate_confidence(0.6)
         assert action == "warn"
         assert adopt is True
         assert warning is not None
 
-        # 低置信度
+        # Low confidence
         action, adopt, warning = linker.evaluate_confidence(0.3)
         assert action == "manual"
         assert adopt is False
@@ -159,67 +159,67 @@ class TestEntityLinker:
         linker = EntityLinker(temp_project)
 
         result = linker.process_uncertain(
-            mention="那位前辈",
+            mention="The senior",
             candidates=["yaolao", "elder_zhang"],
             suggested="yaolao",
             confidence=0.7
         )
 
-        assert result.mention == "那位前辈"
+        assert result.mention == "The senior"
         assert result.entity_id == "yaolao"
         assert result.adopted is True
         assert result.warning is not None
 
 
 class TestStateManager:
-    """状态管理器测试"""
+    """State manager tests"""
 
     def test_add_and_get_entity(self, temp_project):
         manager = StateManager(temp_project)
 
         entity = EntityState(
             id="xiaoyan",
-            name="萧炎",
-            type="角色",
-            tier="核心"
+            name="Xiao Yan",
+            type="character",
+            tier="core"
         )
         assert manager.add_entity(entity)
 
-        # 获取实体
+        # Get entity
         result = manager.get_entity("xiaoyan")
         assert result is not None
-        assert result["canonical_name"] == "萧炎"
+        assert result["canonical_name"] == "Xiao Yan"
 
     def test_update_entity(self, temp_project):
         manager = StateManager(temp_project)
 
-        entity = EntityState(id="xiaoyan", name="萧炎", type="角色")
+        entity = EntityState(id="xiaoyan", name="Xiao Yan", type="character")
         manager.add_entity(entity)
 
-        # 更新属性 (v5.0: attributes 存在 current 字段)
-        manager.update_entity("xiaoyan", {"current": {"realm": "斗师"}})
+        # Update attributes (v5.0: attributes exists current field)
+        manager.update_entity("xiaoyan", {"current": {"realm": "Dou Shi"}})
 
         result = manager.get_entity("xiaoyan")
-        assert result["current"]["realm"] == "斗师"
+        assert result["current"]["realm"] == "Dou Shi"
 
     def test_record_state_change(self, temp_project):
         manager = StateManager(temp_project)
 
-        entity = EntityState(id="xiaoyan", name="萧炎", type="角色")
+        entity = EntityState(id="xiaoyan", name="Xiao Yan", type="character")
         manager.add_entity(entity)
 
         manager.record_state_change(
             entity_id="xiaoyan",
             field="realm",
-            old_value="斗者",
-            new_value="斗师",
-            reason="突破",
+            old_value="Dou Zhe",
+            new_value="Dou Shi",
+            reason="Breakthrough",
             chapter=100
         )
 
         changes = manager.get_state_changes("xiaoyan")
         assert len(changes) == 1
-        assert changes[0]["new_value"] == "斗师"
+        assert changes[0]["new_value"] == "Dou Shi"
 
     def test_add_relationship(self, temp_project):
         manager = StateManager(temp_project)
@@ -227,55 +227,55 @@ class TestStateManager:
         manager.add_relationship(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            rel_type="师徒",
-            description="药老收萧炎为徒",
+            rel_type="mentor-student",
+            description="Yao Lao takes Xiao Yan as an apprentice",
             chapter=10
         )
 
         rels = manager.get_relationships("xiaoyan")
         assert len(rels) == 1
-        assert rels[0]["type"] == "师徒"
+        assert rels[0]["type"] == "mentor-student"
 
     def test_process_chapter_result(self, temp_project):
         manager = StateManager(temp_project)
 
         result = {
             "entities_appeared": [
-                {"id": "xiaoyan", "mentions": ["萧炎", "他"]}
+                {"id": "xiaoyan", "mentions": ["Xiao Yan", "he"]}
             ],
             "entities_new": [
-                {"suggested_id": "hongyi_girl", "name": "红衣女子", "type": "角色", "tier": "装饰"}
+                {"suggested_id": "hongyi_girl", "name": "Woman in Red", "type": "character", "tier": "decorative"}
             ],
             "state_changes": [
-                {"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师", "reason": "突破"}
+                {"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi", "reason": "Breakthrough"}
             ],
             "relationships_new": [
-                {"from": "xiaoyan", "to": "hongyi_girl", "type": "相识", "description": "初次见面"}
+                {"from": "xiaoyan", "to": "hongyi_girl", "type": "acquaintance", "description": "First Meeting"}
             ]
         }
 
-        # 先添加萧炎
-        manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色"))
+        # Add Xiao Yan first
+        manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character"))
 
         warnings = manager.process_chapter_result(100, result)
 
-        # 验证新实体被添加
+        # Verify the new entity was added
         assert manager.get_entity("hongyi_girl") is not None
 
-        # 验证状态变化
+        # Verify state changes
         changes = manager.get_state_changes("xiaoyan")
         assert len(changes) == 1
 
-        # 验证进度更新
+        # Verify progress updates
         assert manager.get_current_chapter() == 100
 
     def test_save_state_with_init_project_schema(self, temp_project):
-        """回归：init_project 生成的 state.json，StateManager 仍应可写入。(v5.1 SQLite-only)"""
-        # v5.1: state.json 不再包含 entities_v3/alias_index，实体数据在 SQLite
+        """regression: init_project generated state.json，StateManager should remain writable。(v5.1 SQLite-only)"""
+        # v5.1: state.json no longer includes entities_v3/alias_index，entity data resides in SQLite
         init_state = {
-            "project_info": {"title": "测试书名", "genre": "修仙/玄幻", "created_at": "2026-01-01"},
+            "project_info": {"title": "Test novel title", "genre": "cultivation/xuanhuan", "created_at": "2026-01-01"},
             "progress": {"current_chapter": 0, "total_words": 0, "last_updated": "2026-01-01 00:00:00"},
-            "protagonist_state": {"name": "测试主角"},
+            "protagonist_state": {"name": "Test protagonist"},
             "relationships": {},
             "world_settings": {"power_system": [], "factions": [], "locations": []},
             "plot_threads": {"active_threads": [], "foreshadowing": []},
@@ -292,17 +292,17 @@ class TestStateManager:
         assert "meta" not in saved
         assert saved["progress"]["current_chapter"] == 5
         assert saved["progress"]["total_words"] == 100
-        # v5.1: entities_v3/alias_index 不再在 state.json 中
+        # v5.1: entities_v3/alias_index no longer in state.json in
 
     def test_save_state_preserves_unrelated_fields(self, temp_project):
-        """回归：仅写入增量，不应覆盖/丢失其他模块维护的字段。(v5.1 SQLite-only)"""
+        """regression: Write only the delta，must not overwrite/lose fields maintained by other modules。(v5.1 SQLite-only)"""
         init_state = {
-            "project_info": {"title": "测试书名", "genre": "修仙/玄幻", "created_at": "2026-01-01"},
+            "project_info": {"title": "Test novel title", "genre": "cultivation/xuanhuan", "created_at": "2026-01-01"},
             "progress": {"current_chapter": 10, "total_words": 1000, "last_updated": "2026-01-01 00:00:00"},
-            "protagonist_state": {"name": "测试主角"},
-            "relationships": {"allies": ["药老"], "enemies": []},
+            "protagonist_state": {"name": "Test protagonist"},
+            "relationships": {"allies": ["Yao Lao"], "enemies": []},
             "world_settings": {"power_system": [], "factions": [], "locations": []},
-            "plot_threads": {"active_threads": [{"id": "t1", "title": "主线"}], "foreshadowing": []},
+            "plot_threads": {"active_threads": [{"id": "t1", "title": "main"}], "foreshadowing": []},
             "review_checkpoints": [],
             "strand_tracker": {"current_dominant": "quest", "history": []},
             "custom_field": {"keep": True},
@@ -310,7 +310,7 @@ class TestStateManager:
         temp_project.state_file.write_text(json.dumps(init_state, ensure_ascii=False, indent=2), encoding="utf-8")
 
         manager = StateManager(temp_project)
-        manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色", tier="核心"))
+        manager.add_entity(EntityState(id="xiaoyan", name="Xiao Yan", type="character", tier="core"))
         manager.save_state()
 
         saved = json.loads(temp_project.state_file.read_text(encoding="utf-8"))
@@ -319,7 +319,7 @@ class TestStateManager:
         assert isinstance(saved.get("relationships"), dict)
 
     def test_disambiguation_feedback_persisted(self, temp_project):
-        """回归：中/低置信度消歧必须对 Writer 可见（写入 state.json）。"""
+        """regression: in/low-confidence disambiguation must Writer visible (write state.json)。"""
         manager = StateManager(temp_project)
 
         result = {
@@ -329,15 +329,15 @@ class TestStateManager:
             "relationships_new": [],
             "uncertain": [
                 {
-                    "mention": "那位前辈",
-                    "context": "那位前辈看了他一眼",
-                    "candidates": [{"type": "角色", "id": "yaolao"}, {"type": "角色", "id": "elder_zhang"}],
+                    "mention": "The senior",
+                    "context": "The senior glanced at him",
+                    "candidates": [{"type": "character", "id": "yaolao"}, {"type": "character", "id": "elder_zhang"}],
                     "suggested": "yaolao",
                     "confidence": 0.6,
                 },
                 {
-                    "mention": "宗主",
-                    "context": "宗主出现在血煞秘境",
+                    "mention": "Sect Leader",
+                    "context": "The sect leader appears in Bloodfiend Realm",
                     "candidates": ["xueshazonzhu", "lintian"],
                     "suggested": "xueshazonzhu",
                     "confidence": 0.4,
@@ -357,28 +357,28 @@ class TestStateManager:
 
         warn = state["disambiguation_warnings"][0]
         assert warn.get("chapter") == 100
-        assert warn.get("mention") == "那位前辈"
+        assert warn.get("mention") == "The senior"
         assert warn.get("chosen_id") == "yaolao"
 
         pending = state["disambiguation_pending"][0]
         assert pending.get("chapter") == 100
-        assert pending.get("mention") == "宗主"
+        assert pending.get("mention") == "Sect Leader"
 
-        # 返回值也应包含可见警告，便于 CLI/日志透出
+        # the return value should also contain visible warnings，for convenience CLI/visible in logs
         assert any("Disambiguation warning" in w for w in warnings)
         assert any("Disambiguation requires manual confirmation" in w for w in warnings)
 
 
 class TestIndexManager:
-    """索引管理器测试"""
+    """Index manager tests"""
 
     def test_add_and_get_chapter(self, temp_project):
         manager = IndexManager(temp_project)
 
         meta = ChapterMeta(
             chapter=100,
-            title="突破",
-            location="天云宗",
+            title="Breakthrough",
+            location="Skycloud Sect",
             word_count=3500,
             characters=["xiaoyan", "yaolao"]
         )
@@ -386,7 +386,7 @@ class TestIndexManager:
 
         result = manager.get_chapter(100)
         assert result is not None
-        assert result["title"] == "突破"
+        assert result["title"] == "Breakthrough"
         assert "xiaoyan" in result["characters"]
 
     def test_add_scenes(self, temp_project):
@@ -394,21 +394,21 @@ class TestIndexManager:
 
         scenes = [
             SceneMeta(chapter=100, scene_index=1, start_line=1, end_line=50,
-                     location="天云宗·闭关室", summary="萧炎闭关突破", characters=["xiaoyan"]),
+                     location="Skycloud Sect·Seclusion Chamber", summary="Xiao Yan advances during seclusion", characters=["xiaoyan"]),
             SceneMeta(chapter=100, scene_index=2, start_line=51, end_line=100,
-                     location="天云宗·演武场", summary="展示实力", characters=["xiaoyan", "lintian"])
+                     location="Skycloud Sect·Training Ground", summary="Display of Power", characters=["xiaoyan", "lintian"])
         ]
         manager.add_scenes(100, scenes)
 
         result = manager.get_scenes(100)
         assert len(result) == 2
-        assert result[0]["location"] == "天云宗·闭关室"
+        assert result[0]["location"] == "Skycloud Sect·Seclusion Chamber"
 
     def test_record_appearance(self, temp_project):
         manager = IndexManager(temp_project)
 
-        manager.record_appearance("xiaoyan", 100, ["萧炎", "他"], 0.95)
-        manager.record_appearance("yaolao", 100, ["药老"], 0.92)
+        manager.record_appearance("xiaoyan", 100, ["Xiao Yan", "he"], 0.95)
+        manager.record_appearance("yaolao", 100, ["Yao Lao"], 0.92)
 
         appearances = manager.get_chapter_appearances(100)
         assert len(appearances) == 2
@@ -421,14 +421,14 @@ class TestIndexManager:
 
         scenes = [
             SceneMeta(chapter=100, scene_index=1, start_line=1, end_line=50,
-                     location="天云宗·闭关室", summary="闭关", characters=[]),
+                     location="Skycloud Sect·Seclusion Chamber", summary="Seclusion", characters=[]),
             SceneMeta(chapter=101, scene_index=1, start_line=1, end_line=50,
-                     location="天云宗·大殿", summary="议事", characters=[])
+                     location="Skycloud Sect·Grand Hall", summary="Council", characters=[])
         ]
         manager.add_scenes(100, scenes[:1])
         manager.add_scenes(101, scenes[1:])
 
-        results = manager.search_scenes_by_location("天云宗")
+        results = manager.search_scenes_by_location("Skycloud Sect")
         assert len(results) == 2
 
     def test_get_stats(self, temp_project):
@@ -437,8 +437,8 @@ class TestIndexManager:
         manager.upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
+                type="character",
+                canonical_name="Xiao Yan",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
@@ -460,8 +460,8 @@ class TestIndexManager:
         manager.upsert_entity(
             EntityMeta(
                 id="chenfeng",
-                type="角色",
-                canonical_name="陈锋",
+                type="character",
+                canonical_name="Chen Feng",
                 current={},
                 first_appearance=1,
                 last_appearance=1,
@@ -469,29 +469,29 @@ class TestIndexManager:
         )
 
         aliases = manager.get_entity_aliases("chenfeng")
-        assert "陈锋" in aliases
-        assert manager.get_entities_by_alias("陈锋")[0]["id"] == "chenfeng"
-        assert manager.get_entity("陈锋")["id"] == "chenfeng"
+        assert "Chen Feng" in aliases
+        assert manager.get_entities_by_alias("Chen Feng")[0]["id"] == "chenfeng"
+        assert manager.get_entity("Chen Feng")["id"] == "chenfeng"
 
     def test_entity_alias_and_relationships(self, temp_project):
         manager = IndexManager(temp_project)
 
         entity_main = EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
-            desc="主角",
-            current={"realm": "斗者"},
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
+            desc="protagonist",
+            current={"realm": "Dou Zhe"},
             first_appearance=1,
             last_appearance=1,
             is_protagonist=True,
         )
         entity_other = EntityMeta(
             id="yaolao",
-            type="角色",
-            canonical_name="药老",
-            tier="重要",
+            type="character",
+            canonical_name="Yao Lao",
+            tier="major",
             current={},
             first_appearance=1,
             last_appearance=2,
@@ -500,47 +500,47 @@ class TestIndexManager:
         assert manager.upsert_entity(entity_main) is True
         assert manager.upsert_entity(entity_other) is True
 
-        # 更新 current
-        assert manager.update_entity_current("xiaoyan", {"realm": "斗师"}) is True
+        # Update current
+        assert manager.update_entity_current("xiaoyan", {"realm": "Dou Shi"}) is True
         entity = manager.get_entity("xiaoyan")
-        assert entity["current_json"]["realm"] == "斗师"
+        assert entity["current_json"]["realm"] == "Dou Shi"
 
-        # 元数据更新
-        entity_main.desc = "主角（更新）"
+        # Metadata update
+        entity_main.desc = "protagonist (Update)"
         entity_main.last_appearance = 3
         assert manager.upsert_entity(entity_main, update_metadata=True) is False
 
-        # 别名管理
-        assert manager.register_alias("炎帝", "xiaoyan", "角色")
-        assert "炎帝" in manager.get_entity_aliases("xiaoyan")
-        assert manager.get_entities_by_alias("炎帝")[0]["id"] == "xiaoyan"
-        assert manager.remove_alias("炎帝", "xiaoyan")
-        assert manager.get_entities_by_alias("炎帝") == []
+        # Alias management
+        assert manager.register_alias("Flame Emperor", "xiaoyan", "character")
+        assert "Flame Emperor" in manager.get_entity_aliases("xiaoyan")
+        assert manager.get_entities_by_alias("Flame Emperor")[0]["id"] == "xiaoyan"
+        assert manager.remove_alias("Flame Emperor", "xiaoyan")
+        assert manager.get_entities_by_alias("Flame Emperor") == []
 
-        # 类型/层级/核心/主角查询
-        assert len(manager.get_entities_by_type("角色")) == 2
-        assert any(e["id"] == "xiaoyan" for e in manager.get_entities_by_tier("核心"))
+        # Type/level/core/Protagonist query
+        assert len(manager.get_entities_by_type("character")) == 2
+        assert any(e["id"] == "xiaoyan" for e in manager.get_entities_by_tier("core"))
         assert any(e["id"] == "xiaoyan" for e in manager.get_core_entities())
         assert manager.get_protagonist()["id"] == "xiaoyan"
 
-        # 归档实体
+        # Archive entity
         assert manager.archive_entity("yaolao") is True
-        assert all(e["id"] != "yaolao" for e in manager.get_entities_by_type("角色"))
+        assert all(e["id"] != "yaolao" for e in manager.get_entities_by_type("character"))
         assert any(
             e["id"] == "yaolao"
-            for e in manager.get_entities_by_type("角色", include_archived=True)
+            for e in manager.get_entities_by_type("character", include_archived=True)
         )
 
-        # 关系管理（新建 + 更新）
+        # Relationship management (Create + Update)
         rel = RelationshipMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
-            description="收徒",
+            type="mentor-student",
+            description="Accept apprentice",
             chapter=1,
         )
         assert manager.upsert_relationship(rel) is True
-        rel.description = "收徒（更新）"
+        rel.description = "Accept apprentice (Update)"
         rel.chapter = 2
         assert manager.upsert_relationship(rel) is False
 
@@ -555,8 +555,8 @@ class TestIndexManager:
 
         entity = EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
+            type="character",
+            canonical_name="Xiao Yan",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -566,9 +566,9 @@ class TestIndexManager:
         change = StateChangeMeta(
             entity_id="xiaoyan",
             field="realm",
-            old_value="斗者",
-            new_value="斗师",
-            reason="突破",
+            old_value="Dou Zhe",
+            new_value="Dou Shi",
+            reason="Breakthrough",
             chapter=2,
         )
         change_id = manager.record_state_change(change)
@@ -578,10 +578,10 @@ class TestIndexManager:
         assert len(manager.get_recent_state_changes(limit=5)) == 1
         assert len(manager.get_chapter_state_changes(2)) == 1
 
-        # 出场记录（含 skip_if_exists 分支）
-        manager.record_appearance("xiaoyan", 2, ["萧炎"], 1.0)
-        manager.record_appearance("xiaoyan", 2, ["萧炎"], 1.0, skip_if_exists=True)
-        manager.record_appearance("xiaoyan", 3, ["萧炎"], 1.0)
+        # Appearance records (includes skip_if_exists branch)
+        manager.record_appearance("xiaoyan", 2, ["Xiao Yan"], 1.0)
+        manager.record_appearance("xiaoyan", 2, ["Xiao Yan"], 1.0, skip_if_exists=True)
+        manager.record_appearance("xiaoyan", 3, ["Xiao Yan"], 1.0)
 
         assert len(manager.get_entity_appearances("xiaoyan")) == 2
         assert len(manager.get_recent_appearances(limit=5)) >= 1
@@ -593,8 +593,8 @@ class TestIndexManager:
         manager.add_chapter(
             ChapterMeta(
                 chapter=1,
-                title="起点",
-                location="天云宗",
+                title="starting point",
+                location="Skycloud Sect",
                 word_count=1000,
                 characters=["xiaoyan"],
             )
@@ -602,8 +602,8 @@ class TestIndexManager:
         manager.add_chapter(
             ChapterMeta(
                 chapter=2,
-                title="突破",
-                location="天云宗",
+                title="Breakthrough",
+                location="Skycloud Sect",
                 word_count=1200,
                 characters=["xiaoyan", "yaolao"],
             )
@@ -618,8 +618,8 @@ class TestIndexManager:
                 scene_index=1,
                 start_line=1,
                 end_line=50,
-                location="天云宗·闭关室",
-                summary="闭关",
+                location="Skycloud Sect·Seclusion Chamber",
+                summary="Seclusion",
                 characters=["xiaoyan"],
             ),
             SceneMeta(
@@ -627,24 +627,24 @@ class TestIndexManager:
                 scene_index=2,
                 start_line=51,
                 end_line=80,
-                location="天云宗·演武场",
-                summary="练习",
+                location="Skycloud Sect·Training Ground",
+                summary="Practice",
                 characters=["xiaoyan"],
             ),
         ]
         manager.add_scenes(1, scenes)
         assert len(manager.get_scenes(1)) == 2
 
-        results = manager.search_scenes_by_location("天云宗")
+        results = manager.search_scenes_by_location("Skycloud Sect")
         assert len(results) >= 2
 
         stats = manager.process_chapter_data(
             chapter=10,
-            title="试炼",
-            location="秘境",
+            title="Trial",
+            location="hidden realm",
             word_count=1500,
-            entities=[{"id": "xiaoyan", "type": "角色", "mentions": ["萧炎"]}],
-            scenes=[{"index": 1, "start_line": 1, "end_line": 20, "location": "秘境", "summary": "开场", "characters": ["xiaoyan"]}],
+            entities=[{"id": "xiaoyan", "type": "character", "mentions": ["Xiao Yan"]}],
+            scenes=[{"index": 1, "start_line": 1, "end_line": 20, "location": "hidden realm", "summary": "Opening", "characters": ["xiaoyan"]}],
         )
         assert stats["chapters"] == 1
         assert stats["scenes"] == 1
@@ -658,39 +658,39 @@ class TestIndexManager:
             constraint_type="SOFT_MICROPAYOFF",
             constraint_id="micropayoff_count",
             rationale_type="TRANSITIONAL_SETUP",
-            rationale_text="铺垫需要",
-            payback_plan="下章补偿",
+            rationale_text="Setup needed",
+            payback_plan="Compensate next chapter",
             due_chapter=3,
             status="pending",
         )
         contract_id = manager.create_override_contract(contract)
         assert contract_id > 0
 
-        # pending 状态允许更新
-        contract.rationale_text = "调整理由"
+        # pending status permits updates
+        contract.rationale_text = "Adjustment reason"
         contract.due_chapter = 4
         assert manager.create_override_contract(contract) == contract_id
         updated = manager.get_chapter_overrides(1)[0]
-        assert updated["rationale_text"] == "调整理由"
+        assert updated["rationale_text"] == "Adjustment reason"
         assert updated["due_chapter"] == 4
 
-        # 终态冻结
+        # Terminal state frozen
         contract.status = "fulfilled"
-        contract.rationale_text = "终态理由"
+        contract.rationale_text = "Terminal-state reason"
         contract.due_chapter = 5
         manager.create_override_contract(contract)
         frozen = manager.get_chapter_overrides(1)[0]
         assert frozen["status"] == "fulfilled"
-        assert frozen["rationale_text"] == "终态理由"
+        assert frozen["rationale_text"] == "Terminal-state reason"
 
-        # 试图回写 pending，不应改动终态字段
+        # attempts to write back pending，must not modify terminal-state fields
         contract.status = "pending"
-        contract.rationale_text = "不应生效"
+        contract.rationale_text = "must not take effect"
         contract.due_chapter = 99
         manager.create_override_contract(contract)
         frozen_again = manager.get_chapter_overrides(1)[0]
         assert frozen_again["status"] == "fulfilled"
-        assert frozen_again["rationale_text"] == "终态理由"
+        assert frozen_again["rationale_text"] == "Terminal-state reason"
         assert frozen_again["due_chapter"] == 5
 
         debt_contract_id = manager.create_override_contract(
@@ -699,8 +699,8 @@ class TestIndexManager:
                 constraint_type="SOFT_HOOK_STRENGTH",
                 constraint_id="hook_strength",
                 rationale_type="ARC_TIMING",
-                rationale_text="节奏安排",
-                payback_plan="后续补强",
+                rationale_text="Pacing arrangement",
+                payback_plan="Reinforce later",
                 due_chapter=4,
                 status="pending",
             )
@@ -731,13 +731,13 @@ class TestIndexManager:
         assert len(manager.get_active_debts()) == 2
         assert manager.get_total_debt_balance() > 0
 
-        # 计息与幂等保护
+        # interest accrual and idempotency protection
         result = manager.accrue_interest(current_chapter=2)
         assert result["debts_processed"] == 2
         result_again = manager.accrue_interest(current_chapter=2)
         assert result_again["skipped_already_processed"] == 2
 
-        # 逾期标记
+        # Overdue marker
         result_overdue = manager.accrue_interest(current_chapter=3)
         assert result_overdue["new_overdues"] >= 1
         overdue = manager.get_overdue_debts(current_chapter=3)
@@ -745,20 +745,20 @@ class TestIndexManager:
         history = manager.get_debt_history(debt_id_1)
         assert any(h["event_type"] == "interest_accrued" for h in history)
 
-        # 金额校验
+        # Amount validation
         error = manager.pay_debt(debt_id_1, 0, chapter=3)
         assert "error" in error
 
-        # 部分偿还
+        # Partial repayment
         partial = manager.pay_debt(debt_id_1, 0.5, chapter=3)
         assert partial["fully_paid"] is False
 
-        # 完全偿还（仍有另一笔债务时不应 fulfilled）
+        # Full repayment (should not act while another debt remains fulfilled)
         full = manager.pay_debt(debt_id_1, 100, chapter=3)
         assert full["fully_paid"] is True
         assert full["override_fulfilled"] is False
 
-        # 清空最后一笔债务 -> fulfilled
+        # clear the final debt -> fulfilled
         full2 = manager.pay_debt(debt_id_2, 100, chapter=3)
         assert full2["fully_paid"] is True
         assert full2["override_fulfilled"] is True
@@ -766,14 +766,14 @@ class TestIndexManager:
     def test_reading_power_and_debt_summary(self, temp_project):
         manager = IndexManager(temp_project)
 
-        # 追读力元数据
+        # reader-engagement metadata
         manager.save_chapter_reading_power(
             ChapterReadingPowerMeta(
                 chapter=1,
-                hook_type="渴望钩",
+                hook_type="desire",
                 hook_strength="strong",
-                coolpoint_patterns=["打脸权威", "身份掉马"],
-                micropayoffs=["能力兑现"],
+                coolpoint_patterns=["Challenge authority", "Identity revelation"],
+                micropayoffs=["Ability payoff"],
                 hard_violations=[],
                 soft_suggestions=["SOFT_HOOK_STRENGTH"],
                 is_transition=False,
@@ -784,10 +784,10 @@ class TestIndexManager:
         manager.save_chapter_reading_power(
             ChapterReadingPowerMeta(
                 chapter=2,
-                hook_type="悬念钩",
+                hook_type="mystery",
                 hook_strength="medium",
-                coolpoint_patterns=["身份掉马"],
-                micropayoffs=["信息兑现"],
+                coolpoint_patterns=["Identity revelation"],
+                micropayoffs=["Information payoff"],
                 hard_violations=["HARD-004"],
                 soft_suggestions=[],
                 is_transition=True,
@@ -797,29 +797,29 @@ class TestIndexManager:
         )
 
         record = manager.get_chapter_reading_power(1)
-        assert record["hook_type"] == "渴望钩"
-        assert "身份掉马" in record["coolpoint_patterns"]
-        assert record["is_transition"] == 0  # SQLite 存储为 0/1
+        assert record["hook_type"] == "desire"
+        assert "Identity revelation" in record["coolpoint_patterns"]
+        assert record["is_transition"] == 0  # SQLite stored as 0/1
         assert manager.get_chapter_reading_power(999) is None
 
         recent = manager.get_recent_reading_power(limit=2)
         assert len(recent) == 2
 
         pattern_stats = manager.get_pattern_usage_stats(last_n_chapters=5)
-        assert pattern_stats.get("身份掉马") == 2
+        assert pattern_stats.get("Identity revelation") == 2
 
         hook_stats = manager.get_hook_type_stats(last_n_chapters=5)
-        assert hook_stats.get("渴望钩") == 1
+        assert hook_stats.get("desire") == 1
 
-        # 债务汇总
+        # Debt summary
         contract_id = manager.create_override_contract(
             OverrideContractMeta(
                 chapter=3,
                 constraint_type="SOFT_HOOK_STRENGTH",
                 constraint_id="hook_strength",
                 rationale_type="ARC_TIMING",
-                rationale_text="节奏安排",
-                payback_plan="后续补强",
+                rationale_text="Pacing arrangement",
+                payback_plan="Reinforce later",
                 due_chapter=5,
                 status="pending",
             )
@@ -868,8 +868,8 @@ class TestIndexManager:
                 constraint_type="SOFT_EXPECTATION_OVERLOAD",
                 constraint_id="expectation_count",
                 rationale_type="EDITORIAL_INTENT",
-                rationale_text="作者意图",
-                payback_plan="后续补足",
+                rationale_text="Author intent",
+                payback_plan="Complete later",
                 due_chapter=6,
                 status="pending",
             )
@@ -886,16 +886,16 @@ class TestIndexManager:
                 end_chapter=1,
                 overall_score=48,
                 dimension_scores={
-                    "爽点密度": 8,
-                    "设定一致性": 7,
-                    "节奏控制": 7,
-                    "人物塑造": 8,
-                    "连贯性": 9,
-                    "追读力": 9,
+                    "Payoff density": 8,
+                    "Setting consistency": 7,
+                    "Pacing control": 7,
+                    "Characterization": 8,
+                    "Continuity": 9,
+                    "Reader engagement": 9,
                 },
                 severity_counts={"critical": 0, "high": 1, "medium": 2, "low": 0},
                 critical_issues=[],
-                report_file="审查报告/第1-1章审查报告.md",
+                report_file="reviews/chapters-1-1-review.md",
             )
         )
         manager.save_review_metrics(
@@ -904,16 +904,16 @@ class TestIndexManager:
                 end_chapter=2,
                 overall_score=42,
                 dimension_scores={
-                    "爽点密度": 6,
-                    "设定一致性": 8,
-                    "节奏控制": 7,
-                    "人物塑造": 7,
-                    "连贯性": 7,
-                    "追读力": 7,
+                    "Payoff density": 6,
+                    "Setting consistency": 8,
+                    "Pacing control": 7,
+                    "Characterization": 7,
+                    "Continuity": 7,
+                    "Reader engagement": 7,
                 },
                 severity_counts={"critical": 1, "high": 0, "medium": 1, "low": 2},
-                critical_issues=["设定自相矛盾"],
-                report_file="审查报告/第2-2章审查报告.md",
+                critical_issues=["contradictory setting"],
+                report_file="reviews/chapters-2-2-review.md",
             )
         )
 
@@ -923,7 +923,7 @@ class TestIndexManager:
         trends = manager.get_review_trend_stats(last_n=5)
         assert trends["count"] == 2
         assert trends["overall_avg"] > 0
-        assert "爽点密度" in trends["dimension_avg"]
+        assert "Payoff density" in trends["dimension_avg"]
 
     def test_writing_checklist_score_persistence_and_trend(self, temp_project):
         manager = IndexManager(temp_project)
@@ -941,7 +941,7 @@ class TestIndexManager:
                 completion_rate=0.6667,
                 score=78.5,
                 score_breakdown={"weighted_completion_rate": 0.66},
-                pending_items=["段末留钩"],
+                pending_items=["End the paragraph with a hook"],
             )
         )
         manager.save_writing_checklist_score(
@@ -979,14 +979,14 @@ class TestIndexManager:
         root = str(temp_project.project_root)
         manager = IndexManager(temp_project)
 
-        # 基础数据
+        # Base data
         manager.upsert_entity(
             EntityMeta(
                 id="xiaoyan",
-                type="角色",
-                canonical_name="萧炎",
-                tier="核心",
-                current={"realm": "斗者"},
+                type="character",
+                canonical_name="Xiao Yan",
+                tier="core",
+                current={"realm": "Dou Zhe"},
                 first_appearance=1,
                 last_appearance=1,
                 is_protagonist=True,
@@ -995,21 +995,21 @@ class TestIndexManager:
         manager.upsert_entity(
             EntityMeta(
                 id="yaolao",
-                type="角色",
-                canonical_name="药老",
-                tier="重要",
+                type="character",
+                canonical_name="Yao Lao",
+                tier="major",
                 current={},
                 first_appearance=1,
                 last_appearance=2,
             )
         )
 
-        manager.register_alias("炎帝", "xiaoyan", "角色")
+        manager.register_alias("Flame Emperor", "xiaoyan", "character")
         manager.add_chapter(
             ChapterMeta(
                 chapter=1,
-                title="起点",
-                location="天云宗",
+                title="starting point",
+                location="Skycloud Sect",
                 word_count=1000,
                 characters=["xiaoyan"],
             )
@@ -1022,20 +1022,20 @@ class TestIndexManager:
                     scene_index=1,
                     start_line=1,
                     end_line=20,
-                    location="天云宗·闭关室",
-                    summary="闭关",
+                    location="Skycloud Sect·Seclusion Chamber",
+                    summary="Seclusion",
                     characters=["xiaoyan"],
                 )
             ],
         )
-        manager.record_appearance("xiaoyan", 1, ["萧炎"], 1.0)
+        manager.record_appearance("xiaoyan", 1, ["Xiao Yan"], 1.0)
         manager.record_state_change(
             StateChangeMeta(
                 entity_id="xiaoyan",
                 field="realm",
-                old_value="斗者",
-                new_value="斗师",
-                reason="突破",
+                old_value="Dou Zhe",
+                new_value="Dou Shi",
+                reason="Breakthrough",
                 chapter=1,
             )
         )
@@ -1043,20 +1043,20 @@ class TestIndexManager:
             RelationshipMeta(
                 from_entity="xiaoyan",
                 to_entity="yaolao",
-                type="师徒",
-                description="收徒",
+                type="mentor-student",
+                description="Accept apprentice",
                 chapter=1,
             )
         )
 
-        # 追读力与债务
+        # Reader engagement and debt
         manager.save_chapter_reading_power(
             ChapterReadingPowerMeta(
                 chapter=1,
-                hook_type="渴望钩",
+                hook_type="desire",
                 hook_strength="medium",
-                coolpoint_patterns=["身份掉马"],
-                micropayoffs=["能力兑现"],
+                coolpoint_patterns=["Identity revelation"],
+                micropayoffs=["Ability payoff"],
                 hard_violations=[],
                 soft_suggestions=[],
             )
@@ -1067,8 +1067,8 @@ class TestIndexManager:
                 constraint_type="SOFT_HOOK_STRENGTH",
                 constraint_id="hook_strength",
                 rationale_type="ARC_TIMING",
-                rationale_text="节奏安排",
-                payback_plan="后续补强",
+                rationale_text="Pacing arrangement",
+                payback_plan="Reinforce later",
                 due_chapter=2,
                 status="pending",
             )
@@ -1090,15 +1090,15 @@ class TestIndexManager:
             monkeypatch.setattr(sys, "argv", ["index_manager"] + args)
             index_manager_module.main()
 
-        # 基础命令
+        # Basic commands
         run_cli(["--project-root", root, "stats"])
         run_cli(["--project-root", root, "get-chapter", "--chapter", "1"])
         run_cli(["--project-root", root, "get-chapter", "--chapter", "99"])
         run_cli(["--project-root", root, "recent-appearances", "--limit", "5"])
         run_cli(["--project-root", root, "entity-appearances", "--entity", "xiaoyan", "--limit", "5"])
-        run_cli(["--project-root", root, "search-scenes", "--location", "天云宗", "--limit", "5"])
+        run_cli(["--project-root", root, "search-scenes", "--location", "Skycloud Sect", "--limit", "5"])
 
-        # 处理章节
+        # Process chapter
         run_cli(
             [
                 "--project-root",
@@ -1107,13 +1107,13 @@ class TestIndexManager:
                 "--chapter",
                 "2",
                 "--title",
-                "试炼",
+                "Trial",
                 "--location",
-                "秘境",
+                "hidden realm",
                 "--word-count",
                 "1200",
                 "--entities",
-                json.dumps([{"id": "xiaoyan", "mentions": ["萧炎"]}], ensure_ascii=False),
+                json.dumps([{"id": "xiaoyan", "mentions": ["Xiao Yan"]}], ensure_ascii=False),
                 "--scenes",
                 json.dumps(
                     [
@@ -1121,8 +1121,8 @@ class TestIndexManager:
                             "index": 1,
                             "start_line": 1,
                             "end_line": 10,
-                            "location": "秘境",
-                            "summary": "开场",
+                            "location": "hidden realm",
+                            "summary": "Opening",
                             "characters": ["xiaoyan"],
                         }
                     ],
@@ -1131,18 +1131,18 @@ class TestIndexManager:
             ]
         )
 
-        # v5.1 命令
+        # v5.1 Command
         run_cli(["--project-root", root, "get-entity", "--id", "xiaoyan"])
         run_cli(["--project-root", root, "get-entity", "--id", "missing"])
         run_cli(["--project-root", root, "get-core-entities"])
         run_cli(["--project-root", root, "get-protagonist"])
         run_cli(
-            ["--project-root", root, "get-entities-by-type", "--type", "角色", "--include-archived"]
+            ["--project-root", root, "get-entities-by-type", "--type", "character", "--include-archived"]
         )
-        run_cli(["--project-root", root, "get-by-alias", "--alias", "炎帝"])
-        run_cli(["--project-root", root, "get-by-alias", "--alias", "不存在"])
+        run_cli(["--project-root", root, "get-by-alias", "--alias", "Flame Emperor"])
+        run_cli(["--project-root", root, "get-by-alias", "--alias", "nonexistent"])
         run_cli(["--project-root", root, "get-aliases", "--entity", "xiaoyan"])
-        run_cli(["--project-root", root, "register-alias", "--alias", "炎哥", "--entity", "xiaoyan", "--type", "角色"])
+        run_cli(["--project-root", root, "register-alias", "--alias", "Brother Yan", "--entity", "xiaoyan", "--type", "character"])
         run_cli(["--project-root", root, "get-relationships", "--entity", "xiaoyan", "--direction", "from"])
         run_cli(["--project-root", root, "get-state-changes", "--entity", "xiaoyan", "--limit", "20"])
         run_cli(
@@ -1154,10 +1154,10 @@ class TestIndexManager:
                 json.dumps(
                     {
                         "id": "lintian",
-                        "type": "角色",
-                        "canonical_name": "林天",
-                        "tier": "装饰",
-                        "current": {"realm": "斗者"},
+                        "type": "character",
+                        "canonical_name": "Lin Tian",
+                        "tier": "decorative",
+                        "current": {"realm": "Dou Zhe"},
                     },
                     ensure_ascii=False,
                 ),
@@ -1173,8 +1173,8 @@ class TestIndexManager:
                     {
                         "from_entity": "xiaoyan",
                         "to_entity": "lintian",
-                        "type": "相识",
-                        "description": "初见",
+                        "type": "acquaintance",
+                        "description": "First meeting",
                         "chapter": 2,
                     },
                     ensure_ascii=False,
@@ -1191,9 +1191,9 @@ class TestIndexManager:
                     {
                         "entity_id": "xiaoyan",
                         "field": "realm",
-                        "old_value": "斗者",
-                        "new_value": "斗师",
-                        "reason": "突破",
+                        "old_value": "Dou Zhe",
+                        "new_value": "Dou Shi",
+                        "reason": "Breakthrough",
                         "chapter": 2,
                     },
                     ensure_ascii=False,
@@ -1201,7 +1201,7 @@ class TestIndexManager:
             ]
         )
 
-        # v5.3 命令
+        # v5.3 Command
         run_cli(["--project-root", root, "get-debt-summary"])
         run_cli(["--project-root", root, "get-recent-reading-power", "--limit", "5"])
         run_cli(["--project-root", root, "get-chapter-reading-power", "--chapter", "1"])
@@ -1227,8 +1227,8 @@ class TestIndexManager:
                         "constraint_type": "SOFT_MICROPAYOFF",
                         "constraint_id": "micropayoff_count",
                         "rationale_type": "TRANSITIONAL_SETUP",
-                        "rationale_text": "铺垫",
-                        "payback_plan": "后续补偿",
+                        "rationale_text": "Setup",
+                        "payback_plan": "Later compensation",
                         "due_chapter": 4,
                     },
                     ensure_ascii=False,
@@ -1265,10 +1265,10 @@ class TestIndexManager:
                 json.dumps(
                     {
                         "chapter": 3,
-                        "hook_type": "悬念钩",
+                        "hook_type": "mystery",
                         "hook_strength": "medium",
-                        "coolpoint_patterns": ["打脸权威"],
-                        "micropayoffs": ["信息兑现"],
+                        "coolpoint_patterns": ["Challenge authority"],
+                        "micropayoffs": ["Information payoff"],
                         "hard_violations": [],
                         "soft_suggestions": [],
                         "is_transition": False,
@@ -1285,16 +1285,16 @@ class TestIndexManager:
             "end_chapter": 1,
             "overall_score": 50,
             "dimension_scores": {
-                "爽点密度": 8,
-                "设定一致性": 7,
-                "节奏控制": 8,
-                "人物塑造": 8,
-                "连贯性": 9,
-                "追读力": 10,
+                "Payoff density": 8,
+                "Setting consistency": 7,
+                "Pacing control": 8,
+                "Characterization": 8,
+                "Continuity": 9,
+                "Reader engagement": 10,
             },
             "severity_counts": {"critical": 0, "high": 1, "medium": 2, "low": 0},
             "critical_issues": [],
-            "report_file": "审查报告/第1-1章审查报告.md",
+            "report_file": "reviews/chapters-1-1-review.md",
         }
         run_cli(
             [
@@ -1320,7 +1320,7 @@ class TestIndexManager:
             "completion_rate": 0.6667,
             "score": 79.2,
             "score_breakdown": {"weighted_completion_rate": 0.73},
-            "pending_items": ["钩子差异化"],
+            "pending_items": ["Hook differentiation"],
             "source": "context_manager",
         }
         run_cli(
@@ -1368,9 +1368,9 @@ class TestIndexManager:
                 "--chapter",
                 "2",
                 "--title",
-                "试炼",
+                "Trial",
                 "--location",
-                "秘境",
+                "hidden realm",
                 "--word-count",
                 "1200",
                 "--entities",
@@ -1385,7 +1385,7 @@ class TestIndexManager:
 
 
 class TestStyleSampler:
-    """风格样本测试"""
+    """Style sampler tests"""
 
     def test_add_and_get_sample(self, temp_project):
         sampler = StyleSampler(temp_project)
@@ -1393,14 +1393,14 @@ class TestStyleSampler:
         sample = StyleSample(
             id="ch100_s1",
             chapter=100,
-            scene_type="战斗",
-            content="萧炎一拳轰出...",
+            scene_type="combat",
+            content="Xiao Yan throws a punch...",
             score=0.85,
-            tags=["战斗", "激烈"]
+            tags=["combat", "intense"]
         )
         assert sampler.add_sample(sample)
 
-        results = sampler.get_samples_by_type("战斗")
+        results = sampler.get_samples_by_type("combat")
         assert len(results) == 1
         assert results[0].id == "ch100_s1"
 
@@ -1408,76 +1408,76 @@ class TestStyleSampler:
         sampler = StyleSampler(temp_project)
 
         scenes = [
-            {"index": 1, "summary": "战斗场景", "content": "萧炎一拳轰出，斗气如虹，直接将对手击退三丈，周围的空气都被震得嗡嗡作响..." + "a" * 200}
+            {"index": 1, "summary": "Combat scene", "content": "Xiao Yan throws a punch，battle energy blazed like a rainbow，drove the opponent back ten meters，The surrounding air hummed from the impact..." + "a" * 200}
         ]
 
-        # 低分不提取
+        # Do not extract low-scoring material
         candidates = sampler.extract_candidates(100, "", 70, scenes)
         assert len(candidates) == 0
 
-        # 高分提取
+        # Extract high-scoring material
         candidates = sampler.extract_candidates(100, "", 85, scenes)
         assert len(candidates) == 1
-        assert candidates[0].scene_type == "战斗"
+        assert candidates[0].scene_type == "combat"
 
     def test_select_samples_for_chapter(self, temp_project):
         sampler = StyleSampler(temp_project)
 
-        # 添加一些样本
+        # Add some samples
         for i in range(3):
             sampler.add_sample(StyleSample(
                 id=f"battle_{i}",
                 chapter=i,
-                scene_type="战斗",
-                content=f"战斗内容 {i}",
+                scene_type="combat",
+                content=f"Combat content {i}",
                 score=0.9,
                 tags=[]
             ))
 
-        samples = sampler.select_samples_for_chapter("本章有一场激烈的战斗")
+        samples = sampler.select_samples_for_chapter("This chapter contains an intense battle")
         assert len(samples) <= 3
-        assert all(s.scene_type == "战斗" for s in samples)
+        assert all(s.scene_type == "combat" for s in samples)
 
 
 class TestRAGAdapter:
-    """RAG 适配器测试（不包含 API 调用）"""
+    """RAG Adapter tests (does not include API Call)"""
 
     def test_bm25_search(self, temp_project):
         adapter = RAGAdapter(temp_project)
 
-        # 手动插入一些测试数据
+        # Insert some test data manually
         with adapter._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 插入向量记录（空向量，只测试 BM25）
+            # Insert a vector record (Empty vector，Test only BM25)
             cursor.execute("""
                 INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding)
                 VALUES (?, ?, ?, ?, ?)
-            """, ("ch1_s1", 1, 1, "萧炎在天云宗修炼斗气", b""))
+            """, ("ch1_s1", 1, 1, "Xiao Yan cultivates battle energy at Skycloud Sect", b""))
 
             cursor.execute("""
                 INSERT INTO vectors (chunk_id, chapter, scene_index, content, embedding)
                 VALUES (?, ?, ?, ?, ?)
-            """, ("ch1_s2", 1, 2, "药老传授炼药技巧", b""))
+            """, ("ch1_s2", 1, 2, "Yao Lao teaches alchemy techniques", b""))
 
             conn.commit()
 
-            # 更新 BM25 索引
-            adapter._update_bm25_index(cursor, "ch1_s1", "萧炎在天云宗修炼斗气")
-            adapter._update_bm25_index(cursor, "ch1_s2", "药老传授炼药技巧")
+            # Update BM25 Index
+            adapter._update_bm25_index(cursor, "ch1_s1", "Xiao Yan cultivates battle energy at Skycloud Sect")
+            adapter._update_bm25_index(cursor, "ch1_s2", "Yao Lao teaches alchemy techniques")
             conn.commit()
 
-        # BM25 搜索
-        results = adapter.bm25_search("萧炎修炼", top_k=5)
+        # BM25 Search
+        results = adapter.bm25_search("Xiao Yan cultivates", top_k=5)
         assert len(results) >= 1
         assert results[0].chunk_id == "ch1_s1"
 
     def test_tokenize(self, temp_project):
         adapter = RAGAdapter(temp_project)
 
-        tokens = adapter._tokenize("萧炎hello世界world")
-        assert "萧" in tokens
-        assert "炎" in tokens
+        tokens = adapter._tokenize("Xiao Yan hello WORLD")
+        assert "xiao" in tokens
+        assert "yan" in tokens
         assert "hello" in tokens
         assert "world" in tokens
 

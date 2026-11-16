@@ -3,143 +3,143 @@
   "terms": [
     {
       "technical": "subagent",
-      "author": "写作助手",
-      "explanation": "负责某一类写作任务的辅助步骤，例如写前准备、写作检查或资料整理。"
+      "author": "Writing assistant",
+      "explanation": "An auxiliary step responsible for a specific writing task, such as preparation, review, or organizing reference material."
     },
     {
       "technical": "context-agent",
-      "author": "写前准备",
-      "explanation": "整理本章需要参考的前情、章纲、伏笔和设定。"
+      "author": "Writing preparation",
+      "explanation": "Gather the prior events, chapter outline, foreshadowing, and setting details needed for this chapter."
     },
     {
       "technical": "reviewer",
-      "author": "写作检查",
-      "explanation": "检查本章是否存在影响继续写作的问题。"
+      "author": "Writing review",
+      "explanation": "Check whether the chapter contains problems that would obstruct continued writing."
     },
     {
       "technical": "data-agent",
-      "author": "保存本章故事事实",
-      "explanation": "提取本章新发生的事件、人物状态和设定变化。"
+      "author": "Save chapter story facts",
+      "explanation": "Extract the chapter’s new events, character states, and setting changes."
     },
     {
       "technical": "deconstruction-agent",
-      "author": "参考作品拆解",
-      "explanation": "把参考作品的可借鉴结构整理成创意素材。"
+      "author": "Reference-work analysis",
+      "explanation": "Turn useful structures from reference works into creative material."
     },
     {
       "technical": "artifact",
-      "author": "中间结果文件",
-      "explanation": "流程中保存的检查、提取或提交前材料。"
+      "author": "Intermediate result file",
+      "explanation": "Review, extraction, or pre-submission material saved during the workflow."
     },
     {
       "technical": "review_results",
-      "author": "写作检查结果",
-      "explanation": "本章写作检查的结构化结果。"
+      "author": "Writing review results",
+      "explanation": "Structured results of the chapter’s writing review."
     },
     {
       "technical": "fulfillment_result",
-      "author": "本章目标完成情况",
-      "explanation": "本章是否覆盖了章纲要求的关键节点。"
+      "author": "Chapter goal completion",
+      "explanation": "Whether the chapter covers the key beats required by its outline."
     },
     {
       "technical": "disambiguation_result",
-      "author": "待确认的人名/设定歧义",
-      "explanation": "系统不确定某些称呼或设定指向，需要确认后再入库。"
+      "author": "Names or setting details awaiting clarification",
+      "explanation": "References whose intended identity or meaning must be confirmed before storage."
     },
     {
       "technical": "extraction_result",
-      "author": "本章新发生的故事事实",
-      "explanation": "本章可写入故事资料的事件、状态和关系变化。"
+      "author": "New chapter story facts",
+      "explanation": "Events, states, and relationship changes eligible for addition to the story records."
     },
     {
       "technical": "chapter-commit",
-      "author": "提交本章事实",
-      "explanation": "把本章通过检查的故事事实正式保存进主链。"
+      "author": "Submit chapter facts",
+      "explanation": "Formally save the chapter’s validated story facts to the main workflow."
     },
     {
       "technical": "CHAPTER_COMMIT",
-      "author": "本章事实存档",
-      "explanation": "系统保存本章事实时生成的权威记录。"
+      "author": "Chapter fact archive",
+      "explanation": "The authoritative record created when the system saves a chapter’s facts."
     },
     {
       "technical": "commit",
-      "author": "入账存档",
-      "explanation": "把本章已确认的事实正式记入故事资料。"
+      "author": "Record confirmed facts",
+      "explanation": "Formally enter the chapter’s confirmed facts in the story records."
     },
     {
       "technical": "projection",
-      "author": "更新故事资料",
-      "explanation": "把已保存的本章事实同步到状态、摘要、长期记忆和检索库。"
+      "author": "Update story data",
+      "explanation": "Synchronize saved chapter facts to state, summaries, long-term memory, and the retrieval database."
     },
     {
       "technical": "state",
-      "author": "状态",
-      "explanation": "角色、地点和故事进度的当前状态。"
+      "author": "State",
+      "explanation": "The current state of characters, locations, and story progress."
     },
     {
       "technical": "index",
-      "author": "索引",
-      "explanation": "用于查询章节、角色和事件的资料索引。"
+      "author": "Index",
+      "explanation": "An index for querying chapters, characters, and events."
     },
     {
       "technical": "summary",
-      "author": "摘要",
-      "explanation": "章节或剧情的简要记录。"
+      "author": "Summary",
+      "explanation": "A concise record of a chapter or plot developments."
     },
     {
       "technical": "memory",
-      "author": "长期记忆",
-      "explanation": "跨章节保持一致所需的长期资料。"
+      "author": "Long-term memory",
+      "explanation": "Persistent information needed for consistency across chapters."
     },
     {
       "technical": "vector",
-      "author": "检索库",
-      "explanation": "用于相似内容召回和写前查询的资料库。"
+      "author": "Retrieval database",
+      "explanation": "A database for retrieving similar content and answering prewriting queries."
     },
     {
       "technical": "write-gate",
-      "author": "自检关卡",
-      "explanation": "写作流程在关键节点做的安全检查。"
+      "author": "Validation checkpoint",
+      "explanation": "A safety check performed at a key boundary in the writing workflow."
     },
     {
       "technical": "blocking issue",
-      "author": "会影响继续写作的问题",
-      "explanation": "不处理会影响提交、连贯性或后续写作的问题。"
+      "author": "Problem blocking further writing",
+      "explanation": "An unresolved issue that prevents submission or harms continuity or subsequent writing."
     },
     {
       "technical": "fallback",
-      "author": "临时降级读取",
-      "explanation": "主资料不可用时，临时用较简单方式继续读取必要信息。"
+      "author": "Temporary fallback reading",
+      "explanation": "Use a simpler reading method to obtain essential information when the primary records are unavailable."
     },
     {
       "technical": "runtime contract",
-      "author": "本章写作要求",
-      "explanation": "本章必须遵守的章纲、设定、禁区和检查规则。"
+      "author": "Chapter writing requirements",
+      "explanation": "The outline, setting, restrictions, and review rules that this chapter must follow."
     },
     {
       "technical": "schema error",
-      "author": "中间结果格式不完整",
-      "explanation": "流程产物缺字段或形状不对，系统无法可靠继续。"
+      "author": "Incomplete intermediate-result format",
+      "explanation": "A workflow result is missing fields or has the wrong structure, preventing reliable continuation."
     },
     {
       "technical": "mainline_ready",
-      "author": "这本书的档案是否就绪",
-      "explanation": "Story System 主链是否已经具备继续写作所需的基础资料。"
+      "author": "Whether the book records are ready",
+      "explanation": "Whether the Story System main workflow has the foundational records needed to continue writing."
     },
     {
       "technical": "pending",
-      "author": "等待确认",
-      "explanation": "还有事项没有确认，暂时不能当成完成。"
+      "author": "Awaiting confirmation",
+      "explanation": "Some items remain unconfirmed and cannot yet be treated as complete."
     },
     {
       "technical": "rejected",
-      "author": "本章事实未通过提交",
-      "explanation": "本章事实没有被正式保存进主链。"
+      "author": "Chapter facts rejected",
+      "explanation": "The chapter’s facts were not formally saved to the main workflow."
     },
     {
       "technical": "accepted",
-      "author": "本章事实已通过提交",
-      "explanation": "本章事实已经正式保存进主链。"
+      "author": "Chapter facts accepted",
+      "explanation": "The chapter’s facts were formally saved to the main workflow."
     }
   ]
 }

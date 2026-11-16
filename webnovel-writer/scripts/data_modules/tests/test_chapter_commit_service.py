@@ -17,9 +17,9 @@ def test_commit_service_rejects_when_missed_nodes_exist(tmp_path):
         chapter=3,
         review_result={"blocking_count": 0},
         fulfillment_result={
-            "planned_nodes": ["发现陷阱"],
+            "planned_nodes": ["Discover the trap"],
             "covered_nodes": [],
-            "missed_nodes": ["发现陷阱"],
+            "missed_nodes": ["Discover the trap"],
             "extra_nodes": [],
         },
         disambiguation_result={"pending": []},
@@ -33,7 +33,7 @@ def test_commit_service_accepts_when_all_checks_pass(tmp_path):
     payload = service.build_commit(
         chapter=3,
         review_result={"blocking_count": 0},
-        fulfillment_result={"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []},
+        fulfillment_result={"planned_nodes": ["Discover the trap"], "covered_nodes": ["Discover the trap"], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
         extraction_result={"state_deltas": [], "entity_deltas": [], "accepted_events": []},
     )
@@ -41,7 +41,7 @@ def test_commit_service_accepts_when_all_checks_pass(tmp_path):
     assert payload["contract_refs"]["master"] == "MASTER_SETTING.json"
     assert payload["contract_refs"]["volume"] == "volume_001.json"
     assert payload["contract_refs"]["chapter"] == "chapter_003.json"
-    assert payload["outline_snapshot"]["covered_nodes"] == ["发现陷阱"]
+    assert payload["outline_snapshot"]["covered_nodes"] == ["Discover the trap"]
     assert payload["extraction_result"]["accepted_events"] == []
     assert "accepted_events" not in payload
     assert "state_deltas" not in payload
@@ -53,7 +53,7 @@ def test_commit_service_includes_volume_ref_and_write_fact_provenance(tmp_path):
     payload = service.build_commit(
         chapter=3,
         review_result={"blocking_count": 0},
-        fulfillment_result={"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []},
+        fulfillment_result={"planned_nodes": ["Discover the trap"], "covered_nodes": ["Discover the trap"], "missed_nodes": [], "extra_nodes": []},
         disambiguation_result={"pending": []},
         extraction_result={"state_deltas": [], "entity_deltas": [], "accepted_events": []},
     )
@@ -87,7 +87,7 @@ def test_commit_service_rejects_malformed_gate_artifacts(tmp_path):
         service.build_commit(
             chapter=3,
             review_result={"blocking_count": 0},
-            fulfillment_result={"fulfillment": {"missed_nodes": ["遗漏节点"]}},
+            fulfillment_result={"fulfillment": {"missed_nodes": ["Missed node"]}},
             disambiguation_result=valid_disambiguation,
             extraction_result=valid_extraction,
         )
@@ -97,7 +97,7 @@ def test_commit_service_rejects_malformed_gate_artifacts(tmp_path):
             chapter=3,
             review_result={"blocking_count": 0},
             fulfillment_result=valid_fulfillment,
-            disambiguation_result={"disambiguation": {"pending": ["宗主"]}},
+            disambiguation_result={"disambiguation": {"pending": ["Sect Leader"]}},
             extraction_result=valid_extraction,
         )
 
@@ -119,8 +119,8 @@ def test_commit_service_rejects_nested_extraction_result_shape(tmp_path):
             extraction_result={
                 "chapter": 76,
                 "extraction": {
-                    "scenes": [{"summary": "场景切分"}],
-                    "unresolved_threads": ["未解线索"],
+                    "scenes": [{"summary": "Scene segmentation"}],
+                    "unresolved_threads": ["Unresolved clue"],
                 },
             },
         )
@@ -145,8 +145,8 @@ def test_commit_service_rejects_extraction_wrapper_even_with_empty_core_fields(t
                 "state_deltas": [],
                 "entity_deltas": [],
                 "extraction": {
-                    "scenes": [{"summary": "真实场景却被包错层"}],
-                    "summary_text": "真实摘要却被包错层",
+                    "scenes": [{"summary": "Real scene wrapped at the wrong level"}],
+                    "summary_text": "Real summary wrapped at the wrong level",
                 },
             },
         )
@@ -166,7 +166,7 @@ def test_commit_service_rejects_extraction_result_missing_core_fields(tmp_path):
                 "extra_nodes": [],
             },
             disambiguation_result={"pending": []},
-            extraction_result={"summary_text": "摘要"},
+            extraction_result={"summary_text": "Summary"},
         )
 
 
@@ -234,7 +234,7 @@ def test_commit_service_normalizes_accepted_events_before_projection(tmp_path):
                 {
                     "type": "mystery_introduction",
                     "characters": ["xiaoyan"],
-                    "payload": {"content": "萧炎发现石门背后的新疑点"},
+                    "payload": {"content": "Xiao Yan finds a new clue behind the stone door"},
                 }
             ],
         },
@@ -258,9 +258,9 @@ def test_apply_projections_normalizes_events_before_router_inspection(
             captured["events"] = list(payload.get("extraction_result", {}).get("accepted_events") or [])
             return []
 
-    monkeypatch.setattr(
-        "data_modules.chapter_commit_service.EventProjectionRouter",
-        lambda: SpyRouter(),
+    monkeypatch.setitem(
+        ChapterCommitService.apply_projection_writers.__globals__,
+        "EventProjectionRouter", lambda: SpyRouter(),
     )
 
     service = ChapterCommitService(tmp_path)
@@ -271,7 +271,7 @@ def test_apply_projections_normalizes_events_before_router_inspection(
                 {
                     "type": "scene_open",
                     "characters": ["xiaoyan"],
-                    "payload": {"content": "萧炎推开石门，新的悬念出现"},
+                    "payload": {"content": "Xiao Yan pushes open the stone door，a new mystery emerges"},
                 }
             ],
             "state_deltas": [],
@@ -308,8 +308,8 @@ def test_apply_projections_updates_state_for_rejected_commit(tmp_path):
         chapter=7,
         review_result={"blocking_count": 1},
         fulfillment_result={
-            "planned_nodes": ["进入坊市"],
-            "covered_nodes": ["进入坊市"],
+            "planned_nodes": ["Enter the marketplace"],
+            "covered_nodes": ["Enter the marketplace"],
             "missed_nodes": [],
             "extra_nodes": [],
         },
@@ -331,7 +331,7 @@ def test_chapter_commit_cli_builds_and_persists_commit(tmp_path, monkeypatch):
     extraction_path = tmp_path / "extraction.json"
     review_path.write_text('{"blocking_count": 0}', encoding="utf-8")
     fulfillment_path.write_text(
-        '{"planned_nodes": ["发现陷阱"], "covered_nodes": ["发现陷阱"], "missed_nodes": [], "extra_nodes": []}',
+        '{"planned_nodes": ["Discover the trap"], "covered_nodes": ["Discover the trap"], "missed_nodes": [], "extra_nodes": []}',
         encoding="utf-8",
     )
     disambiguation_path.write_text('{"pending": []}', encoding="utf-8")
@@ -373,8 +373,8 @@ def test_apply_projections_writes_events_and_amend_proposals(tmp_path):
         chapter=3,
         review_result={"blocking_count": 0},
         fulfillment_result={
-            "planned_nodes": ["发现陷阱"],
-            "covered_nodes": ["发现陷阱"],
+            "planned_nodes": ["Discover the trap"],
+            "covered_nodes": ["Discover the trap"],
             "missed_nodes": [],
             "extra_nodes": [],
         },
@@ -388,11 +388,11 @@ def test_apply_projections_writes_events_and_amend_proposals(tmp_path):
                     "event_id": "evt-001",
                     "chapter": 3,
                     "event_type": "world_rule_broken",
-                    "subject": "金手指",
+                    "subject": "Special ability",
                     "payload": {
                         "field": "world_rule",
-                        "base_value": "每日一次",
-                        "proposed_value": "短时失控突破",
+                        "base_value": "Once daily",
+                        "proposed_value": "brief loss of control during breakthrough",
                     },
                 }
             ],
@@ -415,5 +415,5 @@ def test_apply_projections_writes_events_and_amend_proposals(tmp_path):
 
     assert row["record_type"] == "amend_proposal"
     assert row["field"] == "world_rule"
-    assert row["override_value"] == "短时失控突破"
+    assert row["override_value"] == "brief loss of control during breakthrough"
     assert row["status"] == "pending"

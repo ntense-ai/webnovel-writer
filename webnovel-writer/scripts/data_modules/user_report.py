@@ -358,7 +358,7 @@ def _find_review_report(project_root: Path, chapter: int) -> Path | None:
     reports_dir = project_dir(project_root, "reviews")
     if not reports_dir.is_dir():
         return None
-    patterns = (f"chapter-{chapter}-review.md", f"chapter-{chapter:03d}-review.md", f"chapter-{chapter:04d}-review.md", f"*第{chapter}章*.md", f"*第{chapter:02d}章*.md", f"*第{chapter:03d}章*.md")
+    patterns = (f"chapter-{chapter}-review.md", f"chapter-{chapter:03d}-review.md", f"chapter-{chapter:04d}-review.md")
     for pattern in patterns:
         matches = sorted(reports_dir.rglob(pattern))
         for item in matches:
@@ -452,7 +452,7 @@ def _add_projection_issues(
 def _backup_evidence(project_root: Path, chapter: int) -> tuple[bool, str]:
     backup_dir = project_root / ".webnovel" / "backups"
     if backup_dir.is_dir():
-        patterns = (f"ch{chapter:04d}*", f"*{chapter:04d}*", f"*第{chapter}章*")
+        patterns = (f"ch{chapter:04d}*", f"*{chapter:04d}*")
         for pattern in patterns:
             if any(backup_dir.glob(pattern)):
                 return True, _rel(project_root, backup_dir)
@@ -758,7 +758,7 @@ def build_plan_report(project_root: Path, *, chapter: int | None = None, volume:
     target_chapter = int(chapter or 1)
     report = _new_report(project_root, stage="plan", chapter=target_chapter, volume=volume)
     core_files = 0
-    outline_path = project_path(project_root, "大纲/总纲.md")
+    outline_path = project_path(project_root, "outlines/master-outline.md")
     if outline_path.is_file():
         core_files += 1
         _add_file(report, label="Master outline", path=_rel(project_root, outline_path), status="completed", note="Generated")

@@ -64,8 +64,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                 "commit_not_accepted",
                 message=f"chapter commit status is {status or 'missing'}",
                 path=str(commit_path),
-                impact="写章充分性闸门要求 accepted commit 才能进入备份和下一章。",
-                repair="修复 review/fulfillment/disambiguation 阻断项后重新提交。",
+                impact="The chapter sufficiency gate requires an accepted commit before backup or the next chapter.",
+                repair="Resolve blocking review, fulfillment, or disambiguation issues, then resubmit.",
             )
         )
 
@@ -83,8 +83,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                         "projection_status_missing",
                         message=f"projection {writer} status missing",
                         path=str(commit_path),
-                        impact="postcommit 必须确认 state/index/summary/memory/vector 五项投影状态。",
-                        repair="重新执行 chapter-commit 或补跑 projection retry/replay。",
+                        impact="Postcommit must confirm all five projection statuses: state, index, summary, memory, and vector.",
+                        repair="Rerun chapter-commit or use projection retry/replay.",
                         details={"source": projection_source},
                     )
                 )
@@ -94,8 +94,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                         "projection_failure",
                         message=f"projection {writer} failed: {status_text}",
                         path=str(commit_path),
-                        impact="最新 projection_log 显示 read-model 投影失败。",
-                        repair="查看 projection_log.jsonl 的 writers 字段，修复后补跑 projection retry/replay。",
+                        impact="The latest projection_log shows a failed read-model projection.",
+                        repair="Inspect the writers field in projection_log.jsonl, repair the problem, then use projection retry/replay.",
                         details={"source": projection_source, "run": projection_run},
                     )
                 )
@@ -105,8 +105,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                         "projection_pending",
                         message=f"projection {writer} is still pending",
                         path=str(commit_path),
-                        impact="read-model 还没有确认写入完成。",
-                        repair="重新运行 chapter-commit 或后续 projection retry/replay。",
+                        impact="The read-model write has not yet been confirmed complete.",
+                        repair="Run chapter-commit again or use projection retry/replay afterward.",
                     )
                 )
             elif status_text not in OK_PROJECTION_STATUSES:
@@ -115,8 +115,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                         "projection_status_invalid",
                         message=f"projection {writer} status is {status_text}",
                         path=str(commit_path),
-                        impact="postcommit 只接受 projection 状态 done 或 skipped。",
-                        repair="等待投影完成或补跑 projection retry/replay。",
+                        impact="Postcommit accepts only done or skipped projection states.",
+                        repair="Wait for projection completion or use projection retry/replay.",
                     )
                 )
 
@@ -129,8 +129,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                     "summary_projection_missing",
                     message="summary projection marked done but file is missing",
                     path=str(summary_path),
-                    impact="后续上下文无法读取本章摘要。",
-                    repair="补跑 summary projection 或重新执行 chapter-commit。",
+                    impact="Subsequent context cannot read this chapter's summary.",
+                    repair="Retry the summary projection or rerun chapter-commit.",
                 )
             )
     if isinstance(projection_status, dict) and projection_status.get("index") == "done" and not cfg.index_db.is_file():
@@ -139,8 +139,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                 "index_projection_missing",
                 message="index projection marked done but index.db is missing",
                 path=str(cfg.index_db),
-                impact="查询、dashboard 和实体关系读模型不可用。",
-                repair="补跑 index projection 或重新执行 chapter-commit。",
+                impact="Query, dashboard, and entity-relationship read models are unavailable.",
+                repair="Retry the index projection or rerun chapter-commit.",
             )
         )
     if isinstance(projection_status, dict) and projection_status.get("memory") == "done" and not cfg.scratchpad_file.is_file():
@@ -150,8 +150,8 @@ def run_postcommit_gate(project_root: Path, chapter: int) -> dict:
                 message="memory projection marked done but scratchpad is missing",
                 severity="warning",
                 path=str(cfg.scratchpad_file),
-                impact="长期记忆可能未写入。",
-                repair="检查 memory projection 输出；必要时补跑。",
+                impact="Long-term memory may not have been written.",
+                repair="Check the memory projection output and retry if necessary.",
             )
         )
 

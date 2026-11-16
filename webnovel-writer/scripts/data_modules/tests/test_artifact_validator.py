@@ -79,7 +79,7 @@ def test_artifact_validator_reports_policy_blockers(tmp_path):
             "extra_nodes": [],
         },
     )
-    disambiguation = _write_json(tmp_path / "disambiguation_result.json", {"pending": [{"mention": "宗主"}]})
+    disambiguation = _write_json(tmp_path / "disambiguation_result.json", {"pending": [{"mention": "Sect Leader"}]})
 
     assert validate_review_result(review)["errors"][0]["type"] == ERROR_BLOCKING_REVIEW
     assert validate_fulfillment_result(fulfillment)["errors"][0]["type"] == ERROR_MISSED_OUTLINE_NODE
@@ -95,14 +95,14 @@ def test_artifact_validator_accepts_valid_extraction(tmp_path):
             "entity_deltas": [],
             "entities_appeared": [],
             "scenes": [],
-            "summary_text": "摘要",
+            "summary_text": "Summary",
         },
     )
 
     report = validate_extraction_result(path)
 
     assert report["ok"] is True
-    assert report["payload"]["summary_text"] == "摘要"
+    assert report["payload"]["summary_text"] == "Summary"
 
 
 def test_validate_commit_artifact_files_merges_reports(tmp_path):
@@ -114,7 +114,7 @@ def test_validate_commit_artifact_files_merges_reports(tmp_path):
     disambiguation = _write_json(tmp_path / "disambiguation_result.json", {"pending": []})
     extraction = _write_json(
         tmp_path / "extraction_result.json",
-        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "Summary"},
     )
 
     report = validate_commit_artifact_files(
@@ -150,7 +150,7 @@ def test_validate_chapter_commit_reports_projection_failure(tmp_path):
                 "accepted_events": [],
                 "state_deltas": [],
                 "entity_deltas": [],
-                "summary_text": "摘要",
+                "summary_text": "Summary",
             },
             "projection_status": {"state": "done", "index": "failed:locked"},
         },
@@ -179,7 +179,7 @@ def test_validate_chapter_commit_requires_all_projection_writers(tmp_path):
                 "accepted_events": [],
                 "state_deltas": [],
                 "entity_deltas": [],
-                "summary_text": "摘要",
+                "summary_text": "Summary",
             },
             "projection_status": {
                 "state": "done",
@@ -201,12 +201,12 @@ def test_validate_chapter_commit_requires_all_projection_writers(tmp_path):
 
 
 def test_artifact_validator_rejects_missing_required_top_level_fields(tmp_path):
-    """precommit 负向用例：缺关键顶层字段时 runtime validator 必须拦截。
+    """precommit Negative test case: when required top-level fields are missing runtime validator must block。
 
-    取代已退役的 test_webnovel_write_data_agent_prompt_requires_extraction_schema
-    （plan §12.2）：字段保障由 runtime schema 强制，而非主 Skill 文案锚定。
+    Replaces the retired test_webnovel_write_data_agent_prompt_requires_extraction_schema
+     (plan §12.2): Field guarantees come from runtime schema enforce，rather than the primary Skill wording anchors。
     """
-    # fulfillment_result 缺 missed_nodes
+    # fulfillment_result missing missed_nodes
     fulfillment = _write_json(
         tmp_path / "fulfillment_result.json",
         {"planned_nodes": [], "covered_nodes": [], "extra_nodes": []},
@@ -216,14 +216,14 @@ def test_artifact_validator_rejects_missing_required_top_level_fields(tmp_path):
     assert report["errors"][0]["type"] == ERROR_SCHEMA
     assert "missed_nodes" in report["errors"][0]["message"]
 
-    # disambiguation_result 缺 pending
+    # disambiguation_result missing pending
     disambiguation = _write_json(tmp_path / "disambiguation_result.json", {})
     report = validate_disambiguation_result(disambiguation)
     assert report["ok"] is False
     assert report["errors"][0]["type"] == ERROR_SCHEMA
     assert "pending" in report["errors"][0]["message"]
 
-    # extraction_result 缺核心字段 accepted_events
+    # extraction_result missing core fields accepted_events
     extraction = _write_json(
         tmp_path / "extraction_result.json",
         {"state_deltas": [], "entity_deltas": []},

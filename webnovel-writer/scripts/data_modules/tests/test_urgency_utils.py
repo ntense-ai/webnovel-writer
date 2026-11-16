@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""urgency_utils.coerce_urgency 单元测试。"""
+"""urgency_utils.coerce_urgency unit tests。"""
 from __future__ import annotations
 
 import math
@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-# 确保 scripts/ 在 sys.path 中
+# ensure scripts/ at sys.path in
 _scripts_dir = str(Path(__file__).resolve().parent.parent.parent)
 if _scripts_dir not in sys.path:
     sys.path.insert(0, _scripts_dir)
@@ -18,7 +18,7 @@ from data_modules.urgency_utils import coerce_urgency
 
 
 class TestCoerceUrgencyNumeric:
-    """数值输入直接通过。"""
+    """numeric input passes through。"""
 
     def test_int_input(self):
         assert coerce_urgency(80) == 80.0
@@ -30,16 +30,16 @@ class TestCoerceUrgencyNumeric:
         assert coerce_urgency(0) == 0.0
 
     def test_large_number_not_clamped(self):
-        # 当前实现不夹紧上界，仅做规范化；如果将来需要 clamp，再单独加。
+        # current implementation does not clamp the upper bound，normalization only；if needed later clamp，then add separately。
         assert coerce_urgency(150) == 150.0
 
     def test_negative_number_preserved(self):
-        # 负数语义虽然不常用，但 coerce 不应该静默修改它。
+        # negative values are unusual but，but coerce must not silently modify it。
         assert coerce_urgency(-5) == -5.0
 
 
 class TestCoerceUrgencyString:
-    """字符串输入被映射或解析。"""
+    """string input is mapped or parsed。"""
 
     @pytest.mark.parametrize(
         "label,expected",
@@ -68,7 +68,7 @@ class TestCoerceUrgencyString:
         assert coerce_urgency(numeric_str) == pytest.approx(expected)
 
     def test_unknown_label_returns_default(self):
-        # "critical"/"urgent" 等未在映射表里 → 走 default
+        # "critical"/"urgent" not in the mapping → go default
         assert coerce_urgency("critical") == 0.0
         assert coerce_urgency("critical", default=50.0) == 50.0
 
@@ -77,7 +77,7 @@ class TestCoerceUrgencyString:
         assert coerce_urgency("   ") == 0.0
 
     def test_invalid_string_does_not_raise(self):
-        """关键：旧版本会 raise，新版本必须安全返回 default。"""
+        """key：old version would raise，new version must return safely default。"""
         try:
             result = coerce_urgency("not-a-number")
         except Exception as e:  # pragma: no cover - regression guard
@@ -86,7 +86,7 @@ class TestCoerceUrgencyString:
 
 
 class TestCoerceUrgencyOther:
-    """其他类型/边界情况。"""
+    """other types/edge cases。"""
 
     def test_none(self):
         assert coerce_urgency(None) == 0.0
@@ -95,7 +95,7 @@ class TestCoerceUrgencyOther:
         assert coerce_urgency(None, default=42.0) == 42.0
 
     def test_bool_returns_default(self):
-        # bool 是 int 子类，但语义不是 urgency；显式返回 default。
+        # bool is int subclass，but the meaning is not urgency；explicitly return default。
         assert coerce_urgency(True) == 0.0
         assert coerce_urgency(False) == 0.0
 
@@ -107,10 +107,10 @@ class TestCoerceUrgencyOther:
 
 
 class TestRegressionOriginalBug:
-    """复现 Issue：data-agent 输出字符串 urgency 导致下游 ValueError。"""
+    """reproduce Issue：data-agent output string urgency causes downstream ValueError。"""
 
     def test_high_no_longer_raises(self):
-        """旧代码 float("high") 抛 ValueError，新代码必须正常返回。"""
+        """old code float("high") raise ValueError，new code must return normally。"""
         result = coerce_urgency("high")
         assert math.isfinite(result)
         assert result > 0

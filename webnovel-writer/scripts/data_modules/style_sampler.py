@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Style Sampler - 风格样本管理模块
-
-管理高质量章节片段作为风格参考：
-- 风格样本存储
-- 按场景类型分类
-- 样本选择策略
-"""
+"Style Sampler manages high-quality chapter excerpts as style references, including storage, classification by scene type, and sample-selection strategies."
 
 import json
 import sqlite3
@@ -24,19 +17,19 @@ from .observability import safe_append_perf_timing, safe_log_tool_call
 
 
 class SceneType(Enum):
-    """场景类型"""
-    BATTLE = "战斗"
-    DIALOGUE = "对话"
-    DESCRIPTION = "描写"
-    TRANSITION = "过渡"
-    EMOTION = "情感"
-    TENSION = "紧张"
-    COMEDY = "轻松"
+    "Scene type."
+    BATTLE = "combat"
+    DIALOGUE = "conversation"
+    DESCRIPTION = "description"
+    TRANSITION = "transition"
+    EMOTION = "emotional-relationships"
+    TENSION = "tension"
+    COMEDY = "lighthearted"
 
 
 @dataclass
 class StyleSample:
-    """风格样本"""
+    "Style sample."
     id: str
     chapter: int
     scene_type: str
@@ -47,14 +40,14 @@ class StyleSample:
 
 
 class StyleSampler:
-    """风格样本管理器"""
+    "Style sample manager."
 
     def __init__(self, config=None):
         self.config = config or get_config()
         self._init_db()
 
     def _init_db(self):
-        """初始化数据库"""
+        "Initialize the database."
         self.config.ensure_dirs()
         with self._get_conn() as conn:
             cursor = conn.cursor()
@@ -78,7 +71,7 @@ class StyleSampler:
 
     @contextmanager
     def _get_conn(self):
-        """获取数据库连接（确保关闭，避免 Windows 下文件句柄泄漏导致无法清理临时目录）"""
+        "Get a database connection and ensure it closes, preventing Windows file-handle leaks that block temporary-directory cleanup."
         db_path = self.config.webnovel_dir / "style_samples.db"
         conn = sqlite3.connect(str(db_path))
         try:
@@ -86,10 +79,10 @@ class StyleSampler:
         finally:
             conn.close()
 
-    # ==================== 样本管理 ====================
+    # ==================== Sample management ====================
 
     def add_sample(self, sample: StyleSample) -> bool:
-        """添加风格样本"""
+        "Add a style sample."
         with self._get_conn() as conn:
             cursor = conn.cursor()
             try:
@@ -117,7 +110,7 @@ class StyleSampler:
         limit: int = 5,
         min_score: float = 0.0
     ) -> List[StyleSample]:
-        """按场景类型获取样本"""
+        "Get samples by scene type."
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -131,7 +124,7 @@ class StyleSampler:
             return [self._row_to_sample(row) for row in cursor.fetchall()]
 
     def get_best_samples(self, limit: int = 10) -> List[StyleSample]:
-        """获取最高分样本"""
+        "Get the highest-scoring samples."
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -153,7 +146,7 @@ class StyleSampler:
         return value if isinstance(value, list) else []
 
     def _row_to_sample(self, row) -> StyleSample:
-        """将数据库行转换为样本对象"""
+        "Convert a database row into a sample object."
         return StyleSample(
             id=row[0],
             chapter=row[1],
@@ -164,7 +157,7 @@ class StyleSampler:
             created_at=row[6]
         )
 
-    # ==================== 样本提取 ====================
+    # ==================== Sample extraction ====================
 
     def extract_candidates(
         self,
@@ -173,11 +166,7 @@ class StyleSampler:
         review_score: float,
         scenes: List[Dict]
     ) -> List[StyleSample]:
-        """
-        从章节中提取风格样本候选
-
-        只有高分章节 (review_score >= 80) 才提取样本
-        """
+        "Extract candidate style samples from a chapter only when review_score >= 80."
         if review_score < 80:
             return []
 
@@ -187,16 +176,16 @@ class StyleSampler:
             scene_type = self._classify_scene_type(scene)
             scene_content = scene.get("content", "")
 
-            # 跳过过短的场景
+            # Skip scenes that are too short
             if len(scene_content) < 200:
                 continue
 
-            # 创建样本
+            # Create a sample
             sample = StyleSample(
                 id=f"ch{chapter}_s{scene.get('index', 0)}",
                 chapter=chapter,
                 scene_type=scene_type,
-                content=scene_content[:2000],  # 限制长度
+                content=scene_content[:2000],  # Limit length
                 score=review_score / 100.0,
                 tags=self._extract_tags(scene_content)
             )
@@ -205,15 +194,15 @@ class StyleSampler:
         return candidates
 
     def _classify_scene_type(self, scene: Dict) -> str:
-        """分类场景类型"""
+        "Classify the scene type."
         summary = scene.get("summary", "").lower()
         content = scene.get("content", "").lower()
 
-        # 简单关键词分类
-        battle_keywords = ["战斗", "攻击", "出手", "拳", "剑", "杀", "打", "斗"]
-        dialogue_keywords = ["说道", "问道", "笑道", "冷声", "对话"]
-        emotion_keywords = ["心中", "感觉", "情", "泪", "痛", "喜"]
-        tension_keywords = ["危险", "紧张", "恐惧", "压力"]
+        # Simple keyword classification
+        battle_keywords = ["combat", "attack", "strikes", "fist", "sword", "kill", "hit", "fight"]
+        dialogue_keywords = ["said", "asked", "said with a smile", "said coldly", "conversation"]
+        emotion_keywords = ["inwardly", "feels", "emotion", "tears", "pain", "joy"]
+        tension_keywords = ["danger", "tension", "fear", "pressure"]
 
         text = summary + content
 
@@ -229,22 +218,22 @@ class StyleSampler:
             return SceneType.DESCRIPTION.value
 
     def _extract_tags(self, content: str) -> List[str]:
-        """提取内容标签"""
+        "Extract content tags."
         tags = []
 
-        # 简单标签提取
-        if "战斗" in content or "攻击" in content:
-            tags.append("战斗")
-        if "修炼" in content or "突破" in content:
-            tags.append("修炼")
-        if "对话" in content or "说道" in content:
-            tags.append("对话")
-        if "描写" in content or "景色" in content:
-            tags.append("描写")
+        # Simple tag extraction
+        if "combat" in content or "attack" in content:
+            tags.append("combat")
+        if "cultivation" in content or "breakthrough" in content:
+            tags.append("cultivation")
+        if "conversation" in content or "said" in content:
+            tags.append("conversation")
+        if "description" in content or "scenery" in content:
+            tags.append("description")
 
         return tags[:5]
 
-    # ==================== 样本选择 ====================
+    # ==================== Sample selection ====================
 
     def select_samples_for_chapter(
         self,
@@ -252,13 +241,9 @@ class StyleSampler:
         target_types: List[str] = None,
         max_samples: int = 3
     ) -> List[StyleSample]:
-        """
-        为章节写作选择合适的风格样本
-
-        基于大纲分析需要什么类型的样本
-        """
+        "Select appropriate style samples for chapter writing by analyzing the outline's requirements."
         if target_types is None:
-            # 根据大纲推断需要的场景类型
+            # Infer required scene types from the outline
             target_types = self._infer_scene_types(chapter_outline)
 
         samples = []
@@ -271,16 +256,16 @@ class StyleSampler:
         return samples[:max_samples]
 
     def _infer_scene_types(self, outline: str) -> List[str]:
-        """从大纲推断需要的场景类型"""
+        "Infer required scene types from the outline."
         types = []
 
-        if any(kw in outline for kw in ["战斗", "对决", "比试", "交手"]):
+        if any(kw in outline for kw in ["battle", "combat", "duel", "sparring", "exchange blows"]):
             types.append(SceneType.BATTLE.value)
 
-        if any(kw in outline for kw in ["对话", "谈话", "商议", "讨论"]):
+        if any(kw in outline for kw in ["conversation", "conversation", "consult", "discuss"]):
             types.append(SceneType.DIALOGUE.value)
 
-        if any(kw in outline for kw in ["情感", "感情", "心理"]):
+        if any(kw in outline for kw in ["emotional-relationships", "feelings", "psychology", "psychological", "emotional"]):
             types.append(SceneType.EMOTION.value)
 
         if not types:
@@ -288,10 +273,10 @@ class StyleSampler:
 
         return types
 
-    # ==================== 统计 ====================
+    # ==================== Statistics ====================
 
     def get_stats(self) -> Dict[str, Any]:
-        """获取样本统计"""
+        "Get sample statistics."
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
@@ -315,7 +300,7 @@ class StyleSampler:
             }
 
 
-# ==================== CLI 接口 ====================
+# ==================== CLI ====================
 
 def main():
     import argparse
@@ -329,21 +314,21 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    # 获取统计
+    # Get statistics
     subparsers.add_parser("stats")
 
-    # 列出样本
+    # List samples
     list_parser = subparsers.add_parser("list")
     list_parser.add_argument("--type", help="Filter by type")
     list_parser.add_argument("--limit", type=int, default=10)
 
-    # 提取样本
+    # Extract samples
     extract_parser = subparsers.add_parser("extract")
     extract_parser.add_argument("--chapter", type=int, required=True)
     extract_parser.add_argument("--score", type=float, required=True)
     extract_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
 
-    # 选择样本
+    # Select samples
     select_parser = subparsers.add_parser("select")
     select_parser.add_argument("--outline", required=True, help="Chapter outline")
     select_parser.add_argument("--max", type=int, default=3)
@@ -352,10 +337,10 @@ def main():
     args = parser.parse_args(argv)
     command_started_at = time.perf_counter()
 
-    # 初始化
+    # Initialize
     config = None
     if args.project_root:
-        # 允许传入“工作区根目录”，统一解析到真正的 book project_root（必须包含 .webnovel/state.json）
+        # Accept a workspace root and resolve the actual book project_root, which must contain .webnovel/state.json.
         from project_locator import resolve_project_root
         from .config import DataModulesConfig
 

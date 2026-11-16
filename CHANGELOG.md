@@ -2,6 +2,27 @@
 
 This file records the impact of each stable release on authors and maintainers. Release notes prioritize webnovel authors: explain changes to the writing experience first, then add technical details for maintainers.
 
+## v6.3.0 - English-only author workflows for new books
+
+Release range: `v6.2.1..v6.3.0` on the `ntense` fork.
+
+### Changes for Authors
+
+English project paths, schemas, prompts, dashboard, and the complete reference
+corpus now support new English-author book workflows. Unicode story content
+remains supported. Portable Codex and Antigravity skills reuse the Claude Code
+engine, subject to actual host capabilities and independent-review requirements.
+
+### Do Existing Projects Need Changes?
+
+This fork is for new projects only. Old localized schemas and filename aliases
+are no longer supported; no automatic migration is provided. Preserve old books
+separately on their compatible version.
+
+### For Maintainers
+
+See [v6.3.0 release notes](releases/v6.3.0.md) for verification and host limits.
+
 ## v6.2.1 - Fix intermittent Windows access denial during chapter commits
 
 Release range: `v6.2.0..v6.2.1`.

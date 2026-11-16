@@ -1,0 +1,204 @@
+# Many Children, Many Blessings Template
+
+> Runtime preset identifier: `family-growth-system` (English taxonomy and initialization preset).
+
+## Core Premise
+
+### Essence of the Genre
+```
+System progression + romantic ensemble expansion + frequent payoffs + emotional fulfillment
+```
+
+### Core Attractions
+- Visible system growth.
+- Emotional fulfillment through multiple romances.
+- A sense of achievement from collecting.
+- Sustained stimulation from payoffs.
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack F17
+- General overlay: Pack U03
+
+---
+
+## System Design
+
+### System Panel Template
+```
+┌──────────────────────────────────┐
+│ [Many Children, Many Blessings]  │
+├──────────────────────────────────┤
+│ Level: Lv.5                     │
+│ Experience: 2350/5000            │
+│ Children: 12                    │
+│ Partners: 5                     │
+├──────────────────────────────────┤
+│ Attribute points: 15            │
+│ Skill points: 8                 │
+│ Gold: 52000                     │
+└──────────────────────────────────┘
+```
+
+### Core Mechanics
+- **Offspring system**: Number, quality, and inherited abilities.
+- **Romantic ensemble system**: Affection, intimacy, exclusive skills.
+- **Progression system**: Experience, levels, attribute allocation.
+- **Quest system**: Main/side/daily quests.
+- **Reward system**: Gacha, achievements, milestone rewards.
+
+### Offspring Quality
+| Quality | Probability | Inherited abilities |
+|------|------|----------|
+| Ordinary | 60% | Inherits 10% of attributes |
+| Excellent | 25% | Inherits 30% |
+| Elite | 10% | Inherits 50% |
+| Legendary | 4% | Inherits 80% |
+| Mythic | 1% | Inherits 100% plus mutation |
+
+---
+
+## Female Lead Types
+
+### Personalities
+| Type | Features | Romance approach |
+|------|------|----------|
+| Gentle | Understanding, considerate | Sincerity and care |
+| Lively | Cheerful, playful | Shared fun and surprises |
+| Aloof beauty | Distant, proud | Patience and strength |
+| Cunning | Intelligent, calculating | Intellectual contests and winning her over |
+| Tsundere | Words contradict feelings | Persistence and seeing through her facade |
+
+### Backgrounds
+| Type | Features | Plot function |
+|------|------|----------|
+| Great-family heiress | Resources, connections | Factional support |
+| Martial heroine | Strength, justice | Combat assistance |
+| Princess of another species | Exotic, mysterious | Expands the world |
+| Commoner | Innocence, diligence | Emotional resonance |
+| Young prodigy | Intelligence, ability | Strategic support |
+
+### Abilities
+| Type | Function | Offspring bonus |
+|------|------|----------|
+| Combat | Strong fighter | Strength + agility |
+| Support | Healing/buffs | Constitution + spirit |
+| Strategy | Plans/intelligence | Intelligence + perception |
+| Special | Unique abilities | Special talents |
+
+---
+
+## Managing the Romantic Ensemble
+
+### Affection System
+```
+Strangers (0-20) → Acquaintances (21-40) → Favorable impression (41-60) →
+Liking (61-80) → Love (81-95) → Deepest love (96-100)
+```
+
+### Interactions
+| Interaction | Affection | Cooldown |
+|------|--------|------|
+| Everyday conversation | +1-3 | None |
+| Gifts | +5-20 | 1 day |
+| Dates | +10-30 | 3 days |
+| Fighting together | +5-15 | None |
+| Special events | +20-50 | Trigger-based |
+
+### Balance Principles
+- Screen time: every female lead appears.
+- Emotion: do not unfairly favor one over another.
+- Abilities: each has distinct strengths.
+- Plot: each receives an individual storyline.
+
+---
+
+## Payoff Design
+
+### System Payoffs
+- **Leveling**: Higher level → major attribute increases.
+- **Gacha**: Rare draw → powerful item/skill.
+- **Unlocking**: New feature → system upgrade.
+- **Achievement**: Milestone reached → generous reward.
+
+### Romantic Ensemble Payoffs
+- **Romantic success**: Maximum affection → joins the ensemble.
+- **Jealousy**: A female lead's jealousy → emotional gratification.
+- **Competing for affection**: Romantic rivalry → feeling needed.
+- **Unity**: The ensemble works together → team spirit.
+
+### Offspring Payoffs
+- **Birth**: High-quality offspring → surprise.
+- **Growth**: Children become accomplished → achievement.
+- **Inheritance**: Abilities pass down → legacy.
+- **Comeback**: A child rises against the odds → pride.
+
+---
+
+## Relationship Arc Design
+
+### One Female Lead's Arc
+```
+Meeting → Misunderstanding → Understanding → Attraction → Confession → Together → Deepening bond
+```
+
+### Multiple Female Leads
+```
+Prioritize the main female lead's arc.
+Interweave secondary female leads' development.
+Avoid advancing too many simultaneously.
+```
+
+### Emotional Pacing
+- Early: focus on 1-2 main female leads.
+- Middle: expand to 3-4 secondary female leads.
+- Late: resolve every female lead's storyline.
+
+---
+
+## Plot Pacing
+
+### Opening (First 10 Chapters)
+- Activate the system.
+- Introduce the first romantic partner.
+- First child is born.
+- Establish the basic setting.
+
+### Development (Chapters 10-100)
+- Gradually expand the ensemble to 3-5 partners.
+- Increase offspring to 10-50.
+- Unlock system features.
+- Gradually expand the faction.
+
+### Climax Phase (Chapters 100+)
+- Stabilize the ensemble at 5-10 partners.
+- Children become accomplished, with excellent/legendary quality.
+- Reach the system's maximum level.
+- Dominate a region/become a god.
+
+---
+
+## Worldbuilding
+
+### Background Options
+- Cultivation world.
+- Wuxia martial world.
+- Otherworldly continent.
+- Urban superpowers.
+- Interstellar era.
+
+### Factions
+- Protagonist's faction: grows from weak to strong.
+- Hostile factions: create conflict.
+- Neutral factions: provide resources.
+- Potential allies: help later.
+
+---
+
+## Cautions
+
+- Do not include too many female leads; 5-10 is appropriate.
+- Give each a personality; avoid stereotypes.
+- Children must be more than numbers; develop a few in depth.
+- Restrain system rewards to prevent runaway escalation.
+- Relationship arcs need genuine emotion, not filler.
+- Control payoff density: 1-2 per chapter.

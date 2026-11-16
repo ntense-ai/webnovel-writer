@@ -1,0 +1,282 @@
+# Development and Farming Fiction Template
+
+> Runtime preset identifier: `farming` (English taxonomy and initialization preset).
+
+> **Core appeal**: Resource accumulation + faction building + steady growth. "Build high walls, stockpile grain, and delay claiming kingship": conquer the world through management.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack F12
+- General overlay: Pack U03
+
+## Term Origins
+
+The Chinese genre term for "farming" originated in strategy games, where players developed their faction by building defenses, accumulating resources, and delaying overt bids for power. The genre has two major branches:
+- **Early development fiction**: Faction management, domestic administration, technological advancement; overcome opponents through economic/technological superiority.
+- **Later farming fiction**: Family life, everyday matters, and ordinary people's struggles.
+
+---
+
+## 1. Core Subgenres
+
+### Faction Management (Early Development Fiction)
+- **Features**: Establish a base and develop agriculture/economy/military/politics; administrative strength overwhelms rivals.
+- **Core payoffs**: Expansion, technological dominance, conquering the realm.
+- **Representative works**: *My Heroic Husband*, *Tang Brick*, *New Song*, *Governing All Under Heaven*, *First-Rank Official*.
+
+### Territory Building
+- **Features**: Gain a territory/fief and build from scratch.
+- **Core payoffs**: Territory upgrades, population growth, prosperity.
+- **Representative works**: *Age of Lords*, *Starting from Zero*, *I Have a City in Another World*.
+
+### Base Development
+- **Features**: Build a safe base in an apocalypse/interstellar/otherworldly setting.
+- **Core payoffs**: Base expansion, resource accumulation, team growth.
+- **Representative works**: *I Have a Space in the Apocalypse*, *Interstellar Farmer*.
+
+### Everyday Family Life (Later Farming Fiction)
+- **Features**: Ordinary lives in ancient/modern historical settings.
+- **Core payoffs**: Becoming prosperous, improving life, family harmony.
+- **Representative works**: *The Farmer's Little Lucky Daughter*, *The Beautiful Farm Girl Is Busy Farming*, *Everyday Life After Transmigrating to Qing*.
+
+---
+
+## 2. Worldbuilding: Development Society
+
+### Faction-Management World
+
+#### Development Stages
+| Stage | Features | Core task |
+|------|------|----------|
+| Foothold | Obtain a base | Establish stability |
+| Development | Domestic administration | Accumulate strength |
+| Expansion | Absorb neighbors | Expand influence |
+| Supremacy | Compete for the realm | Unify/dominate |
+
+#### Domestic Administration
+| Field | Content | Function |
+|------|------|------|
+| Agriculture | Food production | Population foundation |
+| Industry | Manufacturing | Equipment/goods |
+| Commerce | Trade and circulation | Wealth accumulation |
+| Military | Army building | Armed security |
+| Technology | Research and development | Generational advantage |
+| Politics | Institutional construction | Greater efficiency |
+
+### Everyday-Family World
+
+#### Social Structure (Ancient Setting)
+| Class | Features | Resources |
+|------|------|------|
+| Landowner | Extensive land | Abundant |
+| Rich farmer | Surplus grain | Ample |
+| Middle farmer | Self-sufficient | Moderate |
+| Poor farmer | Bare subsistence | Scarce |
+| Tenant | Rents farmland | Very few |
+
+#### Resources
+| Resource | Acquisition | Use |
+|------|----------|------|
+| Land | Purchase/reclamation | Farming foundation |
+| Seeds | Purchase/breeding | Crop source |
+| Money | Sales/saving | Currency |
+| Connections | Cultivate relationships | Social capital |
+
+---
+
+## 3. Faction-Management System (Early Genre Core)
+
+### Technology Trees
+```
+Agriculture:
+Primitive farming → Iron tools → Irrigation → Crop rotation → Improved seeds
+
+Industry:
+Hand workshops → Water-powered machinery → Standardized production → Assembly lines → Industrial revolution
+
+Military:
+Melee weapons → Improved bows/crossbows → Gunpowder weapons → Muskets/cannons → Modern firearms
+
+Commerce:
+Barter → Currency → Draft banks → Shareholding → Financial system
+```
+
+### Talent System
+| Type | Function | Acquisition |
+|------|------|----------|
+| Strategist | Strategic planning | Recruitment/voluntary arrival |
+| General | Military command | Recruitment/training |
+| Administrator | Economic management | Examinations/recommendations |
+| Craftsperson | Technical development | Recruitment/training |
+| Merchant | Trade operations | Cooperation/recruitment |
+
+### Institutions
+- **Political**: Centralization/feudalism/parliamentary government.
+- **Economic**: Planned/market/mixed economy.
+- **Military**: Militia system/professional recruitment/conscription.
+- **Selection**: Examinations/recommendations/assessment.
+
+---
+
+## 4. Classic Payoff Patterns
+
+### Technological Dominance (Faction Management)
+- **Scene**: Advanced technology faces a backward faction.
+- **Payoff**: An overwhelming generational advantage defeats greater numbers.
+- **Example**: Muskets against an army using melee weapons.
+
+### Administrative Advantage (Faction Management)
+- **Scene**: Enemies are still infighting while the protagonist has grown strong.
+- **Payoff**: Long preparation culminates in one decisive battle.
+- **Key**: Show the development process.
+
+### Talent Gives Allegiance (Faction Management)
+- **Scene**: Talented people from all sides join the protagonist.
+- **Payoff**: A brilliant constellation of followers.
+- **Key**: Give each recruit distinctive qualities.
+
+### Becoming Prosperous (Everyday Family Life)
+- **Scene**: Move from poverty to wealth.
+- **Payoff**: More money and better living conditions.
+- **Key**: Show the accumulation process.
+
+### Silencing Difficult Relatives (Everyday Family Life)
+- **Scene**: Relatives/neighbors look down on the protagonist.
+- **Payoff**: Regret comes too late after the protagonist succeeds.
+- **Key**: Avoid excessive contrivance.
+
+---
+
+## 5. Outline Structures
+
+### Faction Management (Standard: 2 Million Chinese Characters)
+
+#### Volume One: A Foothold (Chapters 1-80)
+- **Core**: Obtain a base and establish stability.
+- **Territory**: One county/village.
+- **Climax**: Repel the first threat.
+
+#### Volume Two: Development (Chapters 81-200)
+- **Core**: Domestic development and accumulating strength.
+- **Territory**: One commandery/prefecture.
+- **Climax**: Technology/institutions begin showing results.
+
+#### Volume Three: Expansion (Chapters 201-400)
+- **Core**: Absorb neighbors and expand.
+- **Territory**: Several prefectures/a region.
+- **Climax**: Become a regional hegemon.
+
+#### Volume Four: Supremacy (Chapters 401-600)
+- **Core**: Compete for the realm.
+- **Territory**: Half the country.
+- **Climax**: Win the decisive battle.
+
+#### Volume Five: Unification (Chapters 601-700)
+- **Core**: Unify the realm and establish a new order.
+- **Territory**: The whole realm.
+- **Climax**: Coronation/satisfying resolution.
+
+### Everyday Family Life (Standard: 1 Million Chinese Characters)
+
+#### Volume One: Starting Out (Chapters 1-60)
+- **Core**: Family division/transmigration provides basic resources.
+- **Assets**: A few mu of poor land/a dilapidated house.
+- **Climax**: First harvest improves life.
+
+#### Volume Two: Development (Chapters 61-150)
+- **Core**: Expand planting and begin processing.
+- **Assets**: A dozen-plus mu and a small workshop.
+- **Climax**: Open sales channels and double income.
+
+#### Volume Three: Growth (Chapters 151-250)
+- **Core**: Establish businesses and hire workers.
+- **Assets**: Large farm and multiple workshops.
+- **Climax**: Become locally wealthy.
+
+#### Volume Four: Pinnacle (Chapters 251-350)
+- **Core**: Business empire and higher status.
+- **Assets**: Chains of businesses.
+- **Climax**: Official recognition.
+
+#### Volume Five: Fulfillment (Chapters 351-400)
+- **Core**: A flourishing family.
+- **Assets**: An established great clan.
+- **Climax**: Satisfying resolution.
+
+---
+
+## 6. Farming System Design
+
+### Agriculture
+| Type | Cycle | Profit | Risk |
+|------|------|------|------|
+| Grain | Long | Low | Low |
+| Vegetables | Short | Medium | Medium |
+| Cash crops | Medium | High | Medium |
+| Medicinal herbs | Long | High | High |
+
+### Processing
+- **Basic**: Drying, pickling, milling.
+- **Intermediate**: Brewing, sugar production, oil pressing.
+- **Advanced**: Preparing medicinal herbs, specialty foods.
+
+### Economic Cycle
+```
+Production → Processing → Sales → Capital accumulation → Expanded production
+                           ↓
+                   Technical upgrades → Higher efficiency
+```
+
+---
+
+## 7. Conflict Design
+
+### Faction-Management Conflicts
+| Conflict | Source | Resolution |
+|------|------|------|
+| Invasion | Hostile factions | Military defense |
+| Internal rebellion | Dissatisfied groups | Political measures |
+| Resource competition | Neighboring factions | Diplomacy/war |
+| Disasters | Natural/human-made | Administrative response |
+
+### Everyday-Family Conflicts
+| Conflict | Source | Resolution |
+|------|------|------|
+| Land disputes | Landowners/neighbors | Argue on valid grounds |
+| Commercial competition | Industry peers | Differentiation |
+| Family tensions | Relatives | Clear boundaries |
+| Official exploitation | Officials | Find a patron |
+
+---
+
+## 8. Common Pitfalls
+
+### Must Avoid
+- ❌ A monotonous log without conflict.
+- ❌ Effortless development without setbacks.
+- ❌ Era-inappropriate technology/institutions.
+- ❌ Implausible numbers.
+
+### Recommended Practices
+- ✅ Conflict and setbacks.
+- ✅ Obstacles and costs in development.
+- ✅ Gradual technological/institutional progression.
+- ✅ Plausible numbers.
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<!-- Faction-management branch -->
+<entity type="faction" name="Faction name" desc="Nature" tier="level" territory="Territory" population="Population" military="Military strength"/>
+<entity type="technology" name="Technology name" desc="Effect" tier="level" prerequisite="Prerequisite" cost="Research cost"/>
+<entity type="talent" name="Talent name" desc="ability" tier="level" kind="Type" loyalty="Loyalty"/>
+<entity type="institution" name="Institution name" desc="Effect" tier="level" cost="Implementation cost" benefit="Benefit"/>
+
+<!-- Everyday-family branch -->
+<entity type="land" name="Plot name" desc="Position" tier="level" area="Area" fertility="Fertility"/>
+<entity type="enterprise" name="Enterprise name" desc="Type" tier="level" scale="Scale" profit="Profit"/>
+<entity type="asset" name="Asset name" desc="Type" tier="level" value="Value" source="Source"/>
+```

@@ -12,19 +12,19 @@
 
 ## I. Hook Types
 
-### 1.1 Existing Types (Compatibility Mapping)
+### 1.1 Core Types
 
-| Legacy type | New taxonomy | Description |
+| Identifier | New taxonomy | Description |
 |--------|-------------|------|
-| `危机型` | Crisis Hook (`危机钩`) | Enemy appears / danger approaches |
-| `反常型` | Mystery Hook (`悬念钩`) | Information gap / unsolved mystery |
-| `利益型` | Desire Hook (`渴望钩`) | Good things approaching / expected reward |
+| `crisis` | Crisis Hook (`crisis`) | Enemy appears / danger approaches |
+| `mystery` | Mystery Hook (`mystery`) | Information gap / unsolved mystery |
+| `desire` | Desire Hook (`desire`) | Good things approaching / expected reward |
 
-Chinese names in backticks are retained runtime labels.
+Names in backticks are the English runtime labels.
 
 ### 1.2 Extended Types
 
-#### 1.2.1 Emotion Hook (`情绪钩`)
+#### 1.2.1 Emotion Hook (`emotion`)
 
 **Definition**: Drive reading by triggering strong emotion (anger/protectiveness/empathy/injustice/embarrassment/attraction).
 
@@ -59,7 +59,7 @@ Chinese names in backticks are retained runtime labels.
 
 ---
 
-#### 1.2.2 Choice Hook (`选择钩`)
+#### 1.2.2 Choice Hook (`choice`)
 
 **Definition**: Drive reading with dilemmas/high-risk decisions; readers want to know what the character chooses.
 
@@ -95,7 +95,7 @@ Chinese names in backticks are retained runtime labels.
 
 ---
 
-#### 1.2.3 Desire Hook (`渴望钩`)
+#### 1.2.3 Desire Hook (`desire`)
 
 **Definition**: Drive reading with anticipated rewards/achievements/progress; readers want to see wishes fulfilled.
 
@@ -164,16 +164,16 @@ Chinese names in backticks are retained runtime labels.
 
 | Pattern / runtime label | Identifier | Typical trigger |
 |------|------|---------|
-| Vindication (`装逼打脸`) | Flex & Counter | Mockery → reversal → shock |
-| Hidden expert (`扮猪吃虎`) | Underdog Reveal | Apparent weakness → reveal → domination |
-| Defeat a stronger enemy (`越级反杀`) | Underdog Victory | Gap → strategy → reversal |
-| Prove authority wrong (`打脸权威`) | Authority Challenge | Authority → challenge → success |
-| Villain's downfall (`反派翻车`) | Villain Downfall | Gloating → counterattack → defeat |
-| Sweeter than expected (`甜蜜超预期`) | Sweet Surprise | Expectation → exceeded expectation → emotional elevation |
+| Vindication (`flex-and-counter`) | Flex & Counter | Mockery → reversal → shock |
+| Hidden expert (`underdog-reveal`) | Underdog Reveal | Apparent weakness → reveal → domination |
+| Defeat a stronger enemy (`underdog-victory`) | Underdog Victory | Gap → strategy → reversal |
+| Prove authority wrong (`authority-challenge`) | Authority Challenge | Authority → challenge → success |
+| Villain's downfall (`antagonistdownfall`) | Villain Downfall | Gloating → counterattack → defeat |
+| Sweeter than expected (`sweet-surprise`) | Sweet Surprise | Expectation → exceeded expectation → emotional elevation |
 
 ### 2.2 Extended Patterns
 
-#### 2.2.1 Misunderstanding Elevation (`迪化误解`)
+#### 2.2.1 Misunderstanding Elevation (`misunderstanding-elevation`)
 
 **Definition**: The protagonist does something ordinary/casual; supporting characters imagine hidden depths or a reclusive master.
 
@@ -200,7 +200,7 @@ Chinese names in backticks are retained runtime labels.
 
 ---
 
-#### 2.2.2 Identity Reveal (`身份掉马`)
+#### 2.2.2 Identity Reveal (`identity-reveal`)
 
 **Definition**: A hidden identity emerges at a critical moment, creating major contrast and shock.
 

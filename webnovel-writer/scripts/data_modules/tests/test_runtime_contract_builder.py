@@ -26,8 +26,8 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "玄幻退婚流"},
-                "master_constraints": {"core_tone": "先压后爆"},
+                "route": {"primary_genre": "broken-engagement-fantasy"},
+                "master_constraints": {"core_tone": "pressure before payoff"},
                 "base_context": [],
                 "source_trace": [],
                 "override_policy": {"locked": ["route.primary_genre"], "append_only": ["anti_patterns"], "override_allowed": []},
@@ -37,12 +37,12 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
         encoding="utf-8",
     )
     (project_root / ".story-system" / "anti_patterns.json").write_text(
-        json.dumps([{"text": "配角不能抢主角兑现"}], ensure_ascii=False),
+        json.dumps([{"text": "supporting characters must not take the protagonist's payoff"}], ensure_ascii=False),
         encoding="utf-8",
     )
-    (project_root / "大纲").mkdir(parents=True, exist_ok=True)
-    (project_root / "大纲" / "第1卷-详细大纲.md").write_text(
-        "### 第3章：试压\nCBN：继续压迫\n必须覆盖节点：发现陷阱、决定隐忍\n本章禁区：不可提前摊牌",
+    (project_root / "outlines").mkdir(parents=True, exist_ok=True)
+    (project_root / "outlines" / "volume-1-outline.md").write_text(
+        "### Chapter 3：pressure test\nCBN：continue oppression\nMust-cover nodes：discovers the trap、decides to endure quietly\nChapter prohibitions：do not reveal the plan early",
         encoding="utf-8",
     )
 
@@ -51,8 +51,8 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
 
     assert volume_brief["meta"]["contract_type"] == "VOLUME_BRIEF"
     assert review_contract["meta"]["contract_type"] == "REVIEW_CONTRACT"
-    assert "发现陷阱" in review_contract["must_check"]
-    assert "不可提前摊牌" in review_contract["blocking_rules"]
+    assert "discovers the trap" in review_contract["must_check"]
+    assert "do not reveal the plan early" in review_contract["blocking_rules"]
 
 
 def test_runtime_contract_builder_surfaces_review_extracted_anti_patterns(tmp_path):
@@ -68,8 +68,8 @@ def test_runtime_contract_builder_surfaces_review_extracted_anti_patterns(tmp_pa
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "仙侠"},
-                "master_constraints": {"core_tone": "克制具体"},
+                "route": {"primary_genre": "xianxia"},
+                "master_constraints": {"core_tone": "restrained and concrete"},
                 "base_context": [],
                 "source_trace": [],
                 "override_policy": {"locked": [], "append_only": ["anti_patterns"], "override_allowed": []},
@@ -82,7 +82,7 @@ def test_runtime_contract_builder_surfaces_review_extracted_anti_patterns(tmp_pa
         json.dumps(
             [
                 {
-                    "text": "唯一一个知道复利公式的人",
+                    "text": "the only person who knows the compound-interest formula",
                     "source_table": "review_extracted",
                     "source_id": "ch0002_issue_1",
                 }
@@ -94,5 +94,5 @@ def test_runtime_contract_builder_surfaces_review_extracted_anti_patterns(tmp_pa
 
     volume_brief, review_contract = RuntimeContractBuilder(project_root).build_for_chapter(3)
 
-    assert "唯一一个知道复利公式的人" in volume_brief["anti_patterns"]
-    assert "唯一一个知道复利公式的人" in review_contract["anti_patterns"]
+    assert "the only person who knows the compound-interest formula" in volume_brief["anti_patterns"]
+    assert "the only person who knows the compound-interest formula" in review_contract["anti_patterns"]

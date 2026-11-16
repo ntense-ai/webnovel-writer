@@ -20,30 +20,30 @@ from typing import Iterable, Optional
 
 
 GENRE_CANONICAL: set[str] = {
-    "都市", "玄幻", "仙侠", "奇幻", "科幻",
-    "历史", "悬疑", "游戏", "古言", "现言",
-    "幻言", "年代", "种田", "快穿", "衍生",
+    "urban", "xuanhuan", "xianxia", "fantasy", "sci-fi",
+    "historical", "mystery", "game-lit", "historical-romance", "contemporary-romance",
+    "fantasy-romance", "period-fiction", "farming", "quick-transmigration", "fanfiction",
 }
 
-# English UI labels resolve to the existing stable storage taxonomy.
-# Keep canonical_genre and template filenames unchanged for old project data.
+# English UI labels resolve to the English storage taxonomy.
+# Canonical genres and template filenames use English identifiers.
 ENGLISH_GENRE_ALIASES = {
-    "urban": "都市", "contemporary": "都市", "urban fantasy": "都市异能",
-    "slice of life": "都市日常", "realistic fiction": "现实题材",
-    "xuanhuan": "玄幻", "eastern fantasy": "玄幻", "cultivation": "修仙",
-    "xianxia": "仙侠", "immortal fantasy": "仙侠", "fantasy": "奇幻",
-    "western fantasy": "西幻", "science fiction": "科幻", "sci-fi": "科幻",
-    "historical": "历史", "historical fiction": "历史", "mystery": "悬疑",
-    "suspense": "悬疑", "game": "游戏", "gaming": "游戏", "litrpg": "游戏",
-    "historical romance": "古言", "contemporary romance": "现言",
-    "fantasy romance": "幻言", "period fiction": "年代", "farming": "种田",
-    "homesteading": "种田", "quick transmigration": "快穿", "fanfiction": "衍生",
-    "fan fiction": "衍生", "system": "系统流", "system fiction": "系统流",
-    "rebirth": "重生", "rules horror": "规则怪谈", "horror": "规则怪谈",
-    "dark fantasy": "黑暗题材", "ensemble": "群像", "all": "全部",
+    "urban": "urban", "contemporary": "urban", "urban fantasy": "urban-fantasy",
+    "slice of life": "urban-slice-of-life", "realistic fiction": "realistic-fiction",
+    "xuanhuan": "xuanhuan", "eastern fantasy": "xuanhuan", "cultivation": "xianxia",
+    "xianxia": "xianxia", "immortal fantasy": "xianxia", "fantasy": "fantasy",
+    "western fantasy": "western-fantasy", "science fiction": "sci-fi", "sci-fi": "sci-fi",
+    "historical": "historical", "historical fiction": "historical", "mystery": "mystery",
+    "suspense": "mystery", "game": "game-lit", "gaming": "game-lit", "litrpg": "game-lit",
+    "historical romance": "historical-romance", "contemporary romance": "contemporary-romance",
+    "fantasy romance": "fantasy-romance", "period fiction": "period-fiction", "farming": "farming",
+    "homesteading": "farming", "quick transmigration": "quick-transmigration", "fanfiction": "fanfiction",
+    "fan fiction": "fanfiction", "system": "system-fiction", "system fiction": "system-fiction",
+     "rules horror": "rules-horror", "horror": "rules-horror",
+    "dark fantasy": "dark-fiction", "ensemble": "ensemble", "all": "all",
 }
 
-_INPUT_SPLIT_RE = re.compile(r"[+＋/、,，|]+|与")
+_INPUT_SPLIT_RE = re.compile(r"[+＋/、,，|]+")
 _VALUE_SPLIT_RE = re.compile(r"[;；|]+")
 _HIGH_PRIORITY_TYPES = {"route", "platform", "canonical", "preset", "legacy"}
 _TYPE_PRIORITY = {
@@ -120,7 +120,7 @@ def _read_taxonomy(path: Path) -> tuple[GenreEntry, ...]:
         canonical = str(row.get("canonical_genre") or "").strip()
         if not label:
             raise ValueError(f"{path}: line {line_no} missing label")
-        if canonical not in GENRE_CANONICAL and canonical != "全部":
+        if canonical not in GENRE_CANONICAL and canonical != "all":
             raise ValueError(f"{path}: line {line_no} invalid canonical_genre {canonical!r}")
         entries.append(
             GenreEntry(
@@ -202,9 +202,9 @@ def resolve_genre_input(raw_label: Optional[str], *, index_path: Optional[str] =
     resolution = GenreResolution(raw_label=raw)
     if not raw:
         return resolution
-    if raw.casefold() in {"全部", "all"}:
-        resolution.canonical_genre = "全部"
-        resolution.matched_labels.append("全部")
+    if raw.casefold() in {"all"}:
+        resolution.canonical_genre = "all"
+        resolution.matched_labels.append("all")
         return resolution
 
     taxonomy = load_genre_taxonomy(index_path)

@@ -31,26 +31,26 @@
 
 | CSV file | Main source | Skills served | Description |
 | --- | --- | --- | --- |
-| `references/csv/命名规则.csv` | New | init, plan, write | Naming rules and positive/negative examples for characters/places/factions/techniques/items/books |
-| `references/csv/场景写法.csv` | Existing writing/*.md + new material | write, plan | Combat/dialogue/emotion/plot/volume-structure techniques and examples |
-| `references/csv/写作技法.csv` | Existing writing/*.md | write | Dialogue voice, emotional description, scene description, pacing techniques |
+| `references/csv/naming.csv` | New | init, plan, write | Naming rules and positive/negative examples for characters/places/factions/techniques/items/books |
+| `references/csv/scenes.csv` | Existing writing/*.md + new material | write, plan | Combat/dialogue/emotion/plot/volume-structure techniques and examples |
+| `references/csv/techniques.csv` | Existing writing/*.md | write | Dialogue voice, emotional description, scene description, pacing techniques |
 
 ### Existing Markdown to Migrate to CSV
 
 | Existing Markdown | Target CSV | Post-migration handling |
 | --- | --- | --- |
-| `writing/combat-scenes.md` (229 lines) | 场景写法.csv (`场景类型=战斗`) | Delete or keep a stub pointing to CSV |
-| `writing/dialogue-writing.md` (231 lines) | 写作技法.csv (`分类=对话`) | Same |
-| `writing/emotion-psychology.md` (265 lines) | 写作技法.csv (`分类=情感`) | Same |
-| `writing/scene-description.md` (263 lines) | 写作技法.csv (`分类=场景`) | Same |
-| `writing/desire-description.md` (311 lines) | 写作技法.csv (`分类=情感`) | Conservatively retain original; CSV does not yet cover desire-description detail |
-| `writing/genre-hook-payoff-library.md` (85 lines) | 场景写法.csv (`场景类型=钩子/兑现`) | Conservatively retain original; CSV covers only some hook/payoff entries |
+| `writing/combat-scenes.md` (229 lines) | scenes.csv (`scene_type=combat`) | Delete or keep a stub pointing to CSV |
+| `writing/dialogue-writing.md` (231 lines) | techniques.csv (`category=conversation`) | Same |
+| `writing/emotion-psychology.md` (265 lines) | techniques.csv (`category=emotional-relationships`) | Same |
+| `writing/scene-description.md` (263 lines) | techniques.csv (`category=scene`) | Same |
+| `writing/desire-description.md` (311 lines) | techniques.csv (`category=emotional-relationships`) | Conservatively retain original; CSV does not yet cover desire-description detail |
+| `writing/genre-hook-payoff-library.md` (85 lines) | scenes.csv (`scene_type=hook/payoff`) | Conservatively retain original; CSV covers only some hook/payoff entries |
 
 ### Deferred (Revisit When Triggered)
 
 | Original proposal | Reason to defer | Reinstatement condition |
 | --- | --- | --- |
-| init/title-patterns-and-anti-patterns.md | A few rows in 命名规则.csv suffice | Upgrade if CSV coverage is inadequate and titles become heavily formulaic |
+| init/title-patterns-and-anti-patterns.md | A few rows in naming.csv suffice | Upgrade if CSV coverage is inadequate and titles become heavily formulaic |
 | init/protagonist-flaw-patterns.md | Covered by Claude's general abilities | Add CSV entries if webnovel flaw design becomes vague |
 | query/entity-alias-resolution.md | Alias resolution is code logic (entity_linker.py) | Add if semantic ambiguity becomes frequent |
 | query/foreshadowing-urgency-rules.md | context-agent already ranks urgency | Add if output explanations are inconsistent |
@@ -70,15 +70,15 @@
 | `reference_search.py` canonical genre parsing | Complete | Normalizes canonical, platform_tag, and legacy values |
 | `CSV_CONFIG` structural metadata | Complete | Added `prefix`, `required_cols`, `contract_inject` |
 | `validate_csv.py` | Complete | Validates headers, IDs, prefixes, required columns, separators, genres, routing/decision coverage |
-| `题材与调性推理.csv` | Expanded | 8 → 26 rows, covering 15 canonical genres |
-| `裁决规则.csv` | Expanded | 7 → 17 rows, covering 15 canonical genres |
-| CSV `适用题材` canonical migration | Complete | `validate_csv.py` currently reports 0 errors / 0 warnings |
+| `genre-routing.csv` | Expanded | 8 → 26 rows, covering 15 canonical genres |
+| `adjudication.csv` | Expanded | 7 → 17 rows, covering 15 canonical genres |
+| CSV `applicable_genres` canonical migration | Complete | `validate_csv.py` currently reports 0 errors / 0 warnings |
 
 ## IV. Remaining Knowledge-Layer Gaps
 
 | Gap | Priority | Description |
 |------|--------|------|
-| Female-audience naming conventions | P1 | Expand historical/contemporary romance, sweet romance, and entertainment-industry distinctions in `命名规则.csv` |
-| Core romance scenes | P1 | Expand attraction, misunderstandings, reunions, breakups, and winning-back-a-partner scenes in `场景写法.csv` |
-| Mystery reasoning techniques | P1 | Expand clues, fair misdirection, and truth reveals in `写作技法.csv` and `桥段套路.csv` |
+| Female-audience naming conventions | P1 | Expand historical/contemporary romance, sweet romance, and entertainment-industry distinctions in `naming.csv` |
+| Core romance scenes | P1 | Expand attraction, misunderstandings, reunions, breakups, and winning-back-a-partner scenes in `scenes.csv` |
+| Mystery reasoning techniques | P1 | Expand clues, fair misdirection, and truth reveals in `techniques.csv` and `tropes.csv` |
 | Shared Markdown migration review | P2 | Itemizable content in `cool-points-guide.md` and `naming-and-voice-gaps.md` awaits manual entry-by-entry migration |

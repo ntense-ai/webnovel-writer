@@ -4,7 +4,7 @@ This directory contains structured knowledge entries searched by `reference_sear
 
 Core goals:
 
-- Improve BM25 lexical recall for Chinese webnovel scenarios.
+- Improve BM25 lexical recall for English webnovel queries.
 - Return directly executable structured context to language models.
 - Store itemizable knowledge in CSV while retaining methodological Markdown files.
 
@@ -17,22 +17,22 @@ Hard boundaries:
 
 All CSV files use **UTF-8 with BOM**.
 
-Chinese column names, enum values, filenames, and retrieval queries below are literal runtime identifiers retained for compatibility with unchanged CSV data and scripts.
+Column names, enum values, filenames, and queries use English runtime identifiers.
 
 ## Shared Columns (All Tables)
 
 | Column | Required | Description | Example |
 |------|------|------|------|
-| `编号` | Yes | Unique ID with table prefix | `NR-001`, `SP-002`, `WT-003` |
-| `适用技能` | Yes | Multi-value field using `|` | `write|init|plan` |
-| `分类` | Yes | Topic category | `角色`, `战斗`, `情感` |
-| `层级` | Yes | Reminder / defect compensation / supplementary knowledge | `提醒` / `缺陷补偿` / `知识补充` |
-| `关键词` | Yes | High-weight trigger terms; separate with `|` | `角色命名|人名|玄幻命名` |
-| `意图与同义词` | No | Natural-language questions, jargon, idioms; separate with `|` | `名字怎么取|起名|主角叫什么` |
-| `适用题材` | Yes | `全部` or multiple genre names separated with `|` | `玄幻|仙侠` |
-| `大模型指令` | No | Execution instruction passed directly to the model after retrieval | Prioritize genre-appropriate naming vocabulary; avoid modern associations. |
-| `核心摘要` | Yes | Concise summary for high-weight recall and display | Fantasy names should evoke cultivation and classical imagery rather than copied modern names. |
-| `详细展开` | No | Supplementary explanation used for low-weight recall | Prefer classical surnames and setting-related imagery; avoid duplicate core-character names. |
+| `id` | Yes | Unique ID with table prefix | `NR-001`, `SP-002`, `WT-003` |
+| `applicable_skills` | Yes | Multi-value field using `|` | `write|init|plan` |
+| `category` | Yes | Topic category | `character`, `combat`, `emotional-relationships` |
+| `level` | Yes | Reminder / defect compensation / supplementary knowledge | `reminder` / `defect-compensation` / `knowledge` |
+| `keywords` | Yes | High-weight trigger terms; separate with `|` | `characternaming|personal names|xuanhuannaming` |
+| `intent_synonyms` | No | Natural-language questions, jargon, idioms; separate with `|` | `how to choose names|naming|protagonistwhat to call` |
+| `applicable_genres` | Yes | `all` or multiple genre names separated with `|` | `xuanhuan|xianxia` |
+| `model_instruction` | No | Execution instruction passed directly to the model after retrieval | Prioritize genre-appropriate naming vocabulary; avoid modern associations. |
+| `summary` | Yes | Concise summary for high-weight recall and display | Fantasy names should evoke cultivation and classical imagery rather than copied modern names. |
+| `details` | No | Supplementary explanation used for low-weight recall | Prefer classical surnames and setting-related imagery; avoid duplicate core-character names. |
 
 ## General Rules
 
@@ -40,25 +40,25 @@ Chinese column names, enum values, filenames, and retrieval queries below are li
 
 - Use `|` in every list-type field.
 - This applies to:
-  - `适用技能`
-  - `关键词`
-  - `意图与同义词`
-  - `适用题材`
+  - `applicable_skills`
+  - `keywords`
+  - `intent_synonyms`
+  - `applicable_genres`
 - Legacy `,` / `，` separators remain parseable only for migration compatibility.
 - Do not use comma separation in new or edited entries.
 
 ### 2. Long Text
 
-- Keep each field concise (legacy Chinese entries target at most 200 characters). English additions should use short, focused sentences.
+- Keep fields concise, using short, focused English sentences.
 - Split longer material into:
-  - `核心摘要`
-  - `详细展开`
-- `核心摘要` supports high-weight recall and display.
-- `详细展开` supplies additional explanation only; do not bury primary trigger terms there.
+  - `summary`
+  - `details`
+- `summary` supports high-weight recall and display.
+- `details` supplies additional explanation only; do not bury primary trigger terms there.
 
 ### 3. Instructions
 
-- For English additions, write `大模型指令` as direct, actionable English imperatives while preserving the column name. Existing rows remain Chinese source material; translate retrieved guidance into natural English when presenting it to English-language users.
+- Write `model_instruction` as direct, actionable English imperatives while preserving the column name.
 - Prioritize what to check, what to avoid, and how to adjudicate.
 - Avoid vague wording such as "write better" or "pay attention to prose quality."
 
@@ -85,97 +85,97 @@ Chinese column names, enum values, filenames, and retrieval queries below are li
 
 ## Table-Specific Columns
 
-### 命名规则.csv
+### naming.csv
 
 | Column | Description |
 |------|------|
-| `命名对象` | Characters, book titles, places, factions, techniques, items, etc. |
-| `规则` | Naming rule |
-| `正例` | Positive example |
-| `反例` | Negative example |
+| `naming_target` | Characters, book titles, places, factions, techniques, items, etc. |
+| `rule` | Naming rule |
+| `positive_example` | Positive example |
+| `negative_example` | Negative example |
 
-### 场景写法.csv
-
-| Column | Description |
-|------|------|
-| `场景类型` | Combat, dialogue, narrative structure, plot scenes, etc. |
-| `模式名称` | Scene-writing pattern name |
-| `说明` | Additional scene-writing explanation |
-| `示例片段` | Positive example |
-| `反面写法` | Common failure pattern |
-
-### 写作技法.csv
+### scenes.csv
 
 | Column | Description |
 |------|------|
-| `技法类型` | Dialogue, emotion, scene, pacing, etc. |
-| `技法名称` | Technique name |
-| `适用场景` | Applicable writing scenario |
-| `常见误区` | Frequent pitfalls |
-| `正例` | Positive example |
-| `反例` | Negative example |
+| `scene_type` | Combat, dialogue, narrative structure, plot scenes, etc. |
+| `pattern_name` | Scene-writing pattern name |
+| `description` | Additional scene-writing explanation |
+| `example_excerpt` | Positive example |
+| `negative examples` | Common failure pattern |
 
-### 桥段套路.csv
-
-| Column | Description |
-|------|------|
-| `桥段名称` | Trope name |
-| `前置铺垫` | Setup required before triggering |
-| `核心爽点` | Primary payoff |
-| `转折设计` | Key reversal |
-| `反套路变种` | Subversive variation |
-
-### 人设与关系.csv
+### techniques.csv
 
 | Column | Description |
 |------|------|
-| `人设类型` | Character-template name |
-| `核心动机` | Core goal driving behavior |
-| `行为逻辑` | Behavioral logic |
-| `互动模式` | Typical interactions with others |
-| `忌讳写法` | Patterns that make characters foolish or formulaic |
+| `technique_type` | Dialogue, emotion, scene, pacing, etc. |
+| `technique_name` | Technique name |
+| `applicable_scenes` | Applicable writing scenario |
+| `common pitfalls` | Frequent pitfalls |
+| `positive_example` | Positive example |
+| `negative_example` | Negative example |
 
-### 爽点与节奏.csv
-
-| Column | Description |
-|------|------|
-| `节奏类型` | Suppression, eruption, payoff, etc. |
-| `情绪调动手法` | Methods of steering reader emotion |
-| `常见崩盘误区` | Common pacing failures |
-
-### 金手指与设定.csv
+### tropes.csv
 
 | Column | Description |
 |------|------|
-| `设定类型` | System, inheritance, bloodline, world rules, etc. |
-| `数值控制边界` | Caps, cooldowns, costs, limits |
-| `与剧情交互方式` | Interaction with plot progression, conflict, and growth |
+| `trope_name` | Trope name |
+| `setup` | Setup required before triggering |
+| `core_payoff` | Primary payoff |
+| `twist_design` | Key reversal |
+| `subversive_variant` | Subversive variation |
 
-### 题材与调性推理.csv
-
-| Column | Description |
-|------|------|
-| `题材/流派` | Routing entry; platform_tag or common user wording |
-| `canonical_genre` | One of the 15 canonical genres, or `全部` for general routing |
-| `题材别名` | User aliases and jargon |
-| `核心调性` | Tone reference for MASTER_SETTING |
-| `节奏策略` | Pacing reference for MASTER_SETTING |
-| `推荐基础检索表` | Tables searched when story-system builds base_context |
-| `推荐动态检索表` | Tables searched when story-system builds chapter dynamic_context |
-| `默认查询词` | BM25 expansion queries after a route match |
-
-### 裁决规则.csv
+### characters.csv
 
 | Column | Description |
 |------|------|
-| `题材` | One of the 15 canonical genres |
-| `风格优先级` | Style decision order within a genre |
-| `爽点优先级` | Payoff decision order within a genre |
-| `节奏默认策略` | Default pacing written to CHAPTER_BRIEF reasoning |
-| `毒点权重` | Basis for anti-pattern ranking |
-| `冲突裁决` | Ranking basis for matches from multiple tables |
-| `contract注入层` | Target location in Story Contracts for decisions |
-| `反模式` | Genre-level forbidden patterns merged into anti_patterns |
+| `character_type` | Character-template name |
+| `core_motivation` | Core goal driving behavior |
+| `behavior_logic` | Behavioral logic |
+| `interaction_pattern` | Typical interactions with others |
+| `prohibited approaches` | Patterns that make characters foolish or formulaic |
+
+### pacing.csv
+
+| Column | Description |
+|------|------|
+| `pacing_type` | Suppression, eruption, payoff, etc. |
+| `emotional_techniques` | Methods of steering reader emotion |
+| `common failure modes` | Common pacing failures |
+
+### powers.csv
+
+| Column | Description |
+|------|------|
+| `setting_type` | System, inheritance, bloodline, world rules, etc. |
+| `numeric_limits` | Caps, cooldowns, costs, limits |
+| `plot_interaction` | Interaction with plot progression, conflict, and growth |
+
+### genre-routing.csv
+
+| Column | Description |
+|------|------|
+| `genre_route` | Routing entry; platform_tag or common user wording |
+| `canonical_genre` | One of the 15 canonical genres, or `all` for general routing |
+| `genre_aliases` | User aliases and jargon |
+| `core_tone` | Tone reference for MASTER_SETTING |
+| `pacing_strategy` | Pacing reference for MASTER_SETTING |
+| `recommended_base_tables` | Tables searched when story-system builds base_context |
+| `recommended_dynamic_tables` | Tables searched when story-system builds chapter dynamic_context |
+| `default_query` | BM25 expansion queries after a route match |
+
+### adjudication.csv
+
+| Column | Description |
+|------|------|
+| `genre` | One of the 15 canonical genres |
+| `style_priority` | Style decision order within a genre |
+| `payoff_priority` | Payoff decision order within a genre |
+| `default_pacing_strategy` | Default pacing written to CHAPTER_BRIEF reasoning |
+| `pitfall_weight` | Basis for anti-pattern ranking |
+| `conflict_resolution` | Ranking basis for matches from multiple tables |
+| `contract_injection_layer` | Target location in Story Contracts for decisions |
+| `anti_pattern` | Genre-level forbidden patterns merged into anti_patterns |
 
 ## Markdown Suitable for CSV Migration
 
@@ -196,28 +196,28 @@ Not suitable for replacement by CSV:
 
 ## Applicable Genre Enumeration
 
-`适用题材` accepts only these 15 canonical values or `全部`:
+`applicable_genres` accepts only these 15 canonical values or `all`:
 
 ```
-都市  玄幻  仙侠  奇幻  科幻
-历史  悬疑  游戏  古言  现言
-幻言  年代  种田  快穿  衍生
+urban  xuanhuan  xianxia  fantasy  sci-fi
+historical  mystery  game-lit  historical-romance  contemporary-romance
+fantasy-romance  period-fiction  farming  quick-transmigration  fanfiction
 ```
 
 See `genre-canonical.md` for the full two-level genre system (canonical + Fanqie `platform_tag` mapping).
 
-**Do not put** the following in `适用题材`:
+**Do not put** the following in `applicable_genres`:
 
-- Fanqie subcategory names (e.g. `都市日常`, `战神赘婿`): these are `platform_tag` values used only in routing tables.
-- Trope names (e.g. `退婚流`, `系统流`): these belong in `桥段套路.csv`.
-- Tone / scene / format labels (e.g. `爽文`, `动作`, `短篇`): these are outside the genre system.
+- Fanqie subcategory names (e.g. `urban-slice-of-life`, `warrior-son-in-law`): these are `platform_tag` values used only in routing tables.
+- Trope names (e.g. `broken-engagement fiction`, `system-fiction`): these belong in `tropes.csv`.
+- Tone / scene / format labels (e.g. `payoff-driven fiction`, `action`, `short-fiction`): these are outside the genre system.
 
 ## Retrieval
 
 Search with `reference_search.py`:
 
 ```bash
-python reference_search.py --skill write --query "角色命名" --genre 玄幻
-python reference_search.py --skill write --table 命名规则 --query "名字怎么取" --genre 玄幻
-python reference_search.py --skill write --table 写作技法 --query "情感描写 心理"
+python reference_search.py --skill write --query "characternaming" --genre xuanhuan
+python reference_search.py --skill write --table naming --query "how to choose names" --genre xuanhuan
+python reference_search.py --skill write --table techniques --query "emotional-relationshipsdescription psychological"
 ```

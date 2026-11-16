@@ -19,9 +19,9 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
     idx.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            current={"realm": "斗者"},
+            type="character",
+            canonical_name="Xiao Yan",
+            current={"realm": "Dou Zhe"},
             first_appearance=1,
             last_appearance=2,
         )
@@ -30,9 +30,9 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
         StateChangeMeta(
             entity_id="xiaoyan",
             field="realm",
-            old_value="斗者",
-            new_value="斗师",
-            reason="突破",
+            old_value="Dou Zhe",
+            new_value="Dou Shi",
+            reason="Breakthrough",
             chapter=3,
         )
     )
@@ -40,9 +40,9 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
         StateChangeMeta(
             entity_id="xiaoyan",
             field="realm",
-            old_value="斗师",
-            new_value="大斗师",
-            reason="再突破",
+            old_value="Dou Shi",
+            new_value="Da Dou Shi",
+            reason="Another breakthrough",
             chapter=8,
         )
     )
@@ -50,8 +50,8 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
         RelationshipMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
-            description="授艺",
+            type="mentor-student",
+            description="Teaching skills",
             chapter=2,
         )
     )
@@ -59,7 +59,7 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
     summaries_dir = cfg.webnovel_dir / "summaries"
     summaries_dir.mkdir(parents=True, exist_ok=True)
     (summaries_dir / "ch0008.md").write_text(
-        "## 剧情摘要\n内容\n\n## 伏笔\n- 三年之约\n- 神秘玉佩的来历\n",
+        "## Plot Summary\nContent\n\n## foreshadowing\n- three-year challenge\n- the origin of the mysterious jade pendant\n",
         encoding="utf-8",
     )
 
@@ -70,9 +70,9 @@ def test_bootstrap_from_index_includes_state_changes_and_open_loops(tmp_path):
 
     store = ScratchpadManager(cfg)
     active_realm = store.query(category="character_state", subject="xiaoyan", status="active")
-    assert any(item.field == "realm" and item.value == "大斗师" for item in active_realm)
+    assert any(item.field == "realm" and item.value == "Da Dou Shi" for item in active_realm)
     outdated_realm = store.query(category="character_state", subject="xiaoyan", status="outdated")
-    assert any(item.field == "realm" and item.value == "斗师" for item in outdated_realm)
+    assert any(item.field == "realm" and item.value == "Dou Shi" for item in outdated_realm)
     loops = store.query(category="open_loop", status="active")
-    assert any("三年之约" in item.value for item in loops)
+    assert any("three-year challenge" in item.value for item in loops)
 

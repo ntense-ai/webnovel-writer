@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-webnovel 统一入口脚本（无须 `cd`）
-
-用法示例：
-  python "<SCRIPTS_DIR>/webnovel.py" preflight
-  python "<SCRIPTS_DIR>/webnovel.py" where
-  python "<SCRIPTS_DIR>/webnovel.py" index stats
-
-说明：
-- 该脚本仅负责把脚本所在的 `scripts/` 目录加入 sys.path，然后转发到 `data_modules.webnovel`。
-- 适配 skills/agents 在项目级或用户级（~/.claude）安装时的调用方式。
-"""
+'Unified webnovel entry point requiring no directory change.\n\nExamples:\n  python "<SCRIPTS_DIR>/webnovel.py" preflight\n  python "<SCRIPTS_DIR>/webnovel.py" where\n  python "<SCRIPTS_DIR>/webnovel.py" index stats\n\nAdd this script\'s scripts/ directory to sys.path, then forward to data_modules.webnovel. Supports project-level and user-level (~/.claude) skill/agent installations.'
 
 from __future__ import annotations
 
@@ -25,7 +14,7 @@ def main() -> None:
     scripts_dir = Path(__file__).resolve().parent
     sys.path.insert(0, str(scripts_dir))
 
-    # 延迟导入，避免 sys.path 未就绪
+    # Defer import until sys.path is ready.
     from data_modules.webnovel import main as _main
 
     _main()

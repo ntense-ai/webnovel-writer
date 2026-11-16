@@ -39,7 +39,7 @@ def ensure_override_ledger_columns(conn: sqlite3.Connection) -> None:
     }
     for name, ddl in wanted.items():
         if name not in existing:
-            # SECURITY: name 和 ddl 均来自上方硬编码字典，非用户输入，无 SQL 注入风险
+            # SECURITY: name and ddl come from the hard-coded dictionary above, not user input; there is no SQL injection risk.
             conn.execute(f"ALTER TABLE override_contracts ADD COLUMN {name} {ddl}")
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_override_contracts_record_type ON override_contracts(record_type)"
@@ -118,7 +118,7 @@ def persist_amend_proposals(
                 "AMEND_PROPOSAL",
                 str(proposal.get("proposal_id") or ""),
                 "story_amend_proposal",
-                f"事件触发合同修订提案: {proposal.get('proposal_id')}",
+                f"Event-triggered contract revision proposal: {proposal.get('proposal_id')}",
                 "",
                 chapter,
                 "pending",

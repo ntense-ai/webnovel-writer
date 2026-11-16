@@ -52,9 +52,9 @@ class TestValidateCsvRuns:
 
     def test_phase2_row_count_thresholds(self):
         csv_dir = Path(CSV_DIR)
-        with open(csv_dir / "题材与调性推理.csv", "r", encoding="utf-8-sig", newline="") as f:
+        with open(csv_dir / "genre-routing.csv", "r", encoding="utf-8-sig", newline="") as f:
             route_rows = list(csv.DictReader(f))
-        with open(csv_dir / "裁决规则.csv", "r", encoding="utf-8-sig", newline="") as f:
+        with open(csv_dir / "adjudication.csv", "r", encoding="utf-8-sig", newline="") as f:
             reasoning_rows = list(csv.DictReader(f))
 
         assert len(route_rows) >= 16
@@ -62,11 +62,11 @@ class TestValidateCsvRuns:
 
     def test_detects_extra_csv_fields(self):
         tmp_path = _make_local_tmp_path()
-        (tmp_path / "命名规则.csv").write_text(
+        (tmp_path / "naming.csv").write_text(
             "\n".join(
                 [
-                    "编号,适用技能,分类,层级,关键词,意图与同义词,适用题材,大模型指令,核心摘要,详细展开,命名对象,规则,正例,反例,毒点",
-                    "NR-999,write,测试,知识补充,角色命名,,玄幻,指令,摘要,详细,人名,规则,正例,反例,毒点,EXTRA",
+                    "id,applicable_skills,category,level,keywords,intent_synonyms,applicable_genres,model_instruction,summary,details,naming_target,rule,positive_example,negative_example,pitfalls",
+                    "NR-999,write,Test,knowledge,character naming,,xuanhuan,Instruction,Summary,Details,Person name,rule,positive_example,negative_example,pitfalls,EXTRA",
                 ]
             ),
             encoding="utf-8-sig",
@@ -81,15 +81,15 @@ class TestValidateCsvRuns:
         import json
 
         data = json.loads(result.stdout)
-        assert any("字段数超过表头" in error for error in data["errors"])
+        assert any("More fields than headers" in error for error in data["errors"])
 
     def test_detects_invalid_skill_and_level(self):
         tmp_path = _make_local_tmp_path()
-        (tmp_path / "命名规则.csv").write_text(
+        (tmp_path / "naming.csv").write_text(
             "\n".join(
                 [
-                    "编号,适用技能,分类,层级,关键词,意图与同义词,适用题材,大模型指令,核心摘要,详细展开,命名对象,规则,正例,反例,毒点",
-                    "NR-998,bogus,测试,推理层,角色命名,,玄幻,指令,摘要,详细,人名,规则,正例,反例,毒点",
+                    "id,applicable_skills,category,level,keywords,intent_synonyms,applicable_genres,model_instruction,summary,details,naming_target,rule,positive_example,negative_example,pitfalls",
+                    "NR-998,bogus,Test,reasoning,character naming,,xuanhuan,Instruction,Summary,Details,Person name,rule,positive_example,negative_example,pitfalls",
                 ]
             ),
             encoding="utf-8-sig",
@@ -104,5 +104,5 @@ class TestValidateCsvRuns:
         import json
 
         data = json.loads(result.stdout)
-        assert any("适用技能值 'bogus' 不合法" in error for error in data["errors"])
-        assert any("层级值 '推理层' 不合法" in error for error in data["errors"])
+        assert any("Invalid applicable_skills value 'bogus'" in error for error in data["errors"])
+        assert any("Invalid level value 'reasoning'" in error for error in data["errors"])

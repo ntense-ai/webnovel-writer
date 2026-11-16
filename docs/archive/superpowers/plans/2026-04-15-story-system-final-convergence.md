@@ -18,7 +18,7 @@
 
 | File | Responsibility |
 |------|------|
-| `webnovel-writer/references/csv/裁决规则.csv` | Reasoning layer keyed by genre, determining match priority and injection location |
+| `webnovel-writer/references/csv/adjudication.csv` | Reasoning layer keyed by genre, determining match priority and injection location |
 | `webnovel-writer/scripts/data_modules/knowledge_query.py` | Temporal query interfaces: entity_state_at_chapter / relationships_at_chapter |
 | `webnovel-writer/scripts/data_modules/vector_projection_writer.py` | Write events/entity_delta to the vector store after commits |
 | `webnovel-writer/scripts/data_modules/tests/test_csv_config.py` | Validate CSV_CONFIG alignment with CSV headers |
@@ -71,68 +71,68 @@ Insert `CSV_CONFIG` before `_TOKEN_SPLIT_RE`, around line 89:
 # ---------------------------------------------------------------------------
 
 CSV_CONFIG: Dict[str, Dict[str, Any]] = {
-    "命名规则": {
-        "file": "命名规则.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "命名对象", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "naming": {
+        "file": "naming.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "naming_target", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
     },
-    "场景写法": {
-        "file": "场景写法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "模式名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "scenes": {
+        "file": "scenes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pattern_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
     },
-    "写作技法": {
-        "file": "写作技法.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "技法名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "techniques": {
+        "file": "techniques.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "technique_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
     },
-    "桥段套路": {
-        "file": "桥段套路.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "桥段名称", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "tropes": {
+        "file": "tropes.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "trope_name", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
     },
-    "爽点与节奏": {
-        "file": "爽点与节奏.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "节奏类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "pacing": {
+        "file": "pacing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "pacing_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "dynamic",
     },
-    "人设与关系": {
-        "file": "人设与关系.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "人设类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "characters": {
+        "file": "characters.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "character_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
     },
-    "金手指与设定": {
-        "file": "金手指与设定.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "核心摘要": 2},
-        "output_cols": ["编号", "设定类型", "核心摘要", "大模型指令", "详细展开"],
-        "poison_col": "毒点",
+    "powers": {
+        "file": "powers.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "summary": 2},
+        "output_cols": ["id", "setting_type", "summary", "model_instruction", "details"],
+        "poison_col": "pitfalls",
         "role": "base",
     },
-    "题材与调性推理": {
-        "file": "题材与调性推理.csv",
-        "search_cols": {"关键词": 3, "意图与同义词": 4, "题材别名": 3},
-        "output_cols": ["编号", "题材/流派", "核心调性", "推荐基础检索表", "推荐动态检索表"],
-        "poison_col": "毒点",
+    "genre-routing": {
+        "file": "genre-routing.csv",
+        "search_cols": {"keywords": 3, "intent_synonyms": 4, "genre_aliases": 3},
+        "output_cols": ["id", "genre_route", "core_tone", "recommended_base_tables", "recommended_dynamic_tables"],
+        "poison_col": "pitfalls",
         "role": "route",
     },
-    "裁决规则": {
-        "file": "裁决规则.csv",
-        "search_cols": {"题材": 4},
+    "adjudication": {
+        "file": "adjudication.csv",
+        "search_cols": {"genre": 4},
         "output_cols": [
-            "题材", "风格优先级", "爽点优先级", "节奏默认策略",
-            "毒点权重", "冲突裁决", "contract注入层", "反模式",
+            "genre", "style_priority", "payoff_priority", "default_pacing_strategy",
+            "pitfall_weight", "conflict_resolution", "contract_injection_layer", "anti_pattern",
         ],
         "poison_col": "",
         "role": "reasoning",
@@ -150,10 +150,10 @@ Replace the global `_SEARCH_FIELD_WEIGHTS` dict with per-table parameters:
 
 # Retain as the default fallback
 _DEFAULT_SEARCH_WEIGHTS: Dict[str, int] = {
-    "意图与同义词": 4,
-    "关键词": 3,
-    "核心摘要": 2,
-    "详细展开": 1,
+    "intent_synonyms": 4,
+    "keywords": 3,
+    "summary": 2,
+    "details": 1,
 }
 
 
@@ -223,7 +223,7 @@ Update `_build_summary()` to select fields in `CSV_CONFIG.output_cols` order whe
 
 ```python
 def _build_summary(row: Dict[str, str], table_name: str | None = None) -> str:
-    core_summary = row.get("核心摘要", "").strip()
+    core_summary = row.get("summary", "").strip()
     if core_summary:
         return core_summary
 
@@ -232,18 +232,18 @@ def _build_summary(row: Dict[str, str], table_name: str | None = None) -> str:
         cols = CSV_CONFIG[table_name]["output_cols"]
     else:
         cols = [
-            "技法名称", "桥段名称", "人设类型", "节奏类型", "设定类型",
-            "规则", "说明", "模式名称", "命名对象", "场景类型",
+            "technique_name", "trope_name", "character_type", "pacing_type", "setting_type",
+            "rule", "description", "pattern_name", "naming_target", "scene_type",
         ]
 
     parts: List[str] = []
     for col in cols:
         val = row.get(col, "").strip()
-        if val and col not in ("编号", "大模型指令", "详细展开", "核心摘要"):
+        if val and col not in ("id", "model_instruction", "details", "summary"):
             parts.append(val)
     if parts:
         return "；".join(parts)
-    return row.get("详细展开", "").strip()
+    return row.get("details", "").strip()
 ```
 
 - [ ] **Step 5: Create CSV_CONFIG Alignment Tests**
@@ -288,20 +288,20 @@ def test_csv_config_columns_exist_in_csv_header(table_name: str, config: dict):
         all_cols.add(poison)
 
     missing = all_cols - headers
-    assert not missing, f"表 {table_name} 缺少列: {missing}"
+    assert not missing, f"table {table_name} missing column: {missing}"
 
 
 def test_csv_config_file_field_matches_filename():
     """CSV_CONFIG file must equal key + '.csv'."""
     for name, config in CSV_CONFIG.items():
-        assert config["file"] == f"{name}.csv", f"{name}: file 应为 '{name}.csv'，实际为 '{config['file']}'"
+        assert config["file"] == f"{name}.csv", f"{name}: file expected '{name}.csv'，actual '{config['file']}'"
 ```
 
 - [ ] **Step 6: Run Tests to Validate**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py -v`
 
-Expected: `裁决规则` is skipped because its file does not exist yet; all other tables pass.
+Expected: `adjudication` is skipped because its file does not exist yet; all other tables pass.
 
 - [ ] **Step 7: Add Per-Table Retrieval Tests**
 
@@ -314,8 +314,8 @@ class TestPerTableSearchCols:
     def test_different_tables_use_different_search_weights(self):
         """Verify different tables retrieve using different search_cols."""
         # Naming and scene tables both return results using their own search_cols
-        out1 = run_search("--skill", "write", "--table", "命名规则", "--query", "角色命名")
-        out2 = run_search("--skill", "write", "--table", "场景写法", "--query", "战斗描写")
+        out1 = run_search("--skill", "write", "--table", "naming", "--query", "characternaming")
+        out2 = run_search("--skill", "write", "--table", "scenes", "--query", "combatdescription")
         assert out1["status"] == "success"
         assert out2["status"] == "success"
         assert out1["data"]["total"] >= 1
@@ -340,25 +340,25 @@ git commit -m "feat: introduce per-table CSV_CONFIG in reference_search"
 ## Task 2: Standardize CSV Reader-Turn-Off Columns
 
 **Files:**
-- Modify: `webnovel-writer/references/csv/场景写法.csv` (header rename)
-- Modify: `webnovel-writer/references/csv/写作技法.csv` (header rename)
-- Modify: `webnovel-writer/references/csv/爽点与节奏.csv` (header rename)
-- Modify: `webnovel-writer/references/csv/人设与关系.csv` (header rename)
-- Modify: `webnovel-writer/references/csv/桥段套路.csv` (header rename)
-- Modify: `webnovel-writer/references/csv/题材与调性推理.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/scenes.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/techniques.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/pacing.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/characters.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/tropes.csv` (header rename)
+- Modify: `webnovel-writer/references/csv/genre-routing.csv` (header rename)
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py:15-22`
 
 - [ ] **Step 1: Inventory Current Reader-Turn-Off Column Names**
 
 Current column mapping:
-- `场景写法.csv` → `反面写法`
-- `写作技法.csv` → `常见误区`
-- `爽点与节奏.csv` → `常见崩盘误区`
-- `人设与关系.csv` → `忌讳写法`
-- `桥段套路.csv` → has an `忌讳写法` column
-- `题材与调性推理.csv` → `强制禁忌/毒点`
-- `命名规则.csv` → no reader-turn-off column; retain existing `反例` and add `毒点`
-- `金手指与设定.csv` → no reader-turn-off column; add `毒点`
+- `scenes.csv` → `negative examples`
+- `techniques.csv` → `common pitfalls`
+- `pacing.csv` → `common failure modes`
+- `characters.csv` → `prohibited approaches`
+- `tropes.csv` → has an `prohibited approaches` column
+- `genre-routing.csv` → `mandatory prohibitions/pitfalls`
+- `naming.csv` → no reader-turn-off column; retain existing `negative_example` and add `pitfalls`
+- `powers.csv` → no reader-turn-off column; add `pitfalls`
 
 - [ ] **Step 2: Batch-Rename CSV Headers**
 
@@ -373,12 +373,12 @@ from pathlib import Path
 csv_dir = Path('webnovel-writer/references/csv')
 
 renames = {
-    '场景写法.csv': {'反面写法': '毒点'},
-    '写作技法.csv': {'常见误区': '毒点'},
-    '爽点与节奏.csv': {'常见崩盘误区': '毒点'},
-    '人设与关系.csv': {'忌讳写法': '毒点'},
-    '桥段套路.csv': {'忌讳写法': '毒点'},
-    '题材与调性推理.csv': {'强制禁忌/毒点': '毒点'},
+    'scenes.csv': {'negative examples': 'pitfalls'},
+    'techniques.csv': {'common pitfalls': 'pitfalls'},
+    'pacing.csv': {'common failure modes': 'pitfalls'},
+    'characters.csv': {'prohibited approaches': 'pitfalls'},
+    'tropes.csv': {'prohibited approaches': 'pitfalls'},
+    'genre-routing.csv': {'mandatory prohibitions/pitfalls': 'pitfalls'},
 }
 
 for filename, mapping in renames.items():
@@ -406,7 +406,7 @@ print('Done')
 "
 ```
 
-- [ ] **Step 3: Add Empty `毒点` Columns to `命名规则.csv` and `金手指与设定.csv`**
+- [ ] **Step 3: Add Empty `pitfalls` Columns to `naming.csv` and `powers.csv`**
 
 ```python
 python3 -c "
@@ -415,17 +415,17 @@ from pathlib import Path
 
 csv_dir = Path('webnovel-writer/references/csv')
 
-for filename in ['命名规则.csv', '金手指与设定.csv']:
+for filename in ['naming.csv', 'powers.csv']:
     path = csv_dir / filename
     with open(path, 'r', encoding='utf-8-sig', newline='') as f:
         reader = csv.DictReader(f)
         rows = list(reader)
         fields = list(reader.fieldnames)
 
-    if '毒点' not in fields:
-        fields.append('毒点')
+    if 'pitfalls' not in fields:
+        fields.append('pitfalls')
         for row in rows:
-            row['毒点'] = ''
+            row['pitfalls'] = ''
 
     with open(path, 'w', encoding='utf-8-sig', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -442,12 +442,12 @@ Replace the old mapping at lines 15–22:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
-    "场景写法": ["反面写法"],
-    "写作技法": ["常见误区"],
-    "爽点与节奏": ["常见崩盘误区"],
-    "人设与关系": ["忌讳写法"],
-    "桥段套路": ["忌讳写法"],
-    "题材与调性推理": ["强制禁忌/毒点"],
+    "scenes": ["negative examples"],
+    "techniques": ["common pitfalls"],
+    "pacing": ["common failure modes"],
+    "characters": ["prohibited approaches"],
+    "tropes": ["prohibited approaches"],
+    "genre-routing": ["mandatory prohibitions/pitfalls"],
 }
 ```
 
@@ -455,14 +455,14 @@ With this unified mapping:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
-    "场景写法": ["毒点"],
-    "写作技法": ["毒点"],
-    "爽点与节奏": ["毒点"],
-    "人设与关系": ["毒点"],
-    "桥段套路": ["毒点"],
-    "题材与调性推理": ["毒点"],
-    "命名规则": ["毒点"],
-    "金手指与设定": ["毒点"],
+    "scenes": ["pitfalls"],
+    "techniques": ["pitfalls"],
+    "pacing": ["pitfalls"],
+    "characters": ["pitfalls"],
+    "tropes": ["pitfalls"],
+    "genre-routing": ["pitfalls"],
+    "naming": ["pitfalls"],
+    "powers": ["pitfalls"],
 }
 ```
 
@@ -474,21 +474,21 @@ Expected: test_story_system_engine fails because fixture CSVs still use old colu
 
 - [ ] **Step 6: Fix Fixture Column Names in `test_story_system_engine.py`**
 
-Rename fixture CSV columns `忌讳写法`, `常见崩盘误区`, and `强制禁忌/毒点` to `毒点`.
+Rename fixture CSV columns `prohibited approaches`, `common failure modes`, and `mandatory prohibitions/pitfalls` to `pitfalls`.
 
-Change `桥段套路.csv` fixture headers at line 53 to:
+Change `tropes.csv` fixture headers at line 53 to:
 ```python
-["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "桥段名称", "毒点"],
+["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary", "trope_name", "pitfalls"],
 ```
-Rename corresponding row keys from `忌讳写法` to `毒点`.
+Rename corresponding row keys from `prohibited approaches` to `pitfalls`.
 
-Change `爽点与节奏.csv` fixture headers at line 71 to:
+Change `pacing.csv` fixture headers at line 71 to:
 ```python
-["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "毒点", "节奏类型"],
+["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary", "pitfalls", "pacing_type"],
 ```
-Rename corresponding row keys from `常见崩盘误区` to `毒点`.
+Rename corresponding row keys from `common failure modes` to `pitfalls`.
 
-At fixture line 26, rename `强制禁忌/毒点` to `毒点` in both `题材与调性推理.csv` headers and row keys.
+At fixture line 26, rename `mandatory prohibitions/pitfalls` to `pitfalls` in both `genre-routing.csv` headers and row keys.
 
 - [ ] **Step 7: Run Tests and Confirm All Pass**
 
@@ -500,7 +500,7 @@ Expected: All PASS.
 
 ```bash
 git add webnovel-writer/references/csv/*.csv webnovel-writer/scripts/data_modules/story_system_engine.py webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py
-git commit -m "refactor: unify poison column name to 毒点 across all CSV tables"
+git commit -m "refactor: unify poison column name to pitfalls across all CSV tables"
 ```
 
 ---
@@ -508,32 +508,32 @@ git commit -m "refactor: unify poison column name to 毒点 across all CSV table
 ## Task 3: Create the Reasoning Rules Table
 
 **Files:**
-- Create: `webnovel-writer/references/csv/裁决规则.csv`
+- Create: `webnovel-writer/references/csv/adjudication.csv`
 
 - [ ] **Step 1: Create the Reasoning Rules CSV File**
 
 ```csv
-编号,适用技能,分类,层级,关键词,意图与同义词,适用题材,大模型指令,核心摘要,详细展开,题材,风格优先级,爽点优先级,节奏默认策略,毒点权重,冲突裁决,contract注入层,反模式
-RS-001,write|plan,裁决,推理层,西方奇幻|奇幻,西方奇幻怎么写,西方奇幻,按冲突裁决排序命中条目,西方奇幻裁决规则,,西方奇幻,史诗感 > 冷硬算计 > 日常轻松,实力碾压 > 逆境翻盘 > 智谋博弈,快推慢收 对峙段拉长 过渡段压短,圣母病 > 情绪标签化 > 逻辑断裂,爽点与节奏 > 场景写法 > 写作技法,CHAPTER_BRIEF.writing_guidance,情绪标签化|角色行为无逻辑|战斗无代价
-RS-002,write|plan,裁决,推理层,东方仙侠|仙侠,仙侠怎么写,东方仙侠,按冲突裁决排序命中条目,东方仙侠裁决规则,,东方仙侠,冷硬算计 > 超然物外 > 热血冲突,境界碾压 > 底牌揭晓 > 因果兑现,慢蓄快爆 修炼段精简 斗法段拉满,修炼水字数 > 圣母病 > 逻辑断裂,爽点与节奏 > 桥段套路 > 场景写法,CHAPTER_BRIEF.writing_guidance,修炼变流水账|境界突破无代价|感悟靠顿悟标签
-RS-003,write|plan,裁决,推理层,科幻末世|末世|科幻,科幻末世怎么写,科幻末世,按冲突裁决排序命中条目,科幻末世裁决规则,,科幻末世,高压克制 > 冷硬算计 > 绝境反击,绝境生存 > 资源碾压 > 智谋博弈,紧凑推进 危机不断 喘息极短,主角无敌 > 科技无代价 > 末世无压迫感,场景写法 > 爽点与节奏 > 写作技法,CHAPTER_BRIEF.writing_guidance,末世没有生存压力|科技万能|角色行为无逻辑
-RS-004,write|plan,裁决,推理层,都市日常|都市,都市日常怎么写,都市日常,按冲突裁决排序命中条目,都市日常裁决规则,,都市日常,日常轻松 > 温情治愈 > 微妙张力,情感共鸣 > 生活逆袭 > 社交碾压,慢节奏 情感铺垫长 冲突柔和,假大空说教 > 情绪标签化 > 逻辑断裂,写作技法 > 人设与关系 > 场景写法,CHAPTER_BRIEF.writing_guidance,情感靠标签|日常无冲突|角色千人一面
-RS-005,write|plan,裁决,推理层,都市修真|修真|现代修真,都市修真怎么写,都市修真,按冲突裁决排序命中条目,都市修真裁决规则,,都市修真,隐秘低调 > 冷硬算计 > 热血爆发,身份反差 > 境界碾压 > 底牌揭晓,快慢交替 日常短 修真爆发长,修真体系与现代割裂 > 圣母病 > 装逼无代价,爽点与节奏 > 场景写法 > 桥段套路,CHAPTER_BRIEF.writing_guidance,修真体系照搬古代|现代元素没有影响|身份暴露无后果
-RS-006,write|plan,裁决,推理层,都市高武|高武|都市异能,都市高武怎么写,都市高武,按冲突裁决排序命中条目,都市高武裁决规则,,都市高武,热血冲突 > 冷硬算计 > 力量美学,实力碾压 > 以弱胜强 > 排名跃升,快节奏 战斗密集 过渡极短,战力崩盘 > 圣母病 > 无脑开挂,爽点与节奏 > 场景写法 > 桥段套路,CHAPTER_BRIEF.writing_guidance,战力体系自相矛盾|升级无代价|打斗无策略
-RS-007,write|plan,裁决,推理层,历史古代|历史|古代,历史古代怎么写,历史古代,按冲突裁决排序命中条目,历史古代裁决规则,,历史古代,沉稳厚重 > 权谋算计 > 家国情怀,权谋碾压 > 历史转折 > 身份反转,慢铺快收 权谋段拉长 战争段紧凑,现代价值观强加古人 > 逻辑断裂 > 历史常识错误,写作技法 > 人设与关系 > 场景写法,CHAPTER_BRIEF.writing_guidance,用现代口语写古代|权谋无逻辑|历史事件随意篡改
+id,applicable_skills,category,level,keywords,intent_synonyms,applicable_genres,model_instruction,summary,details,genre,style_priority,payoff_priority,default_pacing_strategy,pitfall_weight,conflict_resolution,contract_injection_layer,anti_pattern
+RS-001,write|plan,adjudication,reasoning,Westernfantasy|fantasy,Westernfantasyhow to write,Westernfantasy,Rank matched entries according to conflict_resolution,Westernfantasyadjudication,,Westernfantasy,epic scope > hard-edged calculation > everyday-liferelaxed,overwhelming strength > comeback against adversitycomeback > strategic contests,advance quickly and resolve slowly confrontationextend the sequence compress transitions,naive indiscriminate altruism > emotionreduced to labels > broken logic,pacing > scenes > techniques,CHAPTER_BRIEF.writing_guidance,emotionreduced to labels|illogical character behavior|combatwithout cost
+RS-002,write|plan,adjudication,reasoning,Easternxianxia|xianxia,xianxiahow to write,Easternxianxia,Rank matched entries according to conflict_resolution,Easternxianxiaadjudication,,Easternxianxia,hard-edged calculation > transcendent detachment > passionate conflict,realm superiority > hidden trump-card reveal > causal payoff,build slowly and erupt quickly condense training fully develop magical duels,training as filler > naive indiscriminate altruism > broken logic,pacing > tropes > scenes,CHAPTER_BRIEF.writing_guidance,training becomes a logbook|cost-free breakthroughs|insight reduced to an epiphany label
+RS-003,write|plan,adjudication,reasoning,science-fiction apocalypse|apocalypse|sci-fi,writing a science-fiction apocalypse,science-fiction apocalypse,Rank matched entries according to conflict_resolution,science-fiction apocalypse adjudication,,science-fiction apocalypse,high pressure with restraint > hard-edged calculation > desperate counterattack,survival against the odds > resource superiority > strategic contests,tight momentum constant crises brief breathing space,invincible protagonist > cost-free technology > apocalypse without pressure,scenes > pacing > techniques,CHAPTER_BRIEF.writing_guidance,apocalypse without survival pressure|omnipotent technology|illogical character behavior
+RS-004,write|plan,adjudication,reasoning,urban-slice-of-life|urban,urban-slice-of-lifehow to write,urban-slice-of-life,Rank matched entries according to conflict_resolution,urban-slice-of-lifeadjudication,,urban-slice-of-life,everyday-liferelaxed > warmth and healing > subtle tension,emotional-relationshipsresonance > turning life around > social dominance,slowpacing emotional-relationshipsextended setup gentle conflict,grandiose empty preaching > emotionreduced to labels > broken logic,techniques > characters > scenes,CHAPTER_BRIEF.writing_guidance,emotional-relationshipsconveyed through labels|everyday-lifewithout conflict|characterinterchangeable characters
+RS-005,write|plan,adjudication,reasoning,urbancultivation|cultivation|modern cultivation,urbanhow to write cultivation,urbancultivation,Rank matched entries according to conflict_resolution,urbancultivationadjudication,,urbancultivation,secretivelowprofile > hard-edged calculation > explosive passion,identity contrast > realm superiority > hidden trump-card reveal,alternate fast and slow everyday-lifeshort extended cultivation climaxes,cultivation detached from modern life > naive indiscriminate altruism > cost-free showing off,pacing > scenes > tropes,CHAPTER_BRIEF.writing_guidance,copying an ancient cultivation system unchanged|modern elements have no effect|revealing an identity has no consequences
+RS-006,write|plan,adjudication,reasoning,urbanhigh-martial-power|high-martial-power|urban-fantasy,urbanhigh-martial-powerhow to write,urbanhigh-martial-power,Rank matched entries according to conflict_resolution,urbanhigh-martial-poweradjudication,,urbanhigh-martial-power,passionate conflict > hard-edged calculation > the aesthetics of power,overwhelming strength > underdog victory > rising through rankings,fastpacing combatdense minimal transitions,broken power scaling > naive indiscriminate altruism > mindless cheats,pacing > scenes > tropes,CHAPTER_BRIEF.writing_guidance,contradictory power system|cost-free leveling|fights without strategy
+RS-007,write|plan,adjudication,reasoning,ancient-history|historical|ancient times,ancient-historyhow to write,ancient-history,Rank matched entries according to conflict_resolution,ancient-historyadjudication,,ancient-history,measured gravity > political calculation > loyalty to family and country,political outmaneuvering > historicalturning point > identityreversal,build slowly and resolve quickly expand political intrigue wartighten the sequence,imposing modern values on historical people > broken logic > historicalfactual errors,techniques > characters > scenes,CHAPTER_BRIEF.writing_guidance,modern slang in ancient settings|illogical intrigue|historicaleventarbitrary alteration
 ```
 
 - [ ] **Step 2: Run CSV_CONFIG Validation to Confirm New Headers Align**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py -v`
 
-Expected: `裁决规则` now exists and should PASS.
+Expected: `adjudication` now exists and should PASS.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add webnovel-writer/references/csv/裁决规则.csv
-git commit -m "feat: add 裁决规则.csv reasoning table for 7 genres"
+git add webnovel-writer/references/csv/adjudication.csv
+git commit -m "feat: add adjudication.csv reasoning table for 7 genres"
 ```
 
 ---
@@ -565,56 +565,56 @@ def _write_csv(path, headers, rows):
 
 
 ROUTE_HEADERS = [
-    "编号", "适用技能", "分类", "层级", "关键词", "意图与同义词", "适用题材",
-    "大模型指令", "核心摘要", "详细展开", "题材/流派", "题材别名", "核心调性",
-    "节奏策略", "毒点", "推荐基础检索表", "推荐动态检索表", "默认查询词",
+    "id", "applicable_skills", "category", "level", "keywords", "intent_synonyms", "applicable_genres",
+    "model_instruction", "summary", "details", "genre_route", "genre_aliases", "core_tone",
+    "pacing_strategy", "pitfalls", "recommended_base_tables", "recommended_dynamic_tables", "default_query",
 ]
 
 REASONING_HEADERS = [
-    "编号", "适用技能", "分类", "层级", "关键词", "意图与同义词", "适用题材",
-    "大模型指令", "核心摘要", "详细展开",
-    "题材", "风格优先级", "爽点优先级", "节奏默认策略",
-    "毒点权重", "冲突裁决", "contract注入层", "反模式",
+    "id", "applicable_skills", "category", "level", "keywords", "intent_synonyms", "applicable_genres",
+    "model_instruction", "summary", "details",
+    "genre", "style_priority", "payoff_priority", "default_pacing_strategy",
+    "pitfall_weight", "conflict_resolution", "contract_injection_layer", "anti_pattern",
 ]
 
 
 def _setup_csvs(csv_dir):
-    _write_csv(csv_dir / "题材与调性推理.csv", ROUTE_HEADERS, [{
-        "编号": "GR-001", "适用技能": "write|plan", "分类": "题材路由",
-        "层级": "知识补充", "关键词": "玄幻", "意图与同义词": "玄幻|仙侠",
-        "适用题材": "玄幻", "大模型指令": "", "核心摘要": "", "详细展开": "",
-        "题材/流派": "玄幻", "题材别名": "玄幻", "核心调性": "热血冲突",
-        "节奏策略": "快推慢收", "毒点": "圣母病",
-        "推荐基础检索表": "命名规则|人设与关系",
-        "推荐动态检索表": "桥段套路|爽点与节奏",
-        "默认查询词": "玄幻",
+    _write_csv(csv_dir / "genre-routing.csv", ROUTE_HEADERS, [{
+        "id": "GR-001", "applicable_skills": "write|plan", "category": "genre-routing",
+        "level": "knowledge", "keywords": "xuanhuan", "intent_synonyms": "xuanhuan|xianxia",
+        "applicable_genres": "xuanhuan", "model_instruction": "", "summary": "", "details": "",
+        "genre_route": "xuanhuan", "genre_aliases": "xuanhuan", "core_tone": "passionate conflict",
+        "pacing_strategy": "advance quickly and resolve slowly", "pitfalls": "naive indiscriminate altruism",
+        "recommended_base_tables": "naming|characters",
+        "recommended_dynamic_tables": "tropes|pacing",
+        "default_query": "xuanhuan",
     }])
 
-    _write_csv(csv_dir / "裁决规则.csv", REASONING_HEADERS, [{
-        "编号": "RS-001", "适用技能": "write|plan", "分类": "裁决",
-        "层级": "推理层", "关键词": "玄幻", "意图与同义词": "玄幻",
-        "适用题材": "玄幻", "大模型指令": "", "核心摘要": "", "详细展开": "",
-        "题材": "玄幻",
-        "风格优先级": "热血冲突 > 冷硬算计",
-        "爽点优先级": "实力碾压 > 逆境翻盘",
-        "节奏默认策略": "快推慢收",
-        "毒点权重": "圣母病 > 情绪标签化",
-        "冲突裁决": "爽点与节奏 > 场景写法 > 写作技法",
-        "contract注入层": "CHAPTER_BRIEF.writing_guidance",
-        "反模式": "情绪标签化|战斗无代价",
+    _write_csv(csv_dir / "adjudication.csv", REASONING_HEADERS, [{
+        "id": "RS-001", "applicable_skills": "write|plan", "category": "adjudication",
+        "level": "reasoning", "keywords": "xuanhuan", "intent_synonyms": "xuanhuan",
+        "applicable_genres": "xuanhuan", "model_instruction": "", "summary": "", "details": "",
+        "genre": "xuanhuan",
+        "style_priority": "passionate conflict > hard-edged calculation",
+        "payoff_priority": "overwhelming strength > comeback against adversitycomeback",
+        "default_pacing_strategy": "advance quickly and resolve slowly",
+        "pitfall_weight": "naive indiscriminate altruism > emotionreduced to labels",
+        "conflict_resolution": "pacing > scenes > techniques",
+        "contract_injection_layer": "CHAPTER_BRIEF.writing_guidance",
+        "anti_pattern": "emotionreduced to labels|combatwithout cost",
     }])
 
-    _write_csv(csv_dir / "桥段套路.csv",
-        ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "桥段名称", "毒点"],
-        [{"编号": "TR-001", "适用技能": "write", "分类": "桥段", "层级": "知识补充",
-          "关键词": "退婚", "适用题材": "玄幻", "核心摘要": "退婚反击",
-          "桥段名称": "退婚反击", "毒点": "配角代打"}])
+    _write_csv(csv_dir / "tropes.csv",
+        ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary", "trope_name", "pitfalls"],
+        [{"id": "TR-001", "applicable_skills": "write", "category": "trope", "level": "knowledge",
+          "keywords": "broken engagement", "applicable_genres": "xuanhuan", "summary": "broken-engagement counterattack",
+          "trope_name": "broken-engagement counterattack", "pitfalls": "supporting-characteracting in someone else's place"}])
 
-    _write_csv(csv_dir / "爽点与节奏.csv",
-        ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "毒点", "节奏类型"],
-        [{"编号": "PA-001", "适用技能": "write", "分类": "节奏", "层级": "知识补充",
-          "关键词": "打脸", "适用题材": "玄幻", "核心摘要": "兑现必须补刀",
-          "毒点": "打脸软收尾", "节奏类型": "爆发期"}])
+    _write_csv(csv_dir / "pacing.csv",
+        ["id", "applicable_skills", "category", "level", "keywords", "applicable_genres", "summary", "pitfalls", "pacing_type"],
+        [{"id": "PA-001", "applicable_skills": "write", "category": "pacing", "level": "knowledge",
+          "keywords": "vindication", "applicable_genres": "xuanhuan", "summary": "payoffs require decisive follow-through",
+          "pitfalls": "weak vindication ending", "pacing_type": "eruption phase"}])
 
 
 def test_build_with_reasoning_includes_reasoning_rule_in_source_trace(tmp_path):
@@ -623,12 +623,12 @@ def test_build_with_reasoning_includes_reasoning_rule_in_source_trace(tmp_path):
     _setup_csvs(csv_dir)
 
     engine = StorySystemEngine(csv_dir=csv_dir)
-    contract = engine.build(query="玄幻", genre=None, chapter=5)
+    contract = engine.build(query="xuanhuan", genre=None, chapter=5)
 
     traces = contract["master_setting"]["source_trace"]
     reasoning_traces = [t for t in traces if t.get("reasoning_rule")]
     assert len(reasoning_traces) >= 1
-    assert reasoning_traces[0]["reasoning_rule"] == "玄幻"
+    assert reasoning_traces[0]["reasoning_rule"] == "xuanhuan"
 
 
 def test_reasoning_anti_patterns_sorted_by_weight(tmp_path):
@@ -637,7 +637,7 @@ def test_reasoning_anti_patterns_sorted_by_weight(tmp_path):
     _setup_csvs(csv_dir)
 
     engine = StorySystemEngine(csv_dir=csv_dir)
-    contract = engine.build(query="玄幻", genre=None, chapter=5)
+    contract = engine.build(query="xuanhuan", genre=None, chapter=5)
 
     anti = contract["anti_patterns"]
     assert len(anti) >= 1
@@ -649,7 +649,7 @@ def test_reasoning_not_found_falls_back_gracefully(tmp_path):
     _setup_csvs(csv_dir)
 
     engine = StorySystemEngine(csv_dir=csv_dir)
-    contract = engine.build(query="末日生存", genre="末日", chapter=1)
+    contract = engine.build(query="apocalyptic survival", genre="apocalypse", chapter=1)
 
     # Missing reasoning rules must not cause an error
     assert "master_setting" in contract
@@ -669,13 +669,13 @@ Append to `StorySystemEngine`:
 ```python
 def _load_reasoning(self, genre: str) -> Dict[str, Any]:
     """Look up a genre row in the reasoning table and return a rule dict."""
-    rows = self._load_csv_rows("裁决规则")
+    rows = self._load_csv_rows("adjudication")
     genre_text = self._normalize_text(genre)
     for row in rows:
-        row_genre = self._normalize_text(row.get("题材", ""))
+        row_genre = self._normalize_text(row.get("genre", ""))
         if row_genre == genre_text:
             return row
-        aliases = self._split_multi_value(row.get("关键词")) + self._split_multi_value(row.get("意图与同义词"))
+        aliases = self._split_multi_value(row.get("keywords")) + self._split_multi_value(row.get("intent_synonyms"))
         if any(self._normalize_text(a) == genre_text for a in aliases):
             return row
     return {}
@@ -691,7 +691,7 @@ def _apply_reasoning(
         return base_context + dynamic_context
 
     priority_order = [
-        t.strip() for t in str(reasoning.get("冲突裁决", "")).split(">") if t.strip()
+        t.strip() for t in str(reasoning.get("conflict_resolution", "")).split(">") if t.strip()
     ]
     priority_map = {name: idx for idx, name in enumerate(priority_order)}
 
@@ -699,7 +699,7 @@ def _apply_reasoning(
     for row in all_rows:
         table_name = str(row.get("_table", "")).strip()
         row["_priority_rank"] = priority_map.get(table_name, len(priority_order))
-        row["_reasoning_rule"] = str(reasoning.get("题材", "")).strip()
+        row["_reasoning_rule"] = str(reasoning.get("genre", "")).strip()
 
     all_rows.sort(key=lambda r: r.get("_priority_rank", 999))
     return all_rows
@@ -714,7 +714,7 @@ def _rank_anti_patterns(
         return anti_patterns
 
     weight_order = [
-        t.strip() for t in str(reasoning.get("毒点权重", "")).split(">") if t.strip()
+        t.strip() for t in str(reasoning.get("pitfall_weight", "")).split(">") if t.strip()
     ]
 
     def sort_key(item):
@@ -727,11 +727,11 @@ def _rank_anti_patterns(
     anti_patterns.sort(key=sort_key)
 
     # Append anti-patterns supplied by the reasoning table
-    for text in self._split_multi_value(reasoning.get("反模式")):
+    for text in self._split_multi_value(reasoning.get("anti_pattern")):
         anti_patterns.append({
             "text": text,
-            "source_table": "裁决规则",
-            "source_id": reasoning.get("编号", ""),
+            "source_table": "adjudication",
+            "source_id": reasoning.get("id", ""),
         })
 
     return anti_patterns
@@ -810,10 +810,10 @@ def build(self, query: str, genre: Optional[str], chapter: Optional[int]) -> Dic
                 "dynamic_context": ranked,
                 "source_trace": source_trace,
                 "reasoning": {
-                    "genre": reasoning.get("题材", ""),
-                    "inject_target": reasoning.get("contract注入层", ""),
-                    "style_priority": reasoning.get("风格优先级", ""),
-                    "pacing_strategy": reasoning.get("节奏默认策略", ""),
+                    "genre": reasoning.get("genre", ""),
+                    "inject_target": reasoning.get("contract_injection_layer", ""),
+                    "style_priority": reasoning.get("style_priority", ""),
+                    "pacing_strategy": reasoning.get("default_pacing_strategy", ""),
                 } if reasoning else {},
             }
             if chapter is not None
@@ -830,15 +830,15 @@ def _build_source_trace_with_reasoning(
     self, ranked: List[Dict[str, Any]], reasoning: Dict[str, Any]
 ) -> List[Dict[str, Any]]:
     trace: List[Dict[str, Any]] = []
-    reasoning_rule = str(reasoning.get("题材", "")).strip() if reasoning else ""
+    reasoning_rule = str(reasoning.get("genre", "")).strip() if reasoning else ""
     for row in ranked:
         trace.append({
             "table": row.get("_table", ""),
-            "id": row.get("编号", ""),
-            "summary": row.get("核心摘要", ""),
+            "id": row.get("id", ""),
+            "summary": row.get("summary", ""),
             "reasoning_rule": row.get("_reasoning_rule", reasoning_rule),
             "priority_rank": row.get("_priority_rank", 999),
-            "inject_target": str(reasoning.get("contract注入层", "")).strip() if reasoning else "",
+            "inject_target": str(reasoning.get("contract_injection_layer", "")).strip() if reasoning else "",
         })
     return trace
 ```
@@ -1017,7 +1017,7 @@ In `test_context_manager.py`:
 - Adapt assertions to the new structure: `payload["story_contract"]` instead of `payload["sections"]["story_contract"]["content"]`
 
 In `test_extract_chapter_context.py`:
-- Update assertions depending on legacy Markdown rendering, replacing heading checks such as `"## 本章大纲"` with JSON-key checks
+- Update assertions depending on legacy Markdown rendering, replacing heading checks such as `"## this chapteroutlines"` with JSON-key checks
 
 - [ ] **Step 11: Run Tests**
 
@@ -1052,7 +1052,7 @@ git commit -m "refactor: slim context_manager to pure JSON assembler, remove sna
 Delete lines 182–184:
 
 ```markdown
-状态推进：
+status advancement：
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" state set-chapter-status --chapter {chapter_num} --status chapter_drafted
@@ -1061,7 +1061,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" sta
 
 - [ ] **Step 2: Remove Step 4 `set-chapter-status` From SKILL.md**
 
-Delete the state-advancement section at lines 250–254, labeled `状态推进（--minimal 除外）：`, and its Bash block.
+Delete the state-advancement section at lines 250–254, labeled `status advancement（--minimal except）：`, and its Bash block.
 
 - [ ] **Step 3: Remove `set-chapter-status` at the End of Step 5 in SKILL.md**
 
@@ -1108,8 +1108,8 @@ def test_no_direct_state_writes_in_write_skill():
     """webnovel-write SKILL.md must not call set-chapter-status; projection writers own transitions."""
     text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
     assert "state set-chapter-status" not in text, (
-        "webnovel-write 中不应直接调用 state set-chapter-status，"
-        "chapter_status 由 state_projection_writer 在 commit 时自动推进"
+        "webnovel-write must not call directly within state set-chapter-status，"
+        "chapter_status by state_projection_writer at commit advance automatically when"
     )
 
 
@@ -1118,7 +1118,7 @@ def test_no_direct_state_writes_in_agents():
     for agent_file in AGENT_FILES:
         text = _read_text(agent_file)
         assert "state set-chapter-status" not in text, (
-            f"{agent_file.name}: 不应直接调用 state set-chapter-status"
+            f"{agent_file.name}: must not call directly state set-chapter-status"
         )
 ```
 
@@ -1177,7 +1177,7 @@ def test_required_writers_includes_vector_for_key_events():
             {"event_type": "power_breakthrough", "subject": "xiaoyan", "payload": {}},
         ],
         "entity_deltas": [],
-        "summary_text": "摘要",
+        "summary_text": "summary",
     }
     writers = router.required_writers(payload)
     assert "vector" in writers
@@ -1354,28 +1354,28 @@ def test_event_to_text_formats_power_breakthrough():
     event = {
         "event_type": "power_breakthrough",
         "chapter": 47,
-        "subject": "韩立",
-        "payload": {"field": "realm", "new": "筑基初期"},
+        "subject": "Han Li",
+        "payload": {"field": "realm", "new": "foundation-establishmentearly stage"},
     }
     text = writer._event_to_text(event)
-    assert "第47章" in text
-    assert "韩立" in text
-    assert "筑基初期" in text
+    assert "Chapter 47" in text
+    assert "Han Li" in text
+    assert "foundation-establishmentearly stage" in text
 
 
 def test_delta_to_text_formats_relationship():
     writer = VectorProjectionWriter.__new__(VectorProjectionWriter)
     delta = {
-        "from_entity": "韩立",
-        "to_entity": "陈巧倩",
-        "relationship_type": "合作",
+        "from_entity": "Han Li",
+        "to_entity": "Chen Qiaoqian",
+        "relationship_type": "cooperation",
         "chapter": 47,
     }
     text = writer._delta_to_text(delta)
-    assert "第47章" in text
-    assert "韩立" in text
-    assert "陈巧倩" in text
-    assert "合作" in text
+    assert "Chapter 47" in text
+    assert "Han Li" in text
+    assert "Chen Qiaoqian" in text
+    assert "cooperation" in text
 
 
 def test_collect_chunks_from_commit():
@@ -1386,15 +1386,15 @@ def test_collect_chunks_from_commit():
             {
                 "event_type": "power_breakthrough",
                 "chapter": 47,
-                "subject": "韩立",
-                "payload": {"field": "realm", "new": "筑基初期"},
+                "subject": "Han Li",
+                "payload": {"field": "realm", "new": "foundation-establishmentearly stage"},
             },
         ],
         "entity_deltas": [
             {
-                "from_entity": "韩立",
-                "to_entity": "陈巧倩",
-                "relationship_type": "合作",
+                "from_entity": "Han Li",
+                "to_entity": "Chen Qiaoqian",
+                "relationship_type": "cooperation",
                 "chapter": 47,
             },
         ],
@@ -1496,25 +1496,25 @@ class VectorProjectionWriter:
 
         if event_type == "power_breakthrough":
             new_val = str(payload.get("new") or payload.get("to") or "").strip()
-            return f"第{chapter}章：{subject}突破至{new_val}" if new_val else ""
+            return f"Chapter {chapter}：{subject}break through to{new_val}" if new_val else ""
         elif event_type == "character_state_changed":
             field = str(payload.get("field") or "").strip()
             new_val = str(payload.get("new") or payload.get("to") or "").strip()
-            return f"第{chapter}章：{subject}的{field}变为{new_val}" if field and new_val else ""
+            return f"Chapter {chapter}：{subject}of{field}becomes{new_val}" if field and new_val else ""
         elif event_type == "relationship_changed":
             to_entity = str(payload.get("to_entity") or payload.get("to") or "").strip()
             rel_type = str(
                 payload.get("relationship_type") or payload.get("type") or ""
             ).strip()
-            return f"第{chapter}章：{subject}与{to_entity}关系变为{rel_type}" if to_entity else ""
+            return f"Chapter {chapter}：{subject}and{to_entity}relationshipbecomes{rel_type}" if to_entity else ""
         elif event_type in ("world_rule_revealed", "world_rule_broken"):
             desc = str(payload.get("description") or payload.get("rule") or "").strip()
-            action = "揭示" if "revealed" in event_type else "打破"
-            return f"第{chapter}章：{action}世界规则——{desc}" if desc else ""
+            action = "reveal" if "revealed" in event_type else "break"
+            return f"Chapter {chapter}：{action}worldrule——{desc}" if desc else ""
         elif event_type == "artifact_obtained":
             name = str(payload.get("name") or subject or "").strip()
             owner = str(payload.get("owner") or payload.get("holder") or "").strip()
-            return f"第{chapter}章：{owner}获得{name}" if owner else f"第{chapter}章：获得{name}"
+            return f"Chapter {chapter}：{owner}gain{name}" if owner else f"Chapter {chapter}：gain{name}"
         return ""
 
     def _delta_to_text(self, delta: dict) -> str:
@@ -1524,12 +1524,12 @@ class VectorProjectionWriter:
         rel = str(delta.get("relationship_type") or "").strip()
 
         if from_e and to_e and rel:
-            return f"第{chapter}章：{from_e}与{to_e}关系变为{rel}"
+            return f"Chapter {chapter}：{from_e}and{to_e}relationshipbecomes{rel}"
 
         entity_id = str(delta.get("entity_id") or "").strip()
         canonical = str(delta.get("canonical_name") or entity_id).strip()
         if entity_id:
-            return f"第{chapter}章：实体变更——{canonical}"
+            return f"Chapter {chapter}：entity changes——{canonical}"
         return ""
 
     def _store_chunks(self, chunks: List[Dict[str, Any]]) -> int:
@@ -1623,7 +1623,7 @@ def setup_db(tmp_path):
         CREATE TABLE IF NOT EXISTS entities (
             id TEXT PRIMARY KEY,
             canonical_name TEXT,
-            type TEXT DEFAULT '角色',
+            type TEXT DEFAULT 'character',
             current_json TEXT DEFAULT '{}',
             created_at TEXT,
             updated_at TEXT
@@ -1655,23 +1655,23 @@ def setup_db(tmp_path):
     # Insert test data
     conn.execute(
         "INSERT INTO entities (id, canonical_name, current_json) VALUES (?, ?, ?)",
-        ("hanli", "韩立", json.dumps({"realm": "筑基中期", "location": "乱星海"})),
+        ("hanli", "Han Li", json.dumps({"realm": "foundation-establishmentmiddle stage", "location": "Sea of Scattered Stars"})),
     )
     conn.execute(
         "INSERT INTO state_changes (entity_id, field, old_value, new_value, chapter) VALUES (?, ?, ?, ?, ?)",
-        ("hanli", "realm", "练气圆满", "筑基初期", 30),
+        ("hanli", "realm", "qi-refiningperfection", "foundation-establishmentearly stage", 30),
     )
     conn.execute(
         "INSERT INTO state_changes (entity_id, field, old_value, new_value, chapter) VALUES (?, ?, ?, ?, ?)",
-        ("hanli", "realm", "筑基初期", "筑基中期", 50),
+        ("hanli", "realm", "foundation-establishmentearly stage", "foundation-establishmentmiddle stage", 50),
     )
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, relationship_type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "同门", 20),
+        ("hanli", "Chen Qiaoqian", "fellow-disciple", 20),
     )
     conn.execute(
         "INSERT INTO relationship_events (from_entity, to_entity, relationship_type, chapter) VALUES (?, ?, ?, ?)",
-        ("hanli", "陈巧倩", "合作", 45),
+        ("hanli", "Chen Qiaoqian", "cooperation", 45),
     )
     conn.commit()
     conn.close()
@@ -1690,13 +1690,13 @@ def test_entity_state_at_chapter_before_first_change(setup_db):
 def test_entity_state_at_chapter_after_first_breakthrough(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_state_at_chapter("hanli", 35)
-    assert result["state_at_chapter"]["realm"] == "筑基初期"
+    assert result["state_at_chapter"]["realm"] == "foundation-establishmentearly stage"
 
 
 def test_entity_state_at_chapter_after_second_breakthrough(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_state_at_chapter("hanli", 60)
-    assert result["state_at_chapter"]["realm"] == "筑基中期"
+    assert result["state_at_chapter"]["realm"] == "foundation-establishmentmiddle stage"
 
 
 def test_relationships_at_chapter_before_any(setup_db):
@@ -1709,8 +1709,8 @@ def test_relationships_at_chapter_after_first(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_relationships_at_chapter("hanli", 25)
     assert len(result["relationships"]) == 1
-    assert result["relationships"][0]["to_entity"] == "陈巧倩"
-    assert result["relationships"][0]["relationship_type"] == "同门"
+    assert result["relationships"][0]["to_entity"] == "Chen Qiaoqian"
+    assert result["relationships"][0]["relationship_type"] == "fellow-disciple"
 
 
 def test_relationships_at_chapter_after_update(setup_db):
@@ -1718,7 +1718,7 @@ def test_relationships_at_chapter_after_update(setup_db):
     result = kq.entity_relationships_at_chapter("hanli", 50)
     rels = result["relationships"]
     assert len(rels) == 1
-    assert rels[0]["relationship_type"] == "合作"
+    assert rels[0]["relationship_type"] == "cooperation"
 ```
 
 - [ ] **Step 2: Run Tests and Confirm Failure**
@@ -1823,16 +1823,16 @@ Register `knowledge` in `webnovel-writer/scripts/data_modules/webnovel.py`. Find
 
 ```python
 # knowledge subcommand
-knowledge_parser = subparsers.add_parser("knowledge", help="时序知识查询")
+knowledge_parser = subparsers.add_parser("knowledge", help="temporal knowledge query")
 knowledge_sub = knowledge_parser.add_subparsers(dest="knowledge_action")
 
-qs_parser = knowledge_sub.add_parser("query-entity-state", help="查询实体在指定章节的状态")
-qs_parser.add_argument("--entity", required=True, help="实体 ID")
-qs_parser.add_argument("--at-chapter", type=int, required=True, help="目标章节号")
+qs_parser = knowledge_sub.add_parser("query-entity-state", help="query entity at the specifiedchapterstatus")
+qs_parser.add_argument("--entity", required=True, help="entity ID")
+qs_parser.add_argument("--at-chapter", type=int, required=True, help="goalchapternumber")
 
-qr_parser = knowledge_sub.add_parser("query-relationships", help="查询实体在指定章节的关系")
-qr_parser.add_argument("--entity", required=True, help="实体 ID")
-qr_parser.add_argument("--at-chapter", type=int, required=True, help="目标章节号")
+qr_parser = knowledge_sub.add_parser("query-relationships", help="query entity at the specifiedchapterofrelationship")
+qr_parser.add_argument("--entity", required=True, help="entity ID")
+qr_parser.add_argument("--at-chapter", type=int, required=True, help="goalchapternumber")
 ```
 
 Add a handler in command dispatch:
@@ -1930,12 +1930,12 @@ Expected: `DELETED`.
 python3 -c "
 import csv
 from pathlib import Path
-path = Path('webnovel-writer/references/csv/裁决规则.csv')
+path = Path('webnovel-writer/references/csv/adjudication.csv')
 with open(path, 'r', encoding='utf-8-sig') as f:
     rows = list(csv.DictReader(f))
-genres = [r['题材'] for r in rows]
-print(f'题材数: {len(genres)}')
-print(f'题材: {genres}')
+genres = [r['genre'] for r in rows]
+print(f'genrecount: {len(genres)}')
+print(f'genre: {genres}')
 assert len(genres) == 7
 "
 ```

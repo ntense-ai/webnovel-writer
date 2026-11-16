@@ -113,8 +113,8 @@ def test_master_setting_and_chapter_brief_accept_phase1_seed_shape():
     master = MasterSetting.model_validate(
         {
             "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-            "route": {"primary_genre": "玄幻退婚流"},
-            "master_constraints": {"core_tone": "先压后爆", "pacing_strategy": "三章内首个反打"},
+            "route": {"primary_genre": "broken-engagement-fantasy"},
+            "master_constraints": {"core_tone": "pressure before release", "pacing_strategy": "first counterattack within three chapters"},
             "base_context": [],
             "source_trace": [],
             "override_policy": {"locked": ["route.primary_genre"], "append_only": ["anti_patterns"], "override_allowed": []},
@@ -123,28 +123,28 @@ def test_master_setting_and_chapter_brief_accept_phase1_seed_shape():
     chapter = ChapterBrief.model_validate(
         {
             "meta": {"schema_version": "story-system/v1", "contract_type": "CHAPTER_BRIEF"},
-            "override_allowed": {"chapter_focus": "退婚现场反打"},
+            "override_allowed": {"chapter_focus": "counterattack at the broken-engagement scene"},
             "dynamic_context": [],
             "source_trace": [],
         }
     )
-    assert master.route["primary_genre"] == "玄幻退婚流"
-    assert chapter.override_allowed["chapter_focus"] == "退婚现场反打"
+    assert master.route["primary_genre"] == "broken-engagement-fantasy"
+    assert chapter.override_allowed["chapter_focus"] == "counterattack at the broken-engagement scene"
 
 
 def test_volume_brief_requires_selected_fields():
     payload = {
         "meta": {"schema_version": "story-system/v1", "contract_type": "VOLUME_BRIEF"},
-        "volume_goal": {"summary": "卷一站稳脚跟"},
-        "selected_tropes": ["退婚反击"],
-        "selected_pacing": {"wave": "压抑后爆"},
-        "selected_scenes": ["宗门大厅", "资源争夺"],
-        "anti_patterns": ["配角抢主角兑现"],
-        "system_constraints": ["金手指每日限一次"],
+        "volume_goal": {"summary": "establish a foothold in volume one"},
+        "selected_tropes": ["broken-engagement counterattack"],
+        "selected_pacing": {"wave": "suppression-then-eruption"},
+        "selected_scenes": ["sect hall", "resource competition"],
+        "anti_patterns": ["Supporting characters steal the payoff earned by the protagonist"],
+        "system_constraints": ["special power limited to once daily"],
         "overrides": {"locked": {}, "append_only": {}, "override_allowed": {}},
     }
     model = VolumeBrief.model_validate(payload)
-    assert model.volume_goal["summary"] == "卷一站稳脚跟"
+    assert model.volume_goal["summary"] == "establish a foothold in volume one"
 
 
 def test_review_contract_requires_blocking_rules_list():
@@ -311,8 +311,8 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
         json.dumps(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "MASTER_SETTING"},
-                "route": {"primary_genre": "玄幻退婚流"},
-                "master_constraints": {"core_tone": "先压后爆"},
+                "route": {"primary_genre": "broken-engagement-fantasy"},
+                "master_constraints": {"core_tone": "pressure before release"},
                 "base_context": [],
                 "source_trace": [],
                 "override_policy": {"locked": ["route.primary_genre"], "append_only": ["anti_patterns"], "override_allowed": []},
@@ -322,12 +322,12 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
         encoding="utf-8",
     )
     (project_root / ".story-system" / "anti_patterns.json").write_text(
-        json.dumps([{"text": "配角不能抢主角兑现"}], ensure_ascii=False),
+        json.dumps([{"text": "Supporting characters must not steal the payoff earned by the protagonist"}], ensure_ascii=False),
         encoding="utf-8",
     )
-    (project_root / "大纲").mkdir(parents=True, exist_ok=True)
-    (project_root / "大纲" / "第1卷-详细大纲.md").write_text(
-        "### 第3章：试压\\nCBN：继续压迫\\n必须覆盖节点：发现陷阱、决定隐忍\\n本章禁区：不可提前摊牌",
+    (project_root / "outlines").mkdir(parents=True, exist_ok=True)
+    (project_root / "outlines" / "volume-1-outline.md").write_text(
+        "### Chapter 3：test pressure\\nCBN：continue applying pressure\\nMust-cover nodes：discover the trap、decide to endure\\nChapter prohibitions：do not reveal the cards prematurely",
         encoding="utf-8",
     )
 
@@ -336,8 +336,8 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
 
     assert volume_brief["meta"]["contract_type"] == "VOLUME_BRIEF"
     assert review_contract["meta"]["contract_type"] == "REVIEW_CONTRACT"
-    assert "发现陷阱" in review_contract["must_check"]
-    assert "不可提前摊牌" in review_contract["blocking_rules"]
+    assert "discover the trap" in review_contract["must_check"]
+    assert "do not reveal the cards prematurely" in review_contract["blocking_rules"]
 ```
 
 - [ ] **Step 2: Run and confirm failing tests**
@@ -374,7 +374,7 @@ class RuntimeContractBuilder:
         volume_brief = VolumeBrief.model_validate(
             {
                 "meta": {"schema_version": "story-system/v1", "contract_type": "VOLUME_BRIEF"},
-                "volume_goal": {"summary": f"第{volume}卷延续 {master.route.get('primary_genre', '')} 的主冲突"},
+                "volume_goal": {"summary": f"Volume {volume} continues {master.route.get('primary_genre', '')} main conflict"},
                 "selected_tropes": [master.route.get("primary_genre", "")],
                 "selected_pacing": {"wave": master.master_constraints.get("pacing_strategy", "")},
                 "selected_scenes": list(plot.get("cpns") or []),
@@ -487,20 +487,20 @@ def test_prewrite_validator_builds_disambiguation_domain_and_fulfillment_seed(tm
         json.dumps(
             {
                 "disambiguation_pending": [],
-                "disambiguation_warnings": [{"mention": "宗主"}],
+                "disambiguation_warnings": [{"mention": "sect leader"}],
                 "chapter_meta": {},
             },
             ensure_ascii=False,
         ),
         encoding="utf-8",
     )
-    review_contract = {"must_check": ["发现陷阱"], "blocking_rules": ["不可提前摊牌"]}
-    plot_structure = {"mandatory_nodes": ["发现陷阱"], "prohibitions": ["不可提前摊牌"]}
+    review_contract = {"must_check": ["discover the trap"], "blocking_rules": ["do not reveal the cards prematurely"]}
+    plot_structure = {"mandatory_nodes": ["discover the trap"], "prohibitions": ["do not reveal the cards prematurely"]}
 
     payload = PrewriteValidator(project_root).build(chapter=3, review_contract=review_contract, plot_structure=plot_structure)
 
     assert payload["blocking"] is False
-    assert payload["fulfillment_seed"]["planned_nodes"] == ["发现陷阱"]
+    assert payload["fulfillment_seed"]["planned_nodes"] == ["discover the trap"]
     assert payload["disambiguation_domain"]["pending_count"] == 0
 ```
 
@@ -532,7 +532,7 @@ class PrewriteValidator:
         return {
             "chapter": chapter,
             "blocking": bool(pending),
-            "blocking_reasons": ["存在高优先级 disambiguation_pending"] if pending else [],
+            "blocking_reasons": ["existshighpriority disambiguation_pending"] if pending else [],
             "forbidden_zones": list(review_contract.get("blocking_rules") or []),
             "disambiguation_domain": {
                 "pending_count": len(pending),
@@ -614,7 +614,7 @@ def test_story_system_runtime_contract_commands_exist():
 
     text = Path("webnovel-writer/skills/webnovel-write/SKILL.md").read_text(encoding="utf-8")
     block = re.search(r"story-system[\\s\\S]+--emit-runtime-contracts[\\s\\S]+REVIEW_CONTRACT", text)
-    assert block, "webnovel-write skill 必须包含生成 runtime contracts 的完整步骤块"
+    assert block, "webnovel-write skill must include generation of runtime contracts the complete step block"
 ```
 
 Add to `test_webnovel_unified_cli.py`:
@@ -633,7 +633,7 @@ def test_webnovel_story_system_runtime_forwards(monkeypatch, tmp_path):
         return 0
 
     monkeypatch.setattr(cli, "_run_script", _fake_run_script)
-    monkeypatch.setattr(sys, "argv", ["webnovel", "--project-root", str(project_root), "story-system", "玄幻退婚流", "--emit-runtime-contracts"])
+    monkeypatch.setattr(sys, "argv", ["webnovel", "--project-root", str(project_root), "story-system", "broken-engagement-fantasy", "--emit-runtime-contracts"])
     cli.main()
 
     assert called["script_name"] == "story_system.py"
@@ -733,7 +733,7 @@ Add to `docs/guides/commands.md`:
 ```bash
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" \
   --project-root "<WORKSPACE_ROOT>" \
-  story-system "玄幻退婚流" --chapter 3 --persist --emit-runtime-contracts --format both
+  story-system "broken-engagement-fantasy" --chapter 3 --persist --emit-runtime-contracts --format both
 ```
 
 - [ ] **Step 3: Run the minimal Phase 2 validation suite**

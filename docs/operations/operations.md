@@ -16,7 +16,7 @@ The system uses four directory levels. Understand their differences before use:
 |------|------|------|
 | `WORKSPACE_ROOT` | Claude Code workspace root | `D:\wk\novels` |
 | `.claude/` | Workspace-level configuration and project pointer | `D:\wk\novels\.claude\` |
-| `PROJECT_ROOT` | Root directory for one book (created by `/webnovel-init`) | `D:\wk\novels\凡人资本论` |
+| `PROJECT_ROOT` | Root directory for one book (created by `/webnovel-init`) | `D:\wk\novels\A Mortal's Capital` |
 | `CLAUDE_PLUGIN_ROOT` | Plugin cache directory (outside the project, managed by Marketplace installation) | Automatically managed |
 
 ### Workspace Directory
@@ -26,8 +26,8 @@ workspace-root/
 ├── .claude/
 │   ├── .webnovel-current-project   # Points to the current book project root
 │   └── settings.json
-├── 小说A/                          # PROJECT_ROOT
-├── 小说B/
+├── novelA/                          # PROJECT_ROOT
+├── novelB/
 └── ...
 ```
 

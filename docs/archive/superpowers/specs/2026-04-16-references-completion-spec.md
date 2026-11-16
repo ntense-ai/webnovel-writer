@@ -1,6 +1,6 @@
 # References Completion Spec
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > Status: `implemented` (2026-04-16)
 > Dependencies: `2026-04-09-skills-restructure-and-reference-gaps.md`, `2026-04-12-story-system-evolution-spec.md`, `2026-04-14-ui-ux-pro-max-skill-architecture-research.md`
@@ -9,7 +9,7 @@
 ## Completion Record
 
 - Phase 1 structure is complete: `CSV_CONFIG` includes `prefix`, `required_cols`, and `contract_inject`; `validate_csv.py`, `references/README.md`, loading-map, and gap-register are in place.
-- Phase 2 adjudication is complete: `题材与调性推理.csv` expanded to 26 rows and `裁决规则.csv` to 17, covering 15 canonical genres.
+- Phase 2 adjudication is complete: `genre-routing.csv` expanded to 26 rows and `adjudication.csv` to 17, covering 15 canonical genres.
 - Validation: `validate_csv.py --format json` reports 0 errors / 0 warnings; relevant reference/story-system tests pass.
 - Phase 3 knowledge additions were not expanded within this spec; remaining gaps are recorded in `references/index/reference-gap-register.md`.
 
@@ -27,15 +27,15 @@ This spec does not add knowledge entries; those gaps are in [Appendix A](#append
 references/
 ├── csv/                         # 9 CSV tables
 │   ├── README.md                # Human-readable schema
-│   ├── 命名规则.csv      (45 rows) # NR- | base
-│   ├── 场景写法.csv      (52 rows) # SP- | base
-│   ├── 写作技法.csv      (64 rows) # WT- | base
-│   ├── 桥段套路.csv      (62 rows) # TR- | dynamic
-│   ├── 人设与关系.csv    (58 rows) # CH- | base
-│   ├── 爽点与节奏.csv    (60 rows) # PA- | dynamic
-│   ├── 金手指与设定.csv  (59 rows) # SY- | base
-│   ├── 题材与调性推理.csv (8 rows) # GR- | route; very thin
-│   └── 裁决规则.csv       (7 rows) # RS- | reasoning; very thin
+│   ├── naming.csv      (45 rows) # NR- | base
+│   ├── scenes.csv      (52 rows) # SP- | base
+│   ├── techniques.csv      (64 rows) # WT- | base
+│   ├── tropes.csv      (62 rows) # TR- | dynamic
+│   ├── characters.csv    (58 rows) # CH- | base
+│   ├── pacing.csv    (60 rows) # PA- | dynamic
+│   ├── powers.csv  (59 rows) # SY- | base
+│   ├── genre-routing.csv (8 rows) # GR- | route; very thin
+│   └── adjudication.csv       (7 rows) # RS- | reasoning; very thin
 ├── genre-profiles.md            # Genre profiles, fallback only
 ├── reading-power-taxonomy.md    # Reader-retention taxonomy
 ├── review-schema.md             # Review output schema
@@ -59,9 +59,9 @@ references/
 |------|------|------|
 | `CSV_CONFIG` registry | `reference_search.py:89-154` | ✅ Per-table `search_cols`/`output_cols`/`poison_col`/`role` |
 | BM25 search primitive | `reference_search.py:160-244` | ✅ |
-| `StorySystemEngine._route()` | `story_system_engine.py:115-159` | ✅ Consumes `题材与调性推理.csv` |
+| `StorySystemEngine._route()` | `story_system_engine.py:115-159` | ✅ Consumes `genre-routing.csv` |
 | `StorySystemEngine._collect_tables()` | `story_system_engine.py:161-185` | ✅ Queries tables recommended by the route |
-| `StorySystemEngine._apply_reasoning()` | `story_system_engine.py:278-338` | ✅ Consumes `裁决规则.csv` |
+| `StorySystemEngine._apply_reasoning()` | `story_system_engine.py:278-338` | ✅ Consumes `adjudication.csv` |
 | `RuntimeContractBuilder` | `runtime_contract_builder.py` | ✅ MASTER + plot → volume_brief + review_contract |
 | `ContextManager` | `context_manager.py` | ✅ Reads contracts, genre profiles, state, and summaries |
 
@@ -75,7 +75,7 @@ references/
 | P4 | **Two-source drift** between `CSV_CONFIG` and README schema without automated alignment | Maintenance | Medium |
 | P5 | **Loading-map drift** from actual Skill triggers | Reviewability | Low |
 | P6 | **No top-level references README** explaining csv/md/index/shared boundaries | Readability | Low |
-| P7 | **Missing `contract_inject` in CSV_CONFIG**: `contract注入层` exists in rules, but injection mappings remain scattered in engine code | Reviewability | Low |
+| P7 | **Missing `contract_inject` in CSV_CONFIG**: `contract_injection_layer` exists in rules, but injection mappings remain scattered in engine code | Reviewability | Low |
 
 ---
 
@@ -88,18 +88,18 @@ User genre/selling-point input
   → Read genre-tropes.md, genre-profiles.md
   → Read worldbuilding/*.md (faction, world-rules, power-systems, character-design)
   → Read creativity/*.md (constraints, selling-points, combination, inspiration)
-  → CSV: 命名规则 (--skill init --query "{object} {genre}")
+  → CSV: naming (--skill init --query "{object} {genre}")
   → story-system CLI (--persist, MASTER_SETTING only)
-      → StorySystemEngine._route()    consumes 题材与调性推理.csv
+      → StorySystemEngine._route()    consumes genre-routing.csv
       → StorySystemEngine._collect()  consumes recommended base/dynamic tables
-      → StorySystemEngine._reason()   consumes 裁决规则.csv
+      → StorySystemEngine._reason()   consumes adjudication.csv
   → Output: .story-system/MASTER_SETTING.json + anti_patterns.json
 ```
 
 **Needs**:
 - Genre routing must match: initialization genre/subgenre/tag input starts the entire system.
 - Without a matching route row, MASTER_SETTING `core_tone`, `pacing_strategy`, and recommended tables are empty or degraded.
-- Without an adjudication row, anti_patterns lacks `反模式` and `毒点权重`.
+- Without an adjudication row, anti_patterns lacks `anti_pattern` and `pitfall_weight`.
 
 ### Planning
 
@@ -110,18 +110,18 @@ User volume/chapter planning input
   → Read cool-points-guide.md as needed
   → Read reading-power-taxonomy.md as needed
   → Read outlining/*.md (conflict-design, chapter-planning, genre-volume-pacing)
-  → CSV: 场景写法 (--skill plan --query "卷级结构 叙事功能")
-  → CSV: 命名规则 for new character names
-  → CSV: 爽点与节奏 for conflict design
-  → CSV: 桥段套路 for conflict design
+  → CSV: scenes (--skill plan --query "volumestructure narrationfunction")
+  → CSV: naming for new character names
+  → CSV: pacing for conflict design
+  → CSV: tropes for conflict design
   → story-system CLI (--emit-runtime-contracts)
       → RuntimeContractBuilder.build_for_chapter()
   → Output: volume_brief + review_contract
 ```
 
 **Needs**:
-- Volume planning draws structural guidance from `场景写法` and `爽点与节奏`.
-- `桥段套路` supplies optional conflict templates.
+- Volume planning draws structural guidance from `scenes` and `pacing`.
+- `tropes` supplies optional conflict templates.
 - Naming rules trigger for new characters.
 - Shared outlining currently contains only `plot-signal-vs-spoiler.md`; `conflict-design.md`, `chapter-planning.md`, and `genre-volume-pacing.md` are Skill-local references.
 
@@ -133,16 +133,16 @@ context-agent assembles a writing brief
       → Read all contracts under .story-system/
       → Read genre-profiles.md as fallback
       → Read reading-power-taxonomy.md
-      → Read 设定集/*.md
+      → Read settings/*.md
       → Read state.json, summaries, outlines, index.db
   → Output: JSON context pack
 
 Step 2: Drafting
   → Read core-constraints.md
-  → CSV: 命名规则 for new characters
-  → CSV: 场景写法 for battles/confrontations
-  → CSV: 写作技法 for dialogue/emotion
-  → CSV: 场景写法 for frequent scene patterns
+  → CSV: naming for new characters
+  → CSV: scenes for battles/confrontations
+  → CSV: techniques for dialogue/emotion
+  → CSV: scenes for frequent scene patterns
 
 Step 3: Review
   → Read review-schema.md, core-constraints.md
@@ -180,9 +180,9 @@ Step 4: Polish
 
 ## Design Decisions
 
-### D1: Complete 裁决规则.csv
+### D1: Complete adjudication.csv
 
-**Goal**: Cover all frequent genres in `genre-profiles.md` and all subgenres in `题材与调性推理.csv`.
+**Goal**: Cover all frequent genres in `genre-profiles.md` and all subgenres in `genre-routing.csv`.
 
 **Original coverage, 7 rows**: Western fantasy, Eastern cultivation, sci-fi apocalypse, urban daily life, suspense/thriller, historical martial arts, fantasy.
 
@@ -199,11 +199,11 @@ Step 4: Polish
 | Light novels | Independent Fanqie category |
 | Gaming/esports | Independent Fanqie category |
 
-**Method**: Manually write each row, filling `风格优先级`, `爽点优先级`, `节奏默认策略`, `毒点权重`, `冲突裁决`, `contract注入层`, and `反模式`.
+**Method**: Manually write each row, filling `style_priority`, `payoff_priority`, `default_pacing_strategy`, `pitfall_weight`, `conflict_resolution`, `contract_injection_layer`, and `anti_pattern`.
 
 **Hard constraint**: Adjudication content must be manually distilled, never programmatically generated.
 
-### D2: Complete 题材与调性推理.csv
+### D2: Complete genre-routing.csv
 
 **Goal**: Cover common genre/subgenre/tag combinations users may enter during initialization.
 
@@ -211,24 +211,24 @@ Step 4: Polish
 
 **Additions**: See the route gaps in [Appendix A](#appendix-a-knowledge-entry-gap-register).
 
-**Key principle**: Populate `题材别名` thoroughly. Common names, jargon, and colloquial names are crucial to route hit rate.
+**Key principle**: Populate `genre_aliases` thoroughly. Common names, jargon, and colloquial names are crucial to route hit rate.
 
 ### D3: Enhance CSV_CONFIG
 
 Add per-table fields in `reference_search.py`:
 
 ```python
-"裁决规则": {
-    "file": "裁决规则.csv",
-    "search_cols": {"题材": 4},
+"adjudication": {
+    "file": "adjudication.csv",
+    "search_cols": {"genre": 4},
     "output_cols": [...],
     "poison_col": "",
     "role": "reasoning",
     # New fields
     "contract_inject": "CHAPTER_BRIEF.writing_guidance",  # Injection target
     "prefix": "RS",                                    # ID prefix
-    "required_cols": ["题材", "风格优先级", "爽点优先级", # Required columns
-                      "节奏默认策略", "毒点权重", "冲突裁决"],
+    "required_cols": ["genre", "style_priority", "payoff_priority", # Required columns
+                      "default_pacing_strategy", "pitfall_weight", "conflict_resolution"],
 },
 ```
 
@@ -244,14 +244,14 @@ Add `scripts/validate_csv.py`:
 
 | Check | Rule | Exit code |
 |--------|------|--------|
-| Unique IDs | `编号` globally unique across CSVs | 1 |
+| Unique IDs | `id` globally unique across CSVs | 1 |
 | Prefix consistency | Match `CSV_CONFIG[table].prefix` | 1 |
-| Required values | Table `required_cols` plus common `编号/适用技能/分类/层级/关键词/适用题材/核心摘要` are nonempty | 1 |
-| Delimiters | No Chinese comma `，` in `适用技能/关键词/意图与同义词/适用题材` | 1 |
+| Required values | Table `required_cols` plus common `id/applicable_skills/category/level/keywords/applicable_genres/summary` are nonempty | 1 |
+| Delimiters | No Chinese comma `，` in `applicable_skills/keywords/intent_synonyms/applicable_genres` | 1 |
 | Headers | Actual columns are a superset of `search_cols` + `output_cols` + `required_cols` | 1 |
-| Genre range | Split `适用题材` values belong to Fanqie categories or `全部` | Warning |
-| Route coverage | Each adjudication `题材` has a matching route row | Warning |
-| Adjudication coverage | Each route `题材/流派` has a matching adjudication row | Warning |
+| Genre range | Split `applicable_genres` values belong to Fanqie categories or `all` | Warning |
+| Route coverage | Each adjudication `genre` has a matching route row | Warning |
+| Adjudication coverage | Each route `genre_route` has a matching adjudication row | Warning |
 
 Read metadata from `CSV_CONFIG`; do not hard-code table or column names.
 
@@ -310,8 +310,8 @@ Mark already-completed items:
 |------|---------|
 | `core-constraints.md` | **Keep unchanged**: procedural hard constraints, not itemized knowledge |
 | `strand-weave-pattern.md` | **Keep unchanged**: three-strand proportions/warnings are methodology, not an entry library |
-| `cool-points-guide.md` | **Review**: six execution patterns and four-step vindication may become `爽点与节奏.csv` entries; retain information-asymmetry design and density guidance in Markdown |
-| `naming-and-voice-gaps.md` | **Review**: genre naming and voice distinction tables may become `命名规则.csv`/`写作技法.csv` entries; retain compensation strategies in Markdown |
+| `cool-points-guide.md` | **Review**: six execution patterns and four-step vindication may become `pacing.csv` entries; retain information-asymmetry design and density guidance in Markdown |
+| `naming-and-voice-gaps.md` | **Review**: genre naming and voice distinction tables may become `naming.csv`/`techniques.csv` entries; retain compensation strategies in Markdown |
 
 Record results in [Appendix A](#appendix-a-knowledge-entry-gap-register); migrate later.
 
@@ -381,7 +381,7 @@ Original eight routes: broken engagement, rule-based horror, release after oppre
 
 Original seven: Western fantasy, Eastern cultivation, sci-fi apocalypse, urban daily life, suspense/thriller, historical martial arts, fantasy.
 
-Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route parameters in `题材与调性推理.csv` handle subgenre differences.
+Principle: `adjudication.csv` covers **major genre types**, not subgenres. Route parameters in `genre-routing.csv` handle subgenre differences.
 
 | Missing genre | Priority | Reason |
 |----------|--------|------|
@@ -397,7 +397,7 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 
 > Populate after analyzing existing coverage. This is an initial framework.
 
-#### 命名规则.csv (45 Rows)
+#### naming.csv (45 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -405,7 +405,7 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 | Faction/organization naming: sects, gangs, companies, clans | P1 | Characters and places covered; organizations missing |
 | Book/title naming | P2 | Previously deferred in gap register |
 
-#### 场景写法.csv (52 Rows)
+#### scenes.csv (52 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -413,7 +413,7 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 | Romance: attraction, misunderstanding, reunion, separation | P1 | Core women's-fiction scenes missing |
 | Mystery: clues, deductive confrontation, truth revelation | P2 | |
 
-#### 写作技法.csv (64 Rows)
+#### techniques.csv (64 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -421,7 +421,7 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 | Sweet romance: attraction and couple interaction | P1 | Women's-fiction needs |
 | Humor/commentary for light novels and urban comedy | P2 | |
 
-#### 桥段套路.csv (62 Rows)
+#### tropes.csv (62 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -429,14 +429,14 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 | System activation, hidden missions, upgrades | P1 | |
 | Locked rooms, alibis, culprit reversals | P2 | |
 
-#### 人设与关系.csv (58 Rows)
+#### characters.csv (58 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
 | Women's-fiction archetypes: idealized first love, deceptive innocent, domineering CEO, obsessive lover, childhood friend | P1 | |
 | Team/couple relationships: partners, rivals, mentors and students | P2 | |
 
-#### 爽点与节奏.csv (60 Rows)
+#### pacing.csv (60 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -444,7 +444,7 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 | Farming/management accumulation payoffs | P2 | |
 | Migratable execution patterns from cool-points-guide.md | P2 | D8 review |
 
-#### 金手指与设定.csv (59 Rows)
+#### powers.csv (59 Rows)
 
 | Missing topic | Priority | Evidence |
 |----------|--------|---------|
@@ -457,8 +457,8 @@ Principle: `裁决规则.csv` covers **major genre types**, not subgenres. Route
 
 | Source | Candidate section | Target CSV | Estimated entries | Status |
 |--------|-----------|---------|-----------|------|
-| `cool-points-guide.md` | Pending review | `爽点与节奏.csv` | - | Not started |
-| `naming-and-voice-gaps.md` | Pending review | `命名规则.csv` / `写作技法.csv` | - | Not started |
+| `cool-points-guide.md` | Pending review | `pacing.csv` | - | Not started |
+| `naming-and-voice-gaps.md` | Pending review | `naming.csv` / `techniques.csv` | - | Not started |
 
 ---
 

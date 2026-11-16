@@ -1,9 +1,9 @@
 """
-Dashboard 启动脚本
+Dashboard launcher
 
-用法：
+Usage:
     python -m dashboard.server --project-root /path/to/novel-project
-    python -m dashboard.server                   # 自动从 .claude 指针读取
+    python -m dashboard.server                   # Read the .claude pointer automatically
 """
 
 import argparse
@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 def _resolve_project_root(cli_root: str | None) -> Path:
-    """按优先级解析 PROJECT_ROOT：CLI > 环境变量 > .claude 指针 > CWD。"""
+    """Resolve PROJECT_ROOT by priority: CLI, environment, .claude pointer, then CWD."""
     if cli_root:
         return Path(cli_root).resolve()
 
@@ -22,7 +22,7 @@ def _resolve_project_root(cli_root: str | None) -> Path:
     if env:
         return Path(env).resolve()
 
-    # 尝试从 .claude 指针读取
+    # Try reading the .claude pointer.
     cwd = Path.cwd()
     pointer = cwd / ".claude" / ".webnovel-current-project"
     if pointer.is_file():
@@ -32,7 +32,7 @@ def _resolve_project_root(cli_root: str | None) -> Path:
             if p.is_dir() and (p / ".webnovel" / "state.json").is_file():
                 return p.resolve()
 
-    # 最终兜底：当前目录
+    # Final fallback: current directory.
     if (cwd / ".webnovel" / "state.json").is_file():
         return cwd.resolve()
 
@@ -51,7 +51,7 @@ def main():
     project_root = _resolve_project_root(args.project_root)
     print(f"Project path: {project_root}")
 
-    # 延迟导入，以便先处理路径
+    # Defer imports until paths are resolved.
     import uvicorn
     from .app import create_app
 

@@ -3,18 +3,18 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "使用 /webnovel-review 审查第4章（agents/evals/files/test-project/正文/第0004章-迦南学院的考验.md）。项目在 agents/evals/files/test-project/。",
-      "expected_output": "生成审查报告，识别时间线等事实/一致性问题，并将审查指标写入 index.db",
+      "prompt": "Use /webnovel-review to review chapter 4 (agents/evals/files/test-project/chapters/chapter-0004-the-trial-at-jianan-academy.md). The project is in agents/evals/files/test-project/.",
+      "expected_output": "Generate a review report identifying factual and continuity issues, including the timeline, and write the review metrics to index.db.",
       "files": [
-        "agents/evals/files/test-project/正文/第0004章-迦南学院的考验.md",
+        "agents/evals/files/test-project/chapters/chapter-0004-the-trial-at-jianan-academy.md",
         "agents/evals/files/test-project/.webnovel/state.json",
         "agents/evals/files/test-project/.webnovel/summaries/ch0003.md"
       ],
       "expectations": [
-        "审查报告被生成",
-        "报告中识别了时间跳跃问题（上章黄昏→本章晨光）",
-        "审查指标被写入（review_metrics）",
-        "报告中的每个 issue 都有 evidence"
+        "A review report is generated.",
+        "The report identifies the unexplained time jump from dusk in the previous chapter to morning light in this chapter.",
+        "Review metrics are written to review_metrics.",
+        "Every issue in the report includes evidence."
       ]
     }
   ]

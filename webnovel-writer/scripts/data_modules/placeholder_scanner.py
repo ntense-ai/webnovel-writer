@@ -13,9 +13,9 @@ from project_paths import project_dir, project_path
 
 
 PLACEHOLDER_PATTERNS = [
-    re.compile(r"\[待[^\]]*\]"),
-    re.compile(r"（暂名）|\(暂名\)|（待补充）|\(待补充\)"),
-    re.compile(r"\{占位\}|<占位>"),
+    re.compile(r"\[(?:Pending|TBD|TODO|To be completed)[^\]]*\]", re.IGNORECASE),
+    re.compile(r"\((?:working title|To be completed)\)", re.IGNORECASE),
+    re.compile(r"\{placeholder\}|<placeholder>", re.IGNORECASE),
 ]
 
 
@@ -36,7 +36,7 @@ def _scan_file(path: Path, project_root: Path) -> List[Dict[str, Any]]:
                         "line": line_no,
                         "pattern": match.group(0),
                         "context": line.strip(),
-                        "suggested_fill_phase": "plan" if rel.startswith(("outlines/", "大纲/")) else "setting_update",
+                        "suggested_fill_phase": "plan" if rel.startswith(("outlines/", "outlines/")) else "setting_update",
                     }
                 )
     return results

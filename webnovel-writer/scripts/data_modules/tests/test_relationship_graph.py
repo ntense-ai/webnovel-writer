@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-关系事件与关系图谱测试
+relationship event and graph tests
 """
 
 import json
@@ -33,9 +33,9 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
     manager.upsert_entity(
         EntityMeta(
             id="xiaoyan",
-            type="角色",
-            canonical_name="萧炎",
-            tier="核心",
+            type="character",
+            canonical_name="Xiao Yan",
+            tier="core",
             current={},
             first_appearance=1,
             last_appearance=10,
@@ -45,9 +45,9 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
     manager.upsert_entity(
         EntityMeta(
             id="yaolao",
-            type="角色",
-            canonical_name="药老",
-            tier="重要",
+            type="character",
+            canonical_name="Yao Lao",
+            tier="major",
             current={},
             first_appearance=1,
             last_appearance=10,
@@ -56,9 +56,9 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
     manager.upsert_entity(
         EntityMeta(
             id="lintian",
-            type="角色",
-            canonical_name="林天",
-            tier="重要",
+            type="character",
+            canonical_name="Lin Tian",
+            tier="major",
             current={},
             first_appearance=2,
             last_appearance=10,
@@ -68,8 +68,8 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
         RelationshipMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
-            description="正式拜师",
+            type="mentor-student",
+            description="formally accepts the master",
             chapter=3,
         )
     )
@@ -77,8 +77,8 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
         RelationshipMeta(
             from_entity="yaolao",
             to_entity="lintian",
-            type="敌对",
-            description="理念冲突",
+            type="hostile",
+            description="ideological conflict",
             chapter=5,
         )
     )
@@ -86,13 +86,13 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
         RelationshipEventMeta(
             from_entity="xiaoyan",
             to_entity="yaolao",
-            type="师徒",
+            type="mentor-student",
             chapter=3,
             action="create",
             polarity=1,
             strength=0.9,
-            description="拜师",
-            evidence="公开收徒",
+            description="become a disciple",
+            evidence="publicly accepts a disciple",
             confidence=0.95,
         )
     )
@@ -101,13 +101,13 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
         RelationshipEventMeta(
             from_entity="yaolao",
             to_entity="lintian",
-            type="敌对",
+            type="hostile",
             chapter=5,
             action="create",
             polarity=-1,
             strength=0.8,
-            description="结怨",
-            evidence="比斗失手",
+            description="become enemies",
+            evidence="mistake during a duel",
             confidence=0.8,
         )
     )
@@ -116,7 +116,7 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
     assert events
     timeline = manager.get_relationship_timeline("xiaoyan", "yaolao", limit=20)
     assert timeline
-    assert timeline[0]["type"] == "师徒"
+    assert timeline[0]["type"] == "mentor-student"
 
     graph = manager.build_relationship_subgraph("xiaoyan", depth=2, chapter=10, top_edges=10)
     node_ids = {n["id"] for n in graph["nodes"]}
@@ -126,7 +126,7 @@ def test_relationship_events_timeline_and_subgraph(temp_project):
     assert graph["edges"]
     mermaid = manager.render_relationship_subgraph_mermaid(graph)
     assert "mermaid" in mermaid
-    assert "师徒" in mermaid
+    assert "mentor-student" in mermaid
 
 
 def test_relationship_subgraph_respects_chapter_slice(temp_project):
@@ -134,8 +134,8 @@ def test_relationship_subgraph_respects_chapter_slice(temp_project):
     manager.upsert_entity(
         EntityMeta(
             id="a",
-            type="角色",
-            canonical_name="甲",
+            type="character",
+            canonical_name="A",
             current={},
             first_appearance=1,
             last_appearance=3,
@@ -145,8 +145,8 @@ def test_relationship_subgraph_respects_chapter_slice(temp_project):
     manager.upsert_entity(
         EntityMeta(
             id="b",
-            type="角色",
-            canonical_name="乙",
+            type="character",
+            canonical_name="B",
             current={},
             first_appearance=1,
             last_appearance=3,
@@ -156,7 +156,7 @@ def test_relationship_subgraph_respects_chapter_slice(temp_project):
         RelationshipEventMeta(
             from_entity="a",
             to_entity="b",
-            type="同盟",
+            type="alliance",
             chapter=1,
             action="create",
             polarity=1,
@@ -167,7 +167,7 @@ def test_relationship_subgraph_respects_chapter_slice(temp_project):
         RelationshipEventMeta(
             from_entity="a",
             to_entity="b",
-            type="同盟",
+            type="alliance",
             chapter=2,
             action="remove",
             polarity=0,
@@ -186,8 +186,8 @@ def test_relationship_subgraph_fallbacks_to_snapshot_when_events_missing(temp_pr
     manager.upsert_entity(
         EntityMeta(
             id="a",
-            type="角色",
-            canonical_name="甲",
+            type="character",
+            canonical_name="A",
             current={},
             first_appearance=1,
             last_appearance=5,
@@ -197,20 +197,20 @@ def test_relationship_subgraph_fallbacks_to_snapshot_when_events_missing(temp_pr
     manager.upsert_entity(
         EntityMeta(
             id="b",
-            type="角色",
-            canonical_name="乙",
+            type="character",
+            canonical_name="B",
             current={},
             first_appearance=1,
             last_appearance=5,
         )
     )
-    # 只写 relationships 快照，不写 relationship_events
+    # write only relationships snapshot，do not write relationship_events
     manager.upsert_relationship(
         RelationshipMeta(
             from_entity="a",
             to_entity="b",
-            type="同盟",
-            description="旧版快照数据",
+            type="alliance",
+            description="old snapshot data",
             chapter=3,
         )
     )
@@ -218,7 +218,7 @@ def test_relationship_subgraph_fallbacks_to_snapshot_when_events_missing(temp_pr
     graph = manager.build_relationship_subgraph("a", depth=1, chapter=3, top_edges=10)
     assert graph["edges"]
     assert graph["edges"][0]["action"] == "snapshot"
-    assert graph["edges"][0]["type"] == "同盟"
+    assert graph["edges"][0]["type"] == "alliance"
 
 
 def test_relationship_graph_cli_commands(temp_project, monkeypatch, capsys):
@@ -226,8 +226,8 @@ def test_relationship_graph_cli_commands(temp_project, monkeypatch, capsys):
     manager.upsert_entity(
         EntityMeta(
             id="hero",
-            type="角色",
-            canonical_name="主角",
+            type="character",
+            canonical_name="protagonist",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -237,8 +237,8 @@ def test_relationship_graph_cli_commands(temp_project, monkeypatch, capsys):
     manager.upsert_entity(
         EntityMeta(
             id="mentor",
-            type="角色",
-            canonical_name="师父",
+            type="character",
+            canonical_name="master",
             current={},
             first_appearance=1,
             last_appearance=1,
@@ -248,7 +248,7 @@ def test_relationship_graph_cli_commands(temp_project, monkeypatch, capsys):
         RelationshipEventMeta(
             from_entity="hero",
             to_entity="mentor",
-            type="师徒",
+            type="mentor-student",
             chapter=1,
             action="create",
             polarity=1,
@@ -324,7 +324,7 @@ def test_relationship_graph_cli_commands(temp_project, monkeypatch, capsys):
             json.dumps(
                 {
                     "from_entity": "hero",
-                    "type": "师徒",
+                    "type": "mentor-student",
                     "chapter": 1,
                 },
                 ensure_ascii=False,

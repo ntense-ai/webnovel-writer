@@ -46,9 +46,9 @@ def _write_minimal_package(root: Path, *, plugin_version: str = "1.2.3", marketp
                 "",
                 f"[![Version](https://img.shields.io/badge/version-{plugin_version}-brightgreen.svg)](.claude-plugin/marketplace.json)",
                 "",
-                "| 版本 | 说明 |",
+                "| Version | description |",
                 "|------|------|",
-                f"| **v{plugin_version} (当前)** | test |",
+                f"| **v{plugin_version} (current)** | test |",
                 "",
             ]
         ),

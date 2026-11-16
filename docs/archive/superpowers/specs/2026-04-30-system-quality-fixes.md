@@ -1,11 +1,11 @@
 # System-Level Fixes Identified by Lingshizhuang Testing
 
-> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+> Historical design record. Examples have been translated to the English-only project layout: `chapters/`, `outlines/`, `settings/`, and `reviews/`. Consult the current runtime documentation before applying historical implementation snippets.
 
 > Date: 2026-04-30
 > Scope: webnovel-writer system issues (independent of LLM capability)
-> Test basis: DeepSeek v4pro completed init / plan / write chapters 1-2 + review in `D:\wk\xiaoshuo\灵石庄`
-> Fact check: Verified against current repository behavior and actual artifacts in `D:\wk\xiaoshuo\灵石庄`, correcting over-attribution and nonexistent implementation targets
+> Test basis: DeepSeek v4pro completed init / plan / write chapters 1-2 + review in `D:\wk\xiaoshuo\Spiritstone Manor`
+> Fact check: Verified against current repository behavior and actual artifacts in `D:\wk\xiaoshuo\Spiritstone Manor`, correcting over-attribution and nonexistent implementation targets
 > Already delivered: commit `f58d657 fix: align projection writers with real LLM commit schema` (schema-drift fixes)
 
 ---
@@ -40,9 +40,9 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 - Related tests, preferably in existing story-system / outline-loader test directories.
 
 **Concrete tasks**:
-- Add/extend `load_chapter_execution_directive(project_root: Path, chapter: int)` in `chapter_outline_loader.py`. Extract `goal`, `obstacles`, `cost`, `time_anchor`, `chapter_span`, `countdown`, `cbn`, `cpns`, `cen`, `must_cover_nodes`, `forbidden_zones`, `chapter_end_open_question`, `hook_type`, `hook_strength`, `key_entities`, `strand`, and `antagonist_tier` from `大纲/第{vol}卷-详细大纲.md`.
+- Add/extend `load_chapter_execution_directive(project_root: Path, chapter: int)` in `chapter_outline_loader.py`. Extract `goal`, `obstacles`, `cost`, `time_anchor`, `chapter_span`, `countdown`, `cbn`, `cpns`, `cen`, `must_cover_nodes`, `forbidden_zones`, `chapter_end_open_question`, `hook_type`, `hook_strength`, `key_entities`, `strand`, and `antagonist_tier` from `outlines/Volume {vol}-detailedoutlines.md`.
 - Add top-level `chapter_directive` during story-system brief assembly; retain the legacy path if no chapter block exists.
-- Change `_suggest_chapter_focus()`: prefer `chapter_directive.goal`; without a directive, use a non-placeholder query; never derive it from `dynamic_context[0]["核心摘要"]`.
+- Change `_suggest_chapter_focus()`: prefer `chapter_directive.goal`; without a directive, use a non-placeholder query; never derive it from `dynamic_context[0]["summary"]`.
 - Order the `webnovel-write/SKILL.md` brief: hard chapter constraints → CBN/CPNs/CEN → forbidden content → style guidance → `dynamic_context` stylistic reference.
 - Test persisted directive fields, `chapter_focus` provenance, no reference-summary copying without a directive, and a manually checked prompt-order fixture.
 
@@ -55,7 +55,7 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 - Generate a sample chapter 1 brief; confirm `chapter_directive.time_anchor`, `must_cover_nodes`, and `forbidden_zones`.
 - Manually inspect the writing brief: `dynamic_context` is labeled supplementary and follows the directive.
 
-**Estimated scope/risk**: Medium, 4-6 hours. Main risk: Markdown heading/field variants cause missed parsing; support `第1章`, `第一章`, and spacing variants.
+**Estimated scope/risk**: Medium, 4-6 hours. Main risk: Markdown heading/field variants cause missed parsing; support `Chapter 1`, `Chapter 1`, and spacing variants.
 
 ### Phase 2 — Query Validity / Chapter-Aware Reference Ranking (Issue #3)
 
@@ -70,7 +70,7 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 - Reference/story-system test fixtures.
 
 **Concrete tasks**:
-- Add placeholder-query protection at the `story_system.py` CLI entry. Detect `{章纲目标}`, `第N章章纲目标`, and generic template text; diagnose or warn about degraded behavior.
+- Add placeholder-query protection at the `story_system.py` CLI entry. Detect `{chapter-outlinegoal}`, `Chapter Nchapter-outlinegoal`, and generic template text; diagnose or warn about degraded behavior.
 - Require plan/write Skills to resolve the real chapter goal before calling story-system; never pass a placeholder as `query`.
 - In review, compare `chapter_brief.meta.query` with the detailed-outline goal and flag placeholder queries as system issues.
 - Add chapter-aware scoring around query expansion/table collection/ranking in `story_system_engine.py`, using `chapter_directive.goal/key_entities/strand/antagonist_tier`.
@@ -86,26 +86,26 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 - `test_story_system_reference_matching_prefers_chapter_keywords`: Lending cards outrank generic philosophical-debate/pill/sect-management cards.
 - Sample Lingshizhuang chapter 1 brief: `dynamic_context` contains at least one card related to promissory notes, interest, compound interest, or debt.
 
-**Estimated scope/risk**: Medium, about 4 hours. Reference CSV fields vary; tolerate missing `关键词`, `意图与同义词`, and `适用场景`.
+**Estimated scope/risk**: Medium, about 4 hours. Reference CSV fields vary; tolerate missing `keywords`, `intent_synonyms`, and `applicable_scenes`.
 
 ### Phase 3 — Init Template Pruning / Conditional Generation (Issue #4)
 
-**Objective**: Reduce empty setting files/directories after init, avoid `主角组.md` in single-protagonist projects, and concentrate facts in existing protagonist cards, worldbuilding, and volume outlines.
+**Objective**: Reduce empty setting files/directories after init, avoid `protagonist-team.md` in single-protagonist projects, and concentrate facts in existing protagonist cards, worldbuilding, and volume outlines.
 
 **Files to change**:
 - `webnovel-writer/scripts/init_project.py`
-- `webnovel-writer/templates/output/设定集-金手指.md`
-- `webnovel-writer/templates/output/复合题材-融合逻辑.md`
-- `webnovel-writer/templates/output/设定集-主角组.md`
-- `webnovel-writer/templates/output/设定集-女主卡.md`
+- `webnovel-writer/templates/output/settings-special-advantage.md`
+- `webnovel-writer/templates/output/hybrid-genre.md`
+- `webnovel-writer/templates/output/settings-protagonist-team.md`
+- `webnovel-writer/templates/output/settings-heroine.md`
 - `webnovel-writer/skills/webnovel-init/SKILL.md`
 - Init tests.
 
 **Concrete tasks**:
 - Remove redundant shell templates from default generation: special-advantage design, payoff planning, and hybrid-genre fusion logic, unless explicitly needed.
-- Generate `主角组.md` conditionally from `idea_bank.protagonist_structure`: only `主角组`, `双主角`, or `多主角` projects.
-- Generate `女主卡.md` conditionally from `heroine_config`: not for `无女主`.
-- Create `角色库/`, `物品库/`, and `其他设定/` only on the first entity-delta write.
+- Generate `protagonist-team.md` conditionally from `idea_bank.protagonist_structure`: only `protagonist-team`, `dual`, or `ensemble` projects.
+- Generate `heroine.md` conditionally from `heroine_config`: not for `none`.
+- Create `charactercollection/`, `items/`, and `other-settings/` only on the first entity-delta write.
 - Update init instructions so prompts no longer demand pruned templates.
 
 **Dependencies**:
@@ -113,40 +113,40 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 - First inspect generation lists in `init_project.py`, `webnovel-init/SKILL.md`, and template paths; do not remove templates without changing callers.
 
 **Verification/tests**:
-- Single-protagonist fixture creates `设定集/主角卡.md`, not `设定集/主角组.md`.
-- `无女主` fixture does not create `设定集/女主卡.md`.
-- Default init does not create `金手指设计.md`, `爽点规划.md`, or empty `角色库/物品库/其他设定` directories.
+- Single-protagonist fixture creates `settings/protagonist.md`, not `settings/protagonist-team.md`.
+- `none` fixture does not create `settings/heroine.md`.
+- Default init does not create `special-power-design.md`, `payoff-plan.md`, or empty `charactercollection/items/othersetting` directories.
 
 **Estimated scope/risk**: Small, about 2 hours. Template and output filenames differ; use actual `init_project.py` mappings.
 
 ### Phase 4 — Placeholder Guardrails / Cross-Volume Anchor Writeback (Issues #6 #7)
 
-**Objective**: Detect `[待...]`, `暂名`, `{占位}`, and similar drift at plan/write boundaries. Define Phase 7 as minimal cross-volume anchor writeback after current-volume planning: only after `webnovel-plan` completes and validates current-volume artifacts, write V+1's title, core conflict, ending climax, and explicitly structured foreshadowing/open loops to `总纲.md`. Phase 7 must not automatically plan the next volume in detail.
+**Objective**: Detect `[TODO...]`, `temporary name`, `{placeholder}`, and similar drift at plan/write boundaries. Define Phase 7 as minimal cross-volume anchor writeback after current-volume planning: only after `webnovel-plan` completes and validates current-volume artifacts, write V+1's title, core conflict, ending climax, and explicitly structured foreshadowing/open loops to `master-outline.md`. Phase 7 must not automatically plan the next volume in detail.
 
 **Files to change**:
 - `webnovel-writer/scripts/data_modules/placeholder_scanner.py` (new)
 - `webnovel-writer/scripts/webnovel.py`
 - `webnovel-writer/skills/webnovel-plan/SKILL.md`
 - `webnovel-writer/skills/webnovel-write/SKILL.md`
-- `webnovel-writer/templates/output/大纲-总纲.md`
+- `webnovel-writer/templates/output/outlines-master-outline.md`
 - Plan/write/CLI tests.
 
 **Concrete tasks**:
-- Add `scan_placeholders(project_root)` to scan `大纲/*.md` and `设定集/*.md` for `\[待[^\]]*\]`, `（暂名）`, `(暂名)`, `（待补充）`, and whole-field `{占位}` / `<占位>`.
+- Add `scan_placeholders(project_root)` to scan `outlines/*.md` and `settings/*.md` for `\[TODO[^\]]*\]`, `（temporary name）`, `(temporary name)`, `（To be completed）`, and whole-field `{placeholder}` / `<placeholder>`.
 - Add `placeholder-scan --project-root <dir>` to `webnovel.py`.
 - Scan at plan start/end: warn, do not block planning.
 - At write start, block if setting files for entities relevant to the current chapter retain pending markers.
-- Change `大纲-总纲.md`: no pre-generated empty V2-V20 rows at init.
-- After successful, complete, validated current-volume planning, write only V+1's title, core conflict, and ending climax to `总纲.md`.
+- Change `outlines-master-outline.md`: no pre-generated empty V2-V20 rows at init.
+- After successful, complete, validated current-volume planning, write only V+1's title, core conflict, and ending climax to `master-outline.md`.
 - Append only new foreshadowing/continuing open loops explicitly structured in current planning output; never infer them from free text.
 - Phase 7 must not generate the next volume's detailed outline, beat sheet, timeline, or chapter-level plan.
 
 **Dependencies**:
-- Template overlap with Phase 3: coordinate `templates/output/大纲-总纲.md` and init generation when parallel.
+- Template overlap with Phase 3: coordinate `templates/output/outlines-master-outline.md` and init generation when parallel.
 - Write blocking should reuse Phase 1 `chapter_directive.key_entities` or existing chapter-entity parsing. Whole-project scanning otherwise risks false positives.
 
 **Verification/tests**:
-- `test_placeholder_scanner_finds_pending_marks` covers `[待...]`, `暂名`, `{占位}`.
+- `test_placeholder_scanner_finds_pending_marks` covers `[TODO...]`, `temporary name`, `{placeholder}`.
 - `test_write_chapter_blocks_on_pending_related_entity`: Relevant entity placeholders block; unrelated ones do not.
 - `test_plan_flow_writes_minimal_next_volume_anchor`: After V1 planning/validation, add only V2 title/conflict/climax, with no V3-V20 empty rows or V2 detailed outline/beat sheet/timeline.
 - CLI smoke: `webnovel.py placeholder-scan --project-root <fixture>` returns structured output.
@@ -193,7 +193,7 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 | 3 | P1 | Retrieval underweights actual chapter goals; genre routing dominates semantics | Every brief's relevance | Medium |
 | 4 | P1 | Bulk empty setting templates; protagonist-group file in single-protagonist projects | Init confusion, placeholder noise | Small |
 | 5 | P1 | Unrelated dynamic_context summary inserted into `chapter_focus` | Misleading briefs | Small |
-| 6 | P2 | No placeholder/drift guardrails (outline `[待...]` vs named protagonist-card entry) | Planning inconsistency | Small |
+| 6 | P2 | No placeholder/drift guardrails (outline `[TODO...]` vs named protagonist-card entry) | Planning inconsistency | Small |
 | 7 | P2 | Missing V+1 minimal anchors / structured foreshadowing writeback | Broken cross-volume promises | Medium |
 | 8 | P2 | Reviewed ai_flavor patterns do not feed `anti_patterns.json` | Repeated defects | Small |
 
@@ -205,7 +205,7 @@ This section reorganizes the eight verified issues into an actionable workflow. 
 
 **Evidence**:
 
-Fields in `D:\wk\xiaoshuo\灵石庄\.story-system\chapters\chapter_001.json` (136 lines):
+Fields in `D:\wk\xiaoshuo\Spiritstone Manor\.story-system\chapters\chapter_001.json` (136 lines):
 
 ```json
 {
@@ -217,9 +217,9 @@ Fields in `D:\wk\xiaoshuo\灵石庄\.story-system\chapters\chapter_001.json` (13
 }
 ```
 
-Chapter 1 in `D:\wk\xiaoshuo\灵石庄\大纲\第1卷-详细大纲.md` fully specifies goal / resistance / cost / time anchor / countdown / Strand / antagonist tier / **CBN / CPNs / CEN / required nodes / forbidden content / chapter-end open question / hook type**.
+Chapter 1 in `D:\wk\xiaoshuo\Spiritstone Manor\outlines\volume-1-outline.md` fully specifies goal / resistance / cost / time anchor / countdown / Strand / antagonist tier / **CBN / CPNs / CEN / required nodes / forbidden content / chapter-end open question / hook type**.
 
-Downstream structured parsing already recognizes `CBN / CPNs / CEN / 必须覆盖节点 / 本章禁区`, but **the chapter brief itself lacks goal, resistance, cost, time anchor, countdown, and chapter-end open-question execution constraints**.
+Downstream structured parsing already recognizes `CBN / CPNs / CEN / Must-cover nodes / Chapter prohibitions`, but **the chapter brief itself lacks goal, resistance, cost, time anchor, countdown, and chapter-end open-question execution constraints**.
 
 **Impact**:
 
@@ -241,11 +241,11 @@ The problem is not "never reading the detailed outline," but **reading only its 
 
 1. Extend `webnovel-writer/scripts/chapter_outline_loader.py` or an adjacent helper with execution-constraint extraction:
    - `load_chapter_execution_directive(project_root: Path, chapter: int) -> dict`
-   - Parse the chapter Markdown block in `大纲/第{vol}卷-详细大纲.md` for:
+   - Parse the chapter Markdown block in `outlines/Volume {vol}-detailedoutlines.md` for:
      - `goal` / `obstacles` / `cost` / `time_anchor` / `chapter_span` / `countdown`
      - `cbn` / `cpns: list[str]` / `cen`
-     - `must_cover_nodes: list[str]` (the `必须覆盖节点` line)
-     - `forbidden_zones: list[str]` (the `本章禁区` line, semicolon-separated)
+     - `must_cover_nodes: list[str]` (the `Must-cover nodes` line)
+     - `forbidden_zones: list[str]` (the `Chapter prohibitions` line, semicolon-separated)
      - `chapter_end_open_question` / `hook_type` / `hook_strength`
      - `key_entities: list[str]`, `strand`, `antagonist_tier`
    - Tolerant parsing: return None when the chapter block is absent so callers use the legacy path.
@@ -275,17 +275,17 @@ The problem is not "never reading the detailed outline," but **reading only its 
 ```python
 def test_chapter_brief_contains_outline_directive(tmp_path):
     # Prepare an outline fixture containing one chapter block
-    outline = tmp_path / "大纲" / "第1卷-详细大纲.md"
+    outline = tmp_path / "outlines" / "volume-1-outline.md"
     outline.parent.mkdir(parents=True)
     outline.write_text(SAMPLE_OUTLINE_CHAPTER_1, encoding="utf-8")
     # Build the brief
     brief = build_chapter_brief(tmp_path, chapter=1)
     # Required fields must exist
-    assert brief["chapter_directive"]["time_anchor"] == "D-Day 清晨"
-    assert "杂役不能随意离开宗门" in brief["chapter_directive"]["forbidden_zones"][0]
+    assert brief["chapter_directive"]["time_anchor"] == "D-Day early morning"
+    assert "servant disciples cannot leave the sect at will" in brief["chapter_directive"]["forbidden_zones"][0]
     assert len(brief["chapter_directive"]["cpns"]) >= 1
     # chapter_focus comes from the outline goal, not an SP-card summary
-    assert "搞清楚" in brief["override_allowed"]["chapter_focus"]
+    assert "clarify" in brief["override_allowed"]["chapter_focus"]
 ```
 
 **Effort**: Medium, about 4-6 hours including tests.
@@ -337,7 +337,7 @@ Injected cards lean heavily toward generic xianxia techniques rather than the le
 
 Two issues combine:
 
-1. **Upstream goals are not real**: plan/write instructions show `story-system "{章纲目标}" ...`. The actual Lingshizhuang `MASTER_SETTING.json` even contains literal query `"第2章章纲目标"`, showing that real goals do not reliably enter the workflow. Later review exposes the resulting drift.
+1. **Upstream goals are not real**: plan/write instructions show `story-system "{chapter-outlinegoal}" ...`. The actual Lingshizhuang `MASTER_SETTING.json` even contains literal query `"Chapter 2chapter-outlinegoal"`, showing that real goals do not reliably enter the workflow. Later review exposes the resulting drift.
 2. **Downstream retrieval still favors genre routing**: `webnovel-writer/scripts/data_modules/story_system_engine.py` passes `query` to `reference_search.py`, but genre routing first chooses recommended tables, then simplified BM25 ranks results. Placeholder/generic queries yield genre-correct, scene-wrong matches.
 
 The root cause is not "searching only by genre_filter," but **unreliable real-goal injection and insufficient amplification of chapter semantics**.
@@ -345,13 +345,13 @@ The root cause is not "searching only by genre_filter," but **unreliable real-go
 **Fix**:
 
 1. Correct upstream queries first:
-   - In `webnovel-writer/skills/webnovel-plan/SKILL.md` and `webnovel-writer/skills/webnovel-write/SKILL.md`, upgrade `story-system "{章纲目标}" ...` from a placeholder hint to a requirement to **resolve the real goal before calling**.
+   - In `webnovel-writer/skills/webnovel-plan/SKILL.md` and `webnovel-writer/skills/webnovel-write/SKILL.md`, upgrade `story-system "{chapter-outlinegoal}" ...` from a placeholder hint to a requirement to **resolve the real goal before calling**.
    - In `webnovel-writer/skills/webnovel-review/SKILL.md`, require comparison of actual `chapter_brief.meta.query` with the outline goal; do not treat placeholder-query output as a normal brief.
-   - Add protection near the `webnovel-writer/scripts/story_system.py` entry: diagnose/warn if query remains `{章纲目标}`, `第N章章纲目标`, or similar placeholder text.
+   - Add protection near the `webnovel-writer/scripts/story_system.py` entry: diagnose/warn if query remains `{chapter-outlinegoal}`, `Chapter Nchapter-outlinegoal`, or similar placeholder text.
 2. Add chapter-aware reference signals:
    - Inputs: `chapter_directive.goal`, `chapter_directive.key_entities`, `chapter_directive.strand`, `chapter_directive.antagonist_tier`.
    - Extract keywords using jieba or simple splitting.
-   - Score token overlap against card fields `关键词` / `意图与同义词` / `适用场景`.
+   - Score token overlap against card fields `keywords` / `intent_synonyms` / `applicable_scenes`.
 3. Add ranking signals around `_collect_tables` / `_expand_query` in `webnovel-writer/scripts/data_modules/story_system_engine.py`:
    - Final score: `(genre_match_score * 0.4) + (chapter_keyword_score * 0.6)`.
    - Within equal `priority_rank`, prefer more chapter-keyword hits.
@@ -361,15 +361,15 @@ The root cause is not "searching only by genre_filter," but **unreliable real-go
 
 ```python
 def test_story_system_reference_matching_prefers_chapter_keywords():
-    directive = {"goal": "看穿借据条款的荒谬", "key_entities": ["借据", "利息", "复利"]}
+    directive = {"goal": "see through the absurd terms of the promissory note", "key_entities": ["promissory note", "interest", "compound interest"]}
     result = StorySystemEngine(csv_dir=fixture_csv_dir).build(
-        query="看穿借据条款的荒谬 借据 利息 复利",
-        genre="仙侠",
+        query="see through the absurd terms of the promissory note promissory note interest compound interest",
+        genre="xianxia",
         chapter=1,
     )
     selected = result["chapter_brief"]["dynamic_context"]
     # Lending cards must outrank philosophical-debate cards
-    assert selected[0]["编号"] == "FIN-001"
+    assert selected[0]["id"] == "FIN-001"
 ```
 
 **Effort**: Medium, about 4 hours including a finance-scene reference fixture.
@@ -381,11 +381,11 @@ def test_story_system_reference_matching_prefers_chapter_keywords():
 **Evidence**:
 
 Lingshizhuang's setting directory contains:
-- `金手指设计.md`: Only `{占位}` and empty fields; information already exists in the protagonist card's special-advantage section and master outline's creative constraints.
-- `复合题材-融合逻辑.md`: Empty; information already exists in worldbuilding/master-outline fusion sections.
-- `主角组.md`: Empty, despite **`state.protagonist_structure="单主角+辅助视角"`**.
-- `爽点规划.md`: Only two sample rows for chapters 1-5/6-10; volume-outline payoff-density planning is more detailed.
-- `角色库/{次要角色,反派角色,主要角色}/`, `物品库/`, `其他设定/`: Empty directories.
+- `special-power-design.md`: Only `{placeholder}` and empty fields; information already exists in the protagonist card's special-advantage section and master outline's creative constraints.
+- `hybrid-genre.md`: Empty; information already exists in worldbuilding/master-outline fusion sections.
+- `protagonist-team.md`: Empty, despite **`state.protagonist_structure="singleprotagonist+supportingviewpoint"`**.
+- `payoff-plan.md`: Only two sample rows for chapters 1-5/6-10; volume-outline payoff-density planning is more detailed.
+- `characters/{minor,antagonist,primary}/`, `items/`, `other-settings/`: Empty directories.
 
 **Impact**:
 
@@ -400,17 +400,17 @@ Lingshizhuang's setting directory contains:
 **Fix**:
 
 1. **Stop generating redundant templates**:
-   - `金手指设计.md`: Information belongs in the protagonist card's special-advantage section.
-   - `复合题材-融合逻辑.md`: Information belongs in worldbuilding's fusion section; relevant only to hybrid projects.
-   - `爽点规划.md`: The volume-outline payoff table is the single source of truth.
+   - `special-power-design.md`: Information belongs in the protagonist card's special-advantage section.
+   - `hybrid-genre.md`: Information belongs in worldbuilding's fusion section; relevant only to hybrid projects.
+   - `payoff-plan.md`: The volume-outline payoff table is the single source of truth.
 2. **Generate conditionally**:
-   - `主角组.md` only when `protagonist_structure ∈ {"主角组", "双主角", "多主角"}`.
-   - `女主卡.md` only when `heroine_config != "无女主"`.
-   - Always generate required `反派设计.md`.
-   - If retained, `复合题材-融合逻辑.md` only when `genre_combination` is nonempty.
+   - `protagonist-team.md` only when `protagonist_structure ∈ {"protagonist-team", "dual", "ensemble"}`.
+   - `heroine.md` only when `heroine_config != "none"`.
+   - Always generate required `antagonist.md`.
+   - If retained, `hybrid-genre.md` only when `genre_combination` is nonempty.
 3. **Create directories on demand**:
-   - `角色库/` on the first new-character `apply_entity_delta`, with entity_type/tier subdirectories.
-   - Likewise `物品库/` and `其他设定/`.
+   - `charactercollection/` on the first new-character `apply_entity_delta`, with entity_type/tier subdirectories.
+   - Likewise `items/` and `other-settings/`.
 
 Modify `webnovel-writer/scripts/init_project.py`, retained templates in `webnovel-writer/templates/output/`, and generation steps in `webnovel-writer/skills/webnovel-init/SKILL.md`.
 
@@ -418,14 +418,14 @@ Modify `webnovel-writer/scripts/init_project.py`, retained templates in `webnove
 
 ```python
 def test_init_skips_protagonist_group_for_single_protagonist(tmp_path):
-    init_project(tmp_path, idea_bank={"protagonist_structure": "单主角+辅助视角", ...})
-    assert not (tmp_path / "设定集" / "主角组.md").exists()
-    assert (tmp_path / "设定集" / "主角卡.md").exists()
+    init_project(tmp_path, idea_bank={"protagonist_structure": "singleprotagonist+supportingviewpoint", ...})
+    assert not (tmp_path / "settings" / "protagonist-team.md").exists()
+    assert (tmp_path / "settings" / "protagonist.md").exists()
 
 def test_init_skips_dead_template_files(tmp_path):
     init_project(tmp_path, idea_bank={...})
-    for dead in ("金手指设计.md", "爽点规划.md"):
-        assert not (tmp_path / "设定集" / dead).exists()
+    for dead in ("special-power-design.md", "payoff-plan.md"):
+        assert not (tmp_path / "settings" / dead).exists()
 ```
 
 **Effort**: Small, about 2 hours.
@@ -436,15 +436,15 @@ def test_init_skips_dead_template_files(tmp_path):
 
 **Evidence**:
 
-`chapter_002.json:override_allowed.chapter_focus = "文斗场面的张力来自观点击中修行根基。"`
+`chapter_002.json:override_allowed.chapter_focus = "the debate's tension comes from arguments striking at the foundations of cultivation。"`
 
-This says philosophical-debate tension comes from challenging cultivation foundations, copied directly from SP-087's `核心摘要` in dynamic_context. Chapter 2 instead gathers lending information through a conversation by the well.
+This says philosophical-debate tension comes from challenging cultivation foundations, copied directly from SP-087's `summary` in dynamic_context. Chapter 2 instead gathers lending information through a conversation by the well.
 
 **Impact**: Treating chapter_focus as the main chapter direction misleads the LLM.
 
 **Root cause**:
 
-`_suggest_chapter_focus()` in `webnovel-writer/scripts/data_modules/story_system_engine.py` returns the first dynamic_context card's `核心摘要` when there is no explicit outline goal. Reasoning rankings place generic cards such as SP-087 first, contaminating chapter_focus with unrelated summaries. This is not `runtime_contract_builder.py` behavior.
+`_suggest_chapter_focus()` in `webnovel-writer/scripts/data_modules/story_system_engine.py` returns the first dynamic_context card's `summary` when there is no explicit outline goal. Reasoning rankings place generic cards such as SP-087 first, contaminating chapter_focus with unrelated summaries. This is not `runtime_contract_builder.py` behavior.
 
 **Fix**:
 
@@ -469,14 +469,14 @@ def test_chapter_focus_never_taken_from_dynamic_context_summary(tmp_path):
 
 **Evidence**:
 
-- Volume outline `第1卷-卷纲.md:25`: `第一位女主（暂名） | 女主 | [待章纲拆分时具体设计] | 第20章起`.
-- Protagonist card: `苏云——第一位女主...`.
-- Heroine card: Complete Su Yun (`苏云`) profile.
+- Volume outline `volume-001-outline.md:25`: `First heroine (temporary name) | heroine | [TODO: define specifics during chapter-outline breakdown] | Chapter 20 onward`.
+- Protagonist card: `Su Yun: first heroine...`.
+- Heroine card: Complete Su Yun (`Su Yun`) profile.
 
 The character cards were filled during a planning pass, but **the volume table remained at an older version without a subsequent consistency check**.
 
 The protagonist card also contains:
-- `[待补充]`: A capable fighter but slow-thinking brotherly character, to appear in a later volume.
+- `[To be completed]`: A capable fighter but slow-thinking brotherly character, to appear in a later volume.
 
 The omission may remain unnoticed until writing that volume.
 
@@ -489,31 +489,31 @@ This is not a failed automatic writeback pipeline. **The system promises increme
 **Fix**:
 
 1. Add `webnovel-writer/scripts/data_modules/placeholder_scanner.py`:
-   - Scan `大纲/*.md` and `设定集/*.md` for:
-     - `\[待[^\]]*\]` (e.g. `[待补充]`, `[待章纲拆分时具体设计]`, `[待定]`).
-     - `（暂名）`, `(暂名)`, `（待补充）`.
-     - Whole-field `{占位}` / `<占位>` blocks.
+   - Scan `outlines/*.md` and `settings/*.md` for:
+     - `\[TODO[^\]]*\]` (e.g. `[To be completed]`, `[TODO: define specifics during chapter-outline breakdown]`, `[undecided]`).
+     - `（temporary name）`, `(temporary name)`, `（To be completed）`.
+     - Whole-field `{placeholder}` / `<placeholder>` blocks.
    - Return `{file, line, context, suggested_fill_phase}` for each placeholder.
 
 2. Add checks **before** these workflows:
    - At `webnovel-plan` start/end: scan all planning files; warn without blocking.
-   - At `webnovel-write` start: scan setting files for **entities relevant to this chapter**; **block on `[待...]`**.
+   - At `webnovel-write` start: scan setting files for **entities relevant to this chapter**; **block on `[TODO...]`**.
 3. Add user-invoked `webnovel.py placeholder-scan --project-root <dir>`.
 
 **Acceptance criteria**:
 
 ```python
 def test_placeholder_scanner_finds_pending_marks(tmp_path):
-    f = tmp_path / "大纲" / "第1卷-卷纲.md"
-    f.write_text("第一位女主（暂名）| [待章纲拆分时具体设计]")
+    f = tmp_path / "outlines" / "Volume 1-volume outline.md"
+    f.write_text("First heroine (temporary name)| [TODO: define specifics during chapter-outline breakdown]")
     results = scan_placeholders(tmp_path)
     assert len(results) == 2
-    assert any("（暂名）" in r["pattern"] for r in results)
-    assert any("[待章纲" in r["pattern"] for r in results)
+    assert any("（temporary name）" in r["pattern"] for r in results)
+    assert any("[TODOchapter-outline" in r["pattern"] for r in results)
 
 def test_write_chapter_blocks_on_pending_protagonist_card(tmp_path):
-    # Card has [待补充], but this chapter does not involve the entity → do not block
-    # Card has [待补充] and this chapter involves the entity → block
+    # Card has [To be completed], but this chapter does not involve the entity → do not block
+    # Card has [To be completed] and this chapter involves the entity → block
     ...
 ```
 
@@ -525,14 +525,14 @@ def test_write_chapter_blocks_on_pending_protagonist_card(tmp_path):
 
 **Evidence**:
 
-`大纲/总纲.md:46-62`:
+`outlines/master-outline.md:46-62`:
 
 ```
-| 卷号 | 卷名 | 章节范围 | 核心冲突 | 卷末高潮 |
-| 1 | 阎王债 | 第1-50章 | <已填> | <已填> |
-| 2 | | 第51-100章 | | |
+| volume number | volume-title | chapter range | core conflict | volume-ending climax |
+| 1 | Debt to the King of Hell | Chapters 1-50 | <filled> | <filled> |
+| 2 | | Chapters 51-100 | | |
 ...
-| 20 | | 第951-1000章 | | |
+| 20 | | Chapters 951-1000 | | |
 ```
 
 The foreshadowing table has only two core threads plus an empty row.
@@ -544,8 +544,8 @@ The foreshadowing table has only two core threads plus an empty row.
 1. **Do not generate V2-V20 rows during init**, avoiding empty-table clutter.
 2. Define Phase 7 as **minimal cross-volume anchor writeback** after successful current-volume planning, not automatic detailed next-volume planning:
    - Trigger: `webnovel-plan` successfully completes the current volume and its planning artifacts are complete/validated.
-   - Write only V+1 `卷名`, `核心冲突`, `卷末高潮` (title, core conflict, ending climax).
-   - Update the next-volume row in `大纲/总纲.md`, appending it if absent.
+   - Write only V+1 `volume-title`, `core conflict`, `volume-ending climax` (title, core conflict, ending climax).
+   - Update the next-volume row in `outlines/master-outline.md`, appending it if absent.
 3. Restricted foreshadowing append after each planned volume: only explicitly structured current-output items:
    - New foreshadowing.
    - Continuing open loops.
@@ -564,22 +564,22 @@ This fits the writing workflow: completion preserves only necessary cross-volume
 def test_plan_flow_writes_minimal_next_volume_anchor(tmp_path):
     plan_volume(tmp_path, volume=1)  # Represents webnovel-plan completing V1 planning
     # Master outline gains minimal V2 anchors, with no V3-V20 prefilled rows
-    summary = (tmp_path / "大纲" / "总纲.md").read_text(encoding="utf-8")
+    summary = (tmp_path / "outlines" / "master-outline.md").read_text(encoding="utf-8")
     assert "| 2 |" in summary
     v2_line = [l for l in summary.split("\n") if l.startswith("| 2 |")][0]
     assert v2_line.count("|") == 6
-    assert "第2卷-详细大纲.md" not in list_outline_files(tmp_path)
-    assert "第2卷-beat-sheet.md" not in list_outline_files(tmp_path)
-    assert "第2卷-timeline.md" not in list_outline_files(tmp_path)
+    assert "Volume 2-detailedoutlines.md" not in list_outline_files(tmp_path)
+    assert "Volume 2-beat-sheet.md" not in list_outline_files(tmp_path)
+    assert "Volume 2-timeline.md" not in list_outline_files(tmp_path)
 
 def test_plan_flow_appends_only_structured_foreshadow_items(tmp_path):
     plan_volume(tmp_path, volume=1, structured_foreshadow=[
-        {"type": "new_foreshadowing", "text": "债契背面的红印仍未解释"},
-        {"type": "continued_open_loop", "text": "苏云身份与阎王债源头仍未闭合"},
+        {"type": "new_foreshadowing", "text": "the red seal on the back of the debt contract remains unexplained"},
+        {"type": "continued_open_loop", "text": "Su Yun's identity and the origin of the debt to the King of Hell remain unresolved"},
     ])
-    summary = (tmp_path / "大纲" / "总纲.md").read_text(encoding="utf-8")
-    assert "债契背面的红印仍未解释" in summary
-    assert "苏云身份与阎王债源头仍未闭合" in summary
+    summary = (tmp_path / "outlines" / "master-outline.md").read_text(encoding="utf-8")
+    assert "the red seal on the back of the debt contract remains unexplained" in summary
+    assert "Su Yun's identity and the origin of the debt to the King of Hell remain unresolved" in summary
 ```
 
 **Effort**: Medium, about 4 hours including `webnovel-plan` prompt/workflow changes.
@@ -590,7 +590,7 @@ def test_plan_flow_appends_only_structured_foreshadow_items(tmp_path):
 
 **Evidence**:
 
-All ten entries in `灵石庄/.story-system/anti_patterns.json` came from reference initialization (`毒点` fields in GR-011 / NR-077 / CH-072 / SP-087 / RS-002).
+All ten entries in `Spiritstone Manor/.story-system/anti_patterns.json` came from reference initialization (`pitfalls` fields in GR-011 / NR-077 / CH-072 / SP-087 / RS-002).
 
 Chapter 2 review identified:
 - Three parallel repetitions of "the only person who knows X."
@@ -621,10 +621,10 @@ def test_ai_flavor_review_issue_added_to_anti_patterns(tmp_path):
     save_review_report(tmp_path, chapter=2, issues=[{
         "category": "ai_flavor",
         "severity": "medium",
-        "evidence": "唯一一个知道复利公式的人。唯一一个知道..."
+        "evidence": "the only person who knows the compound-interest formula。the only person who knows..."
     }])
     patterns = json.loads((tmp_path / ".story-system" / "anti_patterns.json").read_text())
-    assert any("唯一一个知道" in p["text"] for p in patterns)
+    assert any("the only person who knows" in p["text"] for p in patterns)
     assert any(p["source_id"].startswith("ch0002_") for p in patterns)
 ```
 
@@ -637,8 +637,8 @@ def test_ai_flavor_review_issue_added_to_anti_patterns(tmp_path):
 After implementation:
 
 1. All `pytest --no-cov` tests pass (currently 508 cases).
-2. Rerun init in a new `灵石庄2` project and verify:
-   - No `主角组.md`, `金手指设计.md`, `复合题材-融合逻辑.md`, or `爽点规划.md`.
+2. Rerun init in a new `Spiritstone Manor2` project and verify:
+   - No `protagonist-team.md`, `special-power-design.md`, `hybrid-genre.md`, or `payoff-plan.md`.
    - No empty directories.
 3. Rewrite chapter 1 and compare briefs:
    - `chapter_directive` must exist.
@@ -647,14 +647,14 @@ After implementation:
 4. After writing chapter 1, deliberately introduce an ai_flavor pattern and review; confirm an anti_patterns.json addition.
 5. After completing/validating volume 1 planning, master outline gains only V2 title/core conflict/ending climax. No V2 detailed outline, beat sheet, timeline, or V3-V20 empty rows.
 6. If current planning explicitly structures new foreshadowing/continuing open loops, append those entries to the master table. Do not infer entries from free-text hints.
-7. Leave `[待补充]` in a protagonist-card entry, then write chapter 50 involving that character; writing must block.
+7. Leave `[To be completed]` in a protagonist-card entry, then write chapter 50 involving that character; writing must block.
 
 ---
 
 ## 6. Risks and Known Limitations
 
-- #1 outline parsing depends on stable Markdown chapter blocks. Support plan-agent heading variants such as `第1章` vs `第一章`. The original proposed regex `第\s*\d+\s*章` covers numeric/spacing variants; Chinese-numeral variants also require compatible handling.
-- #6 scanning may mistake real bracketed prose (e.g. `\[原文\]`) for placeholders. Use a whitelist and strict patterns requiring Chinese `待` for pending placeholders.
+- #1 outline parsing depends on stable Markdown chapter blocks. Support English headings such as `Chapter 1` with optional spacing. Match English chapter labels and numeric chapter identifiers; old heading formats are outside this branch's new-project contract.
+- #6 scanning may mistake real bracketed prose (e.g. `\[source text\]`) for placeholders. Use a whitelist and strict patterns requiring Chinese `TODO` for pending placeholders.
 - #7 V+1 writeback must remain minimal. Accept only structured title/conflict/climax from current planning; do not expand free text or generate detailed next-volume plans. Defer its detailed outline, beat sheet, and timeline until the user enters next-volume planning.
 - The protagonist_state mirror fixed in f58d657 may interact with #1 directives: directive time_anchor and state.protagonist_state location.last_chapter must not be conflated. Explicitly separate namespaces when implementing #1.
 

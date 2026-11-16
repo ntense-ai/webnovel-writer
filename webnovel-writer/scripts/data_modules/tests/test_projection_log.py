@@ -92,8 +92,8 @@ def test_chapter_commit_service_writes_projection_log(tmp_path):
         chapter=7,
         review_result={"blocking_count": 1},
         fulfillment_result={
-            "planned_nodes": ["进入坊市"],
-            "covered_nodes": ["进入坊市"],
+            "planned_nodes": ["enters the market"],
+            "covered_nodes": ["enters the market"],
             "missed_nodes": [],
             "extra_nodes": [],
         },
@@ -123,8 +123,8 @@ def test_chapter_commit_service_marks_vector_store_zero_as_failed(monkeypatch, t
         chapter=8,
         review_result={"blocking_count": 0},
         fulfillment_result={
-            "planned_nodes": ["突破"],
-            "covered_nodes": ["突破"],
+            "planned_nodes": ["breakthrough"],
+            "covered_nodes": ["breakthrough"],
             "missed_nodes": [],
             "extra_nodes": [],
         },
@@ -137,8 +137,8 @@ def test_chapter_commit_service_marks_vector_store_zero_as_failed(monkeypatch, t
                     "event_id": "evt-breakthrough",
                     "event_type": "power_breakthrough",
                     "chapter": 8,
-                    "subject": "韩立",
-                    "payload": {"field": "realm", "to": "筑基初期"},
+                    "subject": "Han Li",
+                    "payload": {"field": "realm", "to": "Early Foundation Establishment"},
                 }
             ],
         },

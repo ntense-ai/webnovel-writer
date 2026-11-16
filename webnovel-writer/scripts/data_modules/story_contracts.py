@@ -149,9 +149,9 @@ def render_master_markdown(master_payload: Dict[str, Any]) -> str:
     return "\n".join(
         [
             "# MASTER_SETTING",
-            f"- 题材：{route.get('primary_genre', '')}",
-            f"- 调性：{constraints.get('core_tone', '')}",
-            f"- 节奏：{constraints.get('pacing_strategy', '')}",
+            f"- genre：{route.get('primary_genre', '')}",
+            f"- Tone: {constraints.get('core_tone', '')}",
+            f"- pacing：{constraints.get('pacing_strategy', '')}",
         ]
     )
 
@@ -168,7 +168,7 @@ def render_chapter_markdown(chapter_payload: Dict[str, Any]) -> str:
     return "\n".join(
         [
             f"# CHAPTER_{int(chapter_payload['meta']['chapter']):03d}",
-            f"- 章节焦点：{focus}",
+            f"- Chapter focus: {focus}",
         ]
     )
 

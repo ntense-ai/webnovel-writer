@@ -29,7 +29,7 @@ def test_router_maps_world_rule_broken_to_memory_only():
     targets = router.route(
         {
             "event_type": "world_rule_broken",
-            "subject": "金手指",
+            "subject": "Special ability",
             "payload": {"field": "world_rule"},
         }
     )
@@ -48,7 +48,7 @@ def test_router_collects_required_writers_from_commit_payload():
                     "payload": {"to": "yaolao"},
                 },
             ],
-            "summary_text": "本章摘要",
+            "summary_text": "Chapter summary",
         }
     )
     assert targets == ["index", "memory", "state", "summary", "vector"]
@@ -81,7 +81,7 @@ def test_required_writers_includes_vector_for_key_events():
             {"event_type": "power_breakthrough", "subject": "xiaoyan", "payload": {}},
         ],
         "entity_deltas": [],
-        "summary_text": "摘要",
+        "summary_text": "Summary",
     }
     writers = router.required_writers(payload)
     assert "vector" in writers

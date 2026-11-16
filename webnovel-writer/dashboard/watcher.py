@@ -1,8 +1,8 @@
 """
-Watchdog 文件变更监听器 + SSE 推送
+Watchdog file-change monitoring and SSE delivery
 
-监控 PROJECT_ROOT/.webnovel/ 与 .story-system/ 的关键文件写事件，
-通过 SSE 通知所有已连接的前端客户端刷新数据。
+Monitor writes to key files under PROJECT_ROOT/.webnovel/ and .story-system/.
+Notify connected frontend clients through SSE to refresh their data.
 """
 
 import asyncio
@@ -26,7 +26,7 @@ def _is_relative_to(path: Path, root: Path | None) -> bool:
 
 
 class _WebnovelFileHandler(FileSystemEventHandler):
-    """关注 .webnovel/ 关键文件与 .story-system/ JSON 变更。"""
+    """Watch key .webnovel files and .story-system JSON changes."""
 
     WATCH_NAMES = {"state.json", "index.db", "workflow_state.json"}
 
@@ -68,14 +68,14 @@ class _WebnovelFileHandler(FileSystemEventHandler):
 
 
 class FileWatcher:
-    """管理 watchdog Observer 和 SSE 客户端订阅。"""
+    """Manage the watchdog Observer and SSE subscriptions."""
 
     def __init__(self):
         self._observer: Observer | None = None
         self._subscribers: list[asyncio.Queue] = []
         self._loop: asyncio.AbstractEventLoop | None = None
 
-    # --- 订阅管理 ---
+    # --- Subscription management ---
 
     def subscribe(self) -> asyncio.Queue:
         q: asyncio.Queue = asyncio.Queue(maxsize=64)
@@ -88,10 +88,10 @@ class FileWatcher:
         except ValueError:
             pass
 
-    # --- 推送 ---
+    # --- Delivery ---
 
     def _on_change(self, path: str, kind: str):
-        """在 watchdog 线程中调用，向主事件循环投递通知。"""
+        """Called from the watchdog thread to dispatch notifications to the main event loop."""
         msg = json.dumps({"file": Path(path).name, "kind": kind, "ts": time.time()})
         if self._loop and not self._loop.is_closed():
             self._loop.call_soon_threadsafe(self._dispatch, msg)
@@ -106,7 +106,7 @@ class FileWatcher:
         for dq in dead:
             self.unsubscribe(dq)
 
-    # --- 生命周期 ---
+    # --- Lifecycle ---
 
     def start(
         self,
@@ -115,7 +115,7 @@ class FileWatcher:
         watch_story_system_dir: Path | None,
         loop: asyncio.AbstractEventLoop,
     ):
-        """启动 watchdog observer，同时监听 .webnovel 与 .story-system。"""
+        """Start the watchdog observer for both .webnovel and .story-system."""
         self.stop()
         self._loop = loop
         handler = _WebnovelFileHandler(

@@ -15,8 +15,8 @@ def test_update_state_cli_add_review_writes_checkpoint(tmp_path, monkeypatch):
         "project_info": {},
         "progress": {"current_chapter": 1, "total_words": 0},
         "protagonist_state": {
-            "power": {"realm": "炼气", "layer": 1, "bottleneck": None},
-            "location": "村口",
+            "power": {"realm": "qi-refining", "layer": 1, "bottleneck": None},
+            "location": "village entrance",
         },
         "relationships": {},
         "world_settings": {},
@@ -26,7 +26,7 @@ def test_update_state_cli_add_review_writes_checkpoint(tmp_path, monkeypatch):
     state_file = webnovel_dir / "state.json"
     state_file.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
 
-    # 避免在测试里创建备份目录/修改权限等非核心行为
+    # avoid creating backup directories in tests/nonessential behavior such as permission changes
     monkeypatch.setattr(update_state_module.StateUpdater, "backup", lambda self: True)
 
     report_file = "review/report_1_2.md"

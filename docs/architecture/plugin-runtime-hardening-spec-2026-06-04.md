@@ -220,7 +220,7 @@ Example state:
 ```json
 {
   "schema_version": "webnovel-project-status/v1",
-  "project": "灵石庄",
+  "project": "Spiritstone Manor",
   "latest_accepted_chapter": 12,
   "target_chapter": 13,
   "phase": "chapter_contract_ready",
@@ -347,7 +347,7 @@ Shared `project_phase.py` derives phases without writing state files. Doctor, pr
 | `no_project` | Invalid project root or missing `.webnovel/state.json` | Not initialized or no bound book project |
 | `unknown` | Insufficient file evidence for a reliable determination | Run only low-risk checks |
 | `init_scaffolded` | State, base directories, settings/master outline exist, but no `.story-system/MASTER_SETTING.json` | `webnovel.py init` just finished; Story System not generated |
-| `init_ready` | State, base settings, `大纲/总纲.md`, and `.story-system/MASTER_SETTING.json` exist | Init complete; ready for plan |
+| `init_ready` | State, base settings, `outlines/master-outline.md`, and `.story-system/MASTER_SETTING.json` exist | Init complete; ready for plan |
 | `plan_in_progress` | MASTER_SETTING exists; volume/chapter contracts incomplete | Planning; not ready to write |
 | `chapter_contract_ready` | Target has volume / chapter / review contracts | Ready for prewrite context and drafting |
 | `draft_in_progress` | Target has draft prose or `.webnovel/tmp` artifacts | Writing or reviewing |
@@ -369,17 +369,17 @@ Doctor output must include current-stage expectations:
     "required": [
       ".webnovel/state.json",
       ".webnovel/summaries/",
-      "设定集/世界观.md",
-      "设定集/力量体系.md",
-      "设定集/主角卡.md",
-      "设定集/反派设计.md",
-      "大纲/总纲.md",
+      "settings/worldbuilding.md",
+      "settings/power-system.md",
+      "settings/protagonist.md",
+      "settings/antagonist.md",
+      "outlines/master-outline.md",
       ".env.example",
       ".story-system/MASTER_SETTING.json"
     ],
     "conditional": [
-      "设定集/主角组.md",
-      "设定集/女主卡.md"
+      "settings/protagonist-team.md",
+      "settings/heroine.md"
     ],
     "not_expected_yet": [
       ".story-system/volumes/volume_001.json",
@@ -395,9 +395,9 @@ Doctor output must include current-stage expectations:
 
 Determine `conditional` files from `state.json`, for example:
 
-- Require `设定集/主角组.md` only for multiple/group protagonists in `protagonist_structure`.
-- Require `设定集/女主卡.md` only when `heroine_config` is not no-heroine.
-- Projects without a special ability need no separate `金手指设计.md`.
+- Require `settings/protagonist-team.md` only for multiple/group protagonists in `protagonist_structure`.
+- Require `settings/heroine.md` only when `heroine_config` is not no-heroine.
+- Projects without a special ability need no separate `special-power-design.md`.
 
 #### 6.4.3 Immediately After Init
 
@@ -411,15 +411,15 @@ Required:
 .webnovel/archive/
 .webnovel/summaries/
 .webnovel/state.json
-设定集/
-设定集/世界观.md
-设定集/力量体系.md
-设定集/主角卡.md
-设定集/反派设计.md
-大纲/
-大纲/总纲.md
-正文/
-审查报告/
+settings/
+settings/worldbuilding.md
+settings/power-system.md
+settings/protagonist.md
+settings/antagonist.md
+outlines/
+outlines/master-outline.md
+chapters/
+reviews/
 .env.example
 ```
 
@@ -505,7 +505,7 @@ Checks:
 - Project root is valid and is not the plugin directory itself.
 - `.webnovel/` exists.
 - `.story-system/` exists.
-- Book directories such as `正文/`, `大纲/`, and `设定集/` exist.
+- Book directories such as `chapters/`, `outlines/`, and `settings/` exist.
 - Whether user-project files were mistakenly written into the plugin directory.
 
 Assessment:
@@ -777,7 +777,7 @@ artifact.schema_error
 - Empty project returns `ok=false` without writing files.
 - Immediately after init, identify `phase=init_scaffolded` or `phase=init_ready` and return stage-specific `expected_files`.
 - Missing commit / summary / memory / vectors.db immediately after init must not return blocker.
-- Missing `state.json`, `设定集/世界观.md`, or `大纲/总纲.md` immediately after init must return blocker/warning with recovery commands.
+- Missing `state.json`, `settings/worldbuilding.md`, or `outlines/master-outline.md` immediately after init must return blocker/warning with recovery commands.
 - Missing `MASTER_SETTING.json` is warning at `init_scaffolded`, blocker at plan/write.
 - Healthy project returns `ok=true` and key table/row counts for `index.db` / `vectors.db`.
 - Missing `state.json` returns a `project.structure` or `projection.file` blocker.
@@ -1214,7 +1214,7 @@ Add an optional project-status hook for session start, resume, clear, and compac
 
 ```text
 Webnovel Writer initialized.
-  project: 灵石庄
+  project: Spiritstone Manor
   story runtime: mainline ready, latest chapter 12 accepted
   projections: 4 done, 1 failed(vector)
   rag: BM25 fallback; EMBED_API_KEY missing

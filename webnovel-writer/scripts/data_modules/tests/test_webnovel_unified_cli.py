@@ -28,10 +28,10 @@ def _make_cli_init_ready_project(project_root: Path) -> None:
         ".webnovel/backups",
         ".webnovel/archive",
         ".webnovel/summaries",
-        "设定集",
-        "大纲",
-        "正文",
-        "审查报告",
+        "settings",
+        "outlines",
+        "chapters",
+        "reviews",
     )
     for rel in dirs:
         (project_root / rel).mkdir(parents=True, exist_ok=True)
@@ -39,7 +39,7 @@ def _make_cli_init_ready_project(project_root: Path) -> None:
     (project_root / ".webnovel" / "state.json").write_text(
         json.dumps(
             {
-                "project_info": {"title": "测试书", "genre": "玄幻"},
+                "project_info": {"title": "Test Book", "genre": "xuanhuan"},
                 "progress": {"current_chapter": 0},
             },
             ensure_ascii=False,
@@ -47,11 +47,11 @@ def _make_cli_init_ready_project(project_root: Path) -> None:
         encoding="utf-8",
     )
     for rel in (
-        "设定集/世界观.md",
-        "设定集/力量体系.md",
-        "设定集/主角卡.md",
-        "设定集/反派设计.md",
-        "大纲/总纲.md",
+        "settings/worldbuilding.md",
+        "settings/power-system.md",
+        "settings/protagonist.md",
+        "settings/antagonist.md",
+        "outlines/master-outline.md",
         ".env.example",
     ):
         path = project_root / rel
@@ -70,19 +70,19 @@ def test_init_does_not_resolve_existing_project_root(monkeypatch):
         return 0
 
     def _fail_resolve(_explicit_project_root=None):
-        raise AssertionError("init 子命令不应触发 project_root 解析")
+        raise AssertionError("init subcommand must not trigger project_root parse")
 
     monkeypatch.setenv("WEBNOVEL_PROJECT_ROOT", r"D:\invalid\root")
     monkeypatch.setattr(module, "_run_script", _fake_run_script)
     monkeypatch.setattr(module, "_resolve_root", _fail_resolve)
-    monkeypatch.setattr(sys, "argv", ["webnovel", "init", "proj-dir", "测试书", "修仙"])
+    monkeypatch.setattr(sys, "argv", ["webnovel", "init", "proj-dir", "Test Book", "cultivation"])
 
     with pytest.raises(SystemExit) as exc:
         module.main()
 
     assert int(exc.value.code or 0) == 0
     assert called["script_name"] == "init_project.py"
-    assert called["argv"] == ["proj-dir", "测试书", "修仙"]
+    assert called["argv"] == ["proj-dir", "Test Book", "cultivation"]
 
 
 def test_extract_context_forwards_with_resolved_project_root(monkeypatch, tmp_path):
@@ -160,7 +160,7 @@ def test_backup_forwards_resolved_book_root_from_parent_workspace(monkeypatch, t
             "--chapter",
             "2",
             "--chapter-title",
-            "第二章",
+            "chapter two",
         ],
     )
 
@@ -175,7 +175,7 @@ def test_backup_forwards_resolved_book_root_from_parent_workspace(monkeypatch, t
         "--chapter",
         "2",
         "--chapter-title",
-        "第二章",
+        "chapter two",
     ]
 
 
@@ -203,7 +203,7 @@ def test_webnovel_story_system_forwards_with_resolved_project_root(monkeypatch, 
             "--project-root",
             str(tmp_path),
             "story-system",
-            "玄幻退婚流",
+            "broken-engagement-fantasy",
         ],
     )
 
@@ -239,7 +239,7 @@ def test_webnovel_story_system_runtime_forwards(monkeypatch, tmp_path):
             "--project-root",
             str(project_root),
             "story-system",
-            "玄幻退婚流",
+            "broken-engagement-fantasy",
             "--emit-runtime-contracts",
         ],
     )
@@ -379,7 +379,7 @@ def test_project_status_cli_outputs_json_without_reusing_status(monkeypatch, tmp
     report = json.loads(captured.out)
     assert int(exc.value.code or 0) == 0
     assert report["schema_version"] == "webnovel-project-status/v1"
-    assert report["project"] == "测试书"
+    assert report["project"] == "Test Book"
     assert report["phase"] == "init_ready"
 
 
@@ -418,8 +418,8 @@ def test_run_ledger_cli_records_and_reports_resume(monkeypatch, tmp_path, capsys
     module = _load_webnovel_module()
     project_root = tmp_path / "book"
     _make_cli_init_ready_project(project_root)
-    chapter_file = project_root / "正文" / "第0001章.md"
-    chapter_file.write_text("正文\n", encoding="utf-8")
+    chapter_file = project_root / "chapters" / "chapter-0001.md"
+    chapter_file.write_text("chapters\n", encoding="utf-8")
 
     monkeypatch.setattr(
         sys,
@@ -513,7 +513,7 @@ def test_doctor_cli_reports_missing_init_file(monkeypatch, tmp_path, capsys):
     module = _load_webnovel_module()
     project_root = tmp_path / "book"
     _make_cli_init_ready_project(project_root)
-    (project_root / "大纲" / "总纲.md").unlink()
+    (project_root / "outlines" / "master-outline.md").unlink()
 
     monkeypatch.setattr(
         sys,
@@ -529,7 +529,7 @@ def test_doctor_cli_reports_missing_init_file(monkeypatch, tmp_path, capsys):
     assert int(exc.value.code or 0) == 1
     assert report["schema_version"] == "webnovel-doctor/v1"
     assert report["ok"] is False
-    assert any(item["id"] == "file.required.大纲/总纲.md" for item in report["checks"])
+    assert any(item["id"] == "file.required.outlines/master-outline.md" for item in report["checks"])
 
 
 def test_status_command_still_forwards_to_status_reporter(monkeypatch, tmp_path):
@@ -701,7 +701,7 @@ def test_quality_trend_report_writes_to_book_root_when_input_is_workspace_root(t
     import quality_trend_report as quality_trend_report_module
 
     workspace_root = (tmp_path / "workspace").resolve()
-    book_root = (workspace_root / "凡人资本论").resolve()
+    book_root = (workspace_root / "Mortal Capital").resolve()
 
     (workspace_root / ".claude").mkdir(parents=True, exist_ok=True)
     (workspace_root / ".claude" / ".webnovel-current-project").write_text(str(book_root), encoding="utf-8")
@@ -752,21 +752,21 @@ def test_review_pipeline_builds_artifacts(tmp_path):
                     {
                         "severity": "critical",
                         "category": "timeline",
-                        "location": "第2段",
-                        "description": "时间线回跳",
-                        "evidence": "上章深夜，本章突然中午",
-                        "fix_hint": "补时间过渡",
+                        "location": "Chapter2paragraph",
+                        "description": "timeline jumps backward",
+                        "evidence": "late night in the previous chapter，suddenly noon in this chapter",
+                        "fix_hint": "add a time transition",
                         "blocking": True,
                     },
                     {
                         "severity": "medium",
                         "category": "ai_flavor",
-                        "location": "第5段",
-                        "description": "'稳住心神'出现2次",
-                        "fix_hint": "替换为具体动作",
+                        "location": "Chapter5paragraph",
+                        "description": "'steady oneself'appears2 times",
+                        "fix_hint": "replace with concrete action",
                     },
                 ],
-                "summary": "1个阻断，1个中等",
+                "summary": "1blocking issues，1medium issues",
             },
             ensure_ascii=False,
         ),
@@ -777,7 +777,7 @@ def test_review_pipeline_builds_artifacts(tmp_path):
         project_root=project_root,
         chapter=20,
         review_results_path=review_results_path,
-        report_file="审查报告/第20章.md",
+        report_file="reviews/chapter-0020.md",
     )
 
     assert payload["review_result"]["blocking_count"] == 1
@@ -789,7 +789,7 @@ def test_review_pipeline_builds_artifacts(tmp_path):
     assert payload["metrics"]["blocking_count"] == 1
     assert payload["metrics"]["severity_counts"]["critical"] == 1
     assert payload["metrics"]["severity_counts"]["medium"] == 1
-    assert payload["metrics"]["critical_issues"] == ["时间线回跳"]
+    assert payload["metrics"]["critical_issues"] == ["timeline jumps backward"]
     assert payload["metrics"]["overall_score"] < 100
     assert payload["metrics"]["report_file"] == "reviews/chapter-0020.md"
 
@@ -832,7 +832,7 @@ def test_review_pipeline_forwards_with_resolved_project_root(monkeypatch, tmp_pa
             "--metrics-out",
             str(tmp_path / "metrics.json"),
             "--report-file",
-            "审查报告/第18章.md",
+            "reviews/chapter-0018.md",
             "--save-metrics",
         ],
     )
@@ -852,7 +852,7 @@ def test_review_pipeline_forwards_with_resolved_project_root(monkeypatch, tmp_pa
         "--metrics-out",
         str(tmp_path / "metrics.json"),
         "--report-file",
-        "审查报告/第18章.md",
+        "reviews/chapter-0018.md",
         "--save-metrics",
     ]
 
@@ -885,7 +885,7 @@ def test_project_memory_forwards_with_resolved_project_root(monkeypatch, tmp_pat
             "--pattern-type",
             "format",
             "--description",
-            '内心独白使用双引号""',
+            'use double quotes for internal monologue""',
         ],
     )
 
@@ -901,7 +901,7 @@ def test_project_memory_forwards_with_resolved_project_root(monkeypatch, tmp_pat
         "--pattern-type",
         "format",
         "--description",
-        '内心独白使用双引号""',
+        'use double quotes for internal monologue""',
     ]
 
 
@@ -916,12 +916,12 @@ def test_project_memory_add_pattern_escapes_quotes(tmp_path):
         encoding="utf-8",
     )
 
-    description = "正文格式规范：内心独白使用双引号\"\"，系统界面保留方括号[]"
+    description = "manuscript formatting rules：use double quotes for internal monologue\"\"，retain square brackets for system displays[]"
     result = project_memory_module.add_pattern(
         project_root,
         pattern_type="format",
         description=description,
-        category="写作规范",
+        category="writing conventions",
         importance="high",
     )
 
@@ -952,10 +952,10 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
                         "severity": "low",
                         "category": "other",
                         "location": "p1",
-                        "description": "小问题",
+                        "description": "minor issue",
                     }
                 ],
-                "summary": "轻微",
+                "summary": "minor",
             },
             ensure_ascii=False,
         ),
@@ -977,7 +977,7 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
         "--metrics-out",
         str(metrics_out),
         "--report-file",
-        "审查报告/第9章审查报告.md",
+        "reviews/chapter-9-review.md",
         "--save-metrics",
     ]
     try:
@@ -991,7 +991,7 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
     assert "# Chapter 9 Review" in report_text
     assert "## Author view" in report_text
     assert "Chapter verdict: ⚠️ Changes recommended" in report_text
-    assert "小问题" in report_text
+    assert "minor issue" in report_text
     assert "## Other Issues" in report_text
 
     persisted_review = json.loads(review_results_path.read_text(encoding="utf-8"))
@@ -1031,9 +1031,9 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
                     "volumes_planned": [{"volume": 1, "chapters_range": "1-20"}],
                 },
                 "protagonist_state": {
-                    "name": "萧炎",
-                    "location": {"current": "天云宗外院"},
-                    "power": {"realm": "斗者", "layer": 9},
+                    "name": "Xiao Yan",
+                    "location": {"current": "Skycloud Sect outer courtyard"},
+                    "power": {"realm": "Dou Zhe", "layer": 9},
                 },
                 "chapter_meta": {},
                 "disambiguation_warnings": [],
@@ -1044,20 +1044,20 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
         encoding="utf-8",
     )
 
-    outline_dir = project_root / "大纲"
+    outline_dir = project_root / "outlines"
     outline_dir.mkdir(parents=True, exist_ok=True)
-    (outline_dir / "第1卷-详细大纲.md").write_text(
+    (outline_dir / "volume-1-outline.md").write_text(
         "\n".join(
             [
-                "### 第3章：试炼冲突",
-                "本章将聚焦萧炎与药老关系冲突，并回收旧线索真相。",
-                "CBN：萧炎进入试炼场",
+                "### Chapter 3：trial conflict",
+                "this chapter focuses on conflict between Xiao Yan and Yao Lao，and reveal the old clue's truth。",
+                "CBN：Xiao Yan enters the trial arena",
                 "CPNs：",
-                "- 药老提醒规则异常",
-                "- 萧炎发现师徒分歧",
-                "CEN：萧炎决定暂缓冲突",
-                "必须覆盖节点：发现规则异常",
-                "本章禁区：不可提前摊牌",
+                "- Yao Lao points out anomalous rules",
+                "- Xiao Yan discovers a mentor-disciple disagreement",
+                "CEN：Xiao Yan decides to postpone the conflict",
+                "Must-cover nodes：discovers anomalous rules",
+                "Chapter prohibitions：do not reveal the plan early",
             ]
         ),
         encoding="utf-8",
@@ -1065,8 +1065,8 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
 
     refs_dir = project_root / ".claude" / "references"
     refs_dir.mkdir(parents=True, exist_ok=True)
-    (refs_dir / "genre-profiles.md").write_text("## xuanhuan\n- 升级线清晰", encoding="utf-8")
-    (refs_dir / "reading-power-taxonomy.md").write_text("## xuanhuan\n- 冲突钩优先", encoding="utf-8")
+    (refs_dir / "genre-profiles.md").write_text("## xuanhuan\n- clear progression arc", encoding="utf-8")
+    (refs_dir / "reading-power-taxonomy.md").write_text("## xuanhuan\n- prioritize conflict hooks", encoding="utf-8")
 
     calls = {"embed": 0, "embed_batch": 0, "rerank": 0}
 
@@ -1097,7 +1097,7 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
                 {
                     "chapter": 2,
                     "scene_index": 1,
-                    "content": "萧炎与药老关系紧张，线索逐步浮现，冲突升级。",
+                    "content": "Xiao Yan and Yao Lao have a tense relationship，clues gradually emerge，conflict escalates。",
                 }
             ]
         )
@@ -1138,7 +1138,7 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
                 "--project-root",
                 str(project_root),
                 "story-system",
-                "玄幻退婚流",
+                "broken-engagement-fantasy",
                 "--chapter",
                 "3",
                 "--persist",
@@ -1191,13 +1191,13 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
                     {
                         "severity": "medium",
                         "category": "continuity",
-                        "location": "第3段",
-                        "description": "衔接略弱",
-                        "evidence": "上章钩子未明确承接",
-                        "fix_hint": "补衔接句",
+                        "location": "Chapter3paragraph",
+                        "description": "transition slightly weak",
+                        "evidence": "previous hook not clearly continued",
+                        "fix_hint": "add a connecting sentence",
                     }
                 ],
-                "summary": "1个中优问题",
+                "summary": "1medium-priority issues",
             },
             ensure_ascii=False,
         ),
@@ -1217,7 +1217,7 @@ def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_wit
                 "--metrics-out",
                 str(metrics_out),
                 "--report-file",
-                "审查报告/第3章.md",
+                "reviews/chapter-0003.md",
             ]
         )
         == 0

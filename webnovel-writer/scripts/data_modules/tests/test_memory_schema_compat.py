@@ -23,10 +23,10 @@ def test_data_agent_output_accepts_memory_facts():
         "state_changes": [],
         "relationships_new": [],
         "memory_facts": {
-            "timeline_events": [{"event": "萧炎离开天云宗", "chapter": 12}],
-            "world_rules": [{"rule": "修炼体系九境", "scope": "global"}],
-            "open_loops": [{"content": "三年之约", "status": "active"}],
-            "reader_promises": [{"content": "纳兰嫣然会出场", "type": "encounter"}],
+            "timeline_events": [{"event": "Xiao Yan leaves Skycloud Sect", "chapter": 12}],
+            "world_rules": [{"rule": "nine realms in the cultivation system", "scope": "global"}],
+            "open_loops": [{"content": "three-year challenge", "status": "active"}],
+            "reader_promises": [{"content": "Nalan Yanran will appear", "type": "encounter"}],
         },
     }
     normalized = normalize_data_agent_output(payload)

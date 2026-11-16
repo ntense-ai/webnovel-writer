@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 class IndexChapterMixin:
     def add_chapter(self, meta: ChapterMeta):
-        """添加/更新章节元数据"""
+        'Add or update chapter metadata.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -34,7 +34,7 @@ class IndexChapterMixin:
             conn.commit()
 
     def get_chapter(self, chapter: int) -> Optional[Dict]:
-        """获取章节元数据"""
+        'Get chapter metadata.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM chapters WHERE chapter = ?", (chapter,))
@@ -44,7 +44,7 @@ class IndexChapterMixin:
             return None
 
     def get_recent_chapters(self, limit: int = None) -> List[Dict]:
-        """获取最近章节"""
+        'Get recent chapters.'
         if limit is None:
             limit = self.config.query_recent_chapters_limit
         with self._get_conn() as conn:
@@ -62,17 +62,17 @@ class IndexChapterMixin:
                 for row in cursor.fetchall()
             ]
 
-    # ==================== 场景操作 ====================
+    # ==================== Scene operations ====================
 
     def add_scenes(self, chapter: int, scenes: List[SceneMeta]):
-        """添加章节场景"""
+        'Add scenes for a chapter.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
-            # 先删除该章节旧场景
+            # Delete the chapter's previous scenes first.
             cursor.execute("DELETE FROM scenes WHERE chapter = ?", (chapter,))
 
-            # 插入新场景
+            # Insert the new scenes.
             for scene in scenes:
                 cursor.execute(
                     """
@@ -94,7 +94,7 @@ class IndexChapterMixin:
             conn.commit()
 
     def get_scenes(self, chapter: int) -> List[Dict]:
-        """获取章节场景"""
+        "Get a chapter's scenes."
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -111,7 +111,7 @@ class IndexChapterMixin:
             ]
 
     def search_scenes_by_location(self, location: str, limit: int = None) -> List[Dict]:
-        """按地点搜索场景"""
+        'Search scenes by location.'
         if limit is None:
             limit = self.config.query_scenes_by_location_limit
         with self._get_conn() as conn:
@@ -130,7 +130,7 @@ class IndexChapterMixin:
                 for row in cursor.fetchall()
             ]
 
-    # ==================== 出场记录操作 ====================
+    # ==================== Appearance-record operations ====================
 
     def record_appearance(
         self,
@@ -140,26 +140,18 @@ class IndexChapterMixin:
         confidence: float = 1.0,
         skip_if_exists: bool = False,
     ):
-        """记录实体出场
-
-        Args:
-            entity_id: 实体ID
-            chapter: 章节号
-            mentions: 提及列表
-            confidence: 置信度
-            skip_if_exists: 如果为True，当记录已存在时跳过（避免覆盖已有mentions）
-        """
+        'Record an entity appearance. Args: entity_id is the entity ID; chapter is the chapter number; mentions lists the mentions; confidence is the confidence score; skip_if_exists=True skips an existing record to avoid overwriting its mentions.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
 
             if skip_if_exists:
-                # 先检查是否已存在
+                # Check whether the record already exists.
                 cursor.execute(
                     "SELECT 1 FROM appearances WHERE entity_id = ? AND chapter = ?",
                     (entity_id, chapter),
                 )
                 if cursor.fetchone():
-                    return  # 已存在，跳过
+                    return  # Already present; skip it.
 
             cursor.execute(
                 """
@@ -177,7 +169,7 @@ class IndexChapterMixin:
             conn.commit()
 
     def get_entity_appearances(self, entity_id: str, limit: int = None) -> List[Dict]:
-        """获取实体出场记录"""
+        "Get an entity's appearance records."
         if limit is None:
             limit = self.config.query_entity_appearances_limit
         with self._get_conn() as conn:
@@ -197,7 +189,7 @@ class IndexChapterMixin:
             ]
 
     def get_recent_appearances(self, limit: int = None) -> List[Dict]:
-        """获取最近出场的实体"""
+        'Get entities with recent appearances.'
         if limit is None:
             limit = self.config.query_recent_appearances_limit
         with self._get_conn() as conn:
@@ -215,7 +207,7 @@ class IndexChapterMixin:
             return [dict(row) for row in cursor.fetchall()]
 
     def get_chapter_appearances(self, chapter: int) -> List[Dict]:
-        """获取某章所有出场实体"""
+        'Get all entities appearing in a chapter.'
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -231,7 +223,7 @@ class IndexChapterMixin:
                 for row in cursor.fetchall()
             ]
 
-    # ==================== v5.1 实体操作 ====================
+    # ==================== v5.1 Entity operations ====================
 
     def process_chapter_data(
         self,
@@ -242,19 +234,15 @@ class IndexChapterMixin:
         entities: List[Dict],
         scenes: List[Dict],
     ) -> Dict[str, int]:
-        """
-        处理章节数据，批量写入索引
-
-        返回写入统计
-        """
+        'Process chapter data and write the index in a batch. Return write statistics.'
         from .index_manager import ChapterMeta, SceneMeta
 
         stats = {"chapters": 0, "scenes": 0, "appearances": 0}
 
-        # 提取出场角色
-        characters = [e.get("id") for e in entities if e.get("type") == "角色"]
+        # Extract appearing characters.
+        characters = [e.get("id") for e in entities if e.get("type") == "character"]
 
-        # 写入章节元数据
+        # Write chapter metadata.
         self.add_chapter(
             ChapterMeta(
                 chapter=chapter,
@@ -262,12 +250,12 @@ class IndexChapterMixin:
                 location=location,
                 word_count=word_count,
                 characters=characters,
-                summary="",  # 可后续由 Data Agent 生成
+                summary="",  # Can be generated later by the Data Agent.
             )
         )
         stats["chapters"] = 1
 
-        # 写入场景
+        # Write scenes.
         scene_metas = []
         for s in scenes:
             scene_metas.append(
@@ -284,7 +272,7 @@ class IndexChapterMixin:
         self.add_scenes(chapter, scene_metas)
         stats["scenes"] = len(scene_metas)
 
-        # 写入出场记录
+        # Write appearance records.
         for entity in entities:
             entity_id = entity.get("id")
             if entity_id and entity_id != "NEW":
@@ -298,5 +286,5 @@ class IndexChapterMixin:
 
         return stats
 
-    # ==================== 辅助方法 ====================
+    # ==================== Helpers ====================
 

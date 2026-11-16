@@ -46,15 +46,7 @@ _WIN_WSL_MNT_DRIVE_RE = re.compile(r"^/mnt/(?P<drive>[a-zA-Z])/(?P<rest>.*)$")
 
 
 def normalize_windows_path(value: Union[str, Path]) -> Path:
-    """
-    将 Windows 上常见的 POSIX 风格路径规范化为 Windows 盘符路径。
-
-    典型来源：
-    - Git Bash / MSYS:  /d/desktop/...  => D:/desktop/...
-    - WSL:             /mnt/d/desktop/... => D:/desktop/...
-
-    非 Windows 平台直接返回 Path(value)。
-    """
+    'Normalize common POSIX-style paths to Windows drive paths on Windows.\n\nGit Bash/MSYS: /d/desktop/... becomes D:/desktop/...\nWSL: /mnt/d/desktop/... becomes D:/desktop/...\n\nOn non-Windows platforms, return Path(value) directly.'
     if sys.platform != "win32":
         return Path(value)
 

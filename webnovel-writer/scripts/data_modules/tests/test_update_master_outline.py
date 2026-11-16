@@ -15,54 +15,54 @@ def _ensure_scripts_on_path() -> None:
 
 
 def _write_project(project_root: Path) -> None:
-    outline_dir = project_root / "大纲"
+    outline_dir = project_root / "outlines"
     outline_dir.mkdir(parents=True)
-    (outline_dir / "总纲.md").write_text(
+    (outline_dir / "master-outline.md").write_text(
         "\n".join(
             [
-                "# 总纲",
+                "# master-outline",
                 "",
-                "## 卷划分",
-                "| 卷号 | 卷名 | 章节范围 | 核心冲突 | 卷末高潮 |",
+                "## Volume Plan",
+                "| Volume | volume-title | Chapters | Core Conflict | Ending Climax |",
                 "|------|------|----------|----------|----------|",
-                "| 1 | 阎王债 | 第1-50章 | 逼债调查 | 债契真相浮出 |",
+                "| 1 | Underworld Debt | Chapter1-50chapter | debt investigation | debt-contract truth emerges |",
                 "",
-                "## 伏笔表",
-                "| 伏笔内容 | 埋设章 | 回收章 | 层级 |",
+                "## Foreshadowing Table",
+                "| Foreshadowing | Planted Chapter | Payoff Chapter | level |",
                 "|----------|--------|--------|------|",
-                "| 旧伏笔 | 第1章 | | 卷级 |",
+                "| old foreshadowing | Chapter 1 | | volume |",
                 "",
             ]
         ),
         encoding="utf-8",
     )
-    for name in ("第1卷-节拍表.md", "第1卷-时间线.md", "第1卷-详细大纲.md"):
-        (outline_dir / name).write_text(f"# {name}\n有效内容\n", encoding="utf-8")
+    for name in ("volume-1-beats.md", "volume-1-timeline.md", "volume-1-outline.md"):
+        (outline_dir / name).write_text(f"# {name}\nvalid content\n", encoding="utf-8")
 
 
 def _write_writeback(project_root: Path, *, include_free_text: bool = False) -> Path:
     payload = {
         "next_volume_anchor": {
             "volume": 2,
-            "volume_name": "黑水账",
-            "core_conflict": "追查黑水账簿背后的债脉",
-            "volume_end_climax": "账簿主人在宗门大比现身",
+            "volume_name": "Blackwater Ledger",
+            "core_conflict": "trace the debt network behind the Blackwater Ledger",
+            "volume_end_climax": "ledger owner appears at the sect tournament",
         },
         "foreshadow_writeback": [
             {
-                "content": "债契背面的红印仍未解释",
-                "buried_chapter": "第12章",
+                "content": "the red seal on the contract remains unexplained",
+                "buried_chapter": "Chapter 12",
                 "payoff_chapter": "",
-                "level": "卷级",
+                "level": "volume",
             }
         ],
         "open_loop_writeback": [
-            {"content": "苏云身份与阎王债源头仍未闭合"}
+            {"content": "Su Yun's identity and the origin of Underworld Debt remain unresolved"}
         ],
     }
     if include_free_text:
-        payload["notes"] = "自由文本里提到一个不应被追加的隐藏黑手"
-    path = project_root / "大纲" / "第1卷-总纲写回.json"
+        payload["notes"] = "free text mentions a hidden mastermind that must not be appended"
+    path = project_root / "outlines" / "volume-1-master-outline-update.json"
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return path
 
@@ -76,9 +76,9 @@ def test_next_volume_anchor_writeback(tmp_path):
 
     result = sync_master_outline(tmp_path, 1)
 
-    summary = (tmp_path / "大纲" / "总纲.md").read_text(encoding="utf-8")
+    summary = (tmp_path / "outlines" / "master-outline.md").read_text(encoding="utf-8")
     assert result["next_volume"] == 2
-    assert "| 2 | 黑水账 |  | 追查黑水账簿背后的债脉 | 账簿主人在宗门大比现身 |" in summary
+    assert "| 2 | Blackwater Ledger |  | trace the debt network behind the Blackwater Ledger | ledger owner appears at the sect tournament |" in summary
     assert "| 3 |" not in summary
 
 
@@ -91,11 +91,11 @@ def test_structured_foreshadow_append_only(tmp_path):
 
     result = sync_master_outline(tmp_path, 1)
 
-    summary = (tmp_path / "大纲" / "总纲.md").read_text(encoding="utf-8")
+    summary = (tmp_path / "outlines" / "master-outline.md").read_text(encoding="utf-8")
     assert result["structured_items_appended"] == 2
-    assert "债契背面的红印仍未解释" in summary
-    assert "苏云身份与阎王债源头仍未闭合" in summary
-    assert "隐藏黑手" not in summary
+    assert "the red seal on the contract remains unexplained" in summary
+    assert "Su Yun's identity and the origin of Underworld Debt remain unresolved" in summary
+    assert "hidden mastermind" not in summary
     assert "|  |  |  |  |" not in summary
 
 
@@ -108,9 +108,9 @@ def test_master_outline_sync_does_not_create_next_volume_detail_files(tmp_path):
 
     sync_master_outline(tmp_path, 1)
 
-    assert not (tmp_path / "大纲" / "第2卷-详细大纲.md").exists()
-    assert not (tmp_path / "大纲" / "第2卷-节拍表.md").exists()
-    assert not (tmp_path / "大纲" / "第2卷-时间线.md").exists()
+    assert not (tmp_path / "outlines" / "volume-2-outline.md").exists()
+    assert not (tmp_path / "outlines" / "volume-2-beats.md").exists()
+    assert not (tmp_path / "outlines" / "volume-2-timeline.md").exists()
 
 
 def test_master_outline_sync_requires_completed_current_volume_artifacts(tmp_path):
@@ -119,7 +119,7 @@ def test_master_outline_sync_requires_completed_current_volume_artifacts(tmp_pat
 
     _write_project(tmp_path)
     _write_writeback(tmp_path)
-    (tmp_path / "大纲" / "第1卷-时间线.md").unlink()
+    (tmp_path / "outlines" / "volume-1-timeline.md").unlink()
 
     with pytest.raises(MasterOutlineSyncError, match="artifacts are incomplete"):
         sync_master_outline(tmp_path, 1)
@@ -130,15 +130,15 @@ def test_master_outline_sync_rejects_noncanonical_writeback_source(tmp_path):
     from update_master_outline import MasterOutlineSyncError, sync_master_outline
 
     _write_project(tmp_path)
-    other = tmp_path / "大纲" / "手工备注.json"
+    other = tmp_path / "outlines" / "manual note.json"
     other.write_text(
         json.dumps(
             {
                 "next_volume_anchor": {
                     "volume": 2,
-                    "volume_name": "黑水账",
-                    "core_conflict": "追查黑水账簿背后的债脉",
-                    "volume_end_climax": "账簿主人在宗门大比现身",
+                    "volume_name": "Blackwater Ledger",
+                    "core_conflict": "trace the debt network behind the Blackwater Ledger",
+                    "volume_end_climax": "ledger owner appears at the sect tournament",
                 }
             },
             ensure_ascii=False,
@@ -178,7 +178,7 @@ def test_webnovel_master_outline_sync_cli_forwards_project_root(monkeypatch, tmp
             "--volume",
             "1",
             "--writeback-file",
-            "大纲/第1卷-总纲写回.json",
+            "outlines/volume-1-master-outline-update.json",
             "--format",
             "text",
         ],
@@ -197,5 +197,5 @@ def test_webnovel_master_outline_sync_cli_forwards_project_root(monkeypatch, tmp
         "--format",
         "text",
         "--writeback-file",
-        "大纲/第1卷-总纲写回.json",
+        "outlines/volume-1-master-outline-update.json",
     ]

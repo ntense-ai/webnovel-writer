@@ -52,8 +52,8 @@ def run_precommit_gate(project_root: Path, chapter: int) -> dict:
             issue(
                 "phase_not_ready_for_precommit",
                 message=f"phase {snapshot.phase} is not ready for precommit",
-                impact="项目骨架、规划合同或上一轮投影状态不完整，继续提交会固化不可靠事实。",
-                repair="先运行 project-status/doctor，并按 next_action 修复当前阶段问题。",
+                impact="The project scaffold, planning contracts, or previous projection state are incomplete; continuing would commit unreliable facts.",
+                repair="Run project-status/doctor first and follow next_action to repair the current phase.",
                 details=snapshot.to_dict(),
             )
         )
@@ -65,7 +65,7 @@ def run_precommit_gate(project_root: Path, chapter: int) -> dict:
                 "chapter_file_missing",
                 message=f"chapter {chapter} file missing",
                 path=str(project_dir(project_root, "chapters")),
-                impact="没有可提交的正文文件。",
+                impact="No chapter file is available for submission.",
                 repair=f"Finish drafting and save the chapter in {project_dir(project_root, 'chapters').name}/.",
             )
         )
@@ -75,8 +75,8 @@ def run_precommit_gate(project_root: Path, chapter: int) -> dict:
                 "chapter_file_empty",
                 message=f"chapter {chapter} file is empty",
                 path=str(chapter_file),
-                impact="空正文不能提交为章节事实。",
-                repair="补齐正文内容后再提交。",
+                impact="Empty prose cannot be committed as chapter facts.",
+                repair="Complete the chapter prose before submission.",
             )
         )
 

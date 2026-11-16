@@ -10,22 +10,22 @@ from data_modules.placeholder_scanner import scan_placeholders
 
 
 def test_placeholder_scanner_finds_pending_marks(tmp_path):
-    outline_dir = tmp_path / "大纲"
-    settings_dir = tmp_path / "设定集"
+    outline_dir = tmp_path / "outlines"
+    settings_dir = tmp_path / "settings"
     outline_dir.mkdir()
     settings_dir.mkdir()
-    (outline_dir / "第1卷-卷纲.md").write_text(
-        "第一位女主（暂名）| [待章纲拆分时具体设计]\n",
+    (outline_dir / "volume-1-outline.md").write_text(
+        "first heroine(working title)| [Pending outline: design during chapter planning]\n",
         encoding="utf-8",
     )
-    (settings_dir / "主角卡.md").write_text("- 兄弟：{占位}\n", encoding="utf-8")
+    (settings_dir / "protagonist.md").write_text("- siblings：{placeholder}\n", encoding="utf-8")
 
     results = scan_placeholders(tmp_path)
 
     assert len(results) == 3
-    assert any(item["pattern"] == "（暂名）" for item in results)
-    assert any(item["pattern"].startswith("[待章纲") for item in results)
-    assert any(item["pattern"] == "{占位}" for item in results)
+    assert any(item["pattern"] == "(working title)" for item in results)
+    assert any(item["pattern"].startswith("[Pending outline") for item in results)
+    assert any(item["pattern"] == "{placeholder}" for item in results)
 
 
 def test_webnovel_placeholder_scan_cli_forwards_project_root(monkeypatch, tmp_path, capsys):
@@ -34,8 +34,8 @@ def test_webnovel_placeholder_scan_cli_forwards_project_root(monkeypatch, tmp_pa
     project_root = tmp_path / "book"
     (project_root / ".webnovel").mkdir(parents=True)
     (project_root / ".webnovel" / "state.json").write_text("{}", encoding="utf-8")
-    (project_root / "大纲").mkdir()
-    (project_root / "大纲" / "总纲.md").write_text("[待补充]\n", encoding="utf-8")
+    (project_root / "outlines").mkdir()
+    (project_root / "outlines" / "master-outline.md").write_text("[To be completed]\n", encoding="utf-8")
 
     monkeypatch.setattr(sys, "argv", ["webnovel", "--project-root", str(project_root), "placeholder-scan"])
 
@@ -45,4 +45,4 @@ def test_webnovel_placeholder_scan_cli_forwards_project_root(monkeypatch, tmp_pa
     assert int(exc.value.code or 0) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["ok"] is False
-    assert payload["placeholders"][0]["file"] == "大纲/总纲.md"
+    assert payload["placeholders"][0]["file"] == "outlines/master-outline.md"

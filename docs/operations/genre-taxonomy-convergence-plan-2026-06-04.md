@@ -25,7 +25,7 @@ Guiding principle:
   - `PLATFORM_TO_CANONICAL`: 34 keys.
   - `_LEGACY_GENRE_MAP`: 27 keys.
   - Their union has 54 keys, with 7 overlaps.
-  - Including 15 canonical values and `全部`, `resolve_genre()` handles 67 distinct inputs.
+  - Including 15 canonical values and `all`, `resolve_genre()` handles 67 distinct inputs.
   - Adding the 15 input aliases from `_normalize_genre_key()` / `GENRE_INPUT_ALIASES` yields 78 distinct labels.
   - Including the 37 template stems brings complete coverage to 92 distinct labels/stems.
 - `_normalize_genre_key()` and `GENRE_INPUT_ALIASES` contain the same 15 mappings: duplicated sources of truth.
@@ -40,7 +40,7 @@ Guiding principle:
 - `context_manager.py` currently prioritizes `project.genre` and falls back to `project_info.genre`; reverse this to prefer `project_info`.
 - `memory_contract_adapter.py` currently falls back from Story Contracts route → protagonist genre → legacy `state.project.genre`, without reading `project_info.genre`. Add `project_info` and put legacy `project.genre` last.
 - `story_system_engine.py::_route()` includes keyword/alias matching, explicit-genre fallback, and inferred-genre fallback. If all fail, it raises `StorySystemRoutingError`; it does not silently fall back.
-- `references/csv/题材与调性推理.csv` currently has 26 route rows. Tests must cover the actual complete CSV dynamically rather than hard-code 26 or 27.
+- `references/csv/genre-routing.csv` currently has 26 route rows. Tests must cover the actual complete CSV dynamically rather than hard-code 26 or 27.
 - `references/genre-profiles.md` is already a fallback; frequently used genres have moved to Story Contracts as the mainline.
 
 ## Design Boundaries
@@ -54,17 +54,17 @@ A unified resolver does not imply a single output value. Explicitly distinguish:
 
 Typical conflict:
 
-- Old initialization: `玄幻 -> 修仙.md`.
-- Old reference resolution: `resolve_genre("玄幻") -> 玄幻`.
+- Old initialization: `xuanhuan -> cultivation.md`.
+- Old reference resolution: `resolve_genre("xuanhuan") -> xuanhuan`.
 
 The new resolver must express both simultaneously. Chinese labels in examples below are runtime identifiers, not untranslated prose.
 
 ```python
 GenreResolution(
-    raw_label="玄幻",
-    canonical_genre="玄幻",
-    template_files=["修仙.md"],
-    matched_labels=["玄幻"],
+    raw_label="xuanhuan",
+    canonical_genre="xuanhuan",
+    template_files=["cultivation.md"],
+    matched_labels=["xuanhuan"],
     route_tags=[],
     trope_tags=[],
     format_tags=[],
@@ -78,15 +78,15 @@ GenreResolution(
 Keep the same 15 canonical values as the only hard enum:
 
 ```text
-都市 玄幻 仙侠 奇幻 科幻
-历史 悬疑 游戏 古言 现言
-幻言 年代 种田 快穿 衍生
+urban xuanhuan xianxia fantasy sci-fi
+historical mystery game-lit historical-romance contemporary-romance
+fantasy-romance period-fiction farming quick-transmigration fanfiction
 ```
 
 Used by:
 
-- CSV `适用题材`
-- `题材` in `裁决规则.csv`
+- CSV `applicable_genres`
+- `genre` in `adjudication.csv`
 - Story System `canonical_genre`
 - `reference_search.py --genre`
 - New-project `state.json.project_info.genre`
@@ -99,19 +99,19 @@ Suggested fields:
 
 ```csv
 label,canonical_genre,label_type,template_file,route_tags,trope_tags,format_tags,aliases,notes
-修仙,玄幻,preset,修仙.md,,,,"玄幻;玄幻修仙;修仙/玄幻;修真","preserve old init: 玄幻 loads 修仙.md"
-都市脑洞,都市,platform,都市脑洞.md,都市脑洞,,,"都市奇闻",
-高武,都市,platform,高武.md,高武,,,"都市高武",
-电竞,游戏,platform,电竞.md,游戏电竞,,,"电竞文;游戏电竞",
-直播文,现言,format,直播文.md,,,直播文,"直播;直播带货;主播",
-克苏鲁,悬疑,preset,克苏鲁.md,克苏鲁,,,"克系;克系悬疑",
-规则怪谈,悬疑,route,规则怪谈.md,规则怪谈,,,"规则动物园;规则类",
-知乎短篇,现言,format,知乎短篇.md,,,知乎短篇,"知乎体;盐选;小程序短篇",
-历史古代,历史,platform,历史古代.md,历史古代,,,"",
-青春甜宠,现言,platform,青春甜宠.md,青春甜宠,,,"青春",
-游戏体育,游戏,platform,游戏体育.md,游戏体育,,,"网游;竞技;体育",
-民国言情,年代,platform,民国言情.md,民国言情,,,"",
-武侠,历史,legacy,,,,,,legacy without template
+cultivation,xuanhuan,preset,cultivation.md,,,,"xuanhuan;xuanhuancultivation;cultivation/xuanhuan;cultivation","preserve old init: xuanhuan loads cultivation.md"
+urban-speculative,urban,platform,urban-speculative.md,urban-speculative,,,"urbanstrange tales",
+high-martial-power,urban,platform,high-martial-power.md,high-martial-power,,,"urbanhigh-martial-power",
+esports,game-lit,platform,esports.md,gaming-esports,,,"esportsfiction;gaming-esports",
+livestream-fiction,contemporary-romance,format,livestream-fiction.md,,,livestream-fiction,"livestreaming;livestream commerce;streamer",
+cosmic-horror,mystery,preset,cosmic-horror.md,cosmic-horror,,,"cosmic horror;cosmic horrormystery",
+rules-horror,mystery,route,rules-horror.md,rules-horror,,,"rules-horror-zoo;ruletype",
+zhihu-short-fiction,contemporary-romance,format,zhihu-short-fiction.md,,,zhihu-short-fiction,"Zhihu style;curated premium stories;mini-appshort-fiction",
+ancient-history,historical,platform,ancient-history.md,ancient-history,,,"",
+young-sweet-romance,contemporary-romance,platform,young-sweet-romance.md,young-sweet-romance,,,"youth",
+gaming-and-sports,game-lit,platform,gaming-and-sports.md,gaming-and-sports,,,"online gaming;competition;sports",
+republican-era-romance,period-fiction,platform,republican-era-romance.md,republican-era-romance,,,"",
+wuxia,historical,legacy,,,,,,legacy without template
 ```
 
 Rules:
@@ -120,7 +120,7 @@ Rules:
 - `label` and `aliases` share one lookup namespace; each must be unique and cannot map to multiple canonical values.
 - Separate aliases with `;`; quote CSV fields containing commas.
 - Platform/legacy aliases without templates must also move into the index rather than remain hard-coded in Python.
-- `canonical_genre` must be one of the 15 canonical values or `全部`.
+- `canonical_genre` must be one of the 15 canonical values or `all`.
 - Suggested `label_type`: `canonical`, `platform`, `route`, `trope`, `format`, `preset`, `legacy`.
 - Do not add a separate `template_type` that duplicates `label_type`. Express template purpose through `label_type` and tag columns together.
 - Do not migrate `GENRE_PROFILE_KEY_ALIASES` yet. It outputs English profile-section keys, a different namespace from canonical/template values. Phases 1–5 migrate only input aliases; retain and clearly name/document the profile-key mapping.
@@ -131,13 +131,13 @@ Add a shared loader/resolver, for example `scripts/genre_taxonomy.py`:
 
 ```python
 GenreResolution(
-    raw_label="知乎短篇风的规则怪谈",
-    canonical_genre="悬疑",
-    matched_labels=["规则怪谈", "知乎短篇"],
-    template_files=["规则怪谈.md", "知乎短篇.md"],
-    route_tags=["规则怪谈"],
+    raw_label="zhihu-short-styleofrules-horror",
+    canonical_genre="mystery",
+    matched_labels=["rules-horror", "zhihu-short-fiction"],
+    template_files=["rules-horror.md", "zhihu-short-fiction.md"],
+    route_tags=["rules-horror"],
     trope_tags=[],
-    format_tags=["知乎短篇"],
+    format_tags=["zhihu-short-fiction"],
     unresolved=[],
     warnings=[]
 )
@@ -156,9 +156,9 @@ Compatibility:
 Define and test this explicitly in Phase 1.5:
 
 1. Normalize input: trim, unify full-width/half-width punctuation, ignore case, remove excess whitespace.
-2. Split tokens on `+`, `＋`, `/`, `、`, `,`, `，`, `|`, and `与`.
+2. Split tokens on `+`, `＋`, `/`, `、`, `,`, `，`, `|`, and `and`.
 3. Prefer exact matches: tokens matching a `label` or alias enter the results directly.
-4. Fall back to longest substring matching: scan the complete original input by descending label/alias length, supporting composite language such as `知乎短篇风的规则怪谈`.
+4. Fall back to longest substring matching: scan the complete original input by descending label/alias length, supporting composite language such as `zhihu-short-styleofrules-horror`.
 5. Deduplicate and resolve conflicts:
    - Keep each `template_file` once.
    - `route/platform/canonical/preset` take priority in selecting `canonical_genre`.
@@ -173,13 +173,13 @@ New initialization writes:
 ```json
 {
   "project_info": {
-    "genre": "悬疑",
-    "genre_label": "知乎短篇风的规则怪谈",
+    "genre": "mystery",
+    "genre_label": "zhihu-short-styleofrules-horror",
     "genre_tags": {
-      "route": ["规则怪谈"],
+      "route": ["rules-horror"],
       "trope": [],
-      "format": ["知乎短篇"],
-      "templates": ["规则怪谈", "知乎短篇"]
+      "format": ["zhihu-short-fiction"],
+      "templates": ["rules-horror", "zhihu-short-fiction"]
     }
   }
 }
@@ -244,7 +244,7 @@ Do not add top-level `project.genre` to new projects.
 ### Recommended
 
 - `references/csv/genre-canonical.md`
-  - Clarify that `题材/流派` in `题材与调性推理.csv` is a route tag, not a canonical enum.
+  - Clarify that `genre_route` in `genre-routing.csv` is a route tag, not a canonical enum.
 - `references/csv/README.md`
   - Explain taxonomy index, template preset, and canonical relationships.
 - `references/index/reference-loading-map.md`
@@ -270,7 +270,7 @@ Scope:
 - Add `references/taxonomy/genre-index.csv`.
 - Cover all 37 template files.
 - Include these complete sets in `label` or `aliases`:
-  - 15 `GENRE_CANONICAL` values and `全部`.
+  - 15 `GENRE_CANONICAL` values and `all`.
   - 34 `PLATFORM_TO_CANONICAL` keys.
   - 27 `_LEGACY_GENRE_MAP` keys.
   - 15 `_normalize_genre_key()` keys.
@@ -281,7 +281,7 @@ Scope:
 - Validate:
   - Actual template files and index `template_file` values match bidirectionally.
   - Every template exists and is unique.
-  - Canonical values belong to the 15 values or `全部`.
+  - Canonical values belong to the 15 values or `all`.
   - Labels/aliases are unique and do not map to several canonical values.
   - Symmetric differences against old dictionary keys are empty or explicitly allowlisted.
 
@@ -323,14 +323,14 @@ Scope:
 
 Verify:
 
-- `都市日常 -> 都市`
-- `宫斗宅斗 -> 古言`
-- `玄幻言情 -> 幻言`
-- `规则怪谈 -> 悬疑`
-- `网游 -> 游戏`
-- `玄幻`: canonical `玄幻`, initialization template `修仙.md`.
-- `克系`: canonical `悬疑` or the index-configured value, template `克苏鲁.md`.
-- `知乎短篇风的规则怪谈`: canonical `悬疑`, with both `规则怪谈.md` and `知乎短篇.md`.
+- `urban-slice-of-life -> urban`
+- `palace-household-intrigue -> historical-romance`
+- `cultivation-romance -> fantasy-romance`
+- `rules-horror -> mystery`
+- `online gaming -> game-lit`
+- `xuanhuan`: canonical `xuanhuan`, initialization template `cultivation.md`.
+- `cosmic horror`: canonical `mystery` or the index-configured value, template `cosmic-horror.md`.
+- `zhihu-short-styleofrules-horror`: canonical `mystery`, with both `rules-horror.md` and `zhihu-short-fiction.md`.
 
 ### Phase 3: Initialization Writes and Schema Consumers
 
@@ -360,14 +360,14 @@ Verify:
 
 Scope:
 
-- Add route coverage using `webnovel-writer/references/csv/题材与调性推理.csv`.
+- Add route coverage using `webnovel-writer/references/csv/genre-routing.csv`.
 - For each row:
-  - If `关键词`, `意图与同义词`, or `题材别名` is populated, use the first available alias as query; `_route()` must not raise and should normally use `keyword_or_alias_match`.
-  - If aliases are empty, use `题材/流派` or `canonical_genre` as explicit-genre fallback; no exception.
+  - If `keywords`, `intent_synonyms`, or `genre_aliases` is populated, use the first available alias as query; `_route()` must not raise and should normally use `keyword_or_alias_match`.
+  - If aliases are empty, use `genre_route` or `canonical_genre` as explicit-genre fallback; no exception.
 - Assert:
   - No `StorySystemRoutingError` for valid rows.
   - `route.canonical_genre` belongs to the 15 values.
-  - `route.genre_filter == route.canonical_genre`, unless canonical is empty or `全部`.
+  - `route.genre_filter == route.canonical_genre`, unless canonical is empty or `all`.
   - Unknown query + unknown genre still raises `StorySystemRoutingError`, preserving failure semantics.
 - The CSV currently has 26 rows, but tests must derive coverage dynamically rather than hard-code 26 or 27.
 
@@ -406,12 +406,12 @@ Target structure:
 templates/genres/
   index.csv
   canonical/
-    都市.md
-    玄幻.md
+    urban.md
+    xuanhuan.md
   presets/
-    都市异能.md
-    规则怪谈.md
-    知乎短篇.md
+    urban-fantasy.md
+    rules-horror.md
+    zhihu-short-fiction.md
 ```
 
 This significantly affects paths and requires a separate commit.
@@ -451,10 +451,10 @@ Target priority:
 - Risk: Template and canonical namespaces become confused.
   Control: `GenreResolution` returns both `canonical_genre` and `template_files`; callers use only the fields they need.
 
-- Risk: Historical behavior such as `玄幻 -> 修仙.md` is lost.
+- Risk: Historical behavior such as `xuanhuan -> cultivation.md` is lost.
   Control: Model it explicitly in the index and add regression tests.
 
-- Risk: Default canonical mappings for `系统流` or `知乎短篇` are debatable.
+- Risk: Default canonical mappings for `system-fiction` or `zhihu-short-fiction` are debatable.
   Control: Record `label_type`; show inferred mappings during initialization and allow explicit canonical selection.
 
 - Risk: Resolver changes break Story System routes.

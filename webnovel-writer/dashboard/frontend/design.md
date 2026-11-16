@@ -158,7 +158,7 @@ Register as `pixel`; initialize all charts with `echarts.init(el, 'pixel')`.
 
 **Gantt specification:**
 - Y axis: Thread names (reversed, urgent at top).
-- X axis: Chapter range; the existing label format is `axisLabel: '第N章'` (Chapter N).
+- X axis: Chapter range; the existing label format is `axisLabel: 'Chapter N'` (Chapter N).
 - Bar colors: overdue `#d7263d`, urgent `#f5a524`, active `#26a8ff`, resolved `#2ec27e`.
 - Current-chapter vertical line: `markLine` + `z: 10` (above bars), `label.position: 'end'`.
 - Show only active + urgent by default; collapse resolved threads.

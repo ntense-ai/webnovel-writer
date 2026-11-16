@@ -1,25 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Data Modules - API 客户端 (v5.4，v5.0 OpenAI 兼容接口沿用)
-
-支持两种 API 类型：
-1. openai: OpenAI 兼容的 /v1/embeddings 和 /v1/rerank 接口
-   - 适用于: OpenAI, Jina, Cohere, vLLM, Ollama 等
-2. modal: Modal 自定义接口格式
-   - 适用于: 自部署的 Modal 服务
-
-配置示例 (config.py):
-    embed_api_type = "openai"
-    embed_base_url = "https://api.openai.com/v1"
-    embed_model = "text-embedding-3-small"
-    embed_api_key = "<your-embed-api-key>"
-
-    rerank_api_type = "openai"  # Jina/Cohere 也使用此类型
-    rerank_base_url = "https://api.jina.ai/v1"
-    rerank_model = "jina-reranker-v2-base-multilingual"
-    rerank_api_key = "<your-rerank-api-key>"
-"""
+'Data Modules API clients (v5.4, retaining the v5.0 OpenAI-compatible interface). Supports openai: OpenAI-compatible /v1/embeddings and /v1/rerank endpoints for OpenAI, Jina, Cohere, vLLM, Ollama, etc.; and modal: custom interfaces for self-hosted Modal services. Configuration example in config.py: embed_api_type = "openai"; embed_base_url = "https://api.openai.com/v1"; embed_model = "text-embedding-3-small"; embed_api_key = "<your-embed-api-key>". Reranking: rerank_api_type = "openai" (also for Jina/Cohere); rerank_base_url = "https://api.jina.ai/v1"; rerank_model = "jina-reranker-v2-base-multilingual"; rerank_api_key = "<your-rerank-api-key>".'
 
 import asyncio
 import aiohttp
@@ -33,18 +14,14 @@ from .config import get_config
 
 @dataclass
 class APIStats:
-    """API 调用统计"""
+    'API call statistics.'
     total_calls: int = 0
     total_time: float = 0.0
     errors: int = 0
 
 
 class EmbeddingAPIClient:
-    """
-    通用 Embedding API 客户端
-
-    支持 OpenAI 兼容接口 (/v1/embeddings) 和 Modal 自定义接口
-    """
+    'General embedding API client supporting OpenAI-compatible /v1/embeddings and custom Modal interfaces.'
 
     def __init__(self, config=None):
         self.config = config or get_config()
@@ -66,28 +43,28 @@ class EmbeddingAPIClient:
             await self._session.close()
 
     def _build_headers(self) -> Dict[str, str]:
-        """构建请求头"""
+        'Build request headers.'
         headers = {"Content-Type": "application/json"}
         if self.config.embed_api_key:
             headers["Authorization"] = f"Bearer {self.config.embed_api_key}"
         return headers
 
     def _build_url(self) -> str:
-        """构建请求 URL"""
+        'Build the request URL.'
         base_url = self.config.embed_base_url.rstrip("/")
         if self.config.embed_api_type == "openai":
-            # OpenAI 兼容: /v1/embeddings
+            # OpenAI-compatible: /v1/embeddings
             if not base_url.endswith("/embeddings"):
                 if base_url.endswith("/v1"):
                     return f"{base_url}/embeddings"
                 return f"{base_url}/v1/embeddings"
             return base_url
         else:
-            # Modal 自定义接口: 直接使用配置的 URL
+            # Custom Modal interface: use the configured URL directly.
             return base_url
 
     def _build_payload(self, texts: List[str]) -> Dict[str, Any]:
-        """构建请求体"""
+        'Build the request body.'
         if self.config.embed_api_type == "openai":
             return {
                 "input": texts,
@@ -95,33 +72,33 @@ class EmbeddingAPIClient:
                 "encoding_format": "float"
             }
         else:
-            # Modal 格式
+            # Modal format
             return {
                 "input": texts,
                 "model": self.config.embed_model
             }
 
     def _parse_response(self, data: Dict[str, Any]) -> Optional[List[List[float]]]:
-        """解析响应"""
+        'Parse the response.'
         if self.config.embed_api_type == "openai":
-            # OpenAI 格式: {"data": [{"embedding": [...], "index": 0}, ...]}
+            # OpenAI format: {"data": [{"embedding": [...], "index": 0}, ...]}
             if "data" in data:
-                # 按 index 排序，确保顺序正确
+                # Sort by index to preserve ordering.
                 sorted_data = sorted(data["data"], key=lambda x: x.get("index", 0))
                 return [item["embedding"] for item in sorted_data]
             return None
         else:
-            # Modal 格式: {"data": [{"embedding": [...]}, ...]}
+            # Modal format: {"data": [{"embedding": [...]}, ...]}
             if "data" in data:
                 return [item["embedding"] for item in data["data"]]
             return None
 
     async def embed(self, texts: List[str]) -> Optional[List[List[float]]]:
-        """调用 Embedding 服务（带重试机制）"""
+        'Call the embedding service with retries.'
         if not texts:
             return []
 
-        # 某些 embedding 端点（如 Gemini）拒绝空字符串，用单空格占位保持索引对齐
+        # Some embedding endpoints, such as Gemini, reject empty strings; use one space to preserve index alignment.
         texts = [t if t else " " for t in texts]
 
         timeout = self.config.cold_start_timeout if not self._warmed_up else self.config.normal_timeout
@@ -157,9 +134,9 @@ class EmbeddingAPIClient:
                                 self.last_error_message = ""
                                 return embeddings
 
-                        # 可重试的状态码: 429 (限流), 500, 502, 503, 504
+                        # Retryable status codes: 429 (rate limited), 500, 502, 503, 504
                         if resp.status in (429, 500, 502, 503, 504) and attempt < max_retries - 1:
-                            delay = base_delay * (2 ** attempt)  # 指数退避
+                            delay = base_delay * (2 ** attempt)  # Exponential backoff
                             print(f"[WARN] Embed {resp.status}, retrying in {delay:.1f}s ({attempt + 1}/{max_retries})")
                             await asyncio.sleep(delay)
                             continue
@@ -200,16 +177,7 @@ class EmbeddingAPIClient:
     async def embed_batch(
         self, texts: List[str], *, skip_failures: bool = True
     ) -> List[Optional[List[float]]]:
-        """
-        分批 Embedding
-
-        Args:
-            texts: 要嵌入的文本列表
-            skip_failures: True 时失败的文本返回 None；False 时任一失败则整体返回空列表
-
-        Returns:
-            与 texts 等长的列表，成功的位置是向量，失败的位置是 None
-        """
+        'Embed texts in batches. Args: texts is the list of strings to embed; skip_failures=True returns None for failed texts, while False returns an empty list if any request fails. Returns a list matching the length of texts, with vectors for successes and None for failures.'
         if not texts:
             return []
 
@@ -234,17 +202,13 @@ class EmbeddingAPIClient:
         return all_embeddings[:len(texts)]
 
     async def warmup(self):
-        """预热服务"""
+        'Warm up the service.'
         await self.embed(["test"])
         self._warmed_up = True
 
 
 class RerankAPIClient:
-    """
-    通用 Rerank API 客户端
-
-    支持 OpenAI 兼容接口 (Jina/Cohere 格式) 和 Modal 自定义接口
-    """
+    'General reranking API client supporting OpenAI-compatible Jina/Cohere formats and custom Modal interfaces.'
 
     def __init__(self, config=None):
         self.config = config or get_config()
@@ -264,19 +228,19 @@ class RerankAPIClient:
             await self._session.close()
 
     def _build_headers(self) -> Dict[str, str]:
-        """构建请求头"""
+        'Build request headers.'
         headers = {"Content-Type": "application/json"}
         if self.config.rerank_api_key:
             headers["Authorization"] = f"Bearer {self.config.rerank_api_key}"
         return headers
 
     def _is_dashscope_url(self, base_url: Optional[str] = None) -> bool:
-        """判断当前 Rerank 配置是否指向 DashScope。"""
+        'Check whether the reranking configuration points to DashScope.'
         url = base_url if base_url is not None else self.config.rerank_base_url
         return "dashscope" in str(url or "").lower()
 
     def _is_dashscope_native_rerank_model(self) -> bool:
-        """DashScope 原生 rerank 接口使用 input/parameters 请求结构。"""
+        'The native DashScope reranking interface uses an input/parameters request structure.'
         model = str(self.config.rerank_model or "").lower()
         return model in {"qwen3-vl-rerank", "gte-rerank-v2"}
 
@@ -288,7 +252,7 @@ class RerankAPIClient:
         )
 
     def _dashscope_endpoint_root(self, base_url: str) -> str:
-        """从已配置的 DashScope base URL 中剥离已知 rerank 路径。"""
+        'Strip known reranking paths from the configured DashScope base URL.'
         base_url_lower = base_url.lower()
         known_suffixes = [
             "/api/v1/services/rerank/text-rerank/text-rerank",
@@ -317,23 +281,23 @@ class RerankAPIClient:
         return f"{root_url}/compatible-api/v1/reranks"
 
     def _build_url(self) -> str:
-        """构建请求 URL"""
+        'Build the request URL.'
         base_url = self.config.rerank_base_url.rstrip("/")
         if self.config.rerank_api_type == "openai":
             if self._is_dashscope_url(base_url):
                 return self._build_dashscope_url(base_url)
-            # Jina/Cohere 兼容: /v1/rerank
+            # Jina/Cohere-compatible: /v1/rerank
             if not base_url.endswith("/rerank"):
                 if base_url.endswith("/v1"):
                     return f"{base_url}/rerank"
                 return f"{base_url}/v1/rerank"
             return base_url
         else:
-            # Modal 自定义接口
+            # Custom Modal interface
             return base_url
 
     def _build_payload(self, query: str, documents: List[str], top_n: Optional[int]) -> Dict[str, Any]:
-        """构建请求体"""
+        'Build the request body.'
         if self.config.rerank_api_type == "openai":
             if self._is_dashscope_native_rerank():
                 parameters: Dict[str, Any] = {"return_documents": True}
@@ -359,7 +323,7 @@ class RerankAPIClient:
                     "parameters": parameters,
                 }
 
-            # Jina/Cohere 格式
+            # Jina/Cohere format
             payload: Dict[str, Any] = {
                 "query": query,
                 "documents": documents,
@@ -369,22 +333,22 @@ class RerankAPIClient:
                 payload["top_n"] = top_n
             return payload
         else:
-            # Modal 格式
+            # Modal format
             payload = {"query": query, "documents": documents}
             if top_n:
                 payload["top_n"] = top_n
             return payload
 
     def _parse_response(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """解析响应"""
+        'Parse the response.'
         if self.config.rerank_api_type == "openai":
             if self._is_dashscope_native_rerank():
-                # DashScope 原生格式: {"output": {"results": [...]}}
+                # Native DashScope format: {"output": {"results": [...]}}
                 return data.get("output", {}).get("results", [])
-            # Jina/Cohere 格式: {"results": [{"index": 0, "relevance_score": 0.9}, ...]}
+            # Jina/Cohere format: {"results": [{"index": 0, "relevance_score": 0.9}, ...]}
             return data.get("results", [])
         else:
-            # Modal 格式: {"results": [...]}
+            # Modal format: {"results": [...]}
             return data.get("results", [])
 
     async def rerank(
@@ -393,7 +357,7 @@ class RerankAPIClient:
         documents: List[str],
         top_n: Optional[int] = None
     ) -> Optional[List[Dict[str, Any]]]:
-        """调用 Rerank 服务（带重试机制）"""
+        'Call the reranking service with retries.'
         if not documents:
             return []
 
@@ -426,7 +390,7 @@ class RerankAPIClient:
 
                             return self._parse_response(data)
 
-                        # 可重试的状态码
+                        # Retryable status codes
                         if resp.status in (429, 500, 502, 503, 504) and attempt < max_retries - 1:
                             delay = base_delay * (2 ** attempt)
                             print(f"[WARN] Rerank {resp.status}, retrying in {delay:.1f}s ({attempt + 1}/{max_retries})")
@@ -461,24 +425,20 @@ class RerankAPIClient:
             return None
 
     async def warmup(self):
-        """预热服务"""
+        'Warm up the service.'
         await self.rerank("test", ["doc1", "doc2"])
         self._warmed_up = True
 
 
 class ModalAPIClient:
-    """
-    统一 API 客户端 (兼容旧接口)
-
-    整合 Embedding + Rerank 客户端，保持向后兼容
-    """
+    'Unified API client retaining the legacy interface. Combines embedding and reranking clients while preserving backward compatibility.'
 
     def __init__(self, config=None):
         self.config = config or get_config()
         self._embed_client = EmbeddingAPIClient(self.config)
         self._rerank_client = RerankAPIClient(self.config)
 
-        # 兼容旧代码的信号量
+        # Semaphore retained for compatibility with older code.
         self.sem_embed = self._embed_client.sem
         self.sem_rerank = self._rerank_client.sem
 
@@ -493,17 +453,17 @@ class ModalAPIClient:
         }
 
     async def _get_session(self) -> aiohttp.ClientSession:
-        # 复用 embed client 的 session
+        # Reuse the embedding client's session.
         return await self._embed_client._get_session()
 
     async def close(self):
         await self._embed_client.close()
         await self._rerank_client.close()
 
-    # ==================== 预热 ====================
+    # ==================== Warmup ====================
 
     async def warmup(self):
-        """预热 Embedding 和 Rerank 服务"""
+        'Warm up embedding and reranking services.'
         print("[WARMUP] Warming up Embed + Rerank...")
         start = time.time()
 
@@ -529,13 +489,13 @@ class ModalAPIClient:
     # ==================== Embedding API ====================
 
     async def embed(self, texts: List[str]) -> Optional[List[List[float]]]:
-        """调用 Embedding 服务"""
+        'Call the embedding service.'
         return await self._embed_client.embed(texts)
 
     async def embed_batch(
         self, texts: List[str], *, skip_failures: bool = True
     ) -> List[Optional[List[float]]]:
-        """分批 Embedding"""
+        'Embed in batches.'
         return await self._embed_client.embed_batch(texts, skip_failures=skip_failures)
 
     # ==================== Rerank API ====================
@@ -546,10 +506,10 @@ class ModalAPIClient:
         documents: List[str],
         top_n: Optional[int] = None
     ) -> Optional[List[Dict[str, Any]]]:
-        """调用 Rerank 服务"""
+        'Call the reranking service.'
         return await self._rerank_client.rerank(query, documents, top_n)
 
-    # ==================== 统计 ====================
+    # ==================== Statistics ====================
 
     def print_stats(self):
         print("\n[API STATS]")
@@ -562,7 +522,7 @@ class ModalAPIClient:
                       f"{stats.errors} errors")
 
 
-# 全局客户端
+# Global client
 _client: Optional[ModalAPIClient] = None
 
 

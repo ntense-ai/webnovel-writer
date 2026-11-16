@@ -1,0 +1,99 @@
+# System-Driven Fiction Template
+
+> Runtime preset identifier: `system-fiction` (English taxonomy and initialization preset).
+
+> **Core appeal**: Visible statistics + quest-driven progress + guaranteed rewards. The system is the protagonist's greatest cheat, but may also be their greatest shackle.
+
+---
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint packs: Pack M13 / Pack M05
+- General overlay: Pack U03
+
+## 1. Core Mechanism Design
+
+### Visible Status Panel
+- **Principle**: Keep it simple and direct. Do not list dozens of irrelevant statistics (such as charisma or luck); show only core combat attributes.
+- **Exception rule**: If you retain non-combat attributes such as charisma/luck/spirit, meet both conditions:
+  1) **Short-term feedback**: Within the next 5-10 chapters, trigger at least one perceptible plot consequence (negotiation/social interaction/luck/insight), convincing readers that the number matters.
+  2) **No panel spam**: Show panels sparingly. Do not repeat the full attribute table every chapter; show changes only at level-ups/key milestones.
+- **Dynamic feedback**: Statistics must increase after every training session/battle (e.g., 1,000 sword swings grant +10 experience).
+
+### Quest Generation Logic
+- **Main quests**: Mandatory, with penalties for failure (execution/lifespan deduction). The engine driving the plot.
+- **Side quests**: Optional, with generous rewards. Enrich the worldbuilding.
+- **Achievement quests**: Hidden triggers. Surprise the reader.
+
+---
+
+## 2. Numerical Inflation Control
+
+### Why Does Scaling Break?
+- **Exponential growth**: 100 attack at level 1, 10,000 at level 10, 100 million at level 100. Huge numbers numb the reader.
+- **Currency devaluation**: Spending hundreds of millions of points casually later on makes the system shop meaningless.
+
+### Control Strategies
+1. **Stat compression**: Compress values when changing settings (e.g., after ascension, 100 million lower-realm combat power equals 1 upper-realm divine power).
+2. **Currency sinks**: Introduce resource-devouring features (system upgrades, guaranteed gacha rewards, repairing divine artifacts) that consume large quantities of points.
+3. **Diminishing returns**: Experience requirements rise exponentially with level, slowing advancement.
+
+---
+
+## 3. Relationship Between System and Host
+
+### Stage One: Tool (Chapters 1-200)
+- The system is cold and issues quests mechanically. The protagonist depends on it for survival.
+- **Naming advice**: While the system's name/function is unknown, use a codename or label in the story (such as "Successor System" or "the panel"). Do not use "???" in reader-visible text.
+
+### Stage Two: Companion (Chapters 201-500)
+- The system unlocks an intelligent voice/avatar. It starts teasing, acting cute, and offering advice.
+- The protagonist begins questioning its origins.
+
+### Stage Three: Strategic Struggle (Chapters 501+)
+- **Conspiracy**: Who created the system, and why? (A deadly selection experiment? Body possession? Training a savior?)
+- **Resistance**: The protagonist tries to escape its control and find ways to grow stronger without it.
+
+---
+
+## 4. Classic System Types
+
+### Sign-in
+- **Core**: Check in at specified places/times.
+- **Payoff**: Exploring the map means earning rewards.
+- **Trap**: Easily becomes a monotonous log. Tie it to the plot (having to enter forbidden territory to check in).
+
+### Gacha
+- **Core**: Randomness; a small stake can become a huge windfall.
+- **Payoff**: Extraordinary luck and desperate comebacks.
+- **Trap**: Excessive luck feels fake. Establish a luck stat or a sacrificial cost beforehand.
+
+### Shop
+- **Core**: Anything can be bought with enough money/points.
+- **Payoff**: Grinding reliably makes the protagonist stronger.
+- **Trap**: Easily becomes an endless labor routine.
+
+---
+
+## 5. Task Generator Prompt
+
+When generating system quests in `/webnovel-write`, use this prompt:
+
+```text
+Generate a [type] quest for the protagonist.
+Current situation: [what the protagonist is doing]
+Requirements:
+1. The objective must be challenging but achievable.
+2. The reward must include [an item the protagonist urgently needs].
+3. Failure must incur a painful but nonfatal penalty.
+4. Quest-description voice: [cold/aloof but affectionate/comedic].
+```
+
+---
+
+## 🛠️ Entity Tag Extensions
+
+```xml
+<entity type="system-function" name="Function name" desc="Function" tier="level" unlock="Unlock condition"/>
+<entity type="system-item" name="Item name" desc="Effect" tier="level" price="Price"/>
+<entity type="system-mission" name="Mission name" desc="reward" tier="level" difficulty="Difficulty" penalty="Penalty"/>
+```

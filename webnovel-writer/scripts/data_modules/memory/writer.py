@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-章节结果 -> 长期记忆项映射。
-"""
+"Map chapter results to long-term memory items."
 from __future__ import annotations
 
 import hashlib
@@ -34,12 +32,7 @@ class MemoryWriter:
 
     @staticmethod
     def _coerce_loop_content(payload: Dict[str, Any], event: Dict[str, Any]) -> str:
-        """从 open_loop 事件 payload 多个候选字段里取出有意义的悬念内容。
-
-        优先级：content（旧 schema）→ unanswered_question（信息悬疑）
-        → loop_type + description（结构化）→ description → subject 兜底。
-        若兜底到 subject（通常是角色 ID），加上 loop_type 前缀避免变成纯 ID。
-        """
+        "Extract meaningful suspense content from candidate open_loop payload fields. Priority: content from the old schema, unanswered_question for informational suspense, structured loop_type plus description, description alone, then subject. Prefix a subject fallback, usually a character ID, with loop_type to avoid producing a bare ID."
         for key in ("content", "unanswered_question"):
             value = str(payload.get(key) or "").strip()
             if value:
@@ -59,10 +52,7 @@ class MemoryWriter:
         return subject
 
     def _retire_open_loop(self, content: str, chapter: int, stats: Dict[str, Any]) -> None:
-        """同 subject 的活跃伏笔改为 outdated，并在 payload 记下 resolved 与回收章。
-
-        顶层 status 不能写 resolved：VALID_STATUSES 不含它，normalized() 会打回 active。
-        """
+        "Mark active foreshadowing for the same subject outdated and record resolved plus the payoff chapter in payload. Do not set the top-level status to resolved: VALID_STATUSES excludes it and normalized() would restore active."
         for row in self.store.query(category="open_loop", subject=content, status="active"):
             closed = MemoryItem(
                 **{
@@ -79,7 +69,7 @@ class MemoryWriter:
             self._upsert(closed, stats)
 
     def _planting_already_closed(self, content: str, chapter: int) -> bool:
-        """重放埋设章时，不要把已经关闭的同一条目重新写成 active。"""
+        "When replaying a setup chapter, do not reactivate the same already-closed item."
         item_id = self._item_id("open_loop", content, "status", chapter)
         for item in self.store.query(category="open_loop", subject=content, status=None):
             if item.id == item_id and item.status == "outdated":
@@ -95,7 +85,7 @@ class MemoryWriter:
             "warnings": [],
         }
 
-        # Stage 2: 零成本结构化映射
+        # Stage 2: zero-cost structured mapping
         for change in result.get("state_changes", []) or []:
             entity_id = str(change.get("entity_id", "") or "").strip()
             field = str(
@@ -199,7 +189,7 @@ class MemoryWriter:
             )
             self._upsert(item, stats)
 
-        # Stage 4: Data Agent 深度提取扩展
+        # Stage 4: deeper Data Agent extraction extensions
         memory_facts = result.get("memory_facts") or {}
         if isinstance(memory_facts, dict):
             self._apply_memory_facts(chapter, memory_facts, stats)
@@ -392,8 +382,8 @@ class MemoryWriter:
                     or row.get("name")
                     or row.get("entity_id")
                     or row.get("id"),
-                    "type": row.get("type") or row.get("entity_type") or "角色",
-                    "tier": row.get("tier") or "装饰",
+                    "type": row.get("type") or row.get("entity_type") or "character",
+                    "tier": row.get("tier") or "decorative",
                 }
                 for row in entity_deltas
                 if isinstance(row, dict)

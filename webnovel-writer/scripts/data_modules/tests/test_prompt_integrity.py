@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Prompt 完整性静态校验。
+Static prompt-integrity validation.
 
-验证 agents/*.md 和 skills/*/SKILL.md 的结构、引用、CLI 命令等，
-不需要 LLM 调用，可加入 CI。
+Validate structures, references, and CLI commands in agents/*.md and skills/*/SKILL.md.
+No model calls are required; suitable for CI.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 # ---------------------------------------------------------------------------
-# 基础路径
+# Base paths
 # ---------------------------------------------------------------------------
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent.parent.parent
@@ -48,7 +48,7 @@ SUBAGENT_PROMPT_FILES = (
     "deconstruction-agent.md",
 )
 
-# webnovel.py 注册的子命令（从 add_parser 提取）
+# webnovel.py registered subcommands (extracted from add_parser)
 REGISTERED_CLI_SUBCOMMANDS = {
     "where", "preflight", "project-status", "doctor", "write-gate", "projections", "user-report",
     "run-ledger", "run-log", "use",
@@ -69,7 +69,7 @@ def _read_text(path: Path) -> str:
 
 
 def _extract_frontmatter(text: str) -> dict:
-    """提取 YAML frontmatter 为 dict。"""
+    """Extract YAML frontmatter as a dictionary."""
     m = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
     if not m:
         return {}
@@ -82,17 +82,17 @@ def _extract_frontmatter(text: str) -> dict:
 
 
 def _extract_referenced_paths(text: str, base_dir: Path) -> list[tuple[str, Path]]:
-    """从 markdown 中提取被引用的文件路径（references/, skills/, agents/ 等）。
+    """Extract referenced Markdown file paths (references/, skills/, agents/, etc.).
 
-    返回 (raw_ref, resolved_path) 列表。
+    Return a list of (raw_ref, resolved_path) pairs.
     """
     refs = []
-    # 匹配 `references/xxx.md`、`../../references/xxx.md`、`skills/xxx` 等相对路径
+    # Match relative paths such as `references/xxx.md`, `../../references/xxx.md`, and `skills/xxx`.
     for m in re.finditer(r'[`"]((?:\.\./)*(?:references|skills|agents)/[^\s`"]+\.md)[`"]', text):
         raw = m.group(1)
         resolved = (base_dir / raw).resolve()
         refs.append((raw, resolved))
-    # 匹配 references 段落中列出的路径（不带引号）
+    # Match unquoted paths listed in references sections.
     for m in re.finditer(r'^- `((?:\.\./)*(?:references|skills|agents)/[^\s`]+\.md)`', text, re.MULTILINE):
         raw = m.group(1)
         resolved = (base_dir / raw).resolve()
@@ -101,7 +101,7 @@ def _extract_referenced_paths(text: str, base_dir: Path) -> list[tuple[str, Path
 
 
 def _extract_cli_subcommands(text: str) -> list[str]:
-    """从 prompt 中提取 webnovel.py 调用的子命令。"""
+    """Extract subcommands invoked through webnovel.py in the prompt."""
     cmds = set()
     for m in re.finditer(r'webnovel\.py["\s]+--project-root\s+[^\s]+\s+([a-z][\w-]*)', text):
         cmd = m.group(1)
@@ -110,28 +110,28 @@ def _extract_cli_subcommands(text: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# 1. Frontmatter 完整性
+# 1. Frontmatter integrity
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("agent_file", AGENT_FILES, ids=lambda f: f.name)
 def test_agent_frontmatter_complete(agent_file: Path):
-    """每个 agent 必须有 name, description, tools。"""
+    """Every agent requires name, description, and tools."""
     fm = _extract_frontmatter(_read_text(agent_file))
-    assert "name" in fm, f"{agent_file.name}: 缺少 name"
-    assert "description" in fm, f"{agent_file.name}: 缺少 description"
-    assert "tools" in fm, f"{agent_file.name}: 缺少 tools"
+    assert "name" in fm, f"{agent_file.name}: Missing name"
+    assert "description" in fm, f"{agent_file.name}: Missing description"
+    assert "tools" in fm, f"{agent_file.name}: Missing tools"
 
 
 @pytest.mark.parametrize("skill_file", SKILL_FILES, ids=lambda f: f.parent.name)
 def test_skill_frontmatter_complete(skill_file: Path):
-    """每个 skill 必须有 name, description。"""
+    """Every skill requires name and description."""
     fm = _extract_frontmatter(_read_text(skill_file))
-    assert "name" in fm, f"{skill_file.parent.name}: 缺少 name"
-    assert "description" in fm, f"{skill_file.parent.name}: 缺少 description"
+    assert "name" in fm, f"{skill_file.parent.name}: Missing name"
+    assert "description" in fm, f"{skill_file.parent.name}: Missing description"
 
 
 # ---------------------------------------------------------------------------
-# 2. Agent 模板结构（≥4 段）
+# 2. Agent template structure (at least four sections)
 # ---------------------------------------------------------------------------
 
 EXPECTED_AGENT_SECTIONS = [
@@ -144,24 +144,24 @@ EXPECTED_AGENT_SECTIONS = [
 
 @pytest.mark.parametrize("agent_file", AGENT_FILES, ids=lambda f: f.name)
 def test_agent_template_structure(agent_file: Path):
-    """每个 agent 至少包含 4 个编号段（§12.2 松绑：不强制 8 段，避免为过测试留空段）。"""
+    """Each agent needs at least four numbered sections; section 12.2 no longer forces eight empty sections merely to satisfy tests."""
     text = _read_text(agent_file)
     missing = []
     for section in EXPECTED_AGENT_SECTIONS:
-        # 匹配 "## 1. 身份与目标" 或 "## 2. 可用工具与脚本"（允许后缀）
+        # Match headings such as "## 1. Identity and goals" or "## 2. Tools and scripts", allowing suffixes.
         pattern = rf"^## {re.escape(section)}"
         if not re.search(pattern, text, re.MULTILINE):
             missing.append(section)
-    assert not missing, f"{agent_file.name}: 缺少段落 {missing}"
+    assert not missing, f"{agent_file.name}: Missing section {missing}"
 
 
 # ---------------------------------------------------------------------------
-# 3. 引用完整性
+# 3. Reference integrity
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("prompt_file", ALL_PROMPT_FILES, ids=lambda f: f.name)
 def test_all_references_exist(prompt_file: Path):
-    """prompt 中引用的所有文件路径都必须真实存在。"""
+    """Every file referenced by a prompt must exist."""
     text = _read_text(prompt_file)
     base_dir = prompt_file.parent
     refs = _extract_referenced_paths(text, base_dir)
@@ -169,41 +169,41 @@ def test_all_references_exist(prompt_file: Path):
     for raw, resolved in refs:
         if not resolved.exists():
             missing.append(raw)
-    assert not missing, f"{prompt_file.name}: 引用了不存在的文件 {missing}"
+    assert not missing, f"{prompt_file.name}: References missing files {missing}"
 
 
 # ---------------------------------------------------------------------------
-# 4. CLI 命令有效性
+# 4. CLI command validity
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("prompt_file", ALL_PROMPT_FILES, ids=lambda f: f.name)
 def test_cli_commands_valid(prompt_file: Path):
-    """prompt 中的 webnovel.py 子命令都必须在 CLI 注册表中。"""
+    """Every webnovel.py subcommand in a prompt must be registered."""
     text = _read_text(prompt_file)
     cmds = _extract_cli_subcommands(text)
-    # 排除已知例外（如 webnovel-review 的 workflow 命令待重构）
+    # Exclude known exceptions, such as the pending workflow-command refactor in webnovel-review.
     skill_name = prompt_file.parent.name
     exceptions = _KNOWN_CLI_EXCEPTIONS.get(skill_name, set())
     invalid = [c for c in cmds if c not in REGISTERED_CLI_SUBCOMMANDS and c not in exceptions]
-    assert not invalid, f"{prompt_file.name}: 使用了未注册的 CLI 子命令 {invalid}"
+    assert not invalid, f"{prompt_file.name}: Uses unregistered CLI subcommands {invalid}"
 
 
 # ---------------------------------------------------------------------------
-# 5. Review Schema 一致性
+# 5. Review-schema consistency
 # ---------------------------------------------------------------------------
 
 def test_review_schema_consistency():
-    """reviewer.md 输出格式中的字段必须与 review_schema.py 定义匹配。"""
+    """Reviewer output fields must match review_schema.py."""
     reviewer_text = _read_text(AGENTS_DIR / "reviewer.md")
 
-    # 从 reviewer.md 的 JSON 示例中提取 issue 字段
+    # Extract issue fields from reviewer.md JSON examples.
     issue_fields_in_prompt = set()
     json_block = re.search(r'"issues":\s*\[\s*\{([^}]+)\}', reviewer_text, re.DOTALL)
     if json_block:
         for m in re.finditer(r'"(\w+)":', json_block.group(1)):
             issue_fields_in_prompt.add(m.group(1))
 
-    # 从 review_schema.py 提取 ReviewIssue 字段
+    # Extract ReviewIssue fields from review_schema.py.
     schema_path = SCRIPTS_DIR / "data_modules" / "review_schema.py"
     schema_text = _read_text(schema_path)
     schema_fields = set()
@@ -219,17 +219,17 @@ def test_review_schema_consistency():
             if m:
                 schema_fields.add(m.group(1))
 
-    # reviewer prompt 中的字段应该是 schema 字段的子集
-    assert issue_fields_in_prompt, "无法从 reviewer.md 提取 issue 字段"
-    assert schema_fields, "无法从 review_schema.py 提取字段"
+    # Reviewer prompt fields must be a subset of schema fields.
+    assert issue_fields_in_prompt, "Cannot extract issue fields from reviewer.md"
+    assert schema_fields, "Cannot extract fields from review_schema.py"
     extra = issue_fields_in_prompt - schema_fields
-    assert not extra, f"reviewer.md 中有字段不在 review_schema.py 中: {extra}"
+    assert not extra, f"reviewer.md contains fields absent from review_schema.py: {extra}"
     assert "blocking_count" in reviewer_text
     assert "issues_count" in reviewer_text
 
 
 # ---------------------------------------------------------------------------
-# 6. 无残留引用（已删文件）
+# 6. No stale references to deleted files
 # ---------------------------------------------------------------------------
 
 KNOWN_DELETED_FILES = [
@@ -249,14 +249,14 @@ _KNOWN_CLI_EXCEPTIONS = {}
 
 @pytest.mark.parametrize("prompt_file", ALL_PROMPT_FILES, ids=lambda f: f.name)
 def test_no_stale_references(prompt_file: Path):
-    """不得引用已知已删除的文件。"""
+    """Do not reference known deleted files."""
     text = _read_text(prompt_file)
     found = [name for name in KNOWN_DELETED_FILES if name in text]
-    assert not found, f"{prompt_file.name}: 残留引用已删除文件 {found}"
+    assert not found, f"{prompt_file.name}: Stale references to deleted files {found}"
 
 
 def test_webnovel_review_skill_uses_unified_reviewer_pipeline():
-    """webnovel-review 必须与 webnovel-write 使用同一套 reviewer + review-pipeline 链路。"""
+    """webnovel-review and webnovel-write must share the reviewer + review-pipeline chain."""
     skill_text = _read_text(SKILLS_DIR / "webnovel-review" / "SKILL.md")
 
     assert "`reviewer`" in skill_text
@@ -280,31 +280,31 @@ def test_webnovel_review_skill_uses_unified_reviewer_pipeline():
 
 
 def test_active_skills_use_agent_tool_name_not_legacy_task():
-    """Claude Code 2.1.63+ 将 Task 工具改名为 Agent；active skills 不应再声明 Task。"""
+    """Claude Code 2.1.63+ renamed Task to Agent; active skills must not declare Task."""
     for skill_file in SKILL_FILES:
         text = _read_text(skill_file)
         fm = _extract_frontmatter(text)
         allowed_tools = fm.get("allowed-tools", "")
-        assert "Task" not in allowed_tools, f"{skill_file.parent.name}: allowed-tools 仍声明 Task"
-        assert "Task invocation" not in text, f"{skill_file.parent.name}: 仍使用软性的 Task 调用描述"
-        assert "Must call through `Task`" not in text, f"{skill_file.parent.name}: 仍要求旧 Task 工具名"
+        assert "Task" not in allowed_tools, f"{skill_file.parent.name}: allowed-tools still declares Task"
+        assert "Task invocation" not in text, f"{skill_file.parent.name}: still uses ambiguous Task invocation prose"
+        assert "Must call through `Task`" not in text, f"{skill_file.parent.name}: still requires the obsolete Task tool name"
 
 
 def test_webnovel_write_skill_uses_explicit_agent_invocation_templates():
-    """关键 subagent 必须经 Agent 工具按注册名 webnovel-writer:X 显式调用；不再用伪函数 subagent_type 块（plan §4.4.2/§8.4）。"""
+    """Invoke required subagents through Agent using registered webnovel-writer:X names, not pseudo-function subagent_type blocks (plan 4.4.2/8.4)."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     fm = _extract_frontmatter(text)
 
     assert "Agent" in fm.get("allowed-tools", "")
     for subagent in ("context-agent", "reviewer", "data-agent"):
-        assert f"webnovel-writer:{subagent}" in text, f"缺少 {subagent} 的注册名显式调用"
-    assert "subagent_type:" not in text, "不应再使用伪函数 subagent_type 调用块"
+        assert f"webnovel-writer:{subagent}" in text, f"Missing {subagent} explicit registered-name invocation"
+    assert "subagent_type:" not in text, "Must not use pseudo-function subagent_type blocks"
     assert "the main workflow must not verbally substitute for subagent output" in text
 
 
 @pytest.mark.parametrize("skill_name", AUTHOR_REPORT_SKILLS)
 def test_main_skills_define_author_friendly_final_report_contract(skill_name: str):
-    """四个主 Skill 必须提供作者友好的总状态 + 三段式最终报告契约。"""
+    """The four main skills require an author-friendly overall status and three-part final report."""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
 
     assert "Author-friendly final report contract" in text
@@ -314,9 +314,9 @@ def test_main_skills_define_author_friendly_final_report_contract(skill_name: st
         "2. Issues and unusually long steps encountered",
         "3. Recommended next steps",
     ):
-        assert section in text, f"{skill_name}: 缺少最终报告段落 {section}"
+        assert section in text, f"{skill_name}: Missing final-report section {section}"
     for issue_type in ("Automatically handled", "Suggested for confirmation", "Must address"):
-        assert issue_type in text, f"{skill_name}: 缺少异常分类 {issue_type}"
+        assert issue_type in text, f"{skill_name}: Missing issue classification {issue_type}"
     assert "task-oriented language" in text
     assert "copyable commands" in text
     assert "/webnovel-doctor" in text
@@ -324,7 +324,7 @@ def test_main_skills_define_author_friendly_final_report_contract(skill_name: st
 
 
 def test_write_skill_final_report_covers_commit_projection_and_backup():
-    """写章最终报告必须覆盖正文、审查、data artifacts、commit、projection、backup。"""
+    """The writing report must cover prose, review, data artifacts, commit, projections, and backup."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     for required in (
         "Chapter prose file path",
@@ -346,7 +346,7 @@ def test_write_skill_final_report_covers_commit_projection_and_backup():
 
 
 def test_review_skill_final_report_covers_metrics_and_blocking_decision():
-    """审查最终报告必须覆盖报告、metrics、blocking 数与用户裁决状态。"""
+    """The review report must cover reports, metrics, blocker counts, and user adjudication status."""
     text = _read_text(SKILLS_DIR / "webnovel-review" / "SKILL.md")
     for required in (
         "review report file",
@@ -363,7 +363,7 @@ def test_review_skill_final_report_covers_metrics_and_blocking_decision():
 
 
 def test_main_skills_record_subagent_run_summaries_for_agent_calls():
-    """主 Skill 调用 Agent 后必须记录 SubagentRun 汇总，供最终报告使用。"""
+    """After Agent calls, the main skill records SubagentRun summaries for the final report."""
     expected = {
         "webnovel-init": ("deconstruction-agent",),
         "webnovel-write": ("context-agent", "reviewer", "data-agent"),
@@ -372,25 +372,25 @@ def test_main_skills_record_subagent_run_summaries_for_agent_calls():
 
     for skill_name, agents in expected.items():
         text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
-        assert "SubagentRun" in text, f"{skill_name}: 缺少 SubagentRun 汇总契约"
+        assert "SubagentRun" in text, f"{skill_name}: Missing SubagentRun summary contract"
         for field in SUBAGENT_RUN_FIELDS:
-            assert field in text, f"{skill_name}: 缺少 SubagentRun 字段 {field}"
+            assert field in text, f"{skill_name}: Missing SubagentRun field {field}"
         for agent_name in agents:
             assert f'"name": "{agent_name}"' in text, (
-                f"{skill_name}: 缺少 {agent_name} 的 SubagentRun name"
+                f"{skill_name}: Missing {agent_name} SubagentRun name"
             )
     plan_text = _read_text(SKILLS_DIR / "webnovel-plan" / "SKILL.md")
-    assert "SubagentRun" not in plan_text, "webnovel-plan 当前不调用 Agent，不应虚构 SubagentRun"
+    assert "SubagentRun" not in plan_text, "webnovel-plan does not currently call Agent and must not invent SubagentRun"
 
 
 @pytest.mark.parametrize("agent_file_name", SUBAGENT_PROMPT_FILES)
 def test_agents_expose_subagent_run_summary_signals_without_changing_outputs(agent_file_name: str):
-    """Agent prompt 必须暴露可汇总信号，但不得把 SubagentRun 写入原始产物。"""
+    """Agent prompts expose summary signals without adding SubagentRun to raw artifacts."""
     text = _read_text(AGENTS_DIR / agent_file_name)
 
     assert "Aggregatable SubagentRun Signals" in text
     for field in ("`status`", "`problems`", "`auto_handled`", "`needs_user_action`", "`duration_ms`", "`outputs`"):
-        assert field in text, f"{agent_file_name}: 缺少可汇总字段 {field}"
+        assert field in text, f"{agent_file_name}: Missing summarizable field {field}"
     assert "The main workflow records" in text
 
     if agent_file_name == "reviewer.md":
@@ -405,7 +405,7 @@ def test_agents_expose_subagent_run_summary_signals_without_changing_outputs(age
 
 @pytest.mark.parametrize("skill_name", AUTHOR_REPORT_SKILLS)
 def test_main_skills_define_author_friendly_progress_and_recovery_contract(skill_name: str):
-    """四个主 Skill 必须有过程提示、少打扰确认、卡住恢复和日志边界。"""
+    """The four main skills require progress cues, minimal confirmations, recovery guidance, and log boundaries."""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
 
     for required in (
@@ -421,12 +421,12 @@ def test_main_skills_define_author_friendly_progress_and_recovery_contract(skill
         "run-log",
         "user-report",
     ):
-        assert required.casefold() in text.casefold(), f"{skill_name}: 缺少过程/恢复契约 {required}"
+        assert required.casefold() in text.casefold(), f"{skill_name}: Missing progress/recovery contract {required}"
     assert "not raw JSON" in text or "do not output raw JSON" in text
 
 
 def test_write_skill_progress_nodes_are_author_friendly_and_limited():
-    """写章过程节点必须压缩到不超过 6 个作者可理解阶段。"""
+    """Writing progress must use no more than six author-friendly stages."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     marker = "Writing progress milestones (at most six)"
     assert marker in text
@@ -436,11 +436,11 @@ def test_write_skill_progress_nodes_are_author_friendly_and_limited():
     for forbidden in ("write-gate", "chapter-commit", "projection_status", "artifact", "schema"):
         assert forbidden not in "\n".join(nodes)
     for friendly in ("Check project environment", "Organize writing context", "Draft chapter prose", "Writing check", "Save this chapter's story facts", "Commit and back up"):
-        assert any(friendly in node for node in nodes), f"缺少作者友好节点 {friendly}"
+        assert any(friendly in node for node in nodes), f"Missing author-friendly stage {friendly}"
 
 
 def test_write_skill_resume_contract_uses_runtime_ledger_and_confirmation_boundaries():
-    """写章重复执行必须先查可信断点，且在覆盖风险处停下确认。"""
+    """Repeated writing must check trusted checkpoints and pause for confirmation before risky overwrites."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     for required in (
         "run-ledger write-resume",
@@ -490,7 +490,7 @@ def test_context_agent_prefers_contract_and_latest_commit_mainline():
 
 def test_context_agent_loads_fixed_guides_and_outputs_writer_brief():
     text = (AGENTS_DIR / "context-agent.md").read_text(encoding="utf-8")
-    # core-constraints 和 anti-ai-guide 已内化为"Writing Laws"段落
+    # core-constraints and anti-ai-guide are incorporated into the Writing Laws section.
     assert "Writing Laws" in text or "Anti-AI" in text
     assert "writing brief" in text
     assert "Step 2 direct-writing prompt" not in text
@@ -522,17 +522,17 @@ def test_data_agent_is_described_as_extraction_only_not_direct_write_mainline():
         "scene index written",
         "indexing failed",
     ):
-        assert forbidden not in text, f"data-agent.md 不应保留 projection 写入语义: {forbidden}"
-    # data-agent 不得携带可运行的 chapter-commit 命令（commit 是主流程的事实提交入口，data-agent 只产 artifact）
+        assert forbidden not in text, f"data-agent.md Must not retain projection-writing instructions: {forbidden}"
+    # data-agent must not include runnable chapter-commit commands: the main workflow commits facts; data-agent only produces artifacts.
     assert not re.search(r"webnovel\.py[^\n]+chapter-commit", text), (
-        "data-agent.md 不应出现可运行的 webnovel.py ... chapter-commit 命令"
+        "data-agent.md Must not contain a runnable webnovel.py ... chapter-commit command"
     )
 
 
-# (已按 plan §12.2 退役) test_webnovel_write_data_agent_prompt_requires_extraction_schema：
-# 该测试逐字要求主 Skill 写出 data artifact 的 schema 字段名，与判据一冲突。schema 字段保障已迁到
-# data-agent.md 生产方（test_data_agent_is_described_as_extraction_only_not_direct_write_mainline）
-# + precommit 负向用例（Task 7）。主 Skill 不再内联长 schema。
+# (Retired under plan section 12.2) test_webnovel_write_data_agent_prompt_requires_extraction_schema：
+# The former test required inline data-artifact schema names, conflicting with criterion one. Schema coverage now belongs to
+# the data-agent.md producer（test_data_agent_is_described_as_extraction_only_not_direct_write_mainline）
+# + negative precommit cases (Task 7). Main skills no longer inline long schemas.
 
 
 def test_dashboard_and_plan_skills_surface_story_runtime_mainline():
@@ -563,20 +563,20 @@ def test_context_agent_and_write_skill_form_isolated_write_chain():
 
 
 def test_no_direct_state_writes_in_write_skill():
-    """webnovel-write SKILL.md 中不应有 set-chapter-status 调用。"""
+    """webnovel-write SKILL.md must not invoke set-chapter-status."""
     text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
     assert "state set-chapter-status" not in text, (
-        "webnovel-write 中不应直接调用 state set-chapter-status，"
-        "chapter_status 由 state_projection_writer 在 commit 时自动推进"
+        "webnovel-write must not directly invoke state set-chapter-status, "
+        "chapter_status is advanced automatically by state_projection_writer at commit time"
     )
 
 
 def test_no_direct_state_writes_in_agents():
-    """agents 目录中不应有直接写 state/index 的指令。"""
+    """Agent prompts must not directly write state or index."""
     for agent_file in AGENT_FILES:
         text = _read_text(agent_file)
         assert "state set-chapter-status" not in text, (
-            f"{agent_file.name}: 不应直接调用 state set-chapter-status"
+            f"{agent_file.name}: must not directly invoke state set-chapter-status"
         )
 
 
@@ -681,175 +681,175 @@ def test_webnovel_init_deconstruction_wiring_keeps_confirmation_gate():
 
 
 # ---------------------------------------------------------------------------
-# 7. A 类跨层红线：行为/契约级断言（Phase 0 守护）
-#    这些断言守护「已实现」的业务红线，全部应为绿。优先断言结构不变量
-#    （命令存在/顺序、节点 schema、变量化的真实参数），不做脆弱的文案匹配。
+# 7. Type-A cross-layer invariants: behavioral and contract assertions (Phase 0 guards)
+#    These assertions guard implemented invariants and must pass. Prefer structural invariants
+#    (command presence/order, node schemas, and variables carrying real arguments) over brittle wording checks.
 # ---------------------------------------------------------------------------
 
-# A 类红线 2：placeholder-scan 必须出现在 plan 与 write 两层的关键节点。
+# Invariant A2: plan and write must run placeholder-scan at required checkpoints.
 def test_placeholder_scan_runs_in_both_plan_and_write_skills():
-    """红线 2：plan 与 write 都必须显式调用 placeholder-scan CLI。"""
+    """Invariant 2: both plan and write explicitly invoke placeholder-scan."""
     plan_text = _read_text(SKILLS_DIR / "webnovel-plan" / "SKILL.md")
     write_text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     for name, text in (("webnovel-plan", plan_text), ("webnovel-write", write_text)):
         cmds = _extract_cli_subcommands(text)
         assert "placeholder-scan" in cmds, (
-            f"{name}: 关键节点缺少 placeholder-scan CLI 调用"
+            f"{name}: Required checkpoint lacks placeholder-scan CLI invocation"
         )
 
 
-# A 类红线 3：story-system 章级刷新必须传入真实 CHAPTER_GOAL 变量，
-# 不得把 {章纲目标} / 第N章章纲目标 这类占位文本当作 positional query。
+# Invariant A3: chapter-level story-system refresh uses the actual CHAPTER_GOAL variable.
+# Do not pass placeholder goals as positional queries.
 @pytest.mark.parametrize("skill_name", ["webnovel-plan", "webnovel-write"])
 def test_story_system_chapter_refresh_uses_real_goal_not_placeholder_query(skill_name: str):
-    """红线 3：story-system 的 query 实参是 ${CHAPTER_GOAL} 变量，且禁占位文本写在命令里。"""
+    """Invariant 3: story-system receives ${CHAPTER_GOAL}, and placeholder queries are explicitly prohibited."""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
-    # 命令必须用变量化的真实目标作为 query 实参
+    # Commands must pass a variable containing the actual goal as the query.
     assert 'story-system "${CHAPTER_GOAL}"' in text, (
-        f"{skill_name}: story-system 未使用真实 ${{CHAPTER_GOAL}} 作为 query 实参"
+        f"{skill_name}: story-system does not use the actual ${{CHAPTER_GOAL}} as the query argument"
     )
-    # 占位 query 绝不能作为 story-system 的 positional 实参出现
-    for placeholder in ("{章纲目标}", "第N章章纲目标", "{chapter_outline_goal}", "Chapter N outline goal"):
+    # Placeholder queries must never be positional arguments to story-system.
+    for placeholder in ("{chapter_outline_goal}", "Chapter N outline goal"):
         assert f'story-system "{placeholder}"' not in text, (
-            f"{skill_name}: story-system 不得把占位文本 {placeholder} 当作 query"
+            f"{skill_name}: story-system must not pass placeholder text {placeholder} as the query"
         )
-    # 必须显式声明「禁止占位 query」这一约束（断言事实存在，不锁具体措辞）
+    # Require an explicit prohibition on placeholder queries without fixing its precise wording.
     assert "{chapter_outline_goal}" in text and "Chapter N outline goal" in text, (
-        f"{skill_name}: 缺少对占位 query 的明确禁止说明"
+        f"{skill_name}: Missing an explicit prohibition on placeholder queries"
     )
 
 
-# A 类红线 4：story-system 章级刷新必须 --persist 且 --emit-runtime-contracts。
+# Invariant A4: chapter refresh must use --persist and --emit-runtime-contracts.
 @pytest.mark.parametrize("skill_name", ["webnovel-plan", "webnovel-write"])
 def test_story_system_chapter_refresh_persists_runtime_contracts(skill_name: str):
-    """红线 4：章级 story-system 刷新必须同时 --persist 与 --emit-runtime-contracts。"""
+    """Invariant 4: chapter refresh requires both --persist and --emit-runtime-contracts."""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
     cmd_start = text.find('story-system "${CHAPTER_GOAL}"')
-    assert cmd_start >= 0, f"{skill_name}: 缺少章级 story-system 调用"
-    # 取该调用所在的命令行（到下一空行/段落结束），断言两个关键开关都在
+    assert cmd_start >= 0, f"{skill_name}: Missing chapter-level story-system invocation"
+    # Inspect the command through the next blank line and assert both required flags.
     cmd_tail = text[cmd_start:cmd_start + 400]
-    assert "--persist" in cmd_tail, f"{skill_name}: 章级 story-system 缺少 --persist"
+    assert "--persist" in cmd_tail, f"{skill_name}: chapter-level story-system Missing --persist"
     assert "--emit-runtime-contracts" in cmd_tail, (
-        f"{skill_name}: 章级 story-system 缺少 --emit-runtime-contracts"
+        f"{skill_name}: chapter-level story-system Missing --emit-runtime-contracts"
     )
-    assert "--chapter" in cmd_tail, f"{skill_name}: 章级 story-system 缺少 --chapter"
+    assert "--chapter" in cmd_tail, f"{skill_name}: chapter-level story-system Missing --chapter"
 
 
-# A 类红线 5：write-gate 三道闸门必须齐全且顺序为 prewrite→precommit→postcommit。
+# Invariant A5: all write gates must appear in prewrite→precommit→postcommit order.
 def test_write_skill_gate_stages_ordered_prewrite_precommit_postcommit():
-    """红线 5：write-gate 三道 gate 顺序不可乱。"""
+    """Invariant 5: write-gate ordering is fixed."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     prewrite = text.find("write-gate --chapter {chapter_num} --stage prewrite")
     precommit = text.find("write-gate --chapter {chapter_num} --stage precommit")
     postcommit = text.find("write-gate --chapter {chapter_num} --stage postcommit")
-    assert prewrite >= 0, "缺少 prewrite gate"
-    assert precommit >= 0, "缺少 precommit gate"
-    assert postcommit >= 0, "缺少 postcommit gate"
+    assert prewrite >= 0, "Missing prewrite gate"
+    assert precommit >= 0, "Missing precommit gate"
+    assert postcommit >= 0, "Missing postcommit gate"
     assert prewrite < precommit < postcommit, (
-        "write-gate 三道 gate 顺序必须为 prewrite→precommit→postcommit"
+        "write-gate gate order must be prewrite→precommit→postcommit"
     )
 
 
-# A 类红线 7：reviewer 原始 JSON 必须经 review-pipeline --save-metrics 落库（write 与 review 两层）。
+# Invariant A7: writing and review persist raw reviewer JSON through review-pipeline --save-metrics.
 @pytest.mark.parametrize("skill_name", ["webnovel-write", "webnovel-review"])
 def test_review_pipeline_persists_metrics_in_review_chain(skill_name: str):
-    """红线 7：reviewer JSON 经 review-pipeline --save-metrics 落库。"""
+    """Invariant 7: persist reviewer JSON through review-pipeline --save-metrics."""
     text = _read_text(SKILLS_DIR / skill_name / "SKILL.md")
     cmds = _extract_cli_subcommands(text)
-    assert "review-pipeline" in cmds, f"{skill_name}: 缺少 review-pipeline CLI 调用"
-    assert "--save-metrics" in text, f"{skill_name}: review-pipeline 未带 --save-metrics 落库"
+    assert "review-pipeline" in cmds, f"{skill_name}: Missing review-pipeline CLI invocation"
+    assert "--save-metrics" in text, f"{skill_name}: review-pipeline missing --save-metrics persistence"
 
 
-# A 类红线 10：postcommit 必须验证 projection 五项；失败只 projections retry。
+# Invariant A10: postcommit verifies all five projections; failures use only projections retry.
 def test_write_skill_postcommit_verifies_five_projections_and_retry_only():
-    """红线 10：projection 五项（state/index/summary/memory/vector）验证，失败只 retry。"""
+    """Invariant 10: verify state/index/summary/memory/vector projections; only retry failed projections."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     assert "state/index/summary/memory/vector" in text, (
-        "缺少 projection 五项（state/index/summary/memory/vector）验证说明"
+        "Missing projection verification of all five projections (state/index/summary/memory/vector)"
     )
-    # 失败兜底唯一手段是 projections retry（命令以续行书写，直接断言字面调用）
+    # The sole recovery is projections retry; assert the literal multiline invocation.
     assert "projections retry --chapter {chapter_num}" in text, (
-        "projection 失败兜底必须是 projections retry --chapter {chapter_num}"
+        "projection failure recovery must be projections retry --chapter {chapter_num}"
     )
 
 
-# A 类红线 12：plan 必须覆盖节拍表/时间线/结构化章纲节点/结构化总纲写回/状态更新。
+# Invariant A12: plan covers beats, timeline, structured chapter nodes, master-outline writeback, and state updates.
 def test_plan_skill_covers_outline_writeback_and_state_sync_contract():
-    """红线 12：plan 的节拍表/时间线/章纲节点/总纲写回 JSON/master-outline-sync/update-state。"""
+    """Invariant 12: plan includes beats, timeline, nodes, writeback JSON, master-outline-sync, and update-state."""
     text = _read_text(SKILLS_DIR / "webnovel-plan" / "SKILL.md")
-    # 节拍表 / 时间线 输出物
+    # Beat-sheet and timeline artifacts
     assert "outlines/volume-{volume_id}-beats.md" in text
     assert "outlines/volume-{volume_id}-timeline.md" in text
-    # 结构化章纲节点
+    # Structured chapter-outline nodes
     for node in ("CBN", "CPNs", "CEN", "Must-cover nodes", "Chapter prohibitions"):
-        assert node in text, f"plan 缺少结构化章纲节点标记 {node}"
-    # 结构化总纲写回文件（不可从自由文本推断伏笔）
+        assert node in text, f"plan MissingStructured chapter-outline nodesmarker {node}"
+    # Structured master-outline writeback; never infer foreshadowing from free text.
     assert "outlines/volume-{volume_id}-master-outline-update.json" in text
-    # 设定写回 + 状态同步命令
+    # Setting writeback and state synchronization commands
     cmds = _extract_cli_subcommands(text)
-    assert "master-outline-sync" in cmds, "plan 缺少 master-outline-sync 写回命令"
-    assert "update-state" in cmds, "plan 缺少 update-state 状态更新命令"
+    assert "master-outline-sync" in cmds, "plan Missing master-outline-sync writeback command"
+    assert "update-state" in cmds, "plan Missing update-state state-update command"
 
 
 # ---------------------------------------------------------------------------
-# 8. B 类跨层新契约（plan §5.2-B / §4.5 写入所有权矩阵）
-#    tools↔落盘一致性现状已满足 → 作通过型守护；
-#    提交前只读 git diff 变更面校验现状缺失 → xfail，Task 5（Phase 1）落地后移除标记转正。
+# 8. Type-B cross-layer contracts (plan 5.2-B / 4.5 write-ownership matrix)
+#    Tools and persistence ownership already agree; guard with passing tests.
+#    Originally the precommit read-only git diff scope check was missing; Task 5 (Phase 1) removes xfail once implemented.
 # ---------------------------------------------------------------------------
 
 def _agent_tools(agent_name: str) -> list[str]:
-    """解析某 agent frontmatter 的 tools 列表。"""
+    """Parse an agent frontmatter tools list."""
     fm = _extract_frontmatter(_read_text(AGENTS_DIR / f"{agent_name}.md"))
     return [t.strip() for t in fm.get("tools", "").split(",") if t.strip()]
 
 
-# B 类红线（写入所有权 ↔ tools 一致，单一写入者）：
-# data-agent 是三份 tmp artifact 的唯一写入者 → 必须持 Write；
-# reviewer/context-agent/deconstruction-agent 只返回结果、由主流程落盘 → 不得持 Write。
+# Type-B invariant: write ownership matches tools, with a single writer.
+# data-agent is the sole writer of three temporary artifacts and requires Write.
+# reviewer/context-agent/deconstruction-agent return results for the main workflow to persist and must not have Write.
 def test_agent_write_ownership_matches_tools_frontmatter():
-    """红线（写入所有权）：仅 data-agent 持 Write，其余三个 agent 不持 Write。"""
+    """Write-ownership invariant: only data-agent has Write, not the other three agents."""
     assert "Write" in _agent_tools("data-agent"), (
-        "data-agent 必须持有 Write（它是三份 tmp artifact 的唯一写入者）"
+        "data-agent must have Write as the sole writer of the three temporary artifacts"
     )
     for agent_name in ("reviewer", "context-agent", "deconstruction-agent"):
         assert "Write" not in _agent_tools(agent_name), (
-            f"{agent_name} 不得持有 Write（它只返回结果，由主流程落盘）"
+            f"{agent_name} must not have Write; it returns results for the main workflow to persist"
         )
 
 
-# B 类红线（提交前变更面校验）：write SKILL 在 chapter-commit 前必须执行只读 git diff 变更面校验。
-# 现状 write SKILL 尚无此步 → 标 xfail；Task 5（Phase 1）实现后移除本标记，转为硬守护。
-# B 类红线（提交前变更面校验）：write SKILL 在 chapter-commit 前必须执行只读 git diff 变更面校验。
-# Phase 1 (Task 5) 已落地 → 转为硬守护（移除 xfail 标记）。
+# Type-B invariant: write SKILL performs a read-only git diff scope check before chapter-commit.
+# Historical state: this step was absent and marked xfail until Phase 1 Task 5 implemented the hard guard.
+# Type-B invariant: write SKILL performs a read-only git diff scope check before chapter-commit.
+# Phase 1 Task 5 is implemented: enforce the hard guard without xfail.
 def test_write_skill_has_readonly_git_diff_change_surface_check():
-    """红线（提交前变更面校验）：write SKILL 在 chapter-commit 前执行只读 git diff 校验。"""
+    """Precommit scope invariant: write SKILL runs read-only git diff before chapter-commit."""
     text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     assert "diff --name-status" in text, (
-        "write SKILL 缺少提交前只读 git diff --name-status 变更面校验"
+        "write SKILL Missing precommit read-only git diff --name-status change-scope validation"
     )
     assert "diff --check" in text, (
-        "write SKILL 缺少 git diff --check 空白/冲突标记校验"
+        "write SKILL Missing git diff --check whitespace/conflict-marker validation"
     )
 
 
-# B 类红线（写入所有权·prompt 层）：write/review 必须在文本层声明所有权，
-# 与 frontmatter（test_agent_write_ownership_matches_tools_frontmatter）+ behavior eval（artifact_ownership）三处互守。
+# Type-B prompt-ownership invariant: write/review explicitly declare ownership,
+# cross-checked with frontmatter (test_agent_write_ownership_matches_tools_frontmatter) and the artifact_ownership behavioral eval.
 def test_write_review_skills_state_artifact_ownership():
-    """reviewer 返回 JSON、主流程落盘 review_results.json、data-agent 唯一写入者。"""
+    """Reviewer returns JSON; the main workflow persists review_results.json; data-agent is the sole artifact writer."""
     write_text = _read_text(SKILLS_DIR / "webnovel-write" / "SKILL.md")
     review_text = _read_text(SKILLS_DIR / "webnovel-review" / "SKILL.md")
     for name, text in (("webnovel-write", write_text), ("webnovel-review", review_text)):
         assert re.search(r"main (?:workflow|flow)", text) and ".webnovel/tmp/review_results.json" in text, (
-            f"{name}: 缺 reviewer→主流程落盘 review_results.json 的所有权说明"
+            f"{name}: Missing ownership declaration: reviewer returns results, main workflow writes review_results.json"
         )
-    assert "sole writer" in write_text, "webnovel-write 缺 data-agent 唯一写入者说明"
+    assert "sole writer" in write_text, "webnovel-write Missing declaration that data-agent is the sole writer"
     assert "The main workflow checks only file existence and schema" in write_text
     assert "do not write directly to state/index/summaries/memory/vectors/projection" in write_text
 
 
-# §9.3/§12.3：reviewer 删除 ReAct/思维链 元叙述后的正向守护（审查只给输出合同，不教它怎么想）。
+# Sections 9.3/12.3 guard removal of ReAct and reasoning-process narration: reviews specify outputs, not private reasoning.
 def test_reviewer_has_no_react_meta_narrative():
-    """reviewer.md 不得保留 ReAct/思维链 元叙述。"""
+    """reviewer.md must not retain ReAct or private-reasoning narration."""
     text = _read_text(AGENTS_DIR / "reviewer.md")
-    assert "ReAct" not in text, "reviewer 不应出现 ReAct 字样"
-    assert "chain of thought" not in text.casefold(), "reviewer 不应保留思维链元叙述"
+    assert "ReAct" not in text, "reviewer must not mention ReAct"
+    assert "chain of thought" not in text.casefold(), "reviewer must not retain private-reasoning narration"

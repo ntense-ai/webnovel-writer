@@ -1,0 +1,206 @@
+# Dark Fiction Template
+
+> Runtime preset identifier: `dark-fiction` (English taxonomy and initialization preset).
+
+## Core Premise
+
+### Essence of Dark Fiction
+```
+Collapse of order + establishment of new order + extreme power + moral ambiguity
+```
+
+### Core Attractions
+- Ultimate fulfillment of power fantasies.
+- The forbidden thrill of breaking conventions.
+- Survival governed by predation and strength.
+- A narrative experienced from an unconventional perspective.
+
+## Recommended Creative Constraints (Optional)
+- Recommended constraint pack: Pack M16
+- General overlay: Pack U01
+
+---
+
+## Dark Protagonist Design
+
+### Protagonist Types
+| Type | Features | Core drive |
+|------|------|----------|
+| Tyrant | Absolute rule, ruthless methods | Order and control |
+| Conqueror | Expansionist ambition, never satisfied | Possession and conquest |
+| Destroyer | Destroys everything to rebuild the world | Destruction and rebirth |
+| Parasite | Covert infiltration and manipulation | Survival and evolution |
+
+### Personality Template
+```
+Cold rationality + absolute control + ambition + profound loneliness
+```
+
+### Origin Template
+```
+Rejected by the world → Awakens dark power → Revenge/conquest → Establishes a new order
+```
+
+### Protagonist Complexity
+- Follows an internal behavioral logic.
+- Is not purely evil.
+- Has understandable motives.
+- Occasionally reveals humanity.
+
+---
+
+## Dark System Design
+
+### Genetic Hegemony System (Example)
+```
+Devour → Digest → Evolve → Receive feedback
+```
+
+| Mechanism | Description | Payoff |
+|------|------|------|
+| Devour | Acquire genes/energy | Thrill of plunder |
+| Digest | Convert into strength | Satisfaction of growth |
+| Evolve | Upgrade abilities | Pleasure of becoming stronger |
+| Feedback | Validate through battle | Thrill of overwhelming opponents |
+
+### System Panel Design
+```
+┌──────────────────────────────────┐
+│ [Genetic Hegemony System]        │
+├──────────────────────────────────┤
+│ Genetic purity: 87%             │
+│ Evolution stage: Third form     │
+│ Devouring points: 12500/20000    │
+│ Offspring count: 156            │
+├──────────────────────────────────┤
+│ Available skill points: 8       │
+│ Abilities awaiting unlock: 3    │
+└──────────────────────────────────┘
+```
+
+### Evolution Path
+```
+Basic stage → Intermediate stage → Advanced stage → Ultimate stage
+```
+
+---
+
+## Worldbuilding
+
+### World Types
+| Type | Features | Suitable style |
+|------|------|----------|
+| Apocalyptic wasteland | Collapsed civilization, scarce resources | Survival competition |
+| Corrupted cultivation world | Cultivation's dark underside | Predatory survival |
+| Dark city | Modern society's shadow side | Covert infiltration |
+| Interstellar darkness | Conquest on a cosmic scale | Wars between species |
+
+### Survival Laws
+```
+The strong prey on the weak → Survival of the fittest → Might makes right → Winner takes all
+```
+
+### Faction Landscape
+| Faction | Role | Function |
+|------|------|------|
+| Protagonist's faction | Rising dark empire | Main development arc |
+| Resistance | Humanity's last hope | Generates conflict |
+| Third parties | Neutral/opportunistic | Add uncertainty |
+| Hostile factions | Rivals/old order | Main opponents |
+
+---
+
+## Dark Payoff Design
+
+### Payoff Types
+| Type | Trigger | Effect |
+|------|------|------|
+| Domination | Absolute control over others | Satisfaction of power |
+| Conquest | Seizing cities and territory | Thrill of expansion |
+| Devouring | Plundering abilities/resources | Satisfaction of growth |
+| Overwhelming force | Displaying a power gap | Thrill of strength |
+| Fear | Making enemies afraid | Satisfaction of deterrence |
+
+### Payoff Structure
+```
+Show the power gap → Enemy fear/despair → Domination/conquest → Collect spoils
+```
+
+### Dark Ceremonial Moments
+- Ascension to the throne/coronation.
+- Enemies submitting.
+- Territorial expansion.
+- Evolutionary breakthroughs.
+
+---
+
+## Creating Horror
+
+### Horror Types
+| Type | Technique | Effect |
+|------|------|------|
+| Body horror | Mutation, deformity | Physical discomfort |
+| Psychological horror | Mind control, brainwashing | Psychological oppression |
+| Existential horror | Incomprehensible beings | Collapse of understanding |
+| Horror of despair | Inescapable fate | Suffocation |
+
+### Atmospheric Description
+```
+Environmental pressure: darkness, decay, deathly silence.
+Sensory stimulation: foul odors, stickiness, piercing sounds.
+Psychological suggestion: being watched, nowhere to escape.
+```
+
+### Escalating Fear
+```
+Unease → Tension → Fear → Despair → Breakdown
+```
+
+---
+
+## Plot Pacing
+
+### Opening (First 10 Chapters)
+- Dark power awakens.
+- First act of devouring/conquest.
+- Establish a basic faction.
+- Define the protagonist's behavioral logic.
+
+### Development (Chapters 10-100)
+- Expand the faction.
+- Evolve abilities.
+- Conquer/devour stronger opponents.
+- Establish a new order.
+
+### Climax Phase (Chapters 100+)
+- Become an apex predator.
+- Conquer vast territories.
+- Face the ultimate enemy.
+- Establish a dark empire.
+
+---
+
+## Moral Boundaries
+
+### Establishing Limits
+- Define the protagonist's behavioral logic.
+- Give them principles, even dark ones.
+- Avoid mindless slaughter.
+- Provide clear goals and reasons.
+
+### Showing Humanity
+- Occasional moments of softness.
+- Attachment to specific people/things.
+- Inner loneliness and struggle.
+- Humanity has not vanished entirely.
+
+---
+
+## Cautions
+
+- **Intensity**: Avoid excessively graphic violence that could get the work banned.
+- **Consistency**: Darkness does not mean stupidity; the protagonist must be intelligent.
+- **Reader connection**: Even a dark protagonist needs understandable motives.
+- **Pacing**: Do not maintain uninterrupted oppression; release tension through payoffs.
+- **Moral baseline**: Avoid excessively distorted values; retain basic moral boundaries.
+- **Characterization**: A dark protagonist needs charisma, not mere evil.

@@ -160,14 +160,14 @@
 ╚══════════════════════════════════════════════════════╝
 ```
 
-**Entity tag format** (Chinese type/tier values are retained as compatibility literals):
+**Entity tag format** (use English type and tier identifiers):
 ```xml
-<entity type="系统模块" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
+<entity type="system-module" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
 
 <!-- Examples -->
-<entity type="系统模块" name="Shop system" desc="Exchange spirit stones for pills, techniques, or artifacts" tier="核心" unlock="Foundation Establishment"/>
-<entity type="系统模块" name="Lottery system" desc="Spend mission points on random draws" tier="支线" unlock="Golden Core"/>
-<entity type="系统模块" name="Space-time travel" desc="Travel to other planes for training" tier="核心" unlock="Nascent Soul"/>
+<entity type="system-module" name="Shop system" desc="Exchange spirit stones for pills, techniques, or artifacts" tier="core" unlock="Foundation Establishment"/>
+<entity type="system-module" name="Lottery system" desc="Spend mission points on random draws" tier="subplot" unlock="Golden Core"/>
+<entity type="system-module" name="Space-time travel" desc="Travel to other planes for training" tier="core" unlock="Nascent Soul"/>
 ```
 
 **Example system versions**:
@@ -246,11 +246,11 @@ Level 4 → Small world (Nascent Soul + special opportunity)
 
 **Entity tag format**:
 ```xml
-<entity type="未来事件" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
+<entity type="future-event" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
 
 <!-- Examples -->
-<entity type="未来事件" name="Secret realm opening" desc="A realm behind Tianyun Sect opens, containing Foundation Establishment pills" tier="核心" time="In 3 months" strategy="Prepare an entry token beforehand"/>
-<entity type="未来事件" name="Blood Fiend Sect invasion" desc="Demonic attackers devastate the clan" tier="核心" time="In 6 months" strategy="Move clan members and assets in advance"/>
+<entity type="future-event" name="Secret realm opening" desc="A realm behind Tianyun Sect opens, containing Foundation Establishment pills" tier="core" time="In 3 months" strategy="Prepare an entry token beforehand"/>
+<entity type="future-event" name="Blood Fiend Sect invasion" desc="Demonic attackers devastate the clan" tier="core" time="In 6 months" strategy="Move clan members and assets in advance"/>
 ```
 
 ---
@@ -440,10 +440,10 @@ Level 1 → Level 2 → Level 3 → ... → Final form
 The following XML entity types can describe special-advantage systems. Keep the original type literals for compatibility:
 
 ```xml
-<entity type="系统模块" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
-<entity type="系统货币" name="Currency name" desc="Acquisition method" tier="Tier" initial="Initial quantity"/>
-<entity type="系统物品" name="Item name" desc="Effect" tier="Tier" grade="Grade" source="Source"/>
-<entity type="未来事件" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
+<entity type="system-module" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
+<entity type="system-currency" name="Currency name" desc="Acquisition method" tier="Tier" initial="Initial quantity"/>
+<entity type="system-item" name="Item name" desc="Effect" tier="Tier" grade="Grade" source="Source"/>
+<entity type="future-event" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
 ```
 
 > **Introduced in v5.0 (retained in v5.4)**: These tags are **optional**. Data Agent can extract entities from plain chapter text; tags are for manual annotation only.

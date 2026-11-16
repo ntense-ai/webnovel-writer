@@ -69,7 +69,7 @@
         "contains": [
           "schema error",
           "missing field",
-          "字段"
+          "required field"
         ]
       },
       "severity": "must_handle",

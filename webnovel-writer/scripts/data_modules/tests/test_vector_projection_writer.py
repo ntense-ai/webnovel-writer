@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""VectorProjectionWriter 单元测试。"""
+"""VectorProjectionWriter unit tests。"""
 import pytest
 
 from data_modules.vector_projection_writer import VectorProjectionWriter
@@ -11,28 +11,28 @@ def test_event_to_text_formats_power_breakthrough():
     event = {
         "event_type": "power_breakthrough",
         "chapter": 47,
-        "subject": "韩立",
-        "payload": {"field": "realm", "new": "筑基初期"},
+        "subject": "Han Li",
+        "payload": {"field": "realm", "new": "Early Foundation Establishment"},
     }
     text = writer._event_to_text(event)
-    assert "第47章" in text
-    assert "韩立" in text
-    assert "筑基初期" in text
+    assert "Chapter 47" in text
+    assert "Han Li" in text
+    assert "Early Foundation Establishment" in text
 
 
 def test_delta_to_text_formats_relationship():
     writer = VectorProjectionWriter.__new__(VectorProjectionWriter)
     delta = {
-        "from_entity": "韩立",
-        "to_entity": "陈巧倩",
-        "relationship_type": "合作",
+        "from_entity": "Han Li",
+        "to_entity": "Chen Qiaoqian",
+        "relationship_type": "cooperation",
         "chapter": 47,
     }
     text = writer._delta_to_text(delta)
-    assert "第47章" in text
-    assert "韩立" in text
-    assert "陈巧倩" in text
-    assert "合作" in text
+    assert "Chapter 47" in text
+    assert "Han Li" in text
+    assert "Chen Qiaoqian" in text
+    assert "cooperation" in text
 
 
 def test_collect_chunks_from_commit():
@@ -43,15 +43,15 @@ def test_collect_chunks_from_commit():
             {
                 "event_type": "power_breakthrough",
                 "chapter": 47,
-                "subject": "韩立",
-                "payload": {"field": "realm", "new": "筑基初期"},
+                "subject": "Han Li",
+                "payload": {"field": "realm", "new": "Early Foundation Establishment"},
             },
         ],
         "entity_deltas": [
             {
-                "from_entity": "韩立",
-                "to_entity": "陈巧倩",
-                "relationship_type": "合作",
+                "from_entity": "Han Li",
+                "to_entity": "Chen Qiaoqian",
+                "relationship_type": "cooperation",
                 "chapter": 47,
             },
         ],
@@ -71,14 +71,14 @@ def test_collect_chunks_assigns_unique_ids_for_same_chapter_events():
             {
                 "event_type": "character_state_changed",
                 "chapter": 47,
-                "subject": "韩立",
-                "payload": {"field": "状态", "new": "警觉"},
+                "subject": "Han Li",
+                "payload": {"field": "state", "new": "alert"},
             },
             {
                 "event_type": "character_state_changed",
                 "chapter": 47,
-                "subject": "陈巧倩",
-                "payload": {"field": "状态", "new": "迟疑"},
+                "subject": "Chen Qiaoqian",
+                "payload": {"field": "state", "new": "hesitates"},
             },
         ],
         "entity_deltas": [],
@@ -97,15 +97,15 @@ def test_collect_chunks_keeps_event_id_stable_when_order_changes():
         "event_id": "evt-a",
         "event_type": "character_state_changed",
         "chapter": 47,
-        "subject": "韩立",
-        "payload": {"field": "状态", "new": "警觉"},
+        "subject": "Han Li",
+        "payload": {"field": "state", "new": "alert"},
     }
     event_b = {
         "event_id": "evt-b",
         "event_type": "character_state_changed",
         "chapter": 47,
-        "subject": "陈巧倩",
-        "payload": {"field": "状态", "new": "迟疑"},
+        "subject": "Chen Qiaoqian",
+        "payload": {"field": "state", "new": "hesitates"},
     }
 
     first = writer._collect_chunks(
@@ -134,7 +134,7 @@ def test_store_zero_for_required_chunks_is_error(monkeypatch, tmp_path):
     result = writer.apply(
         {
             "meta": {"status": "accepted", "chapter": 47},
-            "summary_text": "韩立在坊市发现丹方线索。",
+            "summary_text": "Han Li discovers an alchemy-recipe clue at the market。",
             "accepted_events": [],
             "entity_deltas": [],
         }
@@ -148,10 +148,10 @@ def test_collect_chunks_includes_summary_and_scenes():
     writer = VectorProjectionWriter.__new__(VectorProjectionWriter)
     payload = {
         "meta": {"chapter": 47, "status": "accepted"},
-        "summary_text": "韩立在坊市发现丹方线索。",
+        "summary_text": "Han Li discovers an alchemy-recipe clue at the market。",
         "scenes": [
-            {"index": 1, "summary": "韩立入坊市观察摊位", "location": "坊市"},
-            {"scene_index": 2, "content": "陈巧倩暗中提醒韩立有人跟踪。"},
+            {"index": 1, "summary": "Han Li examines market stalls", "location": "market"},
+            {"scene_index": 2, "content": "Chen Qiaoqian secretly warns Han Li that someone is following him。"},
         ],
         "accepted_events": [],
         "entity_deltas": [],
@@ -165,7 +165,7 @@ def test_collect_chunks_includes_summary_and_scenes():
     assert by_type["summary"][0]["chunk_id"] == "ch0047_summary"
     assert by_type["summary"][0]["parent_chunk_id"] is None
     assert by_type["scene"][0]["parent_chunk_id"] == "ch0047_summary"
-    assert by_type["scene"][0]["content"].startswith("坊市：")
+    assert by_type["scene"][0]["content"].startswith("market：")
     assert any(chunk["scene_index"] == 2 for chunk in by_type["scene"])
 
 

@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-网文项目初始化脚本
-
-目标：
-- 生成可运行的项目结构（webnovel-project）
-- 创建/更新 .webnovel/state.json（初始化配置与兼容读模型）
-- 生成基础设定集与大纲模板文件（供 /webnovel-plan 与 /webnovel-write 使用）
-
-说明：
-- 该脚本是命令 /webnovel-init 的“唯一允许的文件生成入口”（与命令文档保持一致）。
-- 生成的内容以“模板骨架”为主，便于 AI/作者后续补全；但保证所有关键文件存在。
-"""
+'Initialize a webnovel project.\n\nCreate a runnable webnovel-project layout, create or update .webnovel/state.json with initialization metadata and compatible read models, and generate setting/outline templates for /webnovel-plan and /webnovel-write.\n\nThis script is the sole permitted file-generation entry point for /webnovel-init. Generated files are template scaffolds for later completion by the author or AI, but all essential files are guaranteed to exist.'
 
 from __future__ import annotations
 
@@ -27,26 +16,24 @@ from runtime_compat import enable_windows_utf8_stdio
 from typing import Any, Dict, List
 import re
 
-# 安全修复：导入安全工具函数
+# Security fix: import secure utility functions.
 from security_utils import sanitize_commit_message, atomic_write_json, is_git_available
 from project_locator import write_current_project_pointer
 from project_paths import project_dir as resolve_project_dir, project_path as resolve_project_path
 from genre_taxonomy import resolve_genre_input, resolve_template_stems, load_genre_taxonomy, _normalize_lookup_key
 
 
-# Windows 编码兼容性修复
+# Windows encoding compatibility.
 if sys.platform == "win32":
     enable_windows_utf8_stdio()
 
 
-_ASCII_LETTER_RE = re.compile(r"[A-Za-z]")
-
 
 def _validate_initial_genre_source(genre: str) -> str:
     normalized = str(genre or "").strip()
-    if _ASCII_LETTER_RE.search(normalized):
+    if normalized and normalized.casefold() != "all":
         # Resolve individual labels so a partially recognized hybrid is not
-        # silently accepted. Stable Chinese schema keys remain internal.
+        # silently accepted. Canonical schema keys are English.
         unresolved = [part for part in _split_genre_keys(normalized)
                       if _normalize_lookup_key(part) not in load_genre_taxonomy().lookup]
         if unresolved:
@@ -74,9 +61,8 @@ def _split_genre_keys(genre: str) -> list[str]:
     raw = (genre or "").strip()
     if not raw:
         return []
-    # 支持复合题材：A+B / A+B / A、B / A与B
-    raw = re.sub(r"[＋/、]", "+", raw)
-    raw = raw.replace("与", "+")
+    # Support composite genres with plus signs and legacy localized separators.
+    raw = re.sub(r"[＋/、,，|]", "+", raw)
     parts = [p.strip() for p in raw.split("+") if p.strip()]
     return parts or [raw]
 
@@ -86,16 +72,7 @@ def _normalize_genre_key(key: str) -> str:
     return stems[0] if stems else key
 
 
-LABEL_TRANSLATIONS = {
-    "大陆/位面数量": "Number of continents/planes", "核心势力": "Major factions",
-    "社会阶层": "Social classes", "资源分配规则": "Resource allocation rules",
-    "宗门/组织层级": "Sect/organization hierarchy", "货币体系": "Currency system",
-    "兑换规则": "Exchange rules", "体系类型": "System type",
-    "典型境界链（可选）": "Typical realm progression (optional)", "小境界划分": "Sub-realm stages",
-    "姓名": "Name", "真正渴望（可能不自知）": "True desire (possibly unconscious)",
-    "性格缺陷": "Personality flaws",
-    "与主角关系定位（对手/盟友/共谋/牵制）": "Relationship to the protagonist (opponent/ally/co-conspirator/check on their actions)",
-}
+
 
 
 def _apply_label_replacements(text: str, replacements: Dict[str, str]) -> str:
@@ -107,7 +84,7 @@ def _apply_label_replacements(text: str, replacements: Dict[str, str]) -> str:
         for label, value in replacements.items():
             if not value:
                 continue
-            labels = (label, LABEL_TRANSLATIONS.get(label, label))
+            labels = (label,)
             for candidate in labels:
                 for punctuation in (":", "："):
                     prefix = f"- {candidate}{punctuation}"
@@ -133,12 +110,12 @@ def _parse_tier_map(raw: str) -> Dict[str, str]:
 
 def _needs_protagonist_group(protagonist_structure: str) -> bool:
     text = (protagonist_structure or "").strip().lower()
-    return any(marker in text for marker in ("主角组", "双主角", "多主角", "群像主角", "ensemble", "multiple", "dual", "multi-protagonist"))
+    return any(marker in text for marker in ("protagonist-team", "dual", "ensemble", "multiple", "multi-protagonist"))
 
 
 def _needs_heroine_card(heroine_config: str, heroine_names: str) -> bool:
     text = (heroine_config or "").strip().lower()
-    if text in {"无", "无女主", "none", "no heroine"}:
+    if text in {"none", "no heroine"}:
         return False
     return bool((heroine_names or "").strip() or text)
 
@@ -152,17 +129,11 @@ def _render_team_rows(names: List[str], roles: List[str]) -> List[str]:
 
 
 def _ensure_state_schema(state: Dict[str, Any]) -> Dict[str, Any]:
-    """确保 state.json 具备 v5.1 架构所需的字段集合（v5.4 沿用）。
-
-    v5.1 变更:
-    - entities_v3 和 alias_index 已迁移到 index.db，不再存储在 state.json
-    - structured_relationships 已迁移到 index.db relationships 表
-    - state.json 保持精简 (< 5KB)
-    """
+    'Ensure state.json contains the v5.1 schema fields retained in v5.4.\n\nSince v5.1, entities_v3 and alias_index live in index.db; structured_relationships lives in its relationships table. Keep state.json compact (under 5 KB).'
     state.setdefault("project_info", {})
     state.setdefault("progress", {})
     state.setdefault("protagonist_state", {})
-    state.setdefault("relationships", {})  # update_state.py 需要此字段
+    state.setdefault("relationships", {})  # update_state.py requires this field.
     state.setdefault("disambiguation_warnings", [])
     state.setdefault("disambiguation_pending", [])
     state.setdefault("world_settings", {"power_system": [], "factions": [], "locations": []})
@@ -180,8 +151,8 @@ def _ensure_state_schema(state: Dict[str, Any]) -> Dict[str, Any]:
             "history": [],
         },
     )
-    # v5.1: entities_v3, alias_index, structured_relationships 已迁移到 index.db
-    # 不再在 state.json 中初始化这些字段
+    # v5.1: entities_v3, alias_index, and structured_relationships moved to index.db.
+    # Do not initialize those fields in state.json anymore.
 
     # progress schema evolution
     state["progress"].setdefault("current_chapter", 0)
@@ -193,10 +164,10 @@ def _ensure_state_schema(state: Dict[str, Any]) -> Dict[str, Any]:
 
     # protagonist schema evolution
     ps = state["protagonist_state"]
-    ps.setdefault("name", "")
+    ps.setdefault("Name", "")
     ps.setdefault("power", {"realm": "", "layer": 1, "bottleneck": ""})
     ps.setdefault("location", {"current": "", "last_chapter": 0})
-    ps.setdefault("golden_finger", {"name": "", "level": 1, "cooldown": 0, "skills": []})
+    ps.setdefault("golden_finger", {"Name": "", "level": 1, "cooldown": 0, "skills": []})
     ps.setdefault("attributes", {})
 
     return state
@@ -232,11 +203,11 @@ def _build_master_outline(target_chapters: int, *, chapters_per_volume: int = 50
 
 
 def _inject_volume_rows(template_text: str, target_chapters: int, *, chapters_per_volume: int = 50) -> str:
-    """在总纲模板的卷表中只注入首卷行（后续卷由规划完成后写回）。"""
+    'Insert only the first volume into the master outline; later volumes are written back after planning.'
     lines = template_text.splitlines()
     header_idx = None
     for i, line in enumerate(lines):
-        if line.strip().startswith(("| 卷号", "| Volume number")):
+        if line.strip().startswith(("| Volume number",)):
             header_idx = i
             break
     if header_idx is None:
@@ -248,7 +219,7 @@ def _inject_volume_rows(template_text: str, target_chapters: int, *, chapters_pe
     # Replace the first-volume placeholder rather than adding a duplicate row.
     lines = [line for i, line in enumerate(lines) if not (i >= insert_idx and re.match(r"^\|\s*1\s*\|\s*\|\s*\|", line))]
 
-    # 避免重复插入（若模板已有数据行）
+    # Avoid duplicate insertion if the template already has data rows.
     existing = {line.strip() for line in lines}
     rows = [r for r in rows if r.strip() not in existing]
     return "\n".join(lines[:insert_idx] + rows + lines[insert_idx:])
@@ -300,20 +271,20 @@ def init_project(
     canonical_genre = genre_resolution.canonical_genre or genre
     project_path.mkdir(parents=True, exist_ok=True)
 
-    # 目录结构（同时兼容“卷目录”与后续扩展）
+    # Directory layout supports volume subdirectories and future expansion.
     directories = [
         ".webnovel/backups",
         ".webnovel/archive",
         ".webnovel/summaries",
-        "设定集",
-        "大纲",
-        "正文",
-        "审查报告",
+        "settings",
+        "outlines",
+        "chapters",
+        "reviews",
     ]
     for dir_path in directories:
         resolve_project_path(project_path, dir_path).mkdir(parents=True, exist_ok=True)
 
-    # state.json（创建或增量补齐）
+    # Create state.json or fill in missing fields incrementally.
     state_path = project_path / ".webnovel" / "state.json"
     if state_path.exists():
         try:
@@ -344,7 +315,7 @@ def init_project(
             "created_at": created_at,
             "target_words": int(target_words),
             "target_chapters": int(target_chapters),
-            # 下面字段属于“初始化元信息”，不影响运行时脚本
+            # The following initialization metadata does not affect runtime scripts.
             "golden_finger_name": golden_finger_name,
             "golden_finger_type": golden_finger_type,
             "golden_finger_style": golden_finger_style,
@@ -374,26 +345,26 @@ def init_project(
     )
 
     if protagonist_name:
-        state["protagonist_state"]["name"] = protagonist_name
+        state["protagonist_state"]["Name"] = protagonist_name
 
     gf_type_norm = (golden_finger_type or "").strip()
-    if gf_type_norm in {"无", "无金手指", "none"}:
-        state["protagonist_state"]["golden_finger"]["name"] = "None"
+    if gf_type_norm in {"none", "no special advantage"}:
+        state["protagonist_state"]["golden_finger"]["Name"] = "None"
         state["protagonist_state"]["golden_finger"]["level"] = 0
         state["protagonist_state"]["golden_finger"]["cooldown"] = 0
     elif golden_finger_name:
-        state["protagonist_state"]["golden_finger"]["name"] = golden_finger_name
+        state["protagonist_state"]["golden_finger"]["Name"] = golden_finger_name
 
-    # 确保 golden_finger 字段存在且可编辑
-    if not state["protagonist_state"]["golden_finger"].get("name"):
-        state["protagonist_state"]["golden_finger"]["name"] = "Unnamed special advantage"
+    # Ensure golden_finger exists and remains editable.
+    if not state["protagonist_state"]["golden_finger"].get("Name"):
+        state["protagonist_state"]["golden_finger"]["Name"] = "Unnamed special advantage"
 
     state["progress"]["last_updated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     state_path.parent.mkdir(parents=True, exist_ok=True)
-    # 使用原子化写入（初始化不需要备份旧文件）
+    # Write atomically; initialization needs no backup of an old file.
     atomic_write_json(state_path, state, use_lock=True, backup=False)
 
-    # 读取内置模板（可选）
+    # Read bundled templates if available.
     script_dir = Path(__file__).resolve().parent
     templates_dir = script_dir.parent / "templates"
     output_templates_dir = templates_dir / "output"
@@ -411,15 +382,15 @@ def init_project(
         if template_text:
             genre_templates.append(template_text.strip())
     genre_template = "\n\n---\n\n".join(genre_templates)
-    output_worldview = _read_text_if_exists(output_templates_dir / "设定集-世界观.md")
-    output_power = _read_text_if_exists(output_templates_dir / "设定集-力量体系.md")
-    output_protagonist = _read_text_if_exists(output_templates_dir / "设定集-主角卡.md")
-    output_heroine = _read_text_if_exists(output_templates_dir / "设定集-女主卡.md")
-    output_team = _read_text_if_exists(output_templates_dir / "设定集-主角组.md")
-    output_outline = _read_text_if_exists(output_templates_dir / "大纲-总纲.md")
-    output_antagonist = _read_text_if_exists(output_templates_dir / "设定集-反派设计.md")
+    output_worldview = _read_text_if_exists(output_templates_dir / "settings-worldbuilding.md")
+    output_power = _read_text_if_exists(output_templates_dir / "settings-power-system.md")
+    output_protagonist = _read_text_if_exists(output_templates_dir / "settings-protagonist.md")
+    output_heroine = _read_text_if_exists(output_templates_dir / "settings-heroine.md")
+    output_team = _read_text_if_exists(output_templates_dir / "settings-protagonist-team.md")
+    output_outline = _read_text_if_exists(output_templates_dir / "outlines-master-outline.md")
+    output_antagonist = _read_text_if_exists(output_templates_dir / "settings-antagonist.md")
 
-    # 基础文件（只在缺失时生成，避免覆盖已有内容）
+    # Generate base files only if absent, preserving existing content.
     now = datetime.now().strftime("%Y-%m-%d")
 
     worldview_content = output_worldview.strip() if output_worldview else ""
@@ -451,13 +422,13 @@ def init_project(
         worldview_content = _apply_label_replacements(
             worldview_content,
             {
-                "大陆/位面数量": world_scale,
-                "核心势力": factions,
-                "社会阶层": social_class,
-                "资源分配规则": resource_distribution,
-                "宗门/组织层级": sect_hierarchy,
-                "货币体系": currency_system,
-                "兑换规则": currency_exchange,
+                "Number of continents/planes": world_scale,
+                "Major factions": factions,
+                "Social classes": social_class,
+                "Resource allocation rules": resource_distribution,
+                "Sect/organization hierarchy": sect_hierarchy,
+                "Currency system": currency_system,
+                "Exchange rules": currency_exchange,
             },
         )
         if genre_template:
@@ -468,7 +439,7 @@ def init_project(
                 + "\n"
             )
     _write_text_if_missing(
-        resolve_project_path(project_path, "settings/世界观.md"),
+        resolve_project_path(project_path, "settings/worldbuilding.md"),
         worldview_content,
     )
 
@@ -498,13 +469,13 @@ def init_project(
         power_content = _apply_label_replacements(
             power_content,
             {
-                "体系类型": power_system_type,
-                "典型境界链（可选）": cultivation_chain,
-                "小境界划分": cultivation_subtiers,
+                "System type": power_system_type,
+                "Typical realm progression (optional)": cultivation_chain,
+                "Sub-realm stages": cultivation_subtiers,
             },
         )
     _write_text_if_missing(
-        resolve_project_path(project_path, "settings/力量体系.md"),
+        resolve_project_path(project_path, "settings/power-system.md"),
         power_content,
     )
 
@@ -538,13 +509,13 @@ def init_project(
         protagonist_content = _apply_label_replacements(
             protagonist_content,
             {
-                "姓名": protagonist_name,
-                "真正渴望（可能不自知）": protagonist_desire,
-                "性格缺陷": protagonist_flaw,
+                "Name": protagonist_name,
+                "True desire (possibly unconscious)": protagonist_desire,
+                "Personality flaws": protagonist_flaw,
             },
         )
     _write_text_if_missing(
-        resolve_project_path(project_path, "settings/主角卡.md"),
+        resolve_project_path(project_path, "settings/protagonist.md"),
         protagonist_content,
     )
 
@@ -553,11 +524,11 @@ def init_project(
         heroine_content = _apply_label_replacements(
             heroine_content,
             {
-                "姓名": heroine_names,
-                "与主角关系定位（对手/盟友/共谋/牵制）": heroine_role,
+                "Name": heroine_names,
+                "Relationship to the protagonist (opponent/ally/co-conspirator/check on their actions)": heroine_role,
             },
         )
-        _write_text_if_missing(resolve_project_path(project_path, "settings/女主卡.md"), heroine_content)
+        _write_text_if_missing(resolve_project_path(project_path, "settings/heroine.md"), heroine_content)
 
     team_content = output_team.strip() if output_team else ""
     if team_content and _needs_protagonist_group(protagonist_structure):
@@ -569,16 +540,16 @@ def init_project(
             replaced = False
             out_lines: List[str] = []
             for line in lines:
-                if line.strip().startswith(("| 主角A", "| Protagonist A")):
+                if line.strip().startswith(("| protagonistA", "| Protagonist A")):
                     out_lines.extend(new_rows)
                     replaced = True
                     continue
-                if replaced and line.strip().startswith(("| 主角", "| Protagonist ")):
+                if replaced and line.strip().startswith(("| protagonist", "| Protagonist ")):
                     continue
                 out_lines.append(line)
             team_content = "\n".join(out_lines)
         _write_text_if_missing(
-            resolve_project_path(project_path, "settings/主角组.md"),
+            resolve_project_path(project_path, "settings/protagonist-team.md"),
             team_content,
         )
 
@@ -604,30 +575,30 @@ def init_project(
             lines = antagonist_content.splitlines()
             out_lines = []
             for line in lines:
-                if line.strip().startswith(("| 小反派", "| Minor antagonist")):
-                    name = tier_map.get("Minor antagonist", tier_map.get("minor antagonist", tier_map.get("小反派", "")))
+                if line.strip().startswith(("| minor", "| Minor antagonist")):
+                    name = tier_map.get("Minor antagonist", tier_map.get("minor antagonist", tier_map.get("minor", "")))
                     out_lines.append(f"| Minor antagonist | {name} | Early stage | | |")
                     continue
-                if line.strip().startswith(("| 中反派", "| Mid-level antagonist")):
-                    name = tier_map.get("Mid-level antagonist", tier_map.get("mid-level antagonist", tier_map.get("中反派", "")))
+                if line.strip().startswith(("| major", "| Mid-level antagonist")):
+                    name = tier_map.get("Mid-level antagonist", tier_map.get("mid-level antagonist", tier_map.get("major", "")))
                     out_lines.append(f"| Mid-level antagonist | {name} | Middle stage | | |")
                     continue
-                if line.strip().startswith(("| 大反派", "| Major antagonist")):
-                    name = tier_map.get("Major antagonist", tier_map.get("major antagonist", tier_map.get("大反派", "")))
+                if line.strip().startswith(("| main", "| Major antagonist")):
+                    name = tier_map.get("Major antagonist", tier_map.get("major antagonist", tier_map.get("main", "")))
                     out_lines.append(f"| Major antagonist | {name} | Late stage | | |")
                     continue
                 out_lines.append(line)
             antagonist_content = "\n".join(out_lines)
-    _write_text_if_missing(resolve_project_path(project_path, "settings/反派设计.md"), antagonist_content)
+    _write_text_if_missing(resolve_project_path(project_path, "settings/antagonist.md"), antagonist_content)
 
     outline_content = output_outline.strip() if output_outline else ""
     if outline_content:
         outline_content = _inject_volume_rows(outline_content, int(target_chapters)).rstrip() + "\n"
     else:
         outline_content = _build_master_outline(int(target_chapters))
-    _write_text_if_missing(resolve_project_path(project_path, "outlines/总纲.md"), outline_content)
+    _write_text_if_missing(resolve_project_path(project_path, "outlines/master-outline.md"), outline_content)
 
-    # 生成环境变量模板（不写入真实密钥）
+    # Generate an environment template without real secrets.
     _write_text_if_missing(
         project_path / ".env.example",
         "\n".join(
@@ -650,7 +621,7 @@ def init_project(
         + "\n",
     )
 
-    # Git 初始化（仅当项目目录内尚无 .git 且 Git 可用）
+    # Initialize Git only when available and no .git exists in the project directory.
     git_dir = project_path / ".git"
     if not git_dir.exists():
         if not is_git_available():
@@ -693,7 +664,7 @@ __pycache__/
                     )
 
                 subprocess.run(["git", "add", "."], cwd=project_path, check=True, capture_output=True)
-                # 安全修复：清理 title 防止命令注入
+                # Security fix: sanitize title against command injection.
                 safe_title = sanitize_commit_message(title)
                 subprocess.run(
                     ["git", "commit", "-m", f"Initialize webnovel project: {safe_title}"],
@@ -705,7 +676,7 @@ __pycache__/
             except subprocess.CalledProcessError as e:
                 print(f"Git init failed (non-fatal): {e}")
 
-    # 记录工作区默认项目指针（非阻断）
+    # Record the workspace's default project pointer without blocking execution.
     try:
         pointer_file = write_current_project_pointer(project_path)
         if pointer_file is not None:
@@ -716,10 +687,10 @@ __pycache__/
     print(f"\nProject initialized at: {project_path}")
     print("Key files:")
     print(" - .webnovel/state.json")
-    print(f" - {resolve_project_path(project_path, 'settings/世界观.md').relative_to(project_path)}")
-    print(f" - {resolve_project_path(project_path, 'settings/力量体系.md').relative_to(project_path)}")
-    print(f" - {resolve_project_path(project_path, 'settings/主角卡.md').relative_to(project_path)}")
-    print(f" - {resolve_project_path(project_path, 'outlines/总纲.md').relative_to(project_path)}")
+    print(f" - {resolve_project_path(project_path, 'settings/worldbuilding.md').relative_to(project_path)}")
+    print(f" - {resolve_project_path(project_path, 'settings/power-system.md').relative_to(project_path)}")
+    print(f" - {resolve_project_path(project_path, 'settings/protagonist.md').relative_to(project_path)}")
+    print(f" - {resolve_project_path(project_path, 'outlines/master-outline.md').relative_to(project_path)}")
 
 
 def main() -> None:
@@ -759,7 +730,7 @@ def main() -> None:
     parser.add_argument("--cultivation-chain", default="", help="Typical advancement progression")
     parser.add_argument("--cultivation-subtiers", default="", help="Sub-level stages")
 
-    # 深度模式可选参数（用于预填模板）
+    # Optional deep-mode arguments prefill templates.
     parser.add_argument("--protagonist-desire", default="", help="Protagonist core desire")
     parser.add_argument("--protagonist-flaw", default="", help="Protagonist personality flaw")
     parser.add_argument("--protagonist-archetype", default="", help="Protagonist archetype")

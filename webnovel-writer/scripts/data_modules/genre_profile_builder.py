@@ -98,10 +98,10 @@ def build_composite_genre_hints(genres: List[str], refs: List[str]) -> List[str]
     secondaries = genres[1:]
     hints: List[str] = []
     hints.append(
-        f"以“{primary}”作为主引擎推进主线，每章至少保留1处“{'/'.join(secondaries)}”特征表达。"
+        f"Use {primary} as the main plot engine and include at least one {'/'.join(secondaries)} element per chapter."
     )
     if refs:
-        hints.append(f"复合题材执行参考：{refs[0]}")
-    hints.append("主辅题材冲突时，优先保证主题材读者承诺，辅题材用于制造新鲜感。")
+        hints.append(f"Composite-genre execution reference: {refs[0]}")
+    hints.append("When genres conflict, prioritize the primary genre's reader promise; use secondary genres to add freshness.")
     return hints
 

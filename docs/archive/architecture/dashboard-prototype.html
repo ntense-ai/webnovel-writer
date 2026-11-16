@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -309,43 +309,43 @@ body {
   <aside class="sidebar">
     <div class="sidebar-header">
       <h1>PIXEL WRITER<br>HUB</h1>
-      <div class="subtitle">《仙道长青》</div>
+      <div class="subtitle">Evergreen Immortal Path</div>
     </div>
     <nav class="sidebar-nav" id="nav">
-      <button class="nav-item active" data-page="overview"><span class="icon">📊</span><span>总览</span></button>
-      <button class="nav-item" data-page="characters"><span class="icon">👤</span><span>角色图鉴</span></button>
-      <button class="nav-item" data-page="pacing"><span class="icon">📈</span><span>节奏雷达</span></button>
-      <button class="nav-item" data-page="foreshadowing"><span class="icon">🔖</span><span>伏笔追踪</span></button>
-      <button class="nav-item" data-page="files"><span class="icon">📁</span><span>文档浏览</span></button>
-      <button class="nav-item" data-page="system"><span class="icon">⚙️</span><span>系统状态</span></button>
+      <button class="nav-item active" data-page="overview"><span class="icon">📊</span><span>Overview</span></button>
+      <button class="nav-item" data-page="characters"><span class="icon">👤</span><span>Character directory</span></button>
+      <button class="nav-item" data-page="pacing"><span class="icon">📈</span><span>Pacing radar</span></button>
+      <button class="nav-item" data-page="foreshadowing"><span class="icon">🔖</span><span>Foreshadowing tracker</span></button>
+      <button class="nav-item" data-page="files"><span class="icon">📁</span><span>Document browser</span></button>
+      <button class="nav-item" data-page="system"><span class="icon">⚙️</span><span>System status</span></button>
     </nav>
     <div class="live-indicator">
       <span class="live-dot"></span>
-      实时同步中
+      Live synchronization
     </div>
   </aside>
 
   <!-- MAIN -->
   <main class="main-content">
 
-    <!-- ==================== PAGE 1: 总览 ==================== -->
+    <!-- ==================== PAGE 1: Overview ==================== -->
     <div class="page active" id="page-overview">
       <div class="page-header">
-        <h2>📊 总览</h2>
-        <span class="badge badge-blue">仙侠</span>
+        <h2>📊 Overview</h2>
+        <span class="badge badge-blue">xianxia</span>
       </div>
 
       <div class="stat-grid">
         <div class="card stat-card">
-          <span class="stat-label">总字数</span>
-          <span class="stat-value">128.6 万</span>
-          <span class="stat-sub">目标 200 万字 · 64.3%</span>
+          <span class="stat-label">Total words</span>
+          <span class="stat-value">1.286M</span>
+          <span class="stat-sub">Target 2M words · 64.3%</span>
           <div class="progress-track"><div class="progress-fill" style="width:64.3%"></div></div>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">当前章节</span>
-          <span class="stat-value">第 412 章</span>
-          <span class="stat-sub">目标 800 章 · 卷 5</span>
+          <span class="stat-label">Current chapter</span>
+          <span class="stat-value">Chapter 412</span>
+          <span class="stat-sub">Target 800  chapters · Volume 5</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Story Runtime</span>
@@ -353,35 +353,35 @@ body {
           <span class="stat-sub">accepted · projection OK</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">审查均分</span>
+          <span class="stat-label">Average review score</span>
           <span class="stat-value">7.8</span>
-          <span class="stat-sub">最近 50 章平均</span>
+          <span class="stat-sub">Average over the last 50 chapters</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">紧急伏笔</span>
+          <span class="stat-label">Urgent foreshadowing</span>
           <span class="stat-value" style="color:var(--accent-amber)">4</span>
-          <span class="stat-sub">总计 37 条伏笔</span>
+          <span class="stat-sub">Total 37  foreshadowing threads</span>
         </div>
       </div>
 
-      <!-- 审查得分折线图 -->
+      <!-- Review-score line chart -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">审查得分趋势</span>
+          <span class="card-title">Review-score trend</span>
           <div>
-            <span class="badge badge-green">最近 50 章</span>
-            <button class="page-btn" style="margin-left:6px">← 前 50</button>
-            <button class="page-btn">跳到最新 →</button>
+            <span class="badge badge-green">Recent 50  chapters</span>
+            <button class="page-btn" style="margin-left:6px">← Previous 50</button>
+            <button class="page-btn">Jump to latest →</button>
           </div>
         </div>
         <div class="chart-box" id="chart-review-score"></div>
       </div>
 
-      <!-- 字数分布柱状图 -->
+      <!-- Word-count distribution bars -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">字数分布（按卷）</span>
-          <span class="badge badge-purple">5 卷</span>
+          <span class="card-title">Word-count distribution (By volume)</span>
+          <span class="badge badge-purple">5 volumes</span>
         </div>
         <div class="chart-box" id="chart-word-dist"></div>
       </div>
@@ -389,189 +389,189 @@ body {
       <!-- Strand Weave -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Strand Weave 整体分布</span>
+          <span class="card-title">Strand Weave Overall distribution</span>
           <span class="badge badge-purple">constellation</span>
         </div>
         <div class="chart-box" id="chart-strand-overview" style="height:260px"></div>
       </div>
 
-      <!-- 紧急伏笔 Top 5 -->
+      <!-- Urgent foreshadowing Top 5 -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">紧急伏笔 Top 5</span>
+          <span class="card-title">Urgent foreshadowing Top 5</span>
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>内容</th><th>状态</th><th>埋设章</th><th>目标章</th><th>紧急度</th></tr></thead>
+            <thead><tr><th>Content</th><th>Status</th><th>Planted chapter</th><th>Target chapter</th><th>Urgency</th></tr></thead>
             <tbody>
-              <tr><td>青元秘境的钥匙碎片下落</td><td><span class="badge badge-red">超期</span></td><td>285</td><td>350</td><td><span class="badge badge-red">critical</span></td></tr>
-              <tr><td>凤灵儿真实身份暗示</td><td><span class="badge badge-amber">紧急</span></td><td>312</td><td>420</td><td><span class="badge badge-amber">high</span></td></tr>
-              <tr><td>老道士临终遗言中的数字</td><td><span class="badge badge-amber">紧急</span></td><td>356</td><td>430</td><td><span class="badge badge-amber">high</span></td></tr>
-              <tr><td>黑市拍卖会幕后势力</td><td><span class="badge badge-amber">紧急</span></td><td>389</td><td>440</td><td><span class="badge badge-amber">medium</span></td></tr>
-              <tr><td>主角功法异变的真实原因</td><td><span class="badge badge-blue">活跃</span></td><td>401</td><td>500</td><td><span class="badge badge-blue">normal</span></td></tr>
+              <tr><td>The missing Azure Origin key fragments</td><td><span class="badge badge-red">Overdue</span></td><td>285</td><td>350</td><td><span class="badge badge-red">critical</span></td></tr>
+              <tr><td>Hints about Feng Linger’s true identity</td><td><span class="badge badge-amber">Urgent</span></td><td>312</td><td>420</td><td><span class="badge badge-amber">high</span></td></tr>
+              <tr><td>Numbers in the old Daoist’s last words</td><td><span class="badge badge-amber">Urgent</span></td><td>356</td><td>430</td><td><span class="badge badge-amber">high</span></td></tr>
+              <tr><td>The power behind the black-market auction</td><td><span class="badge badge-amber">Urgent</span></td><td>389</td><td>440</td><td><span class="badge badge-amber">medium</span></td></tr>
+              <tr><td>The true cause of the protagonist’s altered technique</td><td><span class="badge badge-blue">Active</span></td><td>401</td><td>500</td><td><span class="badge badge-blue">normal</span></td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ==================== PAGE 2: 角色图鉴 ==================== -->
+    <!-- ==================== PAGE 2: Character directory ==================== -->
     <div class="page" id="page-characters">
       <div class="page-header">
-        <h2>👤 角色图鉴</h2>
-        <span class="badge badge-green">48 / 127 个实体</span>
+        <h2>👤 Character directory</h2>
+        <span class="badge badge-green">48 / 127  entities</span>
       </div>
 
       <div class="filter-group">
-        <button class="filter-btn active">全部</button>
-        <button class="filter-btn">角色</button>
-        <button class="filter-btn">势力</button>
-        <button class="filter-btn">地点</button>
-        <button class="filter-btn">法宝</button>
+        <button class="filter-btn active">all</button>
+        <button class="filter-btn">character</button>
+        <button class="filter-btn">faction</button>
+        <button class="filter-btn">location</button>
+        <button class="filter-btn">Artifact</button>
       </div>
 
-      <div class="proto-note">Tab 1: 实体列表 + 详情面板（保留现有逻辑） | Tab 2: 关系图谱（下方预览）</div>
+      <div class="proto-note">Tab 1: Entity list + Detail panel (retain existing logic) | Tab 2: Relationship graph (preview below)</div>
 
-      <!-- 关系图谱 -->
+      <!-- Relationship graph -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">关系图谱</span>
-          <span class="badge badge-blue">ECharts graph · 力导向 · 时间轴</span>
+          <span class="card-title">Relationship graph</span>
+          <span class="badge badge-blue">ECharts graph · Force-directed · Timeline</span>
         </div>
-        <!-- 时间轴控制器 -->
+        <!-- Timeline controls -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
-          <button class="page-btn" id="graph-play-btn" style="min-width:60px">▶ 播放</button>
-          <span style="font-size:13px;font-weight:600;color:var(--text-mute);white-space:nowrap">第 1 章</span>
+          <button class="page-btn" id="graph-play-btn" style="min-width:60px">▶ Play</button>
+          <span style="font-size:13px;font-weight:600;color:var(--text-mute);white-space:nowrap">Chapter 1</span>
           <input type="range" id="graph-timeline" min="1" max="412" value="412"
             style="flex:1;min-width:200px;height:12px;accent-color:#26a8ff;cursor:pointer">
-          <span style="font-size:13px;font-weight:600;color:var(--text-mute);white-space:nowrap">第 412 章</span>
-          <span id="graph-chapter-label" class="badge badge-blue" style="min-width:90px;text-align:center">第 412 章</span>
-          <span id="graph-node-count" class="badge badge-green" style="min-width:60px;text-align:center">8 人</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text-mute);white-space:nowrap">Chapter 412</span>
+          <span id="graph-chapter-label" class="badge badge-blue" style="min-width:90px;text-align:center">Chapter 412</span>
+          <span id="graph-node-count" class="badge badge-green" style="min-width:60px;text-align:center">8  people</span>
         </div>
         <div class="chart-box tall" id="chart-relation-graph"></div>
       </div>
     </div>
 
-    <!-- ==================== PAGE 3: 节奏雷达 ==================== -->
+    <!-- ==================== PAGE 3: Pacing radar ==================== -->
     <div class="page" id="page-pacing">
       <div class="page-header">
-        <h2>📈 节奏雷达</h2>
-        <span class="badge badge-amber">412 章数据</span>
+        <h2>📈 Pacing radar</h2>
+        <span class="badge badge-amber">412  chapters of data</span>
       </div>
 
-      <!-- 钩子强度面积图 -->
+      <!-- Hook-strength area chart -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">钩子强度走势</span>
+          <span class="card-title">Hook-strength trend</span>
           <div>
-            <span class="badge badge-green">第 363-412 章</span>
-            <button class="page-btn" style="margin-left:6px">← 前 50</button>
-            <button class="page-btn">跳到最新 →</button>
+            <span class="badge badge-green">Chapter 363-412</span>
+            <button class="page-btn" style="margin-left:6px">← Previous 50</button>
+            <button class="page-btn">Jump to latest →</button>
           </div>
         </div>
         <div class="chart-box" id="chart-hook-strength"></div>
       </div>
 
-      <!-- Strand 堆叠柱状图 -->
+      <!-- Strand Stacked bar chart -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Strand 分布（逐章）</span>
-          <span class="badge badge-purple">堆叠柱状图</span>
+          <span class="card-title">Strand Distribution (Per chapter)</span>
+          <span class="badge badge-purple">Stacked bar chart</span>
         </div>
         <div class="chart-box" id="chart-strand-stack"></div>
       </div>
 
-      <!-- 字数分布 -->
+      <!-- Word-count distribution -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">章节字数分布</span>
-          <span class="badge badge-blue">按卷分组</span>
+          <span class="card-title">Chapter word-count distribution</span>
+          <span class="badge badge-blue">Grouped by volume</span>
         </div>
         <div class="chart-box" id="chart-pacing-words"></div>
       </div>
     </div>
 
-    <!-- ==================== PAGE 4: 伏笔追踪 ==================== -->
+    <!-- ==================== PAGE 4: Foreshadowing tracker ==================== -->
     <div class="page" id="page-foreshadowing">
       <div class="page-header">
-        <h2>🔖 伏笔追踪</h2>
+        <h2>🔖 Foreshadowing tracker</h2>
       </div>
 
       <div class="stat-grid">
         <div class="card stat-card">
-          <span class="stat-label">总伏笔</span>
+          <span class="stat-label">Total foreshadowing</span>
           <span class="stat-value plain">37</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">活跃</span>
+          <span class="stat-label">Active</span>
           <span class="stat-value" style="color:var(--accent-blue)">18</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">已回收</span>
+          <span class="stat-label">resolved</span>
           <span class="stat-value" style="color:var(--accent-green)">15</span>
         </div>
         <div class="card stat-card">
-          <span class="stat-label">紧急/超期</span>
+          <span class="stat-label">Urgent/Overdue</span>
           <span class="stat-value" style="color:var(--accent-red)">4</span>
         </div>
       </div>
 
       <div class="filter-group">
-        <button class="filter-btn active">全部</button>
-        <button class="filter-btn">紧急</button>
-        <button class="filter-btn">活跃</button>
-        <button class="filter-btn">已回收</button>
+        <button class="filter-btn active">all</button>
+        <button class="filter-btn">Urgent</button>
+        <button class="filter-btn">Active</button>
+        <button class="filter-btn">resolved</button>
       </div>
 
-      <!-- 甘特时间线 -->
+      <!-- Gantt timeline -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">伏笔时间线</span>
-          <span class="badge badge-cyan">ECharts 自定义 bar · 甘特</span>
+          <span class="card-title">Foreshadowing timeline</span>
+          <span class="badge badge-cyan">ECharts custom bar · Gantt</span>
         </div>
         <div class="chart-box gantt" id="chart-foreshadow-gantt"></div>
       </div>
 
-      <!-- 伏笔完整表格 -->
+      <!-- Complete foreshadowing table -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">完整伏笔列表</span>
+          <span class="card-title">Complete foreshadowing list</span>
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>内容</th><th>状态</th><th>埋设章</th><th>目标章</th><th>紧急度</th></tr></thead>
+            <thead><tr><th>Content</th><th>Status</th><th>Planted chapter</th><th>Target chapter</th><th>Urgency</th></tr></thead>
             <tbody>
-              <tr><td>青元秘境的钥匙碎片下落</td><td><span class="badge badge-red">超期</span></td><td>285</td><td>350</td><td><span class="badge badge-red">critical</span></td></tr>
-              <tr><td>凤灵儿真实身份暗示</td><td><span class="badge badge-amber">紧急</span></td><td>312</td><td>420</td><td><span class="badge badge-amber">high</span></td></tr>
-              <tr><td>天魔血脉觉醒征兆</td><td><span class="badge badge-blue">活跃</span></td><td>345</td><td>500</td><td><span class="badge badge-blue">normal</span></td></tr>
-              <tr><td>第一卷师门灭门线索</td><td><span class="badge badge-green">已回收</span></td><td>12</td><td>180</td><td>—</td></tr>
+              <tr><td>The missing Azure Origin key fragments</td><td><span class="badge badge-red">Overdue</span></td><td>285</td><td>350</td><td><span class="badge badge-red">critical</span></td></tr>
+              <tr><td>Hints about Feng Linger’s true identity</td><td><span class="badge badge-amber">Urgent</span></td><td>312</td><td>420</td><td><span class="badge badge-amber">high</span></td></tr>
+              <tr><td>Signs of demon bloodline awakening</td><td><span class="badge badge-blue">Active</span></td><td>345</td><td>500</td><td><span class="badge badge-blue">normal</span></td></tr>
+              <tr><td>Volume 1 clues to the sect’s destruction</td><td><span class="badge badge-green">resolved</span></td><td>12</td><td>180</td><td>—</td></tr>
             </tbody>
           </table>
         </div>
         <div class="pager">
-          <button class="page-btn">上一页</button>
-          <span class="page-info">第 1 / 4 页 · 共 37 条</span>
-          <button class="page-btn">下一页</button>
+          <button class="page-btn">Previous</button>
+          <span class="page-info">Page 1 / 4 · Total 37  entries</span>
+          <button class="page-btn">Next</button>
         </div>
       </div>
     </div>
 
-    <!-- ==================== PAGE 5: 文档浏览 ==================== -->
+    <!-- ==================== PAGE 5: Document browser ==================== -->
     <div class="page" id="page-files">
       <div class="page-header">
-        <h2>📁 文档浏览</h2>
+        <h2>📁 Document browser</h2>
       </div>
-      <div class="proto-note">逻辑不变，从现有 App.jsx 迁移。左侧文件树 + 右侧内容预览。</div>
+      <div class="proto-note">Preserve the existing App.jsx behavior: file tree on the left, content preview on the right.</div>
       <div class="card" style="height:500px;display:flex;align-items:center;justify-content:center;">
         <span style="font-size:40px;margin-right:12px">📂</span>
-        <span style="color:var(--text-mute);font-size:16px;font-weight:600">文件树 + 内容预览（直接迁移，无变化）</span>
+        <span style="color:var(--text-mute);font-size:16px;font-weight:600">File tree + Content preview (Direct migration, unchanged)</span>
       </div>
     </div>
 
-    <!-- ==================== PAGE 6: 系统状态 ==================== -->
+    <!-- ==================== PAGE 6: System status ==================== -->
     <div class="page" id="page-system">
       <div class="page-header">
-        <h2>⚙️ 系统状态</h2>
+        <h2>⚙️ System status</h2>
       </div>
 
       <div class="stat-grid">
@@ -583,67 +583,67 @@ body {
         <div class="card stat-card">
           <span class="stat-label">Latest Commit</span>
           <span class="stat-value plain">accepted</span>
-          <span class="stat-sub">第 412 章 · 5 路 projection OK</span>
+          <span class="stat-sub">Chapter 412 · all five projections OK</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">RAG Mode</span>
           <span class="stat-value" style="color:var(--accent-green)">full</span>
-          <span class="stat-sub">embed + rerank 就绪</span>
+          <span class="stat-sub">embed + rerank ready</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Vector DB</span>
           <span class="stat-value plain">2,847</span>
-          <span class="stat-sub">条向量记录</span>
+          <span class="stat-sub"> vector records</span>
         </div>
       </div>
 
-      <!-- 合同树概览 -->
+      <!-- Contract tree overview -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">合同树概览</span>
+          <span class="card-title">Contract tree overview</span>
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>类型</th><th>数量</th><th>说明</th></tr></thead>
+            <thead><tr><th>Type</th><th>Count</th><th>description</th></tr></thead>
             <tbody>
-              <tr><td>MASTER_SETTING</td><td><span class="badge badge-green">1</span></td><td>仙侠 · 沉稳厚重</td></tr>
-              <tr><td>VOLUME_BRIEF</td><td><span class="badge badge-blue">5</span></td><td>卷 1-5</td></tr>
-              <tr><td>CHAPTER_BRIEF</td><td><span class="badge badge-blue">412</span></td><td>全章</td></tr>
-              <tr><td>REVIEW_CONTRACT</td><td><span class="badge badge-purple">412</span></td><td>全章审查合同</td></tr>
+              <tr><td>MASTER_SETTING</td><td><span class="badge badge-green">1</span></td><td>xianxia · Measured and substantial</td></tr>
+              <tr><td>VOLUME_BRIEF</td><td><span class="badge badge-blue">5</span></td><td>Volume 1-5</td></tr>
+              <tr><td>CHAPTER_BRIEF</td><td><span class="badge badge-blue">412</span></td><td>All chapters</td></tr>
+              <tr><td>REVIEW_CONTRACT</td><td><span class="badge badge-purple">412</span></td><td>Review contracts for all chapters</td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- 最近 Commit -->
+      <!-- Recent Commit -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">最近 Commit 历史</span>
+          <span class="card-title">Recent commit history</span>
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>章节</th><th>状态</th><th>state</th><th>index</th><th>summary</th><th>memory</th><th>dashboard</th></tr></thead>
+            <thead><tr><th>chapter</th><th>Status</th><th>state</th><th>index</th><th>summary</th><th>memory</th><th>dashboard</th></tr></thead>
             <tbody>
-              <tr><td>第 412 章</td><td><span class="badge badge-green">accepted</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td></tr>
-              <tr><td>第 411 章</td><td><span class="badge badge-green">accepted</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td></tr>
-              <tr><td>第 410 章</td><td><span class="badge badge-red">rejected</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td></tr>
+              <tr><td>Chapter 412</td><td><span class="badge badge-green">accepted</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td></tr>
+              <tr><td>Chapter 411</td><td><span class="badge badge-green">accepted</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span></td></tr>
+              <tr><td>Chapter 410</td><td><span class="badge badge-red">rejected</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td><td><span class="badge badge-amber">skip</span></td></tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- RAG 诊断 -->
+      <!-- RAG diagnosis -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">RAG 环境</span>
-          <button class="page-btn">运行诊断</button>
+          <span class="card-title">RAG environment</span>
+          <button class="page-btn">Run diagnostics</button>
         </div>
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>组件</th><th>状态</th><th>详情</th></tr></thead>
+            <thead><tr><th>Component</th><th>Status</th><th>Details</th></tr></thead>
             <tbody>
-              <tr><td>Embedding Key</td><td><span class="badge badge-green">OK</span></td><td>VOYAGE_API_KEY 已配置</td></tr>
-              <tr><td>Rerank Key</td><td><span class="badge badge-green">OK</span></td><td>COHERE_API_KEY 已配置</td></tr>
+              <tr><td>Embedding Key</td><td><span class="badge badge-green">OK</span></td><td>VOYAGE_API_KEY configured</td></tr>
+              <tr><td>Rerank Key</td><td><span class="badge badge-green">OK</span></td><td>COHERE_API_KEY configured</td></tr>
               <tr><td>Vector DB</td><td><span class="badge badge-green">OK</span></td><td>2,847 records · 128 MB</td></tr>
               <tr><td>RAG Mode</td><td><span class="badge badge-green">full</span></td><td>embed + rerank</td></tr>
             </tbody>
@@ -713,22 +713,22 @@ const reviewScores = [7.2,7.5,6.8,7.9,8.1,7.4,7.0,7.8,8.3,7.6,6.5,7.2,7.8,8.0,7.
 
 // 1. Review Score Line
 px('chart-review-score', {
-  xAxis: { type: 'category', data: chapters50.map(c => '第'+c+'章'), axisLabel: { interval: 9 } },
+  xAxis: { type: 'category', data: chapters50.map(c => 'Chapter '+c), axisLabel: { interval: 9 } },
   yAxis: { type: 'value', min: 5, max: 10 },
   series: [{
     type: 'line', data: reviewScores, smooth: false, step: false,
     lineStyle: { width: 3, color: '#26a8ff' },
     itemStyle: { color: '#26a8ff', borderColor: '#2a220f', borderWidth: 2 },
     symbol: 'rect', symbolSize: 8,
-    markLine: { data: [{ type: 'average', label: { formatter: '均值 {c}' } }], lineStyle: { color: '#f5a524', width: 2, type: 'dashed' } },
+    markLine: { data: [{ type: 'average', label: { formatter: 'Average {c}' } }], lineStyle: { color: '#f5a524', width: 2, type: 'dashed' } },
     areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(38,168,255,.2)' }, { offset: 1, color: 'rgba(38,168,255,0)' }] } }
   }]
 });
 
 // 2. Word Distribution by Volume
 px('chart-word-dist', {
-  xAxis: { type: 'category', data: ['卷一\n求道篇','卷二\n筑基篇','卷三\n历练篇','卷四\n金丹篇','卷五\n元婴篇'] },
-  yAxis: { type: 'value', axisLabel: { formatter: v => (v/10000).toFixed(0)+'万' } },
+  xAxis: { type: 'category', data: ['Volume 1\nSeeking the Path Arc','Volume 2\nFoundation Establishment Arc','Volume 3\nTrials Arc','Volume 4\nGolden Core Arc','Volume 5\nNascent Soul Arc'] },
+  yAxis: { type: 'value', axisLabel: { formatter: v => (v/10000).toFixed(0)+' x10,000' } },
   series: [{
     type: 'bar', data: [
       { value: 280000, itemStyle: { color: '#26a8ff' } },
@@ -738,7 +738,7 @@ px('chart-word-dist', {
       { value: 141000, itemStyle: { color: '#00b8d4' } }
     ],
     barWidth: '50%',
-    label: { show: true, position: 'top', formatter: p => (p.value/10000).toFixed(1)+'万', fontSize: 12, fontWeight: 700 },
+    label: { show: true, position: 'top', formatter: p => (p.value/10000).toFixed(1)+' x10,000', fontSize: 12, fontWeight: 700 },
     itemStyle: { borderColor: '#2a220f', borderWidth: 2 }
   }]
 });
@@ -760,43 +760,43 @@ px('chart-strand-overview', {
 
 // 4. Relation Graph with Timeline
 const graphNodes = [
-  { name: '林长青', category: 0, appear: 1,   symbolSize: [70,35], itemStyle: { color: '#f5a524' } },
-  { name: '老道士', category: 0, appear: 1 },
-  { name: '太虚宗', category: 1, appear: 5 },
-  { name: '凤灵儿', category: 0, appear: 28 },
-  { name: '初代掌门遗物', category: 2, appear: 45 },
-  { name: '青元秘境', category: 2, appear: 80 },
-  { name: '白玉京', category: 0, appear: 120 },
-  { name: '天魔教', category: 1, appear: 150 },
-  { name: '东海仙城', category: 2, appear: 220 },
-  { name: '龙脉封印', category: 2, appear: 260 },
-  { name: '黑市掮客', category: 0, appear: 310 },
-  { name: '剑灵', category: 0, appear: 380 }
+  { name: 'Lin Changqing', category: 0, appear: 1,   symbolSize: [70,35], itemStyle: { color: '#f5a524' } },
+  { name: 'Old Daoist', category: 0, appear: 1 },
+  { name: 'Great Void Sect', category: 1, appear: 5 },
+  { name: 'Feng Linger', category: 0, appear: 28 },
+  { name: 'Founding Master’s Relic', category: 2, appear: 45 },
+  { name: 'Azure Origin Realm', category: 2, appear: 80 },
+  { name: 'Bai Yujing', category: 0, appear: 120 },
+  { name: 'Heavenly Demon Cult', category: 1, appear: 150 },
+  { name: 'East Sea Immortal City', category: 2, appear: 220 },
+  { name: 'Dragon-Vein Seal', category: 2, appear: 260 },
+  { name: 'Black-Market Broker', category: 0, appear: 310 },
+  { name: 'Sword Spirit', category: 0, appear: 380 }
 ];
 const graphLinks = [
-  { source: '林长青', target: '老道士', name: '师徒', appear: 1 },
-  { source: '老道士', target: '太虚宗', name: '前长老', appear: 5 },
-  { source: '林长青', target: '太虚宗', name: '入门', appear: 12 },
-  { source: '林长青', target: '凤灵儿', name: '初识', appear: 28, changeTo: '师兄妹', changeAt: 60 },
-  { source: '林长青', target: '初代掌门遗物', name: '获得', appear: 50 },
-  { source: '太虚宗', target: '青元秘境', name: '管辖', appear: 80 },
-  { source: '林长青', target: '青元秘境', name: '历练', appear: 85 },
-  { source: '凤灵儿', target: '太虚宗', name: '弟子', appear: 35 },
-  { source: '林长青', target: '白玉京', name: '初遇', appear: 120, changeTo: '宿敌', changeAt: 200 },
-  { source: '白玉京', target: '天魔教', name: '加入', appear: 180, changeTo: '长老', changeAt: 300 },
-  { source: '太虚宗', target: '天魔教', name: '敌对', appear: 200 },
-  { source: '老道士', target: '东海仙城', name: '隐居', appear: 220 },
-  { source: '林长青', target: '东海仙城', name: '造访', appear: 235 },
-  { source: '林长青', target: '龙脉封印', name: '发现', appear: 260 },
-  { source: '黑市掮客', target: '天魔教', name: '线人', appear: 320 },
-  { source: '林长青', target: '黑市掮客', name: '交易', appear: 330 },
-  { source: '林长青', target: '剑灵', name: '契约', appear: 385 },
-  { source: '剑灵', target: '初代掌门遗物', name: '寄宿', appear: 390 }
+  { source: 'Lin Changqing', target: 'Old Daoist', name: 'mentor-student', appear: 1 },
+  { source: 'Old Daoist', target: 'Great Void Sect', name: 'Former elder', appear: 5 },
+  { source: 'Lin Changqing', target: 'Great Void Sect', name: 'Joined the sect', appear: 12 },
+  { source: 'Lin Changqing', target: 'Feng Linger', name: 'New acquaintance', appear: 28, changeTo: 'Fellow disciples', changeAt: 60 },
+  { source: 'Lin Changqing', target: 'Founding Master’s Relic', name: 'Acquired', appear: 50 },
+  { source: 'Great Void Sect', target: 'Azure Origin Realm', name: 'Governs', appear: 80 },
+  { source: 'Lin Changqing', target: 'Azure Origin Realm', name: 'Field training', appear: 85 },
+  { source: 'Feng Linger', target: 'Great Void Sect', name: 'Disciple', appear: 35 },
+  { source: 'Lin Changqing', target: 'Bai Yujing', name: 'First meeting', appear: 120, changeTo: 'Archenemy', changeAt: 200 },
+  { source: 'Bai Yujing', target: 'Heavenly Demon Cult', name: 'Joined', appear: 180, changeTo: 'Elder', changeAt: 300 },
+  { source: 'Great Void Sect', target: 'Heavenly Demon Cult', name: 'hostile', appear: 200 },
+  { source: 'Old Daoist', target: 'East Sea Immortal City', name: 'Retired to', appear: 220 },
+  { source: 'Lin Changqing', target: 'East Sea Immortal City', name: 'Visited', appear: 235 },
+  { source: 'Lin Changqing', target: 'Dragon-Vein Seal', name: 'Discovered', appear: 260 },
+  { source: 'Black-Market Broker', target: 'Heavenly Demon Cult', name: 'Informant', appear: 320 },
+  { source: 'Lin Changqing', target: 'Black-Market Broker', name: 'transaction', appear: 330 },
+  { source: 'Lin Changqing', target: 'Sword Spirit', name: 'Contract', appear: 385 },
+  { source: 'Sword Spirit', target: 'Founding Master’s Relic', name: 'Resides in', appear: 390 }
 ];
 const graphCategories = [
-  { name: '角色', itemStyle: { color: '#26a8ff' } },
-  { name: '势力', itemStyle: { color: '#7f5af0' } },
-  { name: '地点', itemStyle: { color: '#2ec27e' } }
+  { name: 'character', itemStyle: { color: '#26a8ff' } },
+  { name: 'faction', itemStyle: { color: '#7f5af0' } },
+  { name: 'location', itemStyle: { color: '#2ec27e' } }
 ];
 
 function getGraphDataAtChapter(ch) {
@@ -830,8 +830,8 @@ let playing = false, playTimer = null;
 
 function renderGraph(ch) {
   const { nodes, links } = getGraphDataAtChapter(ch);
-  chLabel.textContent = '第 ' + ch + ' 章';
-  nodeCount.textContent = nodes.length + ' 人';
+  chLabel.textContent = 'Chapter ' + ch;
+  nodeCount.textContent = nodes.length + '  people';
   graphChart.setOption({
     animationDuration: 300,
     animationEasingUpdate: 'cubicOut',
@@ -856,14 +856,14 @@ playBtn.addEventListener('click', () => {
   if (playing) {
     playing = false;
     clearInterval(playTimer);
-    playBtn.textContent = '▶ 播放';
+    playBtn.textContent = '▶ Play';
   } else {
     playing = true;
-    playBtn.textContent = '⏸ 暂停';
+    playBtn.textContent = '⏸ Pause';
     if (parseInt(slider.value) >= 412) slider.value = 1;
     playTimer = setInterval(() => {
       let v = parseInt(slider.value) + 5;
-      if (v > 412) { v = 412; playing = false; clearInterval(playTimer); playBtn.textContent = '▶ 播放'; }
+      if (v > 412) { v = 412; playing = false; clearInterval(playTimer); playBtn.textContent = '▶ Play'; }
       slider.value = v;
       renderGraph(v);
     }, 120);
@@ -914,7 +914,7 @@ function volBoxData(arr) {
   return [s[0], s[Math.floor(s.length*.25)], s[Math.floor(s.length*.5)], s[Math.floor(s.length*.75)], s[s.length-1]].map(Math.round);
 }
 px('chart-pacing-words', {
-  xAxis: { type: 'category', data: ['卷一','卷二','卷三','卷四','卷五'] },
+  xAxis: { type: 'category', data: ['Volume 1','Volume 2','Volume 3','Volume 4','Volume 5'] },
   yAxis: { type: 'value', axisLabel: { formatter: v => (v/1000).toFixed(0)+'k' } },
   series: [{
     type: 'boxplot',
@@ -925,23 +925,23 @@ px('chart-pacing-words', {
 
 // 8. Foreshadowing Gantt
 const foreshadowData = [
-  { name: '青元秘境钥匙碎片', start: 285, end: 350, status: 'overdue' },
-  { name: '凤灵儿真实身份', start: 312, end: 420, status: 'urgent' },
-  { name: '老道士遗言数字', start: 356, end: 430, status: 'urgent' },
-  { name: '黑市幕后势力', start: 389, end: 440, status: 'urgent' },
-  { name: '功法异变原因', start: 401, end: 500, status: 'active' },
-  { name: '天魔血脉觉醒', start: 345, end: 500, status: 'active' },
-  { name: '仙城禁地秘密', start: 220, end: 480, status: 'active' },
-  { name: '师门灭门线索', start: 12, end: 180, status: 'resolved' },
-  { name: '初代掌门遗物', start: 45, end: 150, status: 'resolved' },
-  { name: '龙脉封印', start: 100, end: 260, status: 'resolved' }
+  { name: 'Azure Origin key fragments', start: 285, end: 350, status: 'overdue' },
+  { name: 'Feng Linger’s true identity', start: 312, end: 420, status: 'urgent' },
+  { name: 'The old Daoist’s final numbers', start: 356, end: 430, status: 'urgent' },
+  { name: 'The power behind the black market', start: 389, end: 440, status: 'urgent' },
+  { name: 'Cause of the altered technique', start: 401, end: 500, status: 'active' },
+  { name: 'Demon bloodline awakening', start: 345, end: 500, status: 'active' },
+  { name: 'The immortal city’s forbidden-zone secret', start: 220, end: 480, status: 'active' },
+  { name: 'Clues to the sect’s destruction', start: 12, end: 180, status: 'resolved' },
+  { name: 'Founding Master’s Relic', start: 45, end: 150, status: 'resolved' },
+  { name: 'Dragon-Vein Seal', start: 100, end: 260, status: 'resolved' }
 ];
 const statusColor = { overdue: '#d7263d', urgent: '#f5a524', active: '#26a8ff', resolved: '#2ec27e' };
 const yLabels = foreshadowData.map(d => d.name);
 
 px('chart-foreshadow-gantt', {
   grid: { left: 140, right: 30, top: 10, bottom: 40 },
-  xAxis: { type: 'value', min: 0, max: 520, axisLabel: { formatter: v => '第'+v+'章' }, splitLine: { lineStyle: { color: '#e8dcc4', type: 'dashed' } } },
+  xAxis: { type: 'value', min: 0, max: 520, axisLabel: { formatter: v => 'Chapter '+v }, splitLine: { lineStyle: { color: '#e8dcc4', type: 'dashed' } } },
   yAxis: { type: 'category', data: yLabels, inverse: true, axisLabel: { fontSize: 12, fontWeight: 600 } },
   series: [
     {
@@ -966,7 +966,7 @@ px('chart-foreshadow-gantt', {
         silent: true, symbol: 'none',
         lineStyle: { color: '#26a8ff', width: 3, type: 'solid' },
         data: [{ xAxis: 412 }],
-        label: { formatter: '当前 412章', position: 'end', fontSize: 11, fontWeight: 700, color: '#26a8ff' }
+        label: { formatter: 'Current 412 chapters', position: 'end', fontSize: 11, fontWeight: 700, color: '#26a8ff' }
       },
       data: []
     }

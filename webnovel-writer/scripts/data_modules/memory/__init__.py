@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-长期记忆子系统。
-"""
+"""Long-term memory subsystem."""
 
 from .schema import (
     BUCKET_TO_CATEGORY,
