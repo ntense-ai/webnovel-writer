@@ -1,51 +1,51 @@
-# 创意约束系统 (Creativity Constraints)
+# Creativity Constraints
 
-> **定位**：定义创意生成的结构化约束，驱动非套路创意产出。
-> **原则**：约束不是限制，而是创意的催化剂；结构化约束有助于提升新颖度与差异化。
+> **Purpose**: Define structured constraints for generating unconventional ideas.
+> **Principle**: Constraints are catalysts, not merely restrictions. Structured constraints encourage novelty and differentiation.
 
-## 目录
-- 一、创意包 Schema (Idea Package)
-- 二、三轴混搭法 (Three-Axis Mashup)
-- 三、反套路触发器 (Anti-Trope Triggers)
-- 四、镜像对抗设计 (Antagonist Mirror)
-- 五、开篇钩子优先法 (Hook-First Design)
-- 六、硬约束驱动创意 (Hard Constraints)
-- 七、三问筛选法 (Three-Question Filter)
-- 八、评分系统 (Scoring System)
-- 九、输出格式
+## Contents
+- I. Idea Package Schema
+- II. Three-Axis Mashup
+- III. Anti-Trope Triggers
+- IV. Antagonist Mirror
+- V. Hook-First Design
+- VI. Hard Constraints
+- VII. Three-Question Filter
+- VIII. Scoring System
+- IX. Output Format
 
 ---
 
-## 一、创意包 Schema (Idea Package)
+## I. Idea Package Schema
 
-每个创意必须包含以下字段：
+Every idea must contain these fields:
 
 ```json
 {
   "id": "uuid",
-  "title": "书名",
-  "one_liner": "一句话卖点（10秒电梯演讲）",
-  "genre": "题材",
+  "title": "Book title",
+  "one_liner": "One-sentence selling point: a 10-second elevator pitch",
+  "genre": "Genre",
   "novelty_axes": {
-    "genre_base": "题材基础",
-    "rule_constraint": "规则限制（至少1条反常规）",
-    "character_conflict": "角色矛盾"
+    "genre_base": "Genre foundation",
+    "rule_constraint": "Rule constraint: at least one unconventional rule",
+    "character_conflict": "Character conflict"
   },
-  "anti_trope": "选择的反套路规则",
+  "anti_trope": "Selected anti-trope rule",
   "protagonist": {
-    "flaw": "主角缺陷（必填）",
-    "desire": "核心欲望"
+    "flaw": "Protagonist flaw: required",
+    "desire": "Core desire"
   },
   "antagonist_mirror": {
-    "shared_trait": "与主角共享的欲望/缺陷",
-    "opposite_path": "采取的相反道路"
+    "shared_trait": "Desire/flaw shared with protagonist",
+    "opposite_path": "Opposite path taken"
   },
   "opening_hook": {
-    "hook_sentence": "一句钩子",
-    "opening_scene": "开场场景概述",
-    "chapter_end_suspense": "第一章末悬念"
+    "hook_sentence": "One-sentence hook",
+    "opening_scene": "Opening scene summary",
+    "chapter_end_suspense": "Chapter 1 closing suspense"
   },
-  "hard_constraints": ["硬约束1", "硬约束2"],
+  "hard_constraints": ["Hard constraint 1", "Hard constraint 2"],
   "score": {
     "novelty": 0,
     "market_fit": 0,
@@ -55,273 +55,273 @@
     "total": 0
   },
   "three_questions": {
-    "q1_why_this_way": "这题材为什么只能这样写？",
-    "q2_protagonist_swap": "主角换成常规人设会崩吗？",
-    "q3_one_liner_unique": "卖点一句话能讲清且不撞套路吗？"
+    "q1_why_this_way": "Why must this genre be written this way?",
+    "q2_protagonist_swap": "Would replacing the protagonist with a conventional archetype break the story?",
+    "q3_one_liner_unique": "Can the pitch be expressed clearly in one sentence without repeating common tropes?"
   },
   "status": "pending|selected|rejected",
-  "created_at": "ISO日期"
+  "created_at": "ISO date"
 }
 ```
 
 ---
 
-## 二、三轴混搭法 (Three-Axis Mashup)
+## II. Three-Axis Mashup
 
-### 2.1 三轴定义
+### 2.1 Axis Definitions
 
-| 轴 | 说明 | 示例 |
+| Axis | Description | Examples |
 |---|------|------|
-| **题材基础** | 故事的世界观类型 | 修仙、都市、规则怪谈 |
-| **规则限制** | 世界/能力/行为的硬约束 | 资源稀缺、金手指有代价、禁止直接战斗 |
-| **角色矛盾** | 主角内在冲突或与世界的冲突 | 反爽（不追求碾压）、道德困境、身份认同 |
+| **Genre foundation** | Type of story world | Cultivation, urban, rule-based horror |
+| **Rule constraint** | Hard limits on the world, abilities, or behavior | Scarcity, costly advantages, no direct combat |
+| **Character conflict** | Inner conflict or conflict with the world | Rejecting domination, moral dilemmas, identity |
 
-### 2.2 混搭规则
+### 2.2 Mashup Rule
 
-**至少 2/3 轴必须"非该题材默认选项"**
+**At least 2 of the 3 axes must differ from the genre's default choices.**
 
-| 题材 | 默认选项 | 非默认选项（推荐） |
+| Genre | Default choices | Recommended alternatives |
 |------|---------|------------------|
-| 修仙 | 资源充足、金手指无代价、追求碾压 | 资源稀缺、金手指有代价、反爽/苟道 |
-| 都市 | 现代科技、身份隐藏、打脸装逼 | 规则入侵、身份公开、智斗博弈 |
-| 言情 | 男强女弱、误会推动、HE结局 | 势均力敌、信息透明、开放结局 |
-| 规则怪谈 | 规则可破解、主角特殊能力、逃出生天 | 规则不可逆、主角无特殊能力、代价式生存 |
+| Cultivation | Abundant resources, free advantages, pursuit of domination | Scarcity, costly advantages, cautious survival or rejection of easy gratification |
+| Urban | Modern technology, hidden identity, ostentatious vindication | Intruding rules, public identity, intellectual contests |
+| Romance | Strong man/weak woman, misunderstandings, happy ending | Equal partners, transparent information, open ending |
+| Rule-based horror | Solvable rules, special protagonist ability, escape | Irreversible rules, ordinary protagonist, survival at a cost |
 
-### 2.3 混搭示例
+### 2.3 Examples
 
 ```
-✅ 好的混搭：
-修仙（题材）+ 资源严重稀缺（规则）+ 主角反爽（角色）
-→ 3/3 轴非默认，创意空间大
+✅ Strong mashup:
+Cultivation (genre) + extreme scarcity (rules) + protagonist rejects easy domination (character)
+→ Source rubric: 3/3 non-default axes; broad creative possibilities
 
-⚠️ 一般混搭：
-修仙（题材）+ 金手指有代价（规则）+ 追求碾压（角色）
-→ 2/3 轴非默认，可接受
+⚠️ Average mashup:
+Cultivation (genre) + costly special advantage (rules) + pursuit of domination (character)
+→ Source rubric: 2/3 non-default axes; acceptable
 
-❌ 套路混搭：
-修仙（题材）+ 资源充足（规则）+ 追求碾压（角色）
-→ 0/3 轴非默认，拒绝
+❌ Formulaic mashup:
+Cultivation (genre) + abundant resources (rules) + pursuit of domination (character)
+→ Source rubric: 0/3 non-default axes; reject
 ```
 
 ---
 
-## 三、反套路触发器 (Anti-Trope Triggers)
+## III. Anti-Trope Triggers
 
-### 3.1 必选规则
+### 3.1 Mandatory Rule
 
-**每个项目必须选择至少 1 条反常规规则**
+**Every project must choose at least one unconventional rule.**
 
-### 3.2 通用反套路库
+### 3.2 General Anti-Trope Library
 
-| ID | 反套路规则 | 适用题材 | 创意驱动 |
+| ID | Rule | Genres | Creative driver |
 |----|-----------|---------|---------|
-| AT-001 | 金手指有代价且不可逆 | 全题材 | 每次使用都是抉择 |
-| AT-002 | 主角无法直接打脸，只能通过规则/系统反杀 | 爽文/修仙 | 智斗替代武斗 |
-| AT-003 | 主角的优势同时是致命弱点 | 全题材 | 双刃剑设计 |
-| AT-004 | 反派与主角共享同一金手指/能力 | 全题材 | 镜像对抗 |
-| AT-005 | 主角的目标与读者预期相反 | 全题材 | 反预期叙事 |
-| AT-006 | 世界规则对主角不利（非主角特权） | 规则怪谈/修仙 | 公平博弈 |
-| AT-007 | 主角的成长以失去某物为代价 | 全题材 | 成长的重量 |
-| AT-008 | 信息对称（主角不比读者知道更多） | 悬疑/规则怪谈 | 共同推理 |
-| AT-009 | 主角的"正确选择"导致负面后果 | 全题材 | 道德灰度 |
-| AT-010 | 金手指有使用次数/冷却限制 | 系统流 | 资源管理 |
+| AT-001 | The advantage has an irreversible cost | All | Every use is a choice |
+| AT-002 | The protagonist cannot directly humiliate rivals; victories must exploit rules/systems | Payoff-driven fiction/cultivation | Intelligence replaces brute force |
+| AT-003 | The protagonist's strength is also a fatal weakness | All | Double-edged design |
+| AT-004 | Antagonist and protagonist share the same advantage/ability | All | Mirrored opposition |
+| AT-005 | The protagonist's goal opposes reader expectations | All | Expectation reversal |
+| AT-006 | World rules disadvantage the protagonist rather than grant privilege | Rule-based horror/cultivation | Fair competition |
+| AT-007 | Growth requires losing something | All | Growth has weight |
+| AT-008 | Information is symmetric: protagonist knows no more than the reader | Mystery/rule-based horror | Shared deduction |
+| AT-009 | The “right choice” causes negative consequences | All | Moral ambiguity |
+| AT-010 | The advantage has usage or cooldown limits | System fiction | Resource management |
 
-### 3.3 题材专属反套路
+### 3.3 Genre-Specific Libraries
 
-详见：
-- `anti-trope-xianxia.md` - 修仙/玄幻反套路
-- `anti-trope-urban.md` - 都市/历史反套路
-- `anti-trope-game.md` - 游戏/科幻反套路
-- `anti-trope-rules-mystery.md` - 规则怪谈反套路
+See:
+- `anti-trope-xianxia.md`: cultivation/fantasy
+- `anti-trope-urban.md`: urban/historical
+- `anti-trope-game.md`: game/science fiction
+- `anti-trope-rules-mystery.md`: rule-based horror
 
 ---
 
-## 四、镜像对抗设计 (Antagonist Mirror)
+## IV. Antagonist Mirror
 
-### 4.1 核心原则
+### 4.1 Core Principle
 
-**反派与主角共享同一"欲望/缺陷"，但采取相反道路**
+**The antagonist shares the protagonist's desire or flaw but takes the opposite path.**
 
-### 4.2 镜像模板
+### 4.2 Mirror Templates
 
-| 共享特质 | 主角道路 | 反派道路 |
+| Shared trait | Protagonist's path | Antagonist's path |
 |---------|---------|---------|
-| 渴望力量 | 通过努力/牺牲获得 | 通过掠夺/背叛获得 |
-| 恐惧失去 | 学会放手/接受 | 控制/占有一切 |
-| 追求认可 | 证明自己的价值 | 强迫他人认可 |
-| 逃避过去 | 面对并和解 | 毁灭所有证据 |
-| 保护所爱 | 让所爱之人成长 | 囚禁/控制所爱之人 |
+| Desire for power | Earn through effort/sacrifice | Gain through plunder/betrayal |
+| Fear of loss | Learn acceptance and letting go | Control and possess everything |
+| Need for recognition | Prove personal worth | Force others' approval |
+| Escape from the past | Face it and reconcile | Destroy all evidence |
+| Protecting loved ones | Help them grow | Imprison/control them |
 
-### 4.3 镜像示例
+### 4.3 Example
 
 ```
-主角：林天，渴望力量保护家人
-反派：慕容战，渴望力量统治一切
+Protagonist: Lin Tian seeks power to protect his family
+Antagonist: Murong Zhan seeks power to rule everything
 
-共享特质：对力量的渴望
-主角道路：通过修炼和牺牲获得力量
-反派道路：通过吞噬他人获得力量
+Shared trait: Hunger for power
+Protagonist's path: Cultivation and sacrifice
+Antagonist's path: Devouring others
 
-镜像冲突：两人的对决不仅是实力对决，更是"获取力量的方式"之争
+Mirror conflict: Their confrontation concerns not only strength but how strength is acquired
 ```
 
 ---
 
-## 五、开篇钩子优先法 (Hook-First Design)
+## V. Hook-First Design
 
-### 5.1 核心原则
+### 5.1 Core Principle
 
-**先产出钩子，再定大纲**
+**Create the hook before the outline.**
 
-在确定完整大纲前，必须先设计：
-1. 一句钩子（10字以内）
-2. 一个开场场景（50字以内）
-3. 一个第一章末悬念（30字以内）
+Before establishing the complete outline, design:
+1. One hook sentence, within 10 Chinese characters
+2. An opening scene, within 50 Chinese characters
+3. A chapter 1 cliffhanger, within 30 Chinese characters
 
-### 5.2 钩子模板
+### 5.2 Hook Templates
 
-| 钩子类型 | 模板 | 示例 |
+| Type | Template | Example |
 |---------|------|------|
-| 反差钩 | [身份A]却[行为B] | 废物少爷却让宗主跪下 |
-| 悬念钩 | [异常现象]，[疑问] | 他死了三次，每次都记得 |
-| 代价钩 | [获得X]，代价是[Y] | 获得神级系统，代价是寿命 |
-| 选择钩 | [两难]，他选择了[意外] | 救妻子还是救世界，他选择了第三条路 |
-| 反转钩 | [预期A]，实际[B] | 所有人都以为他死了，包括他自己 |
+| Contrast | [Identity A], yet [behavior B] | The useless heir makes the sect master kneel |
+| Mystery | [Anomaly], [question] | He died three times and remembers each death |
+| Cost | Gain [X], at the cost of [Y] | A divine system paid for with lifespan |
+| Choice | [Dilemma], but chooses [unexpected option] | Save his wife or the world? He chooses a third path |
+| Reversal | Expected [A], actually [B] | Everyone thought he was dead, including himself |
 
-### 5.3 开场场景模板
+### 5.3 Opening Scenes
 
-| 场景类型 | 特点 | 适用题材 |
+| Scene type | Feature | Suitable genres |
 |---------|------|---------|
-| 危机开场 | 主角处于生死边缘 | 规则怪谈、修仙 |
-| 反差开场 | 主角身份/能力与表现反差 | 扮猪吃虎、都市 |
-| 悬念开场 | 抛出未解之谜 | 悬疑、规则怪谈 |
-| 冲突开场 | 主角与他人直接冲突 | 爽文、言情 |
-| 日常打破 | 平静日常被打破 | 全题材 |
+| Crisis | Protagonist on the edge of death | Rule-based horror, cultivation |
+| Contrast | Identity/ability conflicts with appearance | Hidden-strength stories, urban |
+| Mystery | An unanswered puzzle | Mystery, rule-based horror |
+| Conflict | Direct confrontation with others | Payoff-driven fiction, romance |
+| Disrupted routine | Peaceful daily life breaks apart | All |
 
 ---
 
-## 六、硬约束驱动创意 (Hard Constraints)
+## VI. Hard Constraints
 
-### 6.1 核心原则
+### 6.1 Core Principle
 
-**定义 2-3 条硬约束，逼出独特剧情解法**
+**Define 2–3 hard constraints to force distinctive plot solutions.**
 
-### 6.2 硬约束类型
+### 6.2 Constraint Types
 
-| 类型 | 说明 | 示例 |
+| Type | Description | Example |
 |------|------|------|
-| 世界观约束 | 世界运行的不可违背规则 | "修仙者不能杀凡人" |
-| 能力约束 | 主角能力的硬性限制 | "金手指每天只能用一次" |
-| 行为约束 | 主角行为的禁区 | "主角不能主动攻击" |
-| 信息约束 | 主角知道/不知道的边界 | "主角不知道自己是穿越者" |
-| 资源约束 | 稀缺资源的硬性限制 | "整个世界只有100颗灵石" |
+| World | Unbreakable operating rules | Cultivators cannot kill mortals |
+| Ability | Firm limits on protagonist powers | The advantage works once daily |
+| Behavior | Forbidden actions | The protagonist cannot attack first |
+| Information | Boundaries of knowledge | The protagonist does not know they transmigrated |
+| Resources | Fixed scarcity | Only 100 spirit stones exist worldwide |
 
-### 6.3 约束组合示例
+### 6.3 Combined Example
 
 ```
-项目：《规则囚笼》
+Project: The Cage of Rules
 
-硬约束1（世界观）：规则一旦触发，无法撤销
-硬约束2（能力）：主角只能"看到"规则，不能"改变"规则
-硬约束3（行为）：主角每次提醒他人规则，自己会失去一段记忆
+Constraint 1 (world): A triggered rule cannot be revoked
+Constraint 2 (ability): The protagonist can see rules, not change them
+Constraint 3 (behavior): Every warning given to another person erases one of the protagonist's memories
 
-创意驱动：
-- 主角如何在不能改变规则的情况下帮助他人？
-- 主角如何在失去记忆的代价下做出选择？
-- 规则不可撤销如何制造紧张感？
+Creative drivers:
+- How can the protagonist help others without changing rules?
+- How do they decide when memory loss is the cost?
+- How does irreversibility generate tension?
 ```
 
 ---
 
-## 七、三问筛选法 (Three-Question Filter)
+## VII. Three-Question Filter
 
-### 7.1 筛选问题
+### 7.1 Questions
 
-| # | 问题 | 通过标准 |
+| # | Question | Pass criterion |
 |---|------|---------|
-| Q1 | 这题材为什么"只能这样写"？ | 能说出至少1个独特理由 |
-| Q2 | 这主角如果换成常规人设会崩吗？ | 是（说明主角设计与故事深度绑定） |
-| Q3 | 这个卖点一句话能讲清、且不撞常见套路吗？ | 是（说明卖点清晰且有差异化） |
+| Q1 | Why must this genre be written this way? | At least one distinctive reason |
+| Q2 | Would a conventional protagonist break the story? | Yes: character and story are deeply linked |
+| Q3 | Is the selling point clear in one sentence and different from common tropes? | Yes: clear and distinctive |
 
-### 7.2 筛选流程
+### 7.2 Process
 
 ```
-生成 3-5 个创意
+Generate 3–5 ideas
     ↓
-三问筛选
+Three-question filter
     ↓
-通过 3/3 → 进入评分
-通过 2/3 → 修改后重新筛选
-通过 1/3 或 0/3 → 淘汰
+Pass 3/3 → Score
+Pass 2/3 → Revise and filter again
+Pass 1/3 or 0/3 → Eliminate
 ```
 
 ---
 
-## 八、评分系统 (Scoring System)
+## VIII. Scoring System
 
-### 8.1 五维评分
+### 8.1 Five Dimensions
 
-| 维度 | 权重 | 1分 | 3分 | 5分 |
+| Dimension | Weight | 1 point | 3 points | 5 points |
 |------|------|-----|-----|-----|
-| 新颖度 | 25% | 烂大街 | 微创新 | 开创新品类 |
-| 市场性 | 20% | 小众冷门 | 中等受众 | 大众热门 |
-| 可写性 | 20% | 极难驾驭 | 中等难度 | 易于实现 |
-| 爽点密度 | 20% | 爽点稀疏 | 中等密度 | 高密度 |
-| 长线潜力 | 15% | 难以续写 | 可续写 | 无限扩展 |
+| Novelty | 25% | Everywhere already | Small innovation | Creates a new category |
+| Market fit | 20% | Obscure niche | Moderate audience | Broad popularity |
+| Writability | 20% | Extremely difficult | Moderate difficulty | Easy to execute |
+| Payoff density | 20% | Sparse | Moderate | High |
+| Long-term potential | 15% | Hard to continue | Sustainable | Unlimited expansion |
 
-### 8.2 计算公式
+### 8.2 Formula
 
 ```
-总分 = 新颖度×2.5 + 市场性×2 + 可写性×2 + 爽点密度×2 + 长线潜力×1.5
-满分 = 50分
-及格线 = 30分
-推荐线 = 40分
+Total = novelty×2.5 + market_fit×2 + writability×2 + cool_point_density×2 + long_term_potential×1.5
+Maximum = 50
+Passing = 30
+Recommended = 40
 ```
 
 ---
 
-## 九、输出格式
+## IX. Output Format
 
-### 9.1 创意卡片格式
+### 9.1 Idea Card
 
 ```markdown
-## 创意 #{N}: {title}
+## Idea #{N}: {title}
 
-**一句话卖点**: {one_liner}
+**One-sentence pitch**: {one_liner}
 
-**三轴混搭**:
-- 题材基础: {genre_base}
-- 规则限制: {rule_constraint}
-- 角色矛盾: {character_conflict}
+**Three-axis mashup**:
+- Genre foundation: {genre_base}
+- Rule constraint: {rule_constraint}
+- Character conflict: {character_conflict}
 
-**反套路规则**: {anti_trope}
+**Anti-trope rule**: {anti_trope}
 
-**主角设计**:
-- 缺陷: {flaw}
-- 欲望: {desire}
+**Protagonist**:
+- Flaw: {flaw}
+- Desire: {desire}
 
-**反派镜像**:
-- 共享特质: {shared_trait}
-- 相反道路: {opposite_path}
+**Antagonist mirror**:
+- Shared trait: {shared_trait}
+- Opposite path: {opposite_path}
 
-**开篇钩子**:
-- 钩子: {hook_sentence}
-- 开场: {opening_scene}
-- 悬念: {chapter_end_suspense}
+**Opening hook**:
+- Hook: {hook_sentence}
+- Opening: {opening_scene}
+- Suspense: {chapter_end_suspense}
 
-**硬约束**:
+**Hard constraints**:
 1. {constraint_1}
 2. {constraint_2}
 
-**三问筛选**:
+**Three-question filter**:
 - Q1: {answer_1}
 - Q2: {answer_2}
 - Q3: {answer_3}
 
-**评分**: {total}/50
-- 新颖度: {novelty}/5
-- 市场性: {market_fit}/5
-- 可写性: {writability}/5
-- 爽点密度: {cool_point_density}/5
-- 长线潜力: {long_term_potential}/5
+**Score**: {total}/50
+- Novelty: {novelty}/5
+- Market fit: {market_fit}/5
+- Writability: {writability}/5
+- Payoff density: {cool_point_density}/5
+- Long-term potential: {long_term_potential}/5
 ```

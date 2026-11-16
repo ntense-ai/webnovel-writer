@@ -1,243 +1,243 @@
-# 剧情框架模板库 (Plot Frameworks)
+# Plot Framework Library
 
-> 归档说明：本文件为历史方法论参考，不在 `/webnovel-plan` 主流程自动加载。
-> 如需接入，必须先在 `SKILL.md` 中补充明确的步骤触发条件与读取指令。
+> Archive note: this is a historical methodology reference, not automatically loaded by the `/webnovel-plan` main workflow.
+> To integrate it, first add explicit step triggers and reading instructions to `SKILL.md`.
 
-> **核心原则**: 不要重复造轮子。经典剧情框架已被验证有效，关键是如何包装出新意。
-
----
-
-## 1. 通用剧情框架
-
-### 框架 A: 英雄之旅（Hero's Journey）
-**适用**: 90% 的网文都可以套用
-
-#### 12个阶段
-```
-1. 平凡世界: 主角是普通人/废材
-2. 冒险召唤: 遭遇危机（退婚/亲人被杀/世界末日）
-3. 拒绝召唤: 主角一开始不想卷入（我只想安静修炼）
-4. 遇见导师: 获得金手指/师尊指点
-5. 跨越第一道门槛: 加入宗门/进入修仙界
-6. 试炼与盟友: 遇到死党、女主，经历小战斗
-7. 深入洞穴: 进入危险区域（秘境/敌对势力）
-8. 苦难考验: 遭遇最大危机（师尊被杀/被人陷害）
-9. 奖赏: 获得神器/顿悟/突破境界
-10. 返回之路: 带着收获回归
-11. 复活: 浴火重生，实力大涨
-12. 带着灵药回归: 成为传奇，改变世界
-```
-
-#### 网文简化版（3幕剧）
-```
-第一幕（前30%）: 建立世界观，主角遇到危机
-第二幕（中间40%）: 主角成长，多次试炼，积累实力
-第三幕（后30%）: 终极对决，打败大BOSS
-```
+> **Core principle**: do not reinvent the wheel. Classic frameworks have proved effective; the key is giving them a fresh presentation.
 
 ---
 
-## 2. 网文专属框架
+## 1. General framework
 
-### 框架 B: 打脸爽文框架
-**公式**: 被嘲讽 → 隐忍 → 爆发 → 打脸 → 循环
+### Framework A: Hero's Journey
+**Suitable for**: 90% of web fiction.
 
-#### 标准流程
+#### Twelve stages
+```
+1. Ordinary world: protagonist is ordinary/a failure
+2. Call to adventure: crisis (broken engagement/family murdered/apocalypse)
+3. Refusal: initially avoids involvement (“I just want to cultivate in peace”)
+4. Mentor: gains special ability/master's guidance
+5. First threshold: joins sect/enters cultivation world
+6. Tests and allies: meets close friend and heroine, fights smaller battles
+7. Approach to the cave: enters danger (secret realm/enemy faction)
+8. Ordeal: greatest crisis (master killed/protagonist framed)
+9. Reward: divine artifact/epiphany/realm breakthrough
+10. Road back: returns with gains
+11. Resurrection: reborn through fire, power surges
+12. Return with elixir: becomes a legend and changes the world
+```
+
+#### Simplified web-fiction version (three acts)
+```
+Act I (first 30%): establish world; protagonist encounters crisis
+Act II (middle 40%): growth, repeated trials, accumulated strength
+Act III (final 30%): ultimate confrontation; defeat major boss
+```
+
+---
+
+## 2. Web-fiction-specific frameworks
+
+### Framework B: Comeuppance power fantasy
+**Formula**: mocked → endure → erupt → turn tables → repeat.
+
+#### Standard sequence
 ```markdown
-Step 1: 设置落差
-- 主角曾经是天才/豪门少爷
-- 因某种原因跌落（灵根被废/家族灭门）
+Step 1: Establish a fall
+- Protagonist was a genius/wealthy-family heir
+- Falls for some reason (spiritual root destroyed/family annihilated)
 
-Step 2: 第一次嘲讽
-- 曾经的未婚妻退婚
-- 台词: "你这个废物，配不上我！"
+Step 2: First humiliation
+- Former fiancée breaks engagement
+- Line: “A loser like you isn't worthy of me!”
 
-Step 3: 隐忍阶段
-- 主角表面忍气吞声
-- 内心: "三十年河东，三十年河西，莫欺少年穷！"
-- 暗中努力（获得金手指/苦修）
+Step 3: Endurance
+- Protagonist appears to swallow the insult
+- Inner thought: “Fortunes change. Never scorn a poor young man!”
+- Works secretly (special ability gained/intense training)
 
-Step 4: 小规模打脸
-- 在某个小场合展示实力（如：宗门考核第一）
-- 打脸对象: 曾经嘲笑他的龙套
-- 读者: "爽！"
+Step 4: Small-scale comeuppance
+- Reveals strength in a minor setting (e.g. first in sect assessment)
+- Target: extras who once mocked him
+- Reader: “Satisfying!”
 
-Step 5: 大规模打脸
-- 在重要场合（宗门大比/家族会议）碾压敌人
-- 打脸对象: 曾经的未婚妻/敌对家族少主
-- 读者: "爽爽爽！"
+Step 5: Major comeuppance
+- Crushes enemy at an important event (sect tournament/family assembly)
+- Target: former fiancée/rival clan heir
+- Reader: “So satisfying!”
 
-Step 6: 进入下一循环
-- 换更大的地图（从新手村到主城）
-- 遇到更强的嘲讽者（从家族少主到宗门天才）
+Step 6: Next cycle
+- Move to a larger map (starter village to main city)
+- Meet stronger mockers (clan heir to sect genius)
 ```
 
-#### 打脸节奏控制
-- **频率**: 每10-20章至少有1次小打脸
-- **递增**: 打脸的爽感要逐渐升级（从口头打脸→实力打脸→碾压式打脸）
-- **避免重复**: 不能总是"未婚妻退婚"这一个梗
+#### Pacing
+- **Frequency**: at least one small comeuppance every 10–20 chapters.
+- **Escalation**: increase gratification (verbal rebuttal → demonstrated strength → overwhelming domination).
+- **Avoid repetition**: do not rely exclusively on broken engagements.
 
 ---
 
-### 框架 C: 废材逆袭框架
-**公式**: 废材 → 奇遇 → 逆袭 → 称霸
-
-```markdown
-## 第一阶段：废材期（1-50章）
-- 主角是公认的废材（无灵根/天赋差/身体残疾）
-- 被欺负、被嘲笑、被抛弃
-- **关键**: 必须让读者同情主角
-
-## 第二阶段：奇遇期（51-100章）
-- 掉落悬崖/进入秘境/获得传承
-- 得到金手指（系统/神器/功法）
-- 开始逆袭
-
-## 第三阶段：崛起期（101-500章）
-- 在新手村称霸
-- 进入更大的舞台（宗门/圣地）
-- 不断打脸曾经看不起他的人
-
-## 第四阶段：称霸期（501章+）
-- 成为顶尖强者
-- 改变世界规则
-- 留续集接口（飞升/前往更高位面）
-```
-
----
-
-### 框架 D: 扮猪吃虎框架
-**公式**: 强者 → 隐藏实力 → 被小觑 → 爆发 → 震惊
+### Framework C: Underdog's rise
+**Formula**: failure → fortunate encounter → comeback → dominance.
 
 ```markdown
-## 设定
-- 主角其实很强（重生/夺舍/真身被封印）
-- 但选择低调（苟道/不想惹麻烦）
+## Stage 1: Failure (Chapters 1–50)
+- Protagonist is widely considered useless (no spiritual root/poor talent/disability)
+- Bullied, mocked, abandoned
+- **Key**: readers must sympathize with the protagonist
 
-## 剧情推进
-1. 主角刻意表现平庸
-2. 反派/龙套因此轻视他
-3. 主角被逼无奈出手
-4. 一招秒杀，全场震惊
-5. 主角: "我只想低调，你们为什么逼我？"
+## Stage 2: Fortunate encounter (51–100)
+- Falls off cliff/enters secret realm/receives inheritance
+- Gains special ability (system/divine artifact/cultivation technique)
+- Begins comeback
 
-## 读者爽点
-- "装逼被雷劈"的反向运用
-- 主角明明很强，却被当成弱鸡（反差萌）
-- 爆发时的震撼感
+## Stage 3: Rise (101–500)
+- Dominates starter village
+- Enters larger stage (sect/sacred land)
+- Continually humiliates former detractors
+
+## Stage 4: Dominance (501+)
+- Becomes a top powerhouse
+- Changes world rules
+- Leaves sequel opening (ascension/higher plane)
 ```
 
 ---
 
-## 3. 类型化剧情框架
+### Framework D: Hidden tiger
+**Formula**: powerful → conceals strength → underestimated → erupts → astonishment.
 
-### 修仙类框架
-```
-炼气期（1-100章）: 新手村，建立基础设定
-筑基期（101-200章）: 加入宗门，站稳脚跟
-金丹期（201-400章）: 秘境夺宝，获得机缘
-元婴期（401-600章）: 宗门危机，成为救世主
-化神期（601-800章）: 跨域冒险，面对更强敌人
-飞升（801章+）: 飞升仙界，开启续集
-```
+```markdown
+## Setup
+- Protagonist is actually powerful (rebirth/possession/true body sealed)
+- Chooses a low profile (cautious survival/avoiding trouble)
 
-### 都市异能类框架
-```
-觉醒期（1-50章）: 获得异能，适应能力
-成长期（51-200章）: 在异能者圈子崭露头角
-争霸期（201-500章）: 参与异能者大战/国际赛事
-巅峰期（501章+）: 成为最强异能者，守护地球
-```
+## Progression
+1. Deliberately appears mediocre
+2. Antagonists/extras underestimate him
+3. Forced to act
+4. Wins in one strike; everyone is stunned
+5. Protagonist: “I only wanted to keep a low profile. Why force me?”
 
-### 游戏竞技类框架
-```
-新手期（1-100章）: 进入游戏，熟悉机制
-升级期（101-300章）: 刷副本、打装备、建公会
-竞技期（301-600章）: 参加联赛/世界赛
-巅峰期（601章+）: 成为电竞传奇/游戏与现实融合
+## Reader gratification
+- Reverses the idea that show-offs get punished
+- A powerful protagonist mistaken for a weakling creates appealing contrast
+- Shock when his power erupts
 ```
 
 ---
 
-## 4. 剧情推进的万能引擎
+## 3. Genre frameworks
 
-### 引擎 1: 时间限制
-- **三年之约**: "三年后，我会亲自上门提亲！"
-- **倒计时**: "秘境七天后关闭"/"血月三日后降临"
-- **作用**: 制造紧迫感，防止剧情拖沓
-
-### 引擎 2: 空间转移
-- **换地图**: 从新手村→主城→圣地→仙界
-- **作用**: 重置战力层级，避免膨胀；引入新角色、新势力
-
-### 引擎 3: 外部威胁
-- **兽潮来袭**: 迫使正邪两道联手
-- **异族入侵**: 提供共同敌人
-- **作用**: 制造大事件，推动剧情高潮
-
-### 引擎 4: 寻人/寻物
-- **救妹妹**: 主角的核心动机
-- **找齐七颗龙珠**: 收集类剧情
-- **作用**: 提供明确的阶段性目标
-
----
-
-## 5. 剧情框架组合拳
-
-单一框架容易单调，可以组合使用：
-
-### 组合案例 1: 废材逆袭 + 打脸爽文
+### Cultivation
 ```
-1-50章: 废材被退婚（打脸框架的开局）
-51-100章: 获得系统（废材逆袭框架的奇遇）
-101-200章: 打脸前未婚妻（打脸框架的第一高潮）
-201-500章: 继续逆袭，打脸更强者（组合循环）
+Qi Refinement (Chapters 1–100): starter village, foundational settings
+Foundation Establishment (101–200): join sect, gain foothold
+Golden Core (201–400): secret-realm treasure hunt, opportunities
+Nascent Soul (401–600): sect crisis, become savior
+Spirit Transformation (601–800): cross-region adventure, stronger enemies
+Ascension (801+): immortal realm, begin sequel
 ```
 
-### 组合案例 2: 英雄之旅 + 扮猪吃虎
+### Urban superpowers
 ```
-1-50章: 主角重生回到少年时期（英雄之旅的"召唤"）
-51-100章: 刻意隐藏实力（扮猪吃虎）
-101-200章: 被逼出手，震惊全场（扮猪吃虎的爆发）
-201章+: 按英雄之旅的"试炼→考验→回归"推进
+Awakening (Chapters 1–50): gain powers and adapt
+Growth (51–200): emerge in the superpowered community
+Rivalry (201–500): participate in superpowered wars/international contests
+Peak (501+): become strongest powered individual, protect Earth
+```
+
+### Gaming/esports
+```
+Beginner (Chapters 1–100): enter game, learn mechanics
+Leveling (101–300): clear dungeons, gather equipment, build guild
+Competition (301–600): league/world championships
+Peak (601+): esports legend/game merges with reality
 ```
 
 ---
 
-## 🛠️ 框架选择指南
+## 4. Universal plot engines
 
-### 选择标准
-| 读者群体 | 推荐框架 | 理由 |
+### Engine 1: Time limit
+- **Three-year agreement**: “In three years, I'll come propose in person!”
+- **Countdown**: “Secret realm closes in seven days” / “Blood moon arrives in three days”.
+- **Effect**: urgency prevents sluggishness.
+
+### Engine 2: Spatial relocation
+- **Map changes**: starter village → main city → sacred land → immortal realm.
+- **Effect**: reset relative power tiers to limit inflation; introduce characters and factions.
+
+### Engine 3: External threat
+- **Beast tide**: forces righteous and evil factions to cooperate.
+- **Alien invasion**: provides a common enemy.
+- **Effect**: major events drive climaxes.
+
+### Engine 4: Search for person/object
+- **Rescue sister**: protagonist's core motivation.
+- **Collect seven Dragon Balls**: collection plot.
+- **Effect**: clear intermediate goals.
+
+---
+
+## 5. Combining frameworks
+
+A single framework may become monotonous; combine them.
+
+### Combination 1: Underdog's rise + comeuppance
+```
+Chapters 1–50: failed protagonist's engagement broken (comeuppance opening)
+51–100: gains system (underdog's fortunate encounter)
+101–200: humiliates former fiancée (first comeuppance climax)
+201–500: keeps rising, humiliates stronger figures (combined cycle)
+```
+
+### Combination 2: Hero's Journey + hidden tiger
+```
+Chapters 1–50: protagonist reborn in youth (Hero's Journey call)
+51–100: deliberately conceals strength (hidden tiger)
+101–200: forced to act, astounds everyone (hidden-tiger eruption)
+201+: progresses through Hero's Journey tests → ordeal → return
+```
+
+---
+
+## 🛠️ Framework selection guide
+
+### Criteria
+| Audience | Recommended framework | Reason |
 |---------|---------|------|
-| **小白读者** | 废材逆袭 + 打脸爽文 | 爽感直接，代入感强 |
-| **老白读者** | 英雄之旅 + 扮猪吃虎 | 有深度，反套路 |
-| **女性读者** | 宫斗/娱乐圈竞争框架 | 符合阅读习惯 |
-| **付费读者** | 修仙/都市异能框架 | 长线连载，易拉长 |
+| **New readers** | Underdog's rise + comeuppance | Direct gratification and strong identification |
+| **Experienced readers** | Hero's Journey + hidden tiger | Depth and trope subversion |
+| **Female readers** | Palace intrigue/entertainment-industry competition | Fits established reading patterns |
+| **Paying readers** | Cultivation/urban superpowers | Long serialization, readily extendable |
 
-### 框架检查清单
-- [ ] **是否有明确的三幕结构？**（开头/中间/结尾）
-- [ ] **是否有阶段性目标？**（让读者知道"下一步要干什么"）
-- [ ] **是否有节奏变化？**（高潮和过渡交替，不能一直紧张或一直平淡）
-- [ ] **是否符合类型特点？**（修仙文要有飞升，都市文要有装逼打脸）
+### Checklist
+- [ ] **Clear three-act structure?** (Beginning/middle/ending.)
+- [ ] **Intermediate goals?** (Readers know what comes next.)
+- [ ] **Pacing variation?** (Alternate climaxes and transitions; not endless tension or flatness.)
+- [ ] **Genre fit?** (Cultivation includes ascension; urban fiction includes status displays and comeuppance.)
 
 ---
 
-## 附录：框架速查表
+## Appendix: Framework quick reference
 
-### 快速套用模板
+### Ready-to-use template
 ```markdown
-## 我的小说框架选择
-**类型**: 修仙文
-**主框架**: 废材逆袭（吸引新读者）
-**辅助框架**: 打脸爽文（提升爽感）
-**剧情引擎**: 救妹妹（核心动机） + 三年之约（时间限制）
+## My novel's framework choices
+**Genre**: cultivation
+**Primary framework**: underdog's rise (attract new readers)
+**Supporting framework**: comeuppance power fantasy (increase gratification)
+**Plot engines**: rescue sister (core motivation) + three-year agreement (time limit)
 
-## 分卷规划
-第一卷: 废材期（被退婚，获得系统）
-第二卷: 逆袭期（宗门大比，打脸前未婚妻）
-第三卷: 救妹期（追踪线索，与反派初次交锋）
-第四卷: 终极对决（击败血神教主，救回妹妹）
-第五卷: 飞升（成为传奇，飞升仙界）
+## Volume plan
+Volume 1: failure stage (broken engagement, system gained)
+Volume 2: comeback (sect tournament, former fiancée humiliated)
+Volume 3: rescue journey (track clues, first antagonist clash)
+Volume 4: final confrontation (defeat Blood God Cult leader, rescue sister)
+Volume 5: ascension (become legend, ascend to immortal realm)
 ```
 
-使用此模板，可以快速搭建出一个结构完整的网文框架。
+Use this template to quickly build a structurally complete webnovel framework.

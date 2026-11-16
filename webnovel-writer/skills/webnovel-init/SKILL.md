@@ -1,96 +1,96 @@
 ---
 name: webnovel-init
-description: 深度初始化网文项目。通过分阶段交互收集完整创作信息，生成可直接进入规划与写作的项目骨架与约束文件。
+description: Deep initialization of a webnovel project. Collect complete creative information through staged interaction, producing a project skeleton and constraint files ready for planning and writing.
 allowed-tools: Read Write Edit Grep Bash Agent AskUserQuestion WebSearch WebFetch
-argument-hint: "[书名或灵感（可选）]"
+argument-hint: "[book title or inspiration (optional)]"
 ---
 
 # Project Initialization (Deep Mode)
 
-## 目标
+## Goals
 
-- 结构化交互收集足够信息，避免"先生成再返工"。
-- 产出可落地骨架：`.webnovel/state.json`、`设定集/*`、`大纲/总纲.md`、`.webnovel/idea_bank.json`、`.story-system/MASTER_SETTING.json`。
-- 保证后续 `/webnovel-plan` 与 `/webnovel-write` 可直接运行。
+- Collect sufficient information through structured interaction to avoid “generate first, redo later.”
+- Produce a usable skeleton: `.webnovel/state.json`, `设定集/*`, `大纲/总纲.md`, `.webnovel/idea_bank.json`, and `.story-system/MASTER_SETTING.json`.
+- Ensure subsequent `/webnovel-plan` and `/webnovel-write` can run directly.
 
-## 执行原则
+## Operating principles
 
-1. 先收集，再生成；未过充分性闸门，不执行 `webnovel.py init`。
-2. 分波次提问，每轮只问"当前缺失且会阻塞下一步"的信息；用户已明确的不重复问，冲突让用户裁决。
-3. 参考书拆解只返回结构化结果；用户确认前不得写入 `idea_bank.json`、`.story-system`、`设定集`、`大纲`、`正文`、`.webnovel/state.json` 或任何 canon/read model 文件。
+1. Collect first, then generate; do not run `webnovel.py init` before passing the sufficiency gate.
+2. Ask in waves, requesting only information that is currently missing and blocks the next step. Do not repeat questions the user has answered; let the user resolve conflicts.
+3. Reference-book deconstruction returns structured results only. Before user confirmation, do not write to `idea_bank.json`, `.story-system`, `设定集`, `大纲`, `正文`, `.webnovel/state.json`, or any canon/read-model file.
 
-## 引用加载策略
+## Reference loading strategy
 
-路径说明：`references/` 指 `skills/webnovel-init/references/`；`../../references/` 指共享 references。详细采集字段见 `references/init-collection-schema.md`（按需区段读，逐项收集，必填项以「充分性闸门」为准）。
+Paths: `references/` means `skills/webnovel-init/references/`; `../../references/` means shared references. Detailed collection fields are in `references/init-collection-schema.md` (read relevant sections on demand and collect item by item; required fields are governed by the “Sufficiency gate”).
 
 | Step | Trigger | Reference |
 |------|---------|-----------|
-| Step 1 | always | `references/system-data-flow.md`、`references/genre-tropes.md` |
-| 题材/卖点采集 | always | `../../references/genre-profiles.md`（只读当前 genre 段） |
-| 角色卡顿 | 人物扁平 | `references/worldbuilding/character-design.md` |
-| 世界观/力量 | 按需 | `references/worldbuilding/faction-systems.md`、`references/worldbuilding/power-systems.md`、`references/worldbuilding/world-rules.md`、`references/worldbuilding/setting-consistency.md` |
-| 创意约束 | Step 6 | `references/creativity/creativity-constraints.md`（区段：采集读 `## 一、创意包 Schema (Idea Package)`、`## 六、硬约束驱动创意 (Hard Constraints)`、`## 八、评分系统 (Scoring System)`，评分展示读 `### 8.1 五维评分`）、`references/creativity/selling-points.md`（区段：`## 9. 核心卖点定位模板` 骨架，按需补 `### 1.3 核心卖点黄金公式`、`## 7. 实战检查清单`）；复合题材读 `creative-combination.md`；卡顿读 `inspiration-collection.md`；题材命中读 `anti-trope-*.md` |
-| 命名 | 开始命名 | `python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill init --table 命名规则 --query "{命名对象} {题材}" --genre {题材}` |
+| Step 1 | always | `references/system-data-flow.md`, `references/genre-tropes.md` |
+| Genre/selling-point collection | always | `../../references/genre-profiles.md` (read only the current genre section) |
+| Character development stalled | Flat characters | `references/worldbuilding/character-design.md` |
+| Worldbuilding/power | On demand | `references/worldbuilding/faction-systems.md`, `references/worldbuilding/power-systems.md`, `references/worldbuilding/world-rules.md`, `references/worldbuilding/setting-consistency.md` |
+| Creative constraints | Step 6 | `references/creativity/creativity-constraints.md` (during collection read `## I. Idea Package Schema`, `## VI. Hard Constraints`, and `## VIII. Scoring System`; for score presentation read `### 8.1 Five Dimensions`), `references/creativity/selling-points.md` (`## 9. Design Templates` skeleton; supplement with `### 1.3 Core Formulas` and `## 7. Practical Checklists`, as needed); for hybrid genres read `creative-combination.md`; when stuck read `inspiration-collection.md`; load matching `anti-trope-*.md` for the genre |
+| Naming | Start naming | `python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill init --table 命名规则 --query "{命名对象} {题材}" --genre {题材}` |
 
-按需读取上述长细则（创意约束、反套路库、世界观设计指南、卖点模板），不内联其条目。
+Read these long-form guides (creative constraints, anti-trope libraries, worldbuilding guides, selling-point templates) on demand; do not inline their entries.
 
-## 工具策略
+## Tool strategy
 
-- `Read/Grep`：读项目上下文与参考文件。
-- `Bash`：执行 `webnovel.py init`、文件存在性检查、最小验证。
-- `Agent`：拆分并行子任务；Step 1.5 用户选择参考书拆解作灵感来源时调用 `webnovel-writer:deconstruction-agent`。
-- `AskUserQuestion`：关键分歧裁决、候选选择、最终确认。
-- `WebSearch`/`WebFetch`：仅在用户要求市场趋势/平台风向、创意约束需时间敏感依据、或题材信息明显不确定时使用，先 search 后 fetch 核验。
+- `Read/Grep`: read project context and reference files.
+- `Bash`: run `webnovel.py init`, file-existence checks, and minimal validation.
+- `Agent`: divide parallel subtasks; call `webnovel-writer:deconstruction-agent` in Step 1.5 when the user chooses reference-book deconstruction as an inspiration source.
+- `AskUserQuestion`: resolve consequential differences, select candidates, and obtain final confirmation.
+- `WebSearch`/`WebFetch`: use only when the user requests market/platform trends, creative constraints need time-sensitive evidence, or genre information is clearly uncertain. Search first, then fetch to verify.
 
-## 交互流程（Deep）
+## Interaction procedure (Deep)
 
-### Step 1：预检与上下文加载
+### Step 1: Preflight and context loading
 
-环境设置（bash 命令执行前）：
+Environment setup (before bash commands):
 ```bash
 export WORKSPACE_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 
 if [ -z "${CLAUDE_PLUGIN_ROOT}" ] || [ ! -d "${CLAUDE_PLUGIN_ROOT}/scripts" ]; then
-  echo "ERROR: 未设置 CLAUDE_PLUGIN_ROOT 或缺少目录: ${CLAUDE_PLUGIN_ROOT}/scripts" >&2
+  echo "ERROR: CLAUDE_PLUGIN_ROOT is unset or directory is missing: ${CLAUDE_PLUGIN_ROOT}/scripts" >&2
   exit 1
 fi
 export SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
 ```
 
-必须做：
-- 确认当前目录可写；确认入口脚本 `${SCRIPTS_DIR}/webnovel.py` 存在（仅支持插件目录）。
-- 初始化前不要用 `where` 把 `WORKSPACE_ROOT` 解析成书项目根；新项目尚不存在时 `where` 可能命中旧指针或旧项目。
-- 只打印工作区与脚本目录，确认生成目标将在工作区下的书名安全化子目录中。
-- 加载最小参考：`references/system-data-flow.md`、`references/genre-tropes.md`；`templates/genres/` 仅在选定题材后按需读取。
+Required:
+- Verify the current directory is writable and the entry script `${SCRIPTS_DIR}/webnovel.py` exists (plugin directory only).
+- Before initialization, do not use `where` to resolve `WORKSPACE_ROOT` to a book project root. When the new project does not yet exist, `where` may match an old pointer or project.
+- Print only workspace and script directories; confirm the generation target will be a sanitized book-title subdirectory under the workspace.
+- Load minimal references: `references/system-data-flow.md`, `references/genre-tropes.md`; read `templates/genres/` only on demand after choosing a genre.
 
-输出：进入 Deep 采集前的"已知信息清单"和"待收集清单"。
+Output: a “known information” list and “information to collect” list before entering Deep collection.
 
-### Step 1.5：灵感来源询问（可选）
+### Step 1.5: Ask about inspiration sources (optional)
 
-进入故事核采集前，必须先用 `AskUserQuestion` 或直接提问确认用户是否提供灵感来源。不要默认拆书，也不要把参考作品当作必填项。
+Before collecting the story core, use `AskUserQuestion` or a direct question to establish whether the user has an inspiration source. Do not deconstruct books by default or require reference works.
 
-建议询问：
+Suggested question:
 
 ```text
-你这本书的灵感来源想从哪里开始？可以直接说原创想法，也可以提供参考作品做拆书提炼。若要拆书，请给参考书名+平台，并尽量提供章节摘录或文本路径；没有参考也可以直接跳过。
+Where would you like to start with this book's inspiration? You can describe an original idea or provide a reference work to deconstruct for inspiration. For deconstruction, give the book title and platform, and ideally chapter excerpts or a text-file path. You can skip this if you have no reference.
 ```
 
-可接受来源：原创想法、参考作品拆书（书名/平台/章节摘录/文本路径）、市场趋势、题材模板/反套路库/已有脑洞片段。
+Acceptable sources: original ideas, reference-work deconstruction (title/platform/chapter excerpts/text path), market trends, genre templates/anti-trope libraries/existing idea fragments.
 
-当用户选择参考作品拆书且提供文本路径或章节摘录时，必须使用 `Agent` 工具调用 `webnovel-writer:deconstruction-agent`，不得由 init 主流程口头替代拆解结果。
+When the user chooses reference-work deconstruction and provides a text path or chapter excerpts, you must call `webnovel-writer:deconstruction-agent` through `Agent`. The init main workflow must not substitute a verbal analysis for its results.
 
 ```text
 Use the Agent tool to run `webnovel-writer:deconstruction-agent`.
 
-Prompt: reference_title={reference_title}; reference_source={reference_source}; reference_text_path={reference_text_path}; reference_text_excerpt={reference_text_excerpt}; analysis_mode={quick|deep|auto}; init_goal={当前初始化故事方向或空}; target_genre={题材或空}。只返回 init_reference_research JSON 对象，不写任何文件，不创建目录，不写 .story-system、.webnovel、设定集、大纲、正文、idea_bank.json、state.json 或任何 canon/read model 文件。
+Prompt: reference_title={reference_title}; reference_source={reference_source}; reference_text_path={reference_text_path}; reference_text_excerpt={reference_text_excerpt}; analysis_mode={quick|deep|auto}; init_goal={当前初始化故事方向或空}; target_genre={题材或空}. Return only an init_reference_research JSON object. Do not write files, create directories, or write .story-system, .webnovel, 设定集, 大纲, 正文, idea_bank.json, state.json, or any canon/read-model files.
 ```
 
-调用后主流程必须记录一份 `SubagentRun` 汇总（仅供最终报告使用，不写入 canon）：
+After the call, the main workflow must record a `SubagentRun` summary (for the final report only; do not write it into canon):
 
 ```json
 {
   "name": "deconstruction-agent",
-  "user_label": "参考作品拆解",
+  "user_label": "Reference-work deconstruction",
   "status": "completed | partial | failed | skipped",
   "problems": [],
   "auto_handled": [],
@@ -100,73 +100,73 @@ Prompt: reference_title={reference_title}; reference_source={reference_source}; 
 }
 ```
 
-`quality.passed=false`、`confidence < 0.85`、输入不足、文本不可读、降级 quick mode 或输出不完整时，必须写入 `problems`，并让最终报告进入“建议确认 / 必须处理”。
+If `quality.passed=false`, `confidence < 0.85`, input is insufficient, text is unreadable, processing degrades to quick mode, or output is incomplete, record it in `problems` and include it under “Suggested for confirmation / Must address” in the final report.
 
-处理规则：
-- 只有书名/平台、无文本或摘录时，先问能否提供摘录/路径；不能提供则把参考书仅作"方向线索"，不得编造其黄金三章、角色、设定或剧情事实。
-- 接收返回的 `init_reference_research` JSON 后，只使用 `reader_promise`、`opening_hook_patterns`、`cool_point_loops`、`protagonist_patterns`、`antagonist_pressure_patterns`、`pacing_notes`、`borrowable_structures`、`differentiation_requirements`、`init_candidates`、`quality`。
-- 先检查 `quality`：`quality.passed=false`、`confidence < 0.85` 或 `warnings` 非空时，不得把候选折叠进创意约束包，只能把风险和需补充材料展示给用户确认。
-- `do_not_copy` 和 `canon_contamination_warnings` 必须进入已知信息清单，作为后续创意生成红线。
-- Step 2-6 只能使用用户确认过、并已变形为本书差异化表达的模式；禁止把参考书角色、设定、组织、地点、金手指、剧情事实原样写入生成项目文件。
+Handling rules:
+- If only a title/platform is available, without text or excerpts, first ask whether the user can provide excerpts/a path. If not, treat the reference solely as a “directional clue”; do not invent its opening three chapters, characters, settings, or plot facts.
+- After receiving `init_reference_research` JSON, use only `reader_promise`, `opening_hook_patterns`, `cool_point_loops`, `protagonist_patterns`, `antagonist_pressure_patterns`, `pacing_notes`, `borrowable_structures`, `differentiation_requirements`, `init_candidates`, and `quality`.
+- Check `quality` first: if `quality.passed=false`, `confidence < 0.85`, or `warnings` is nonempty, do not fold candidates into the creative constraint package; present only risks and needed supplementary material for user confirmation.
+- Include `do_not_copy` and `canon_contamination_warnings` in the known-information list as red lines for subsequent idea generation.
+- Steps 2–6 may use only patterns the user has confirmed and that have been transformed into differentiated expressions for this book. Never copy reference-book characters, settings, organizations, locations, special abilities, or plot facts verbatim into generated project files.
 
-### Step 2：故事核与商业定位
+### Step 2: Story core and commercial positioning
 
-必收：书名、题材（支持 A+B 复合）、目标规模（总字数或总章数）、一句话故事、核心冲突、目标读者/平台。
+Required: title, genre (A+B hybrids supported), target scale (total word count or chapters), one-sentence story, core conflict, target readers/platform.
 
-canonical 题材集合（写入 `project_info.genre`）：都市、玄幻、仙侠、奇幻、科幻、历史、悬疑、游戏、古言、现言、幻言、年代、种田、快穿、衍生。
+Canonical genre set (written to `project_info.genre`): 都市, 玄幻, 仙侠, 奇幻, 科幻, 历史, 悬疑, 游戏, 古言, 现言, 幻言, 年代, 种田, 快穿, 衍生. These are runtime identifiers for urban, xuanhuan, xianxia, fantasy, science fiction, historical, mystery, gaming, historical romance, contemporary romance, fantasy romance, period fiction, farming, quick transmigration, and derivative fiction.
 
-可自由输入细分 preset / 套路 / 形式，初始化脚本会映射到 canonical 并按 taxonomy 加载模板（示例：修仙、系统流、规则怪谈、宫斗宅斗、电竞、末世）。优先让用户自由描述再二次结构化确认；卡住时给 2-4 个候选方向。
+Users may freely enter subgenre presets / tropes / formats; the initialization script maps them to canonical genres and loads templates according to the taxonomy (examples: 修仙, 系统流, 规则怪谈, 宫斗宅斗, 电竞, 末世: cultivation, system fiction, rules horror, palace/household intrigue, esports, apocalypse). Prefer free-form user descriptions followed by structured confirmation; offer 2–4 candidate directions when they are stuck.
 
-### Step 3：角色骨架与关系冲突
+### Step 3: Character skeleton and relationship conflicts
 
-必收：主角姓名、主角欲望、主角缺陷（会害他付代价）、主角结构（单/多主角）、感情线配置（无/单女主/多女主）、反派分层（小/中/大）与镜像对抗一句话。可选：主角原型标签、多主角分工。
+Required: protagonist name, desire, flaw (one that imposes a cost), protagonist structure (single/multiple), romance configuration (none/single heroine/multiple heroines), antagonist tiers (minor/intermediate/major), and a one-sentence mirror conflict. Optional: protagonist archetype tags, division of roles among multiple protagonists.
 
-### Step 4：金手指与兑现机制
+### Step 4: Special ability and payoff mechanism
 
-必收：金手指类型（可为"无金手指"）、名称/系统名（无则留空）、风格、可见度、不可逆代价（必须有代价或明确"无+理由"）、成长节奏。
-条件必收：系统流给系统性格+升级节奏；重生给重生时间点+记忆完整度；传承/器灵给辅助边界+出手限制。
+Required: special-ability type (may be “no special ability”), name/system name (empty if absent), style, visibility, irreversible cost (a cost is mandatory, or explicitly “none + reason”), and growth pacing.
+Conditionally required: system fiction needs system personality + upgrade pacing; rebirth needs rebirth time point + memory completeness; inheritance/artifact spirits need assistance boundaries + intervention limits.
 
-### Step 5：世界观与力量规则
+### Step 5: Worldbuilding and power rules
 
-必收：世界规模（单城/多域/大陆/多界）、力量体系类型、势力格局、社会阶层与资源分配。
-题材相关：货币体系与兑换规则、宗门/组织层级、境界链与小境界。
+Required: world scale (single city/multiple regions/continent/multiple worlds), power-system type, faction landscape, social classes, and resource distribution.
+Genre-dependent: currency and exchange rules, sect/organization hierarchy, realm chain and sub-realms.
 
-### Step 6：创意约束包（差异化核心）
+### Step 6: Creative constraint package (differentiation core)
 
-流程：
-1. 汇总 Step 1.5 已确认的灵感来源：原创想法、参考拆书结果、市场趋势、题材模板或反套路库。
-2. 基于题材映射加载反套路库（最多 2 个主相关库）。
-3. 生成 2-3 套创意包，每套含：一句话卖点、反套路规则 1 条、硬约束 2-3 条、主角缺陷驱动一句话、反派镜像一句话、开篇钩子。
-4. 三问筛选：为什么这题材必须这么写？换常规主角会不会塌？卖点能否一句话讲清且不撞模板？
-5. 展示五维评分（详见 `references/creativity/creativity-constraints.md` 的 `8.1 五维评分`）辅助决策。
-6. 用户选择最终方案，或拒绝并给出原因。
+Procedure:
+1. Summarize confirmed inspiration sources from Step 1.5: original ideas, reference deconstruction results, market trends, genre templates, or anti-trope libraries.
+2. Load anti-trope libraries according to genre mapping (at most two primary relevant libraries).
+3. Generate 2–3 idea packages, each with: a one-sentence selling point, one anti-trope rule, 2–3 hard constraints, one sentence explaining how the protagonist's flaw drives the story, one antagonist-mirror sentence, and an opening hook.
+4. Filter with three questions: Why must this genre be written this way? Would it collapse with a conventional protagonist? Can the selling point be expressed in one sentence without duplicating a template?
+5. Present five-dimension scores (see section 8.1 of `references/creativity/creativity-constraints.md`) to help the decision.
+6. The user selects the final plan, or rejects it and gives reasons.
 
-备注：
-- 若用户要求"贴近当下市场"，可触发外部检索并标注时间戳。
-- 若使用了参考拆解，展示候选时必须标明参考来源、转换方式、不可复制项和差异化要求；用户未明确确认前，不写入 `idea_bank.json` 或任何生成项目文件。
+Notes:
+- If the user requests alignment with the current market, external research may be triggered and timestamped.
+- If reference deconstruction was used, candidate presentations must identify the reference source, transformation method, non-copyable elements, and differentiation requirements. Do not write to `idea_bank.json` or any generated project file before explicit user confirmation.
 
-### Step 7：一致性复述与最终确认
+### Step 7: Consistency recap and final confirmation
 
-必须输出"初始化摘要草案"并让用户确认：故事核（题材/一句话故事/核心冲突）、主角核（欲望/缺陷）、金手指核（能力与代价）、世界核（规模/力量/势力）、创意约束核（反套路+硬约束）。
+Output a “draft initialization summary” and request confirmation: story core (genre/one-sentence story/core conflict), protagonist core (desire/flaw), special-ability core (ability and cost), world core (scale/power/factions), and creative-constraint core (anti-trope + hard constraints).
 
-确认规则：用户未明确确认，不执行生成；用户仅改局部，回到对应 Step 最小重采集。
+Confirmation rules: do not generate without explicit user confirmation; if the user changes only one part, return to the corresponding step for minimal recollection.
 
-## 充分性闸门（必须通过）
+## Sufficiency gate (must pass)
 
-未满足以下条件前，禁止执行 `webnovel.py init`：
+Do not run `webnovel.py init` until all of the following are satisfied:
 
-1. 书名、题材（可复合）已确定。
-2. 目标规模可计算（字数或章数至少一个）。
-3. 主角姓名 + 欲望 + 缺陷完整。
-4. 世界规模 + 力量体系类型完整。
-5. 金手指类型已确定（允许"无金手指"）。
-6. 创意约束已确定：反套路规则 1 条 + 硬约束至少 2 条，或用户明确拒绝并记录原因。
+1. Title and genre (possibly hybrid) are settled.
+2. Target scale is calculable (at least word count or chapter count).
+3. Protagonist name + desire + flaw are complete.
+4. World scale + power-system type are complete.
+5. Special-ability type is settled (no special ability is allowed).
+6. Creative constraints are settled: one anti-trope rule + at least two hard constraints, or the user explicitly refuses and the reason is recorded.
 
-## 项目目录安全规则（必须）
+## Project directory safety rules (mandatory)
 
-- `project_root` 必须由书名安全化生成：`PROJECT_ROOT="${WORKSPACE_ROOT}/${PROJECT_SLUG}"`；安全化结果为空或以 `.` 开头时自动前缀 `proj-`。
-- 禁止在插件目录（`${CLAUDE_PLUGIN_ROOT}`）下生成项目文件；禁止直接把 `WORKSPACE_ROOT` 当作 `PROJECT_ROOT`，除非用户明确指定当前目录就是书项目根。
-- 初始化前必须展示并确认 `WORKSPACE_ROOT`、`PROJECT_SLUG`、`PROJECT_ROOT`。
+- `project_root` must be generated from a sanitized title: `PROJECT_ROOT="${WORKSPACE_ROOT}/${PROJECT_SLUG}"`; automatically prefix `proj-` if sanitization yields an empty string or one starting with `.`.
+- Do not generate project files under the plugin directory (`${CLAUDE_PLUGIN_ROOT}`). Do not use `WORKSPACE_ROOT` directly as `PROJECT_ROOT` unless the user explicitly identifies the current directory as the book project root.
+- Display and confirm `WORKSPACE_ROOT`, `PROJECT_SLUG`, and `PROJECT_ROOT` before initialization.
 
 ```bash
 PROJECT_SLUG="$(python -X utf8 -c "import re,sys; title=sys.argv[1].strip(); slug=re.sub(r'[\\\\/:*?\"<>|]+','',title); slug=re.sub(r'\\s+','-',slug).strip('-'); print(('proj-' + slug) if (not slug or slug.startswith('.')) else slug)" "{title}")"
@@ -176,11 +176,11 @@ echo "PROJECT_SLUG=${PROJECT_SLUG}"
 echo "PROJECT_ROOT=${PROJECT_ROOT}"
 ```
 
-## 执行生成
+## Generate the project
 
-### 1) 运行初始化脚本
+### 1) Run the initialization script
 
-参数全部来自上面的采集对象（书名/题材/主角/金手指/世界观/反派/创意约束等），逐字段映射为 `webnovel.py init` 的 `--*` 选项；完整字段清单见 `references/init-collection-schema.md`，可用 `python "${SCRIPTS_DIR}/webnovel.py" init --help` 核对选项名。
+All arguments come from the collected data above (title/genre/protagonist/special ability/worldbuilding/antagonists/creative constraints, etc.). Map fields individually to `webnovel.py init` `--*` options. The complete field list is in `references/init-collection-schema.md`; use `python "${SCRIPTS_DIR}/webnovel.py" init --help` to check option names.
 
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" init \
@@ -191,12 +191,12 @@ python "${SCRIPTS_DIR}/webnovel.py" init \
   --golden-finger-type "{gf_type}" --gf-irreversible-cost "{gf_irreversible_cost}" \
   --world-scale "{world_scale}" --power-system-type "{power_system_type}" \
   --core-selling-points "{core_points}"
-  # 其余字段（结构/感情线/反派/势力/货币/境界/原型/读者/平台等）按采集对象继续追加对应 --* 选项
+  # Append the corresponding --* options for remaining collected fields (structure/romance/antagonists/factions/currency/realms/archetypes/readers/platform, etc.)
 ```
 
-### 2) 写入 `idea_bank.json`
+### 2) Write `idea_bank.json`
 
-写入 `.webnovel/idea_bank.json`，内容必须与最终选定方案一致：
+Write `.webnovel/idea_bank.json`; its content must match the final selected plan:
 
 ```json
 {
@@ -205,13 +205,13 @@ python "${SCRIPTS_DIR}/webnovel.py" init \
 }
 ```
 
-### 3) Patch 总纲
+### 3) Patch the master outline
 
-`大纲/总纲.md` 必须补齐：故事一句话、核心主线/暗线、创意约束（反套路、硬约束、主角缺陷、反派镜像）、反派分层、关键爽点里程碑（2-3 条）。
+Complete `大纲/总纲.md` with: one-sentence story, core main plot/hidden plot, creative constraints (anti-trope, hard constraints, protagonist flaw, antagonist mirror), antagonist tiers, and key gratification milestones (2–3).
 
-### 4) 生成写前合同树（Story System 初始化）
+### 4) Generate the pre-writing contract tree (Story System initialization)
 
-init 完成后立即生成 MASTER_SETTING，让后续 plan 有调性/禁忌参照。此处不传 `--chapter`（只生成 `MASTER_SETTING.json` 和 `anti_patterns.json`），也不传 `--emit-runtime-contracts`（还没有卷/章级数据）；plan 拆到具体章节时再生成 volume/chapter/review 合同。
+Generate MASTER_SETTING immediately after init so later planning has tone/prohibition references. Do not pass `--chapter` here (generate only `MASTER_SETTING.json` and `anti_patterns.json`), or `--emit-runtime-contracts` (no volume/chapter data yet). Generate volume/chapter/review contracts when plan reaches specific chapters.
 
 ```bash
 GENRE="$(python -X utf8 -c "import json,os; root=os.environ['PROJECT_ROOT']; s=json.load(open(root + '/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
@@ -220,7 +220,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
   story-system "${GENRE}" --genre "${GENRE}" --persist --format json
 ```
 
-## 验证与交付
+## Validation and delivery
 
 ```bash
 test -f "${PROJECT_ROOT}/.webnovel/state.json"
@@ -231,22 +231,22 @@ test -f "${PROJECT_ROOT}/.story-system/MASTER_SETTING.json"
 test "$(basename "${PROJECT_ROOT}")" = "${PROJECT_SLUG}"
 ```
 
-成功标准：
-- `state.json` 存在且 title/genre/target_words/target_chapters 不为空。
-- 设定集核心文件存在：`世界观.md`、`力量体系.md`、`主角卡.md`；单主角不生成 `主角组.md`，`heroine_config=无女主` 不生成 `女主卡.md`。
-- 默认不生成 `金手指设计.md`、`复合题材-融合逻辑.md`、`爽点规划.md` 或空目录；这些以主角卡、世界观、卷纲为事实源。
-- `总纲.md` 已填核心主线与约束字段；`idea_bank.json` 已写入且与最终选定方案一致。
-- `.story-system/MASTER_SETTING.json` 存在且 `route.primary_genre` 非空。
+Success criteria:
+- `state.json` exists and title/genre/target_words/target_chapters are nonempty.
+- Core setting files exist: `世界观.md`, `力量体系.md`, `主角卡.md`; do not generate `主角组.md` for a single protagonist or `女主卡.md` when `heroine_config=无女主`.
+- By default, do not generate `金手指设计.md`, `复合题材-融合逻辑.md`, `爽点规划.md`, or empty directories; their sources of truth are the protagonist sheet, worldbuilding, and volume outline.
+- `总纲.md` has its core plot and constraint fields filled; `idea_bank.json` is written and matches the final selected plan.
+- `.story-system/MASTER_SETTING.json` exists and `route.primary_genre` is nonempty.
 
-## 失败处理（最小回滚）
+## Failure handling (minimal rollback)
 
-触发：关键文件缺失；总纲关键字段缺失；约束启用但 `idea_bank.json` 缺失或不一致。
+Triggers: missing key files; missing key master-outline fields; constraints enabled but `idea_bank.json` missing or inconsistent.
 
-恢复：只补缺失字段，不全量重问；只重跑最小步骤（文件缺失→重跑 `webnovel.py init`；总纲缺字段→只 patch 总纲；idea_bank 不一致→只重写该文件）；重新验证，全部通过后结束。
+Recovery: collect only missing fields rather than asking everything again; rerun only the smallest required step (missing files → rerun `webnovel.py init`; missing outline fields → patch only the master outline; inconsistent idea_bank → rewrite only that file). Revalidate and finish after all checks pass.
 
-## 作者友好过程提示与恢复契约
+## Author-friendly progress and recovery contract
 
-初始化开始前先说明本次会经历：收集故事核心 -> 确认创意约束 -> 生成项目骨架 -> 写入初始故事档案 -> 验证能否进入规划。过程提示用作者语言，不直接输出原始 JSON、traceback 或长命令日志；技术详情写入 `.webnovel/logs/run_last.log`：
+Before initialization begins, explain the stages: collect the story core -> confirm creative constraints -> generate the project skeleton -> write initial story records -> verify readiness for planning. Use author-friendly language in progress updates; do not output raw JSON, tracebacks, or long command logs. Write technical details to `.webnovel/logs/run_last.log`:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" run-log \
@@ -255,11 +255,11 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" run
   --format text
 ```
 
-过程提示每次不超过两行，只说当前动作和影响，例如“正在生成项目骨架：会创建设定集、总纲和初始故事档案”。少打扰确认策略：默认继续收集和生成；只有核心设定、参考拆解采用、项目目录安全、写入 canon 前的最终方案需要用户拍板。
+Limit progress updates to two lines each and describe only the current action and impact, e.g. “Generating the project skeleton: this creates the setting collection, master outline, and initial story records.” Minimize interruptions: continue collection and generation by default; only core settings, adoption of reference deconstruction, project-directory safety, and the final plan before canon writes need the user's decision.
 
-需要用户裁决时使用有限选项，并说明每个选项影响；例如保留当前设定 / 修改局部 / 暂停初始化。卡住时必须说明卡点、已完成内容和恢复建议，例如“设定集已生成，Story System 初始档案缺失；重新运行 `/webnovel-init` 会只补缺失文件”。
+When a user decision is needed, offer finite choices and explain each consequence, e.g. keep current settings / modify one part / pause initialization. When stuck, explain the blocker, completed work, and recovery advice, e.g. “The setting collection is generated, but initial Story System records are missing; rerunning `/webnovel-init` will fill only the missing files.”
 
-不可恢复故障才在最终报告提示 `.webnovel/logs/run_last.log`；平时只保留日志，不打扰作者。收尾必须调用作者报告 helper：
+Mention `.webnovel/logs/run_last.log` in the final report only for unrecoverable failures; otherwise retain logs without bothering the author. Always call the author-report helper when finishing:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" user-report \
@@ -267,42 +267,42 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" use
   --format text
 ```
 
-## 作者友好最终报告契约
+## Author-friendly final report contract
 
-最终回复必须面向作者，不输出原始 JSON、traceback 或长命令日志。使用固定三段式，并以一句总状态开头：
+The final reply must address the author, without raw JSON, tracebacks, or long command logs. Use the fixed three-part format, beginning with one overall-status sentence:
 
 ```text
-总状态：已完成 / 部分完成 / 需要你处理 / 未完成。
+Overall status: Completed / Partially completed / Needs your attention / Not completed.
 
-一、产生的文件与完成情况
+1. Files produced and completion status
 - ...
 
-二、过程中遇到的问题与异常耗时
-- 已自动处理：...
-- 建议确认：...
-- 必须处理：...
+2. Issues and unusually long steps encountered
+- Automatically handled: ...
+- Suggested for confirmation: ...
+- Must address: ...
 
-三、下一步建议
+3. Recommended next steps
 - ...
 ```
 
-必须汇报：
-- 项目目录、`.webnovel/state.json`、`.webnovel/idea_bank.json`。
-- `设定集/世界观.md`、`设定集/力量体系.md`、`设定集/主角卡.md`、`设定集/反派设计.md`。
-- `大纲/总纲.md`、`.story-system/MASTER_SETTING.json`。
-- 是否使用参考作品拆解；用户确认前未写入 canon 的情况。
-- 缺失信息是否影响后续 `/webnovel-plan`。
+Must report:
+- Project directory, `.webnovel/state.json`, and `.webnovel/idea_bank.json`.
+- `设定集/世界观.md`, `设定集/力量体系.md`, `设定集/主角卡.md`, and `设定集/反派设计.md`.
+- `大纲/总纲.md` and `.story-system/MASTER_SETTING.json`.
+- Whether reference-work deconstruction was used, and that canon was not written before user confirmation.
+- Whether missing information affects subsequent `/webnovel-plan`.
 
-异常分类：
-- 已自动处理：脚本补齐目录、重跑最小初始化步骤、重新生成缺失的非内容文件等。
-- 建议确认：参考拆解质量略低、候选创意需用户再看一眼。
-- 必须处理：核心设定未确认、项目目录不安全、关键文件仍缺失。
+Issue categories:
+- Automatically handled: script-created missing directories, rerunning minimal initialization steps, regenerating missing non-content files, etc.
+- Suggested for confirmation: slightly low-quality reference analysis, candidate ideas worth another user look.
+- Must address: unconfirmed core settings, unsafe project directory, still-missing key files.
 
-下一步建议必须使用任务化语言 + 可复制命令，例如：
+Next-step suggestions must use task-oriented language plus copyable commands, for example:
 
 ```text
-- 接下来可以规划第一卷：
+- Next, plan the first volume:
   /webnovel-plan 1
 ```
 
-不写 token 统计；如需排查故障，只给日志路径或建议运行 `/webnovel-doctor`。
+Do not report token statistics; for troubleshooting, provide only the log path or suggest `/webnovel-doctor`.

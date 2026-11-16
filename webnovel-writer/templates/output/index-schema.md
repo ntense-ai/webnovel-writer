@@ -1,12 +1,12 @@
-# index.db 表结构说明
+# index.db Table Schema
 
-> 以 SQLite 存储大规模数据（实体/别名/场景/关系）。
+> Stores large datasets (entities/aliases/scenes/relationships) in SQLite.
 >
-> 当前结构包含追读力/可观测性相关表。
+> The current schema includes reader-retention and observability tables.
 
-## 表一览
+## Table Overview
 
-### 核心索引表
+### Core Index Tables
 
 ### chapters
 - chapter (INTEGER, PK)
@@ -68,17 +68,17 @@
 - description (TEXT)
 - chapter (INTEGER)
 
-### 追读力债务相关表
+### Reader-Retention Debt Tables
 - override_contracts
 - chase_debt
 - debt_events
 - chapter_reading_power
 
-### 可观测性与审查相关表
+### Observability and Review Tables
 - invalid_facts
 - review_metrics
 - rag_query_log
 - tool_call_stats
 - writing_checklist_scores
 
-> 实际字段与约束以 `.claude/scripts/data_modules/index_manager.py` 为准。
+> The authoritative fields and constraints are defined in `.claude/scripts/data_modules/index_manager.py`.

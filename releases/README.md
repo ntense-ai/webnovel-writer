@@ -1,56 +1,63 @@
-# 发布说明维护规则
+# Maintaining Release Notes
 
-每次正式发版都必须在这里新增一份 `vX.Y.Z.md`，作为 GitHub Release 正文的唯一来源。
+Every stable release must add a `vX.Y.Z.md` file here as the sole source of its GitHub Release body.
 
-发布说明不是最后一次提交的摘要，而是从上一个正式 tag 到本次发布提交之间的完整用户可感知变化。写之前先运行：
+Release notes are not a summary of the last commit. They cover all user-visible changes between the previous stable tag and the release commit. Before writing, run:
 
 ```bash
 git tag --list "v*" --sort=-v:refname
-git log --oneline v上一版本..HEAD
-git diff --stat v上一版本..HEAD
+git log --oneline <previous-version-tag>..HEAD
+git diff --stat <previous-version-tag>..HEAD
 ```
 
-## 写作顺序
+## Writing Order
 
-1. 先确定发版范围，例如 `v6.1.0..v6.2.0`。
-2. 先写“给作者看的变化”，使用中文网文作者能理解的场景语言。
-3. 再写“是否需要改旧项目”和“已知影响”。
-4. 最后写“给维护者”，记录 CLI、schema、测试、CI、内部结构变化。
-5. 运行 `validate_release_notes.py` 检查格式和范围。
-6. 推送到 `master` 后由 `Plugin Release` 工作流自动创建 tag 和 GitHub Release；已存在的 tag 或 Release 不会重复创建。
+1. Establish the release range, for example `v6.1.0..v6.2.0`.
+2. Write “Changes for Authors” first, using practical language webnovel authors understand.
+3. Add “Do Existing Projects Need Changes?” and “Known Impact.”
+4. Finish with “For Maintainers,” recording CLI, schema, test, CI, and internal structural changes.
+5. Run `validate_release_notes.py` to check format and scope.
+6. After a push to `master`, the `Plugin Release` workflow automatically creates the tag and GitHub Release. Existing tags and releases are not recreated.
 
-## 固定模板
+## Standard Template
+
+The current validator requires the original Chinese heading strings. Keep the compatibility comments shown below while writing the visible notes in English.
 
 ```md
-# vX.Y.Z - 一句中文用户收益
+# vX.Y.Z - One sentence describing the benefit for users
 
-## 发版范围
+## Release Scope
+<!-- Compatibility marker: ## 发版范围 -->
 
-本次发布覆盖从 `vA.B.C` 到本发布提交的全部变化。
+This release covers all changes from `vA.B.C` to the release commit.
 
-## 给作者看的变化
-
-- ...
-
-## 是否需要改旧项目
+## Changes for Authors
+<!-- Compatibility marker: ## 给作者看的变化 -->
 
 - ...
 
-## 适合谁升级
+## Do Existing Projects Need Changes?
+<!-- Compatibility marker: ## 是否需要改旧项目 -->
 
 - ...
 
-## 已知影响
+## Who Should Upgrade?
 
 - ...
 
-## 给维护者
+## Known Impact
 
 - ...
 
-## 验证
+## For Maintainers
+<!-- Compatibility marker: ## 给维护者 -->
+
+- ...
+
+## Verification
+<!-- Compatibility marker: ## 验证 -->
 
 - ...
 ```
 
-README 只保留一句短摘要；完整变化写在 `CHANGELOG.md` 和本目录的版本文件里。
+Keep only a brief one-sentence summary in the README. Record complete changes in `CHANGELOG.md` and the version files in this directory.

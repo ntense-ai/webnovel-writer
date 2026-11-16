@@ -1,7 +1,7 @@
 ---
 name: scene-description
-purpose: 场景描写时按需加载
+purpose: Load on demand when writing scene description
 ---
 
-本文件内容已迁移到 CSV `写作技法`，运行时通过 `reference_search.py --table 写作技法` 检索（场景/环境/感官相关行如 WT-003/WT-016/WT-039/WT-046/WT-049）。
-此处不再维护正文（历史见 git）。
+This content has moved to the `写作技法` CSV. At runtime, search with `reference_search.py --table 写作技法` (scene/environment/sensory-related rows include WT-003/WT-016/WT-039/WT-046/WT-049).
+The body is no longer maintained here; see Git history.

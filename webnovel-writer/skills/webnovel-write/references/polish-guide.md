@@ -1,351 +1,353 @@
 ---
 name: polish-guide
-purpose: 章节生成后的润色阶段加载，基于审查报告修复问题 + 强化网文口感
+purpose: Load during post-generation polishing to repair review issues and strengthen web-fiction readability
 ---
 
 <context>
-此文件用于 Step 4 润色阶段，目标是“修问题”而非“重写剧情”。
+For Step 4 polishing: the goal is to fix problems, not rewrite the plot.
 
-输入来自两部分：
-1. 章节正文（Step 2 输出）
-2. 审查报告（Step 3 聚合结果）
+Inputs come from two sources:
+1. Chapter prose (Step 2 output)
+2. Review report (Step 3 aggregated results)
 
-职责定义：
-- Step 4 同时负责风格适配（消除模板腔、说明腔、机械腔）和问题修复
-- 包括审查问题修复、Anti-AI 终检、毒点规避
+Responsibilities:
+- Step 4 handles both style adaptation (remove formulaic, expository, mechanical voice) and issue repair.
+- Includes review fixes, final Anti-AI checks, and avoidance of reader-alienating pitfalls.
 </context>
 
 <instructions>
 
-## 1. 输入契约
+## 1. Input contract
 
 ```json
 {
   "chapter_file": "正文/第0123章-章节标题.md",
   "issues": [
-    {"severity": "critical", "category": "setting", "location": "第6段", "description": "境界越权", "evidence": "当前斗者使用斗师技能", "fix_hint": "改为当前境界可用技能", "blocking": true},
-    {"severity": "high", "category": "character", "location": "第9段", "description": "角色口吻偏离", "evidence": "萧炎使用书面语", "fix_hint": "改为符合角色性格的口语"}
+    {"severity": "critical", "category": "setting", "location": "Paragraph 6", "description": "Realm overreach", "evidence": "A Dou Practitioner uses a Dou Master's skill", "fix_hint": "Use a skill available at the current realm", "blocking": true},
+    {"severity": "high", "category": "character", "location": "Paragraph 9", "description": "Character voice mismatch", "evidence": "Xiao Yan uses formal written language", "fix_hint": "Use colloquial speech fitting the character"}
   ],
-  "summary": "1个阻断，1个高优"
+  "summary": "One blocker, one high-priority issue"
 }
 ```
 
-`chapter_file` 必须是当前章节的实际文件路径；若项目尚未迁移到带标题文件名，也可传 `正文/第0123章.md`。issue 格式参见 `review-schema.md`。
+`chapter_file` must be the actual current chapter path; if the project has not migrated to titled filenames, `正文/第0123章.md` is also allowed. See `review-schema.md` for issue format.
 
-## 2. 执行顺序（必须按序）
+## 2. Execution order (must follow in order)
 
-1. 修复审查报告中的问题（先 `critical/high`）
-2. 校验网文化 Hard/Soft/Style 规则
-3. 执行 Phase 1 Anti-AI 终检并改写
-4. 执行 No-Poison 毒点规避检查
-5. 输出润色结果与 deviation（若有）
+1. Fix review-report issues (`critical/high` first).
+2. Validate web-fiction Hard/Soft/Style rules.
+3. Perform Phase 1 final Anti-AI checks and rewrite.
+4. Perform No-Poison checks for reader-alienating pitfalls.
+5. Output polished results and deviations, if any.
 
-## 2A. Anti-AI 检测细则（对应执行顺序第 3 步）
+## 2A. Anti-AI detection details (execution step 3)
 
-> 词频统计**仅作为提醒**，不再作为硬性门槛。若明显超标，需修复并简要说明。  
-> 说明：即使词频仅作提醒，若最终文本仍有明显 AI 模板痕迹，`anti_ai_force_check` 仍应判定为 `fail`。
-> 本节为执行摘要；完整 7 层规则与高频词库见下方「Phase 1 增补」章节，两节配套执行。
+> Word-frequency statistics are **reminders only**, no longer hard thresholds. Repair obvious excesses and briefly explain.
+> Even though frequency is only a reminder, obvious AI-template traces in the final text still require `anti_ai_force_check=fail`.
+> This section is an execution summary; use it together with the full seven-layer rules and vocabulary in the Phase 1 supplement below.
 
-### 常见AI痕迹
+### Common AI traces
 
-| 特征 | 表现 |
+| Feature | Symptom |
 |------|------|
-| 句式规整 | 句子长度相近，结构相似 |
-| 模式化词汇 | 首先、其次、最后、值得注意的是 |
-| 过度连接 | 大量使用然而、因此、此外 |
-| 情感平淡 | 缺乏个性化情绪表达 |
-| 信息过密 | 每句都有信息，缺少留白 |
+| Uniform syntax | Similar sentence lengths and structures |
+| Formulaic vocabulary | First, second, finally, notably |
+| Excessive connectors | Heavy use of however, therefore, furthermore |
+| Flat emotion | Lacks individualized emotional expression |
+| Overdense information | Every sentence conveys information; no breathing room |
 
-### 高频词提醒清单
+### Frequent-word reminders
 
-| 类型 | 关键词 |
+| Type | Keywords (English glosses) |
 |------|--------|
-| 总结词 | 综合 / 总之 / 由此可见 / 总而言之 |
-| 列举结构 | 首先 / 其次 / 最后 / 第一 / 第二 / 第三 |
-| 学术词 | 而言 / 某种程度上 / 本质上 |
-| 因果连词 | 因为 / 所以 / 由于 / 因此 |
+| Summaries | Overall / in conclusion / thus we see / all in all |
+| Enumeration | First / second / finally / firstly / secondly / thirdly |
+| Academic | In terms of / to some extent / essentially |
+| Causal connectives | Because / so / due to / therefore |
 
 ---
 
-## 自然化程度标准（建议）
+## Naturalness standards (recommended)
 
-| 指标 | 不达标 | 达标 |
+| Metric | Below standard | Meets standard |
 |-----|-------|------|
-| 停顿词 | < 0.5次/500字 | 1-2次/500字 |
-| 不确定表达 | 0次 | >= 2次/章 |
-| 短句占比 | < 20% | 30-50% |
-| 口语词 | 0次/1000字 | >= 2次/1000字 |
+| Hesitation words | <0.5 per 500 Chinese characters | 1–2 per 500 |
+| Uncertain expressions | None | ≥2/chapter |
+| Short-sentence proportion | <20% | 30–50% |
+| Colloquial expressions | None per 1,000 characters | ≥2 per 1,000 |
 
-> **提示**：自然化不是越多越好，超量会显得刻意。
+> **Note**: more naturalizing devices are not always better; excess feels forced.
 
-### 强制执行协议（新增）
+### Mandatory execution protocol (new)
 
-- 必须完整执行本节“7层规则 + 高频词库 + 终检清单”，禁止裁剪为“建议项”。
-- 必须按全文逐段检查执行，禁止抽样检查。
-- Step 4 完成后必须输出 `anti_ai_force_check: pass/fail`。
-- 若结果为 `fail`，必须继续留在 Step 4 重写，不得进入 Step 5。
-- 若命中高风险表达但因剧情必要保留，必须写入 `deviation`（位置 + 原因 + 代价）。
+- Fully execute the seven-layer rules + vocabulary + final checklist; do not downgrade them to optional advice.
+- Check the entire text paragraph by paragraph; no sampling.
+- After Step 4, output `anti_ai_force_check: pass/fail`.
+- If `fail`, remain in Step 4 and rewrite; do not enter Step 5.
+- If a high-risk expression is retained because the plot needs it, record a `deviation` (location + reason + cost).
 
-### 全文检查范围（必查）
+### Full-text scope (mandatory)
 
-- 全文章节逐段检查
-- 全部对白逐轮检查
-- 章首/章中/章末都必须通过 Anti-AI 规则
-- 任何命中项都必须改写或记录 deviation
+- Every paragraph of the chapter
+- Every turn of dialogue
+- Beginning, middle, and ending must all pass Anti-AI rules
+- Rewrite every match or record a deviation
 
 ---
 
-## Phase 1 增补：Anti-AI 规范（7层，原版）
+## Phase 1 supplement: Anti-AI rules (seven layers, original)
 
-> 目标：降低模板腔、说明腔、机械腔。  
-> 原则：优先“可读性与人物真实”，不是机械替换每个词。
+> Goal: reduce formulaic, expository, and mechanical voice.
+> Principle: prioritize readability and believable characters, not mechanical word replacement.
 
-### 第1层：高风险词汇（200+词库，首批）
+### Layer 1: High-risk vocabulary (200+ terms, initial set)
 
-#### A. 总结归纳词（22）
+The exact Chinese detection terms below are retained intentionally: these are functional matching vocabulary for Chinese prose, not untranslated instructions. Category headings and guidance are in English.
+
+#### A. Summary/conclusion terms（22）
 
 综合、总之、总而言之、由此可见、可以看出、不难发现、归根结底、说到底、总体来看、从这个角度看、换句话说、简而言之、概括来说、可以说、由此得出、结论是、最终可知、总的来说、总括起来、整体而言、总体上、综上。
 
-#### B. 枚举模板词（24）
+#### B. Enumeration templates（24）
 
 首先、其次、再次、最后、第一、第二、第三、其一、其二、其三、一方面、另一方面、再者、此外、另外、同时、接着、然后、随后、紧接着、最后一步、下一步、第一点、第二点。
 
-#### C. 书面学术腔（24）
+#### C. Formal/academic phrasing（24）
 
 某种程度上、本质上、意义上、维度上、层面上、在于、体现为、构成了、形成了、实现了、完成了、进行了、展开了、推动了、促进了、提供了、具备了、拥有了、达成了、呈现出、表现出、反映出、蕴含着、折射出。
 
-#### D. 逻辑连接滥用词（22）
+#### D. Overused logical connectives（22）
 
 因此、因而、所以、由于、然而、不过、但是、与此同时、同样地、对应地、相应地、进一步、更进一步、从而、进而、于是、结果是、于是乎、故而、由此、相较之下、反过来说。
 
-#### E. 情绪直述词（22）
+#### E. Direct emotion statements（22）
 
 非常愤怒、非常开心、非常难过、心中五味杂陈、百感交集、情绪复杂、内心震撼、不由得感慨、感到无奈、感到痛苦、感到欣慰、感到恐惧、深受触动、心潮起伏、心情沉重、心情复杂、心里一暖、心里一沉、心中一紧、不禁一愣、不由一怔、内心一震。
 
-#### F. 动作套话（22）
+#### F. Stock action phrases（22）
 
 皱起眉头、叹了口气、深吸一口气、缓缓开口、沉声说道、淡淡说道、冷冷说道、轻声说道、嘴角上扬、嘴角抽了抽、眼神一凝、目光一闪、身形一滞、脚步一顿、浑身一震、心头一跳、不由后退半步、猛地转身、抬手一挥、缓缓点头、轻轻摇头、下意识后退。
 
-#### G. 环境套话（22）
+#### G. Stock environmental phrases（22）
 
 空气仿佛凝固、气氛骤然紧张、气压陡然下降、夜色如墨、月色如水、寒风刺骨、四周一片寂静、死一般的寂静、时间仿佛静止、空间仿佛扭曲、房间里弥漫着、唯一的光源、摇摇欲坠、压抑得让人喘不过气、沉默像潮水、空气中充满了、一切都显得、世界仿佛、就在这一刻、忽然之间、刹那间、顷刻之间。
 
-#### H. 叙事填充词（22）
+#### H. Narrative filler（22）
 
 事实上、实际上、某种意义上、严格来说、客观而言、主观上、一般来说、通常情况下、在这种情况下、在这个时候、在此基础上、在这个意义上、从某种角度、对于他来说、对她而言、这意味着、这说明、这代表着、这并不奇怪、并非偶然、不可否认、毋庸置疑。
 
-#### I. 抽象空泛词（22）
+#### I. Vague abstractions（22）
 
 命运、成长、蜕变、升华、价值、意义、抉择、坚持、信念、初心、希望、绝望、勇气、正义、邪恶、真实、虚伪、复杂、深刻、宏大、渺小、沉重。
 
-#### J. 机械开场/收尾词（24）
+#### J. Mechanical opening/ending phrases（24）
 
 故事要从、让我们把视线、镜头转到、与此同时在另一边、回到现在、再说回、这一切都要从、他并不知道、命运的齿轮开始转动、新的篇章开始了、未完待续、故事才刚刚开始、真正的考验还在后面、一场风暴即将来临、更大的阴谋正在酝酿、这只是开始、答案尚未揭晓、未来会怎样、谁也不知道、他深知、她明白、可他不知道的是、可她不知道的是、然而一切才刚开始。
 
-#### K. 神态模板词（15）
+#### K. Expression templates（15）
 
 眸中闪过、眼底掠过、瞳孔微缩、嘴角微微上扬、嘴角勾起一抹弧度、眉头微蹙、眉心微皱、面色微变、神色一凝、目光微闪、眼神微动、唇角微翘、脸色微沉、面色如常、不露声色。
 
-> 特征：AI 对所有角色使用同一套神态描写模板。替代方向——给每个角色设计专属微动作（如咬笔帽=焦虑，拧手表=不耐烦）。
+> Trait: AI gives every character the same expression templates. Instead, design distinctive micro-actions for each character (biting a pen cap = anxiety; twisting a watch = impatience).
 
-#### L. 万能副词（10）
+#### L. Generic adverbs（10）
 
 缓缓、淡淡、微微、轻轻、静静、默默、悄悄、慢慢、渐渐、暗暗。
 
-> 特征：AI 几乎在所有动作前加这些副词，形成"副词+动词"固定模式（缓缓开口、淡淡说道、微微点头、轻轻叹息）。替代方向——删掉副词，用前置动作或结果暗示速度/力度。
+> Trait: AI puts these adverbs before almost every action, creating a fixed adverb + verb pattern (speaking slowly, speaking blandly, nodding slightly, sighing gently). Remove the adverb; imply speed/intensity through preceding action or results.
 
-#### M. 内心活动套话（10）
+#### M. Stock internal-monologue phrases（10）
 
 心中暗道、心中一凛、心中暗自思量、心下了然、心中不由得、心底涌起一股、心中升起一丝、暗自盘算、暗自揣测、心中有了计较。
 
-> 替代方向——删掉"心中暗道"，直接写内心句或用外化行为代替（攥紧拳头=决心，无意识摸下巴=思考）。
+> Instead, remove the thought-framing phrase and write the thought directly or externalize it (clenched fist = determination; unconsciously touching chin = thought).
 
-#### N. 转折/递进模板（9）
+#### N. Reversal/escalation templates（9）
 
 话虽如此、就在此刻、然而下一刻、正当……之际、殊不知、可惜的是、然而就在这时、就在众人以为……的时候、更令人惊讶的是。
 
-> 特征：AI 用这些固定套路制造"转折感"，实际效果是读者一看到这些词就知道后面要反转，悬念全无。
+> Trait: AI uses these formulas to manufacture a sense of reversal, but readers recognize the coming turn as soon as they see them, eliminating suspense.
 
-### 第2层：句式规则（反模板）
+### Layer 2: Sentence rules (anti-template)
 
-- 禁止”首先/其次/最后”三段式说明写法。
-- 禁止连续三句”主语 + 谓语 + 宾语”同构句。
-- 禁止”他认为自己需要做三件事：一、二、三”清单化叙事。
-- 每 3-5 段至少出现一次句长变化（短句打断/插入动作/对话反问）。
-- 禁止”起因→经过→结果→感悟”四段闭环——删掉感悟句，留未解决的余味。
-- 禁止”他感到X，同时又有些Y，内心深处还有一丝Z”情绪三连——情绪用行为展示，不堆标签。
-- 禁止每段/每节都以总结句收尾（”由此可见””他终于明白了”）——用动作或对话结尾。
-- 禁止同一冲突在同段内解决（先抑后扬标准弧）——至少跨一个场景或段落。
-- 禁止同一信息用不同句式重复说 2-3 遍（同义反复）——说一遍，说准。
-- 禁止连续使用”更重要的是””更令人惊讶的是””最让他在意的是”递进模板。
+- No three-part “first/second/finally” exposition.
+- No three consecutive structurally identical subject + verb + object sentences.
+- No checklist narration such as “He thought he needed to do three things: one, two, three”.
+- Vary sentence length at least once every 3–5 paragraphs (short interruption/inserted action/rhetorical dialogue question).
+- No cause → process → result → reflection closed loop; remove reflection and leave unresolved resonance.
+- No triple emotion labels like “He felt X, also Y, and deep down a trace of Z”; show emotion through behavior.
+- Do not end every paragraph/section with a summary (“thus we see”, “he finally understood”); end with action or dialogue.
+- Do not establish and resolve the same conflict in one paragraph (standard suppression-release arc); span at least one scene or paragraph.
+- Do not repeat the same information 2–3 times in different wording; say it once, accurately.
+- Do not consecutively use escalation templates such as “more importantly”, “even more surprisingly”, “what concerned him most”.
 
-### 第3层：形容词与副词限制
+### Layer 3: Adjective and adverb limits
 
-- 连续两个以上形容词修饰同一名词，默认重写。
-- 每 300 字中“很/非常/极其/格外/十分”总数建议不超过 4。
-- 优先“动作 + 结果 + 代价”，弱化“抽象评价词”。
+- Rewrite by default when more than two consecutive adjectives modify one noun.
+- Recommended total of intensifiers (very/extremely/particularly/etc.) is at most four per 300 Chinese characters.
+- Prefer action + result + cost; reduce abstract evaluative words.
 
-### 第4层：四字套语/成语限用
+### Layer 4: Four-character clichés/idioms
 
-- 禁止高频空转四字词密集堆叠（如“心潮澎湃、百感交集、五味杂陈”连用）。
-- 每 500 字四字套语建议不超过 3 个，且不得连续出现。
-- 若使用成语，必须承担叙事功能（推进信息/冲突/角色态度）。
+- Do not densely stack empty four-character expressions (e.g. overlapping clichés about surging, mixed emotions).
+- Recommended maximum: three stock four-character phrases per 500 characters, never consecutively.
+- Idioms must serve narrative functions (advance information/conflict/character attitude).
 
-### 第5层：对话去AI化
+### Layer 5: De-AI dialogue
 
-- 禁止”说明书式对话”（完整解释背景、逻辑过满）。
-- 对话必须有意图（试探/回避/施压/诱导/防御）。
-- 允许真实口语停顿、打断、反问，避免全员”标准书面语”。
-- 禁止严格轮流发言——允许打断、沉默、一方连续说两句。
-- 禁止对白后紧跟叙述者解释（”他这么说是因为……”）——让读者自己理解。
-- “XX说道””XX淡淡道”等万能 said tag 占比不超过 30%——优先用前置动作替代（”他把筷子一搁——'不去。'”）。
-- 对话要有潜台词和言行不一——角色不会把真实想法全盘托出。
+- No manual-like dialogue (complete background explanations and overly full logic).
+- Dialogue must have intention (probe/evade/pressure/lead/defend).
+- Allow realistic pauses, interruptions, and counterquestions; avoid everyone using formal written language.
+- No strict turn-taking; allow interruption, silence, or two consecutive lines by one speaker.
+- No narrator explanation immediately after dialogue (“He said this because...”); let readers infer.
+- Generic said tags (“X said”, “X said blandly”) must be no more than 30%; prefer preceding action (“He put down his chopsticks. ‘Not going.’”).
+- Include subtext and discrepancies between speech and action; characters do not disclose everything they think.
 
-### 第6层：段落结构
+### Layer 6: Paragraph structure
 
-- 单句成段建议占比 25%-45%（冲突章节可提高）。
-- 段落长度建议 20-100 字，避免连续大段说明。
-- 场景切换优先用动作/声音/位置变化，不用“第一幕/第二幕”标签。
+- Recommended single-sentence paragraph ratio: 25%–45% (higher in conflict chapters).
+- Recommended paragraph length: 20–100 Chinese characters; avoid consecutive large explanatory blocks.
+- Prefer action/sound/location changes for transitions rather than “Act One/Act Two” labels.
 
-### 第7层：标点节奏
+### Layer 7: Punctuation rhythm
 
-- 禁止连续使用 `......` 或 `！！！`。
-- 省略号、感叹号每段最多 1 次（特殊情绪爆点除外）。
-- 长句中逗号超过 4 个时，优先拆句。
+- Do not repeatedly use `......` or `！！！`.
+- At most one ellipsis and one exclamation mark per paragraph, except special emotional outbursts.
+- Prefer splitting long sentences containing more than four commas.
 
-### Anti-AI 改写算法（执行动作）
+### Anti-AI rewrite algorithm (actions)
 
-1. 抽象情绪句 → `生理反应 + 当下意图 + 下一动作`
-2. 结论句 → `事实细节 + 代价/风险 + 决策`
-3. 连续说明句（>=3）→ 改成”对白/动作/反问”混排
-4. 连续同构句（>=3）→ 至少打断 1 句为短句或插入动作锚点
-5. 对话整段解释背景 → 改为”带意图的对抗式对白”
-6. 情绪标签（”他感到X”）→ 生理反应 + 微动作 + 环境映射（如”他的手在发抖，茶水洒了半桌”）
-7. 情绪即时切换 → 加过渡（残留、回味、犹豫——“他压下怒意，但声音还是哑了”）
-8. 千人一面反应 → 按角色性格定制反应（老练的人克制、年轻人冲动、谨慎的人后退观察）
+1. Abstract emotional sentence → `physiological reaction + current intention + next action`
+2. Conclusion → `concrete fact + cost/risk + decision`
+3. Three or more consecutive explanatory sentences → mix dialogue/action/counterquestions
+4. Three or more structurally identical sentences → break at least one into a short sentence or insert an action anchor
+5. Dialogue paragraph explaining background → intention-driven confrontational dialogue
+6. Emotion labels (“he felt X”) → physiology + micro-action + environmental reflection (“His hand shook; tea spilled across half the table”)
+7. Instant emotional switch → transition (residue/aftertaste/hesitation: “He suppressed his anger, but his voice remained hoarse”)
+8. Identical reactions across characters → tailor reactions to personality (experienced people restrain themselves, young people act impulsively, cautious people retreat and observe)
 
-### 通过阈值（手工判定）
+### Passing thresholds (manual judgment)
 
-- 全文不得保留未处理的三段式枚举模板句。
-- 全文命中的高风险表达均已改写或记录 deviation。
-- 至少完成 3 处“抽象句→行为句”改写（全文范围内统计）。
-- 章末存在可感知的下一步压力或未闭合问题。
-- 若仍保留高风险表达，需在 deviation 说明保留理由。
+- No unhandled three-part enumeration templates remain anywhere.
+- Every high-risk expression found has been rewritten or logged as a deviation.
+- At least three abstract-to-behavioral sentence rewrites completed across the text.
+- Ending contains perceptible next-step pressure or an unresolved question.
+- Explain retained high-risk expressions in deviation.
 
-### Phase 1 终检（原版保留）
+### Phase 1 final checklist (original retained)
 
-- [ ] 高风险词汇已做全文检查与必要替换。
-- [ ] 未出现三段式说明句（首先/其次/最后）。
-- [ ] 对话存在真实冲突意图，不是信息宣讲。
-- [ ] No-Poison 毒点红线检查见第 5 节（本清单仅覆盖 Anti-AI）。
-- [ ] 修改后未破坏“设定即物理 / 大纲即法律”。
+- [ ] High-risk vocabulary checked throughout and replaced as necessary.
+- [ ] No three-part explanatory sentences (first/second/finally).
+- [ ] Dialogue has genuine conflicting intentions, not information lectures.
+- [ ] See section 5 for No-Poison red lines; this checklist covers only Anti-AI.
+- [ ] Revisions preserve “settings are physics / outline is law”.
 
-## 3. 审查问题修复优先级
+## 3. Review-issue repair priority
 
-| 严重度 | 处理规则 |
+| Severity | Handling |
 |---|---|
-| critical | 必须修复；无法修复必须记录 deviation 与原因 |
-| high | 必须优先处理；无法修复记录 deviation |
-| medium | 视篇幅和收益处理 |
-| low | 可择优处理 |
+| critical | Must fix; if impossible, record deviation and reason |
+| high | Prioritize repair; record deviation if impossible |
+| medium | Handle according to space and benefit |
+| low | Selectively address the most useful |
 
-类型对应修复动作：
-- `OOC`：恢复角色话术、风险偏好、决策边界
-- `POWER_CONFLICT`：能力回落到合法境界，或补出“获得路径+代价”
-- `TIMELINE_ISSUE`：补足时间流逝锚点
-- `LOCATION_ERROR`：补移动过程与空间锚点
-- `PACING_IMBALANCE`：增加缺失的推进事件或删冗余说明段
-- `CONTINUITY_BREAK`：补衔接句与过渡动作
+Repair actions by type:
+- `OOC`: restore character speech, risk preferences, and decision boundaries.
+- `POWER_CONFLICT`: return abilities to the legal realm, or establish acquisition route + cost.
+- `TIMELINE_ISSUE`: add elapsed-time anchors.
+- `LOCATION_ERROR`: add travel and spatial anchors.
+- `PACING_IMBALANCE`: add missing progression events or remove redundant exposition.
+- `CONTINUITY_BREAK`: add connecting sentences and transitional actions.
 
-## 4. 网文化分层规则
+## 4. Layered web-fiction rules
 
-### Hard（必须满足）
+### Hard (mandatory)
 
-1. 本章至少有 1 个明确推进点（信息/行动/关系/局势至少一项）。
-2. 关键对话可判定意图（试探/施压/回避/诱导至少一种）。
-3. 抽象判断句改为“动作/反应/代价”表达。
+1. At least one clear advancement (information/action/relationship/situation).
+2. Key dialogue has identifiable intention (at least probing/pressuring/evading/leading).
+3. Replace abstract judgments with action/reaction/cost.
 
-### Soft（建议满足）
+### Soft (recommended)
 
-1. 章首建议在前 200-400 字进入冲突/风险/强情绪。
-2. 章节中段有节奏脉冲（参考 800-1400 字一波，短章至少一次）。
-3. 后段或章末保留未闭合问题或下一步期待锚点。
+1. Enter conflict/risk/strong emotion within the first 200–400 Chinese characters.
+2. Include a pacing pulse in the middle (roughly every 800–1,400 characters; at least once in short chapters).
+3. Preserve an unresolved question or next-step anticipation anchor late or at the ending.
 
-### Style（按章型择优）
+### Style (select by chapter type)
 
-1. 避免连续大段纯解释，优先“信息+动作/反应”交替。
-2. 允许平缓收尾，但不能机械截断。
+1. Avoid consecutive large blocks of pure exposition; prefer alternating information + action/reaction.
+2. Calm endings are allowed, but not mechanical cutoffs.
 
-## 5. No-Poison 毒点规避（5类）
+## 5. No-Poison: five reader-alienating pitfalls
 
-1. 降智推进：角色忽略常识仅为推进剧情服务。
-2. 强行误会：可一句话说清却长期拖延。
-3. 圣母无代价：无边界原谅高风险对象。
-4. 工具人配角：只在功能节点出现，没有独立动机。
-5. 双标裁决：同类行为评价标准不一致且无叙事解释。
+1. Plot-driven stupidity: characters ignore common sense merely to advance the story.
+2. Forced misunderstanding: something explainable in one sentence is dragged out.
+3. Cost-free saintliness: boundaryless forgiveness of high-risk people.
+4. Tool-like supporting characters: appear only when needed, with no independent motives.
+5. Double-standard judgments: similar behavior evaluated inconsistently without narrative explanation.
 
-命中任一毒点时，必须补“动机/阻力/代价”中的至少两项。
+For any match, add at least two of motivation/resistance/cost.
 
-## 6. 润色红线（不可突破）
+## 6. Polishing red lines
 
-- 不改剧情走向（大纲即法律）
-- 不改设定物理边界（设定即物理）
-- 不删除关键伏笔
-- 不强行改写角色关系基线
+- Do not change plot direction (outline is law).
+- Do not change the setting's physical boundaries (settings are physics).
+- Do not delete key foreshadowing.
+- Do not forcibly rewrite baseline character relationships.
 
-## 7. 输出格式（润色完成后）
+## 7. Output format (after polishing)
 
-必须输出：
-1. 润色后的章节正文
-2. 修复摘要（结构如下）
+Required:
+1. Polished chapter prose
+2. Repair summary in this structure:
 
 ```text
-[润色报告]
-- 严重问题已修复: N 处
-- 高优先级已修复: N 处
-- 中低优先级已修复: N 处
-- Anti-AI 改写: N 处
+[Polishing report]
+- Critical issues fixed: N
+- High-priority issues fixed: N
+- Medium/low-priority issues fixed: N
+- Anti-AI rewrites: N
 - anti_ai_force_check: pass/fail
-- 毒点风险: pass/fail
-- 偏离记录:
+- Reader-alienation risk: pass/fail
+- Deviations:
   - {位置}: {原因}
 ```
 
-若 `critical` 未清零，必须显式标注“未通过”，并返回 Step 4 继续修复。
+If any `critical` issues remain, explicitly mark “Failed” and return to Step 4 for further repair.
 
 </instructions>
 
 <examples>
 
 <example>
-<input>AI风格：首先，他要拿到证据；其次，他要稳住队友；最后，他再公开反击。</input>
-<output>他先把证据攥在手里，转身去找队友。人得先稳住，反击才能一刀见血。</output>
+<input>AI style: First, he needed evidence; second, he needed to steady his teammates; finally, he would counterattack publicly.</input>
+<output>He secured the evidence, then turned to find his teammates. They had to hold steady before his counterattack could strike home.</output>
 </example>
 
 <example>
-<input>AI风格：他非常愤怒，内心五味杂陈。</input>
-<output>他指节捏得发白，喉咙里压着一口气。再等一秒，他就会动手。</output>
+<input>AI style: He was very angry, filled with mixed emotions.</input>
+<output>His knuckles whitened, a breath trapped in his throat. One more second and he would strike.</output>
 </example>
 
 </examples>
 
 <errors>
-❌ 跳过 critical/high 直接做文风微调
-✅ 先清问题，再做风格
+❌ Skip critical/high issues and adjust style directly
+✅ Clear issues first, then style
 
-❌ 只替换高风险词，不改句群结构
-✅ 按“抽象句→行为句”重写句群
+❌ Replace risky words without changing sentence-group structure
+✅ Rewrite groups from abstract statements into behavior
 
-❌ 为去 AI 味而改动剧情事实
-✅ 只改表达，不改事件结果
+❌ Change plot facts to remove AI flavor
+✅ Change expression only, not event outcomes
 </errors>
 
 <checklist>
-- [ ] `critical` 已修复或记录 deviation
-- [ ] `high` 已修复或记录 deviation
-- [ ] Hard 规则全部通过
-- [ ] Phase 1 Anti-AI 全文检查已通过
+- [ ] `critical` fixed or deviation recorded
+- [ ] `high` fixed or deviation recorded
+- [ ] All Hard rules passed
+- [ ] Full-text Phase 1 Anti-AI check passed
 - [ ] `anti_ai_force_check=pass`
-- [ ] No-Poison 五类毒点已检查
-- [ ] 未触碰润色红线
+- [ ] All five No-Poison pitfalls checked
+- [ ] No polishing red lines crossed
 </checklist>

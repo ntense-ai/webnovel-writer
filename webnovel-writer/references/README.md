@@ -1,34 +1,34 @@
 # References
 
-本目录存放 `webnovel-writer` 的所有参考资料，供 skills 和 scripts 在运行时读取。
+This directory contains all reference material for `webnovel-writer`, read by skills and scripts at runtime.
 
-## 目录结构
+## Directory Structure
 
-| 子目录/文件 | 职责 | 消费方式 |
+| Directory/file | Responsibility | Consumer |
 |-------------|------|----------|
-| `csv/` | 结构化知识条目（9 张表） | `reference_search.py` BM25 检索 |
-| `csv/README.md` | CSV schema 规范与录入规则 | 人工参考 |
-| `csv/genre-canonical.md` | 题材权威枚举（canonical + platform_tag 映射） | 人工参考 + 代码常量对照 |
-| `genre-profiles.md` | 题材 profile（fallback，高频题材已迁入 Story Contracts） | `ContextManager` 直接读取 |
-| `reading-power-taxonomy.md` | 追读力分类学 | skills 直接读取 |
-| `review-schema.md` | 审查输出格式定义 | `webnovel-review` 读取 |
-| `index/` | 元数据索引（loading-map、gap-register） | 人工参考 |
-| `outlining/` | 大纲相关参考 | `webnovel-plan` 读取 |
-| `review/` | 审查相关参考 | `webnovel-review` 读取 |
-| `shared/` | 跨 skill 共享参考 | 多 skill 读取 |
+| `csv/` | Structured knowledge entries (9 tables) | BM25 search through `reference_search.py` |
+| `csv/README.md` | CSV schema specifications and entry rules | Human reference |
+| `csv/genre-canonical.md` | Authoritative genre enumeration (canonical + platform_tag mapping) | Human reference + code-constant cross-checks |
+| `genre-profiles.md` | Genre profiles (fallback; common genres have moved to Story Contracts) | Read directly by `ContextManager` |
+| `reading-power-taxonomy.md` | Reader-retention taxonomy | Read directly by skills |
+| `review-schema.md` | Review output format | Read by `webnovel-review` |
+| `index/` | Metadata indexes (loading-map, gap-register) | Human reference |
+| `outlining/` | Outline references | Read by `webnovel-plan` |
+| `review/` | Review references | Read by `webnovel-review` |
+| `shared/` | Cross-skill references | Read by multiple skills |
 
-## md vs CSV 边界
+## Markdown vs CSV Boundary
 
-- `md`: 流程规范、方法论、审查 schema、硬约束、润色指导
-- `CSV`: 可条目化的写作知识、命名规则、场景技法、桥段模板
+- `md`: workflow specifications, methodology, review schemas, hard constraints, polishing guidance
+- `CSV`: writing knowledge, naming rules, scene techniques, and plot templates that can be represented as entries
 
-md 是写给大模型当行为闸门的，CSV 是写给搜索引擎当知识库的。
+Markdown provides behavioral gates for language models; CSV provides a searchable knowledge base.
 
-## 消费链路
+## Consumption Chain
 
-`init -> plan -> write -> review` 的完整 reference 消费路径见 `index/reference-loading-map.md`。
+See `index/reference-loading-map.md` for the full `init -> plan -> write -> review` reference-loading path.
 
-## 校验
+## Validation
 
 ```bash
 cd webnovel-writer/scripts

@@ -1,74 +1,74 @@
 ---
 name: anti-ai-guide
-purpose: Step 2 起草时加载，在写作阶段预防 AI 癖好
+purpose: Load for Step 2 drafting to prevent AI habits during writing
 ---
 
-# Anti-AI 写作指南
+# Anti-AI Writing Guide
 
-> 核心理念：写的时候就写对，比写完再改好。
-> 加载时机：Step 2 起草正文前。
+> Core idea: write it correctly the first time rather than repairing it afterward.
+> Load before drafting chapter prose in Step 2.
 
-## 你最容易犯的错
+## Your most likely mistakes
 
-作为 LLM，你有以下根深蒂固的倾向。写作时必须刻意对抗：
+As an LLM, you have these ingrained tendencies. Deliberately resist them while writing:
 
-1. **每段写完整闭环**——你倾向于"起因→经过→结果→感悟"四段走完。刻意删掉感悟，留未解决的余味。
-2. **用副词修饰一切**——你倾向于写"缓缓开口""淡淡说道""微微点头"。删掉副词，用具体动作替代。
-3. **所有角色同一套反应**——你倾向于让每个人都"瞳孔微缩""心中一凛"。给每个角色设计专属微动作。
-4. **对话像辩论赛**——你倾向于让角色完整、理性地表达观点。让角色说话带潜台词，言行不一，有省略和打断。
-5. **情绪贴标签**——你倾向于写"他感到愤怒"。改为生理反应+微动作，让读者自己判断。
-6. **信息均匀分布**——你倾向于每段放差不多的信息量。刻意制造疏密对比，有的段落只有一句话。
-7. **安全着陆**——你倾向于在章末把所有冲突解决。刻意留下至少一个未解决的问题。
-8. **展示后解释**——你倾向于用动作展示后，再补一句解释。删掉解释句，信任读者的理解力。
+1. **Closing every paragraph's loop**: you tend to complete cause → process → result → reflection. Remove the reflection and leave unresolved resonance.
+2. **Modifying everything with adverbs**: you tend to write “began slowly”, “said blandly”, “nodded slightly”. Remove adverbs and substitute concrete actions.
+3. **Giving everyone the same reactions**: you make everyone “narrow their pupils” or “feel a chill within”. Give each character distinctive micro-actions.
+4. **Dialogue like a debate**: you make characters express complete, rational opinions. Add subtext, discrepancies between words and actions, omissions, and interruptions.
+5. **Labeling emotions**: you write “he felt angry”. Replace it with physiology + micro-action and let readers judge.
+6. **Uniform information distribution**: you put similar amounts of information in each paragraph. Deliberately contrast dense and sparse passages; some paragraphs contain only one sentence.
+7. **Safe landings**: you resolve every conflict at chapter endings. Deliberately leave at least one question unresolved.
+8. **Explaining after showing**: after demonstrating through action, you add an explanatory sentence. Remove it and trust the reader.
 
-## 写作时的 5 个即时检查
+## Five immediate checks while writing
 
-每写完一个段落，快速过一遍：
+After each paragraph, quickly check:
 
-1. **闭环检查**：这段是否走完了"起因→经过→结果→感悟"？→ 删掉最后的感悟/总结句
-2. **副词检查**：最近 3 个动作描写是否用了"缓缓/淡淡/微微/轻轻"？→ 删掉副词，换成不同感官通道的细节
-3. **情绪检查**：角色的情绪是"告诉读者"还是"展示给读者"？→ 把"他感到X"改为生理反应+微动作
-4. **对话检查**：这句对话是在推进冲突还是在解释背景？→ 删掉背景解释，加入角色的真实意图
-5. **节奏检查**：最近 500 字的节奏是否均匀？→ 插入一个短句爆发点、一段沉默、或一个突然的动作
+1. **Closed loop**: did it complete cause → process → result → reflection? → Delete the final reflection/summary.
+2. **Adverbs**: did the last three action descriptions use slowly/blandly/slightly/gently? → Remove adverbs; use details from different sensory channels.
+3. **Emotion**: are you telling or showing emotion? → Replace “he felt X” with physiology + micro-action.
+4. **Dialogue**: does this line advance conflict or explain background? → Remove background exposition and add the character's real intention.
+5. **Pacing**: is the last 500 Chinese characters' rhythm uniform? → Insert a short explosive sentence, a silence, or sudden action.
 
-## 替代方案速查表
+## Replacement quick reference
 
-| AI 癖好 | 替代方向 | 示例 |
+| AI habit | Replacement direction | Example |
 |---------|---------|------|
-| "他感到愤怒" | 生理+微动作+决策 | "指节捏得发白，舌尖尝到铁锈味。再等一秒他就动手。" |
-| "缓缓说道" | 删副词，加前置动作 | "他把杯子搁下——'你确定？'" |
-| "眸中闪过一丝X" | 个性化行为 | "她咬了下嘴唇内侧"（紧张） / "他开始拧笔帽"（焦虑） |
-| "心中暗道" | 直接写内心句 | 删掉"心中暗道"四个字，后面的内容直接保留 |
-| 四段闭环 | 截断在高点 | 删掉最后的感悟句，让读者自己体会 |
-| 全员书面语 | 口语化+个人口癖 | 加口头禅（"得了吧"）、省略（"走？""嗯。"）、打断 |
-| 段末总结 | 删总结句 | 用动作或对话结尾，不写"他终于明白了" |
-| 展示后解释 | 删解释句 | 写完"她把门摔上"后不要再写"她显然很生气" |
-| "更重要的是……" | 直接说事 | 删掉递进模板词，直接给信息 |
-| 情绪即时切换 | 加过渡 | "他压下怒意，但声音还是哑了半拍" |
+| “He felt angry” | Physiology + micro-action + decision | “His knuckles whitened. He tasted iron. One more second and he would strike.” |
+| “Said slowly” | Remove adverb; lead with action | “He set down the cup. ‘Are you sure?’” |
+| “A trace of X flashed in her eyes” | Individualized behavior | “She bit the inside of her lip” (nervous) / “He started twisting his pen cap” (anxious) |
+| “He thought to himself” | State the thought directly | Delete the framing phrase and retain the thought |
+| Four-part closed loop | Cut at the high point | Delete final reflection and let readers experience it |
+| Everyone speaks formally | Colloquial speech + personal verbal habits | Add catchphrases (“Come off it”), omissions (“Go?” “Yeah.”), interruptions |
+| Paragraph-ending summary | Delete summary | End with action/dialogue, not “he finally understood” |
+| Explanation after demonstration | Delete explanation | After “she slammed the door”, do not add “she was clearly angry” |
+| “More importantly...” | State the matter directly | Remove escalation templates and give information directly |
+| Instant emotional switch | Add transition | “He suppressed his anger, but his voice still caught.” |
 
-## 对话专项
+## Dialogue focus
 
-好的对话特征：
-- 有人抢话、有人沉默、有人答非所问
-- 角色不会把真实想法全盘托出
-- 不同角色有不同的说话节奏（有人啰嗦、有人惜字如金）
-- said tag 不超过 30%，优先用前置动作（"他把烟掐灭——'行。'"）
+Good dialogue:
+- Someone interrupts, someone stays silent, someone answers a different question.
+- Characters do not reveal all their real thoughts.
+- Characters speak at different rhythms (some verbose, others terse).
+- Said tags are no more than 30%; prefer preceding actions (“He stubbed out his cigarette. ‘Fine.’”).
 
-坏的对话特征（你最容易写的）：
-- A说→B说→A说→B说，严格交替
-- 每句都完整回应上一句
-- "XX说道""XX淡淡道"贯穿全篇
-- 角色说话像在做报告
+Bad dialogue (your most likely patterns):
+- A speaks → B speaks → A → B in strict alternation.
+- Every line fully answers the previous one.
+- “X said” / “X said blandly” throughout.
+- Characters speak as if delivering reports.
 
-## 节奏专项
+## Pacing focus
 
-好的节奏特征：
-- 有的段落只有一句话，有的段落有十几句
-- 紧张时句子变短、变碎
-- 平静时可以有长段描写
-- 信息密集的段落和留白的段落交替出现
+Good pacing:
+- Some paragraphs have one sentence, others more than ten.
+- Tension shortens and fragments sentences.
+- Calm moments allow longer description.
+- Dense information alternates with breathing room.
 
-坏的节奏特征（你最容易写的）：
-- 每段 3-5 句，长度均匀
-- 信息密度恒定，无峰谷
-- 转场全靠"时间飞逝""不知不觉"
+Bad pacing (your most likely patterns):
+- Every paragraph has 3–5 sentences of uniform length.
+- Constant information density without peaks and valleys.
+- All transitions rely on “time flew” or “before he knew it”.

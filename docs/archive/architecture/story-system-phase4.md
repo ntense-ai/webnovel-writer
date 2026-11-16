@@ -1,31 +1,31 @@
 # Story System Phase 4
 
-## 目标
+## Goal
 
-Phase 4 把 Phase 3 的 `accepted_events` 升级为正式事件主链，并把
-`override_contracts` 扩成统一 override ledger。
+Phase 4 promotes Phase 3’s `accepted_events` to the official event mainline and expands
+`override_contracts` into a unified override ledger.
 
-本阶段新增两条稳定链路：
+This phase introduces two stable pipelines:
 
 1. `CHAPTER_COMMIT.accepted_events -> .story-system/events/*.events.json`
 2. `world_rule_broken -> amend_proposal -> override_contracts`
 
-## 产物
+## Artifacts
 
-运行后会出现这些核心文件或表：
+Execution produces these core files or tables:
 
 - `.story-system/events/chapter_XXX.events.json`
 - `.webnovel/index.db.story_events`
 - `.webnovel/index.db.override_contracts.record_type=*`
 
-`story_events` 是 canonical 审计镜像，`override_contracts` 继续保留旧
-Override Contract / 债务链，同时新增：
+`story_events` is the canonical audit mirror. `override_contracts` retains the legacy
+Override Contract / debt pipeline and adds:
 
 - `soft_deviation`
 - `contract_override`
 - `amend_proposal`
 
-## 执行关系
+## Execution Flow
 
 ```text
 review / fulfillment / disambiguation / extraction
@@ -35,11 +35,11 @@ review / fulfillment / disambiguation / extraction
                 │
                 ├── apply_projections()
                 │     ├── state/index/summary/memory
-                │     └── EventProjectionRouter 决定激活哪些 writer
+                │     └── EventProjectionRouter selects the writers to activate
                 │
                 ├── EventLogStore.write_events()
-                │     ├── JSON 文件
-                │     └── SQLite story_events 镜像
+                │     ├── JSON files
+                │     └── SQLite story_events mirror
                 │
                 └── AmendProposalTrigger.check()
                       └── persist_amend_proposals() -> override_contracts
@@ -47,7 +47,7 @@ review / fulfillment / disambiguation / extraction
 
 ## CLI
 
-统一入口仍然是 `webnovel.py`：
+The unified entry point remains `webnovel.py`:
 
 ```bash
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-system "玄幻退婚流" --persist
@@ -57,16 +57,16 @@ python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJE
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" story-events --health
 ```
 
-## 最小运维检查
+## Minimum Operational Checks
 
-- `story-system --persist` 后应存在 `MASTER_SETTING.json`
-- `story-system --emit-runtime-contracts --chapter N` 后应存在 `volume_XXX.json`
-  与 `chapter_XXX.review.json`
-- `chapter-commit` accepted 后应存在 `chapter_XXX.commit.json`
-- `story-events --health` 应返回 `sqlite_rows` 与 `event_files`
+- After `story-system --persist`, `MASTER_SETTING.json` should exist.
+- After `story-system --emit-runtime-contracts --chapter N`, `volume_XXX.json`
+  and `chapter_XXX.review.json` should exist.
+- After `chapter-commit` is accepted, `chapter_XXX.commit.json` should exist.
+- `story-events --health` should return `sqlite_rows` and `event_files`.
 
-## 当前边界
+## Current Boundaries
 
-- 事件路由仍由 `ChapterCommitService.apply_projections()` 统一调度
-- Phase 4 不新增第二套独立投影循环
-- 旧链路降级与完全切换留到 Phase 5
+- Event routing remains centrally orchestrated by `ChapterCommitService.apply_projections()`.
+- Phase 4 does not introduce a second independent projection loop.
+- Downgrading the legacy pipeline and completing the switchover are deferred to Phase 5.

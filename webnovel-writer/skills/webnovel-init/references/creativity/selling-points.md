@@ -1,687 +1,669 @@
-# 核心卖点定位参考指南
+# Core Selling-Point Design Guide
 
-> 时效说明：本文中的“2025”数据与示例仅作历史样例。
-> 执行 Step 5 卖点筛选时，若涉及市场判断，必须先用 WebSearch/WebFetch 核验当期趋势后再采纳。
+> Currency note: “2025” data and examples below are historical illustrations only.
+> When Step 5 selling-point selection involves market judgments, verify current trends with WebSearch/WebFetch before adopting them.
 
-## 核心定位
+## Purpose
 
-精准识别并定义作品的核心吸引力，确保所有创作要素（主角、金手指、世界观、情节）都围绕这个卖点展开，为读者提供独特且一致的阅读体验。
+Identify and define the work's central appeal precisely. Align the protagonist, special advantage, world, and plot around it to deliver a distinctive, consistent reading experience.
 
 ---
 
-## 1. 核心卖点理论基础
+## 1. Foundations
 
-### 1.1 核心卖点的定义
+### 1.1 Definition
 
-**核心卖点 = 读者选择这本书的唯一理由**
+**Core selling point = the single central reason readers choose this book.**
 
-> 如果读者只有10秒了解你的小说，你会用哪一句话吸引他们？
+> If a reader has ten seconds to learn about your novel, what sentence will attract them?
 
-**三层结构**：
-- **表层（题材标签）**：都市、玄幻、科幻等 → 决定读者是否点开
-- **中层（核心卖点）**：重生复仇、规则怪谈、反派洗白等 → 决定读者是否继续看
-- **底层（情感体验）**：爽、虐、燃、甜、悬疑等 → 决定读者是否付费追更
+**Three layers**:
+- **Surface: genre label**. Urban, fantasy, science fiction: determines whether readers click.
+- **Middle: selling point**. Rebirth revenge, rule-based horror, villain redemption: determines whether they continue.
+- **Deep: emotional experience**. Satisfaction, pain, excitement, sweetness, suspense: determines whether they pay and follow updates.
 
-### 1.2 核心卖点 vs 其他概念
+### 1.2 Related Concepts
 
-| 概念 | 定义 | 区别 |
+| Concept | Definition | Distinction |
 |------|------|------|
-| **核心卖点** | 作品最核心的吸引力 | 唯一、贯穿全文、不可替代 |
-| **题材** | 故事背景类型 | 玄幻/都市/科幻，范围广泛 |
-| **金手指** | 主角特殊优势 | 服务于卖点的工具 |
-| **爽点** | 读者爽感来源 | 卖点的具体表现形式 |
-| **人设** | 角色设定 | 卖点的人格化载体 |
+| **Core selling point** | Central appeal | Unique, sustained throughout, irreplaceable |
+| **Genre** | Type of setting | Broad categories such as fantasy, urban, science fiction |
+| **Special advantage** | Protagonist's unusual edge | A tool serving the selling point |
+| **Payoff** | Source of reader satisfaction | A concrete expression of the selling point |
+| **Character design** | Character construction | The selling point's personified vehicle |
 
-**示例**：
+**Example**:
 ```
-❌ 错误："我的小说是都市重生文"（这是题材，不是卖点）
-✅ 正确："重生成反派，用前世记忆洗白逆袭"（这是核心卖点）
-```
-
-### 1.3 核心卖点黄金公式
-
-**公式一：一句话卖点**
-```
-[主角身份/优势] + [核心行动] + [独特目标] = 核心卖点
+❌ “My novel is urban rebirth fiction.” This names a genre, not the selling point.
+✅ “Reborn as a villain, he uses past-life memories to redeem himself and rise.”
 ```
 
-**示例**：
-- 重生商战大佬（身份）+ 回到高考前（行动）+ 改写人生巅峰（目标）
-- 签到系统宿主（优势）+ 每日获得随机奖励（行动）+ 成为最强者（目标）
-- 看穿规则漏洞（优势）+ 在规则怪谈中求生（行动）+ 破解世界真相（目标）
+### 1.3 Core Formulas
 
-**公式二：核心卖点组合**
+**Formula One: One-sentence pitch**
 ```
-核心卖点 = 代偿承诺 + 情感满足 + 独特价值
+[Protagonist identity/advantage] + [core action] + [distinctive goal] = selling point
 ```
 
-**说明**：
-- **代偿承诺**：读者在现实中无法获得，但在故事中能体验的终极爽感（如：降维打击、言出法随）
-- **情感满足**：爽感、甜蜜、紧张、治愈的具体情绪落点
-- **独特价值**：与同题材作品的 1% 微创新
+**Examples**:
+- Reborn business magnate + return before university entrance exams + rewrite life's peak.
+- Check-in system host + daily random rewards + become the strongest.
+- See rule loopholes + survive rule-based horror + uncover the world's truth.
 
-**公式二：差异化卖点**
+**Formula Two: Selling-point combination**
 ```
-同类作品常见设定 + 微创新/反转 = 差异化卖点
+Core selling point = compensatory promise + emotional satisfaction + distinctive value
 ```
 
-**示例**：
-- 常规重生文：主角碾压一切 → **微创新**：重生后发现未来已被改变
-- 常规系统文：无限奖励 → **反转**：系统每次奖励都有致命代价
-- 常规修仙文：主角天赋异禀 → **微创新**：主角无法修炼，靠"外挂"补救
+**Explanation**:
+- **Compensatory promise**: An ultimate experience unavailable in ordinary life, such as overwhelming superiority or words becoming law.
+- **Emotional satisfaction**: Specific feelings of exhilaration, sweetness, tension, or healing.
+- **Distinctive value**: A 1% innovation over similar works.
+
+**Formula Two: Differentiation**
+```
+Common genre premise + small innovation/reversal = differentiated selling point
+```
+
+**Examples**:
+- Conventional rebirth: dominate everything → **innovation**: discover the future has already changed.
+- Conventional system: unlimited rewards → **reversal**: every reward has a lethal cost.
+- Conventional cultivation: extraordinary talent → **innovation**: cannot cultivate and must compensate with a special advantage.
 
 ---
 
-## 2. 市场热点与创新机会识别
+## 2. Market Opportunities
 
-### 2.1 热门卖点生命周期分析（2025样例）
+### 2.1 Selling-Point Lifecycles (Historical 2025 Examples)
 
-| 卖点类型 | 生命周期阶段 | 市场饱和度 | 创新机会 | 建议策略 |
+| Selling point | Stage | Saturation | Innovation opportunity | Strategy |
 |---------|------------|-----------|---------|---------|
-| **都市重生** | 成熟期 | 高（红海） | 微创新（反派视角、女频视角） | 必须有差异化 |
-| **系统签到** | 成熟期 | 高（红海） | 结合其他元素（悬疑、推理） | 避免纯签到流 |
-| **规则怪谈** | 成长期 | 中等 | 跨题材融合（都市、玄幻） | 黄金入场期 |
-| **反派洗白** | 成长期 | 中等 | 视角创新（女频、甜宠） | 潜力较大 |
-| **无限流** | 成熟期 | 高（红海） | 女性向无限流 | 需深耕细分 |
-| **快穿** | 衰退期 | 极高 | 深度创新或转型 | 不建议新手 |
+| **Urban rebirth** | Mature | High, crowded | Antagonist or women's viewpoint | Differentiation essential |
+| **System check-ins** | Mature | High, crowded | Add mystery/deduction | Avoid pure check-in stories |
+| **Rule-based horror** | Growing | Moderate | Fuse with urban/fantasy | Strong entry opportunity |
+| **Villain redemption** | Growing | Moderate | Women's viewpoint/sweet romance | Significant potential |
+| **Infinite-flow** | Mature | High, crowded | Women's infinite-flow | Focus on a niche |
+| **Rapid transmigration** | Declining | Very high | Deep innovation or repositioning | Not recommended for beginners |
 
-### 2.2 市场空白点识别清单
+### 2.2 Gap Checklist
 
-**检查以下组合是否已被充分开发**：
+**Check whether these combinations are already well developed**:
 
-- [ ] 题材A + 热门卖点B = 是否已有爆款？
-- [ ] 传统卖点 + 新视角（女频/反派/配角） = 是否有人尝试？
-- [ ] 热门卖点 + 反套路设定 = 是否足够新颖？
-- [ ] 跨题材融合（如：都市+规则怪谈） = 是否有成功案例？
+- [ ] Genre A + popular selling point B: already a hit?
+- [ ] Traditional selling point + women's/antagonist/supporting viewpoint: tried before?
+- [ ] Popular selling point + anti-trope premise: sufficiently novel?
+- [ ] Cross-genre fusion, such as urban + rule-based horror: successful precedents?
 
-**市场空白示例**（2025年潜力方向样例）：
-- 规则怪谈 + 都市背景（现代城市中的规则世界）
-- 重生 + 配角视角（重生成原著配角，改写剧情）
-- 系统 + 群像多主角（多人都有系统，相互博弈）
-- 反派洗白 + 女频甜宠（反派大佬洗白后追妻）
+**Historical 2025 opportunity examples**:
+- Rule-based horror in a modern city.
+- Rebirth as an original story's supporting character, rewriting its plot.
+- Ensemble protagonists with competing systems.
+- Villain redemption plus sweet romance, with a former villain pursuing a partner.
 
-### 2.3 读者群体迁移趋势（2025样例）
+### 2.3 Reader Shifts (Historical 2025 Examples)
 
-**从"纯爽"到"爽+烧脑"**：
-- 读者越来越期待智商在线的主角
-- 单纯的金手指碾压已不足以吸引付费
-- 悬疑、推理、反转元素受欢迎
+**From pure gratification to gratification plus intellectual engagement**:
+- Greater demand for intelligent protagonists.
+- Overwhelming special advantages alone no longer guarantee paid interest.
+- Mystery, deduction, and reversals attract readers.
 
-**从"单一主角"到"群像多视角"**：
-- 多主角、多视角叙事开始流行
-- 配角也需要完整的成长线
-- 反派不再是工具人，要有合理动机
+**From one protagonist to ensemble viewpoints**:
+- Multiple leads and narrative perspectives gain popularity.
+- Supporting characters need complete growth arcs.
+- Antagonists need motives, not merely plot functions.
 
-**从"男频独大"到"性别平衡"**：
-- 女频市场快速增长
-- 男频作品开始尝试女性视角
-- 性别反转、性别平等主题受关注
+**From male-dominated to more balanced audiences**:
+- Women's fiction grows rapidly.
+- Men's fiction experiments with female viewpoints.
+- Gender reversals and equality themes receive attention.
 
 ---
 
-## 3. 卖点与要素的系统性匹配
+## 3. Align Story Elements
 
-### 3.1 主角身份与卖点匹配
+### 3.1 Protagonist Identity
 
-**匹配原则**：主角身份必须**最大化展现**核心卖点
+**Principle**: Identity must **maximize expression** of the selling point.
 
-**示例分析**：
-
-| 核心卖点 | 最佳主角身份 | 为什么匹配 | 不匹配的身份 |
+| Selling point | Best identity | Why it fits | Poor fit |
 |---------|------------|-----------|-------------|
-| 重生复仇 | 前世受害者 | 有复仇动机+信息差优势 | 无冤无仇的路人 |
-| 规则破解 | 逻辑能力强的推理者 | 能发现规则漏洞 | 无脑莽夫 |
-| 反派洗白 | 前世反派大佬 | 有洗白动机+反差萌 | 一直是好人 |
-| 系统签到 | 需要快速成长的弱者 | 签到能弥补弱势 | 本身就是天才 |
-| 商战权谋 | 商业天才/重生者 | 有商业知识+信息优势 | 对商业一无所知 |
+| Rebirth revenge | Past-life victim | Motive plus information advantage | Uninvolved stranger |
+| Rule solving | Logical investigator | Can find loopholes | Thoughtless brute |
+| Villain redemption | Former villain leader | Redemption motive and contrast | Someone always good |
+| Check-in system | Weak person needing rapid growth | Rewards compensate for weakness | An existing genius |
+| Business intrigue | Business prodigy/reborn person | Expertise and information | Someone ignorant of business |
 
-**主角性格与卖点匹配**：
+**Personality alignment**:
 
 ```
-卖点：重生复仇
-✅ 匹配性格：冷静、有城府、耐心布局
-❌ 不匹配：冲动、圣母、容易原谅
+Selling point: Rebirth revenge
+✅ Calm, calculating, patiently strategic
+❌ Impulsive, indiscriminately merciful, quick to forgive
 
-卖点：规则怪谈
-✅ 匹配性格：谨慎、理性、观察力强
-❌ 不匹配：鲁莽、粗心、不动脑
+Selling point: Rule-based horror
+✅ Careful, rational, observant
+❌ Reckless, careless, thoughtless
 
-卖点：甜宠文
-✅ 匹配性格：温柔、体贴、会撩
-❌ 不匹配：木讷、直男、情商低
+Selling point: Sweet romance
+✅ Gentle, considerate, good at flirting
+❌ Inexpressive, romantically insensitive, low emotional awareness
 ```
 
-### 3.2 金手指与卖点匹配
+### 3.2 Special Advantage
 
-**匹配原则**：金手指必须**专门服务于**核心卖点，而非通用万能
+**Principle**: The advantage must **specifically serve** the selling point, not solve everything.
 
-**金手指设计三问**：
-1. 这个金手指是否让卖点更突出？
-2. 没有这个金手指，卖点是否无法成立？
-3. 金手指是否会抢走卖点的风头？
+**Three questions**:
+1. Does it make the selling point stand out?
+2. Would the selling point fail without it?
+3. Will it steal attention from the selling point?
 
-**匹配示例**：
-
-| 核心卖点 | 匹配的金手指 | 不匹配的金手指 |
+| Selling point | Suitable advantage | Poor fit |
 |---------|------------|---------------|
-| **重生复仇** | 前世记忆+关键信息 | 无敌战力（与复仇无关） |
-| **规则破解** | 看穿规则漏洞的能力 | 直接无视规则（破坏卖点） |
-| **系统签到** | 每日签到获得奖励 | 一次性获得无敌装备 |
-| **反派洗白** | 读心术（了解他人想法） | 时间倒流（太万能） |
-| **商战权谋** | 预知未来商机 | 武力值爆表（跑题） |
+| **Rebirth revenge** | Past-life memories and key information | Invincible combat unrelated to revenge |
+| **Rule solving** | Perceive loopholes | Ignore rules entirely, destroying the premise |
+| **System check-ins** | Daily rewards | Invincible equipment granted all at once |
+| **Villain redemption** | Mind reading to understand others | Overly universal time reversal |
+| **Business intrigue** | Foresee opportunities | Excessive physical strength, off-topic |
 
-**金手指升级逻辑与卖点关联**：
+**Upgrade alignment**:
 ```
-卖点：规则怪谈破解
-金手指升级路径：
-Lv1: 能看到基础规则
-Lv2: 能发现规则漏洞
-Lv3: 能预测规则变化
-Lv4: 能创造新规则
+Selling point: Solving horror-world rules
+Lv1: See basic rules
+Lv2: Find loopholes
+Lv3: Predict rule changes
+Lv4: Create new rules
 
-每次升级都强化"破解规则"这个核心卖点
+Every upgrade strengthens rule-solving as the central appeal
 ```
 
-### 3.3 世界观与卖点匹配
+### 3.3 Worldbuilding
 
-**匹配原则**：世界观规则必须**放大**卖点的价值
-
-**示例分析**：
+**Principle**: World rules must **amplify** the selling point's value.
 
 ```
-卖点：重生带来的信息差优势
+Selling point: Rebirth information advantage
 
-✅ 匹配的世界观：
-- 股市/商战背景（信息差=财富）
-- 修仙世界（提前知道机缘位置）
-- 娱乐圈（知道哪些歌会火）
+✅ Suitable:
+- Markets/business, where information means wealth
+- Cultivation, with foreknowledge of opportunities
+- Entertainment, knowing which songs become hits
 
-❌ 不匹配的世界观：
-- 完全静态的世界（未来不会变化，重生无意义）
-- 随机性极强的世界（信息差无用）
+❌ Poor fit:
+- A fully static world where rebirth changes nothing
+- A highly random world where knowledge is useless
 ```
 
 ```
-卖点：规则破解
+Selling point: Rule solving
 
-✅ 匹配的世界观：
-- 严格规则约束的怪谈世界
-- 有明确规则的游戏世界
-- 等级森严的修仙体系
+✅ Suitable:
+- Strictly governed horror world
+- Game world with clear rules
+- Hierarchical cultivation system
 
-❌ 不匹配的世界观：
-- 无规则的混乱世界
-- 规则随时改变的世界
+❌ Poor fit:
+- Ruleless chaos
+- Rules changing arbitrarily at any moment
 ```
 
 ---
 
-## 4. 主线结构与卖点贯彻
+## 4. Main Plot and Sustained Appeal
 
-### 4.1 "大目标+小循环"发展模型
+### 4.1 Large Goal + Small Cycles
 
-**大目标**：围绕卖点设定的终极目标
+**Large goal**: Ultimate objective built around the selling point.
 
-**小循环**：每个阶段重复强化卖点的情节模式
+**Small cycles**: Repeating stage-level patterns that reinforce it.
 
-**主线贯彻机制**：
-- **大目标 + 小循环**：每个情节点必须强化核心卖点
-- **读者期待管理**：承诺的爽点必须在黄金三章内有首次体现，且在后续章节中按固定频率兑现
+**Mechanism**:
+- Every plot beat strengthens the central selling point.
+- Deliver the first promised payoff within the opening three chapters, then repeat at a stable cadence.
 
-**示例（重生复仇文）**：
-
+**Rebirth revenge example**:
 ```
-大目标：彻底扳倒仇人，洗刷前世冤屈
+Large goal: Defeat the enemy completely and clear past-life injustice
 
-小循环（每10-15章一个循环）：
-1. 发现仇人的一个弱点（信息差优势）
-2. 制定针对性计划（智商博弈）
-3. 执行计划并打脸（复仇爽点）
-4. 仇人反扑（制造新冲突）
-5. 主角更进一步（成长+复仇推进）
+Cycle every 10–15 chapters:
+1. Discover an enemy weakness through information advantage
+2. Design a targeted plan through intellectual competition
+3. Execute and gain revenge satisfaction
+4. Enemy retaliates, creating new conflict
+5. Protagonist advances in growth and revenge
 
-每个循环都强化"重生复仇"这个核心卖点
-```
-
-### 4.2 阶段性卖点体现
-
-**三幕式结构与卖点贯彻**：
-
-| 阶段 | 字数范围 | 卖点体现方式 | 示例（规则怪谈） |
-|------|---------|------------|-----------------|
-| **第一幕（开局）** | 0-10万字 | 建立卖点，展示独特性 | 主角进入规则世界，展示破解能力 |
-| **第二幕（发展）** | 10-50万字 | 深化卖点，升级变化 | 规则越来越复杂，破解难度提升 |
-| **第三幕（高潮）** | 50万字+ | 卖点的终极体现 | 破解世界终极规则，揭开真相 |
-
-**每个阶段的卖点强化检查**：
-
-- [ ] 第一幕：读者是否在前3章就理解了核心卖点？
-- [ ] 第二幕：卖点是否在每个小高潮都有体现？
-- [ ] 第三幕：终极高潮是否是卖点的最强表现？
-
-### 4.3 情节贯彻卖点的四种方式
-
-**方式一：直接展示**
-```
-卖点：重生带来的先知先觉
-体现：主角直接预言某事，然后应验
+Every cycle reinforces rebirth revenge
 ```
 
-**方式二：对比反差**
+### 4.2 Stage-Level Expression
+
+| Act | Length (Chinese characters) | Selling-point expression | Rule-based horror example |
+|------|------|------------|-----------------|
+| **Act 1: Opening** | 0–100,000 | Establish and distinguish | Enter the rule world and demonstrate solving ability |
+| **Act 2: Development** | 100,000–500,000 | Deepen and evolve | Increasingly complex rules and harder solutions |
+| **Act 3: Climax** | 500,000+ | Ultimate expression | Solve the final rule and reveal the truth |
+
+**Checks**:
+- [ ] Act 1: Do readers understand the appeal within three chapters?
+- [ ] Act 2: Does every small climax express it?
+- [ ] Act 3: Is the final climax its strongest expression?
+
+### 4.3 Four Plot Techniques
+
+**Direct demonstration**
 ```
-卖点：反派洗白
-体现：前世作恶 vs 今生行善，形成强烈对比
+Selling point: Rebirth foreknowledge
+Expression: The protagonist predicts an event and it happens
 ```
 
-**方式三：冲突放大**
+**Contrast**
 ```
-卖点：规则破解
-体现：规则越来越严格，破解难度越来越大
+Selling point: Villain redemption
+Expression: Past-life evil versus present-life good
 ```
 
-**方式四：角色互动**
+**Amplified conflict**
 ```
-卖点：系统签到
-体现：其他角色惊叹主角成长速度，凸显系统优势
+Selling point: Rule solving
+Expression: Stricter rules make solutions harder
+```
+
+**Character interaction**
+```
+Selling point: Check-in system
+Expression: Others marvel at rapid growth, highlighting the system's value
 ```
 
 ---
 
-## 5. 差异化策略与创新方向
+## 5. Differentiation Strategies
 
-### 5.1 同类作品对比分析法
+### 5.1 Compare Similar Works
 
-**步骤一**：找出3-5部同卖点的成功作品
+**Step 1**: Find 3–5 successful works sharing the selling point.
 
-**步骤二**：分析它们的共同点与差异点
+**Step 2**: Compare common and distinct features.
 
-| 作品 | 核心卖点 | 主角设定 | 金手指 | 差异化亮点 |
+| Work | Selling point | Protagonist | Advantage | Distinction |
 |------|---------|---------|--------|-----------|
-| 作品A | 重生复仇 | 商战大佬 | 前世记忆 | 商战权谋 |
-| 作品B | 重生复仇 | 娱乐明星 | 前世记忆 | 娱乐圈打脸 |
-| 作品C | 重生复仇 | 学霸 | 前世记忆 | 高考改命 |
+| A | Rebirth revenge | Business magnate | Past-life memories | Business intrigue |
+| B | Rebirth revenge | Entertainment star | Past-life memories | Entertainment-industry vindication |
+| C | Rebirth revenge | Academic star | Past-life memories | Changing fate through entrance exams |
 
-**步骤三**：找到市场空白或微创新点
+**Step 3**: Find gaps or small innovations.
 
 ```
-已有组合：重生复仇 + 商战/娱乐/学业
-市场空白：重生复仇 + 科研/体育/政坛
-微创新：重生复仇 + 反派视角（重生成反派的洗白）
+Existing: Rebirth revenge + business/entertainment/studies
+Gap: Rebirth revenge + research/sports/politics
+Innovation: Rebirth revenge + antagonist viewpoint and redemption
 ```
 
-### 5.2 六种差异化策略
+### 5.2 Six Strategies
 
-**策略一：视角创新**
+**1. Viewpoint**
 ```
-常规：男性主角 → 创新：女性主角
-常规：正派主角 → 创新：反派主角
-常规：单一视角 → 创新：多视角群像
-```
-
-**策略二：人设反转**
-```
-常规：天才主角 → 创新：废材主角逆袭
-常规：冷酷主角 → 创新：软萌主角（反差萌）
-常规：全能主角 → 创新：有明显短板的主角
+Male protagonist → female protagonist
+Heroic protagonist → antagonist protagonist
+Single viewpoint → ensemble viewpoints
 ```
 
-**策略三：金手指创新**
+**2. Character reversal**
 ```
-常规：无限奖励系统 → 创新：有代价的系统
-常规：全知全能 → 创新：只在特定领域强大
-常规：永久金手指 → 创新：有时限或次数限制
-```
-
-**策略四：世界观融合**
-```
-常规：纯都市 → 创新：都市+玄幻元素
-常规：纯修仙 → 创新：修仙+科技元素
-常规：纯历史 → 创新：历史+穿越元素
+Genius → underdog comeback
+Cold protagonist → soft, endearing protagonist with contrast
+All-rounder → protagonist with a clear weakness
 ```
 
-**策略五：节奏创新**
+**3. Advantage innovation**
 ```
-常规：慢热铺垫 → 创新：开篇即高潮
-常规：线性叙事 → 创新：多线交织+反转
-常规：单一爽点 → 创新：多类型爽点结合
-```
-
-**策略六：情感创新**
-```
-常规：纯爽文 → 创新：爽+虐+燃结合
-常规：无感情线 → 创新：感情线与主线深度融合
-常规：甜宠文 → 创新：先虐后甜（虐恋情深）
+Unlimited reward system → costly system
+Omniscience/omnipotence → power in one narrow field
+Permanent advantage → time or usage limits
 ```
 
----
-
-## 6. 一致性机制与读者期待管理
-
-### 6.1 卖点贯彻的五大一致性原则
-
-**原则一：开篇承诺 = 全文兑现**
+**4. World fusion**
 ```
-开篇承诺："重生复仇"
-全文兑现：每个阶段都在推进复仇进度
-违反示例：前期复仇，后期变成种田文
+Pure urban → urban + fantasy
+Pure cultivation → cultivation + technology
+Pure historical → history + transmigration
 ```
 
-**原则二：金手指强度保持平衡**
+**5. Pacing**
 ```
-✅ 正确：金手指随主角成长逐步升级
-❌ 错误：开篇无敌 → 中期被吊打 → 后期又无敌
-```
-
-**原则三：主角性格不OOC**
-```
-✅ 正确：冷静主角始终理性决策
-❌ 错误：前期冷静，后期突然冲动送人头
+Slow buildup → opening climax
+Linear narrative → interwoven lines and reversals
+Single payoff type → varied payoffs
 ```
 
-**原则四：世界观规则不自相矛盾**
+**6. Emotion**
 ```
-✅ 正确：修仙体系前后一致
-❌ 错误：前期说"境界不可越级"，后期主角越级如喝水
-```
-
-**原则五：爽点频率稳定**
-```
-✅ 正确：每3-5章一个小爽点，每10-15章一个大爽点
-❌ 错误：前期爽点密集，后期10章没一个爽点
-```
-
-### 6.2 读者期待管理策略
-
-**策略一：明确承诺，及时兑现**
-```
-第1章：承诺"主角会复仇"
-第3章：给出第一次小复仇（兑现承诺）
-第10章：第一次大复仇（强化承诺）
-```
-
-**策略二：设置小目标，持续满足**
-```
-大目标：成为最强者
-小目标：
-- 第1阶段：成为班级第一
-- 第2阶段：成为学校第一
-- 第3阶段：成为全市第一
-每个小目标达成都给读者成就感
-```
-
-**策略三：适度留白，制造悬念**
-```
-明确告知：主角有重生优势
-留白：但未来是否会因主角改变而变化？
-制造悬念：主角能否真正改写命运？
-```
-
-**策略四：定期刷新，避免审美疲劳**
-```
-前10章：重生复仇（商战）
-10-20章：引入新敌人（权谋）
-20-30章：发现更大阴谋（悬疑）
-保持核心卖点，但换场景、换对手
-```
-
-### 6.3 卖点偏移预警机制
-
-**偏移信号识别**：
-
-- ⚠️ 读者评论："怎么感觉变成XX文了？"
-- ⚠️ 订阅数据下降
-- ⚠️ 核心卖点连续3章未出现
-- ⚠️ 新引入的元素抢走卖点风头
-
-**纠偏方法**：
-
-1. **快速回归**：下一章立即强化核心卖点
-2. **节奏调整**：削减与卖点无关的情节
-3. **重新聚焦**：通过角色对话提醒读者核心卖点
-4. **读者互动**：在作者说中重申核心卖点
-
----
-
-## 7. 实战检查清单
-
-### 7.1 核心定义清晰度检查
-
-- [ ] 能否用**一句话**说清核心卖点？
-- [ ] 这个卖点是否**独一无二**，而非泛泛的题材描述？
-- [ ] 读者看到这个卖点，是否会**立即产生兴趣**？
-
-**测试方法**：
-```
-请用一句话向陌生人介绍你的小说：
-❌ "这是一部都市重生文"（太宽泛）
-✅ "重生成反派大佬，用前世记忆洗白逆袭"（清晰）
-```
-
-### 7.2 要素匹配度检查
-
-- [ ] 主角身份是否**最大化展现**卖点？
-- [ ] 金手指是否**专门服务于**卖点？
-- [ ] 世界观是否**放大**卖点的价值？
-- [ ] 情节是否**每章都强化**卖点？
-
-### 7.3 差异化竞争力检查
-
-- [ ] 与同题材作品相比，有何**微创新**？
-- [ ] 这个差异化是否足以让读者**选择你的书**？
-- [ ] 差异化是否**可持续**（能支撑30万字+）？
-
-### 7.4 长期可持续性检查
-
-- [ ] 卖点能否支撑**30万字+**连载？
-- [ ] 卖点是否有**升级空间**（避免重复）？
-- [ ] 卖点是否有**冲突来源**（不会写到无事可写）？
-
-### 7.5 读者承诺兑现检查
-
-- [ ] 开篇承诺的爽点，是否在**前3章**就有体现？
-- [ ] 核心卖点是否**每10章**至少强化一次？
-- [ ] 读者期待的情节，是否**及时兑现**（不拖沓）？
-
----
-
-## 8. 常见问题与解决方案
-
-### Q1: 卖点太多，不知道选哪个作为核心？
-
-**A**: 使用"删除法"
-- 依次删除每个卖点，看哪个删除后整个故事就不成立
-- 那个无法删除的卖点，就是核心卖点
-- 其他卖点作为辅助卖点或爽点设计
-
-**示例**：
-```
-候选卖点：重生 + 系统 + 商战
-删除重生 → 系统+商战仍然成立
-删除系统 → 重生+商战仍然成立
-删除商战 → 重生+系统变成泛泛的升级文
-结论：商战是核心卖点，重生和系统是辅助
-```
-
-### Q2: 卖点很好，但不知道怎么持续30万字+？
-
-**A**: 使用"阶梯式升级"
-- 将卖点分解为多个阶段
-- 每个阶段难度递增，但核心不变
-- 换场景、换对手、换规则，但不换卖点
-
-**示例（规则怪谈）**：
-```
-第1阶段：破解基础规则（简单）
-第2阶段：破解复合规则（中等）
-第3阶段：破解动态规则（困难）
-第4阶段：破解终极规则（地狱）
-卖点不变：破解规则
-但难度和深度逐步提升
-```
-
-### Q3: 卖点同质化严重，如何差异化？
-
-**A**: 使用"组合创新法"（参见 `creative-combination.md`）
-- A卖点 + B视角 = 新卖点
-- A卖点 + C人设 = 新卖点
-- A卖点 + D世界观 = 新卖点
-
-**示例**：
-```
-常规：重生复仇（男主）
-创新：重生复仇（女主）
-创新：重生复仇（反派视角）
-创新：重生复仇（配角视角）
-```
-
-### Q4: 卖点在开篇很吸引人,但中后期乏力怎么办？
-
-**A**: 建立"卖点升级路径"
-- 开篇：展示卖点基础形态
-- 中期：卖点遇到挑战，被迫升级
-- 后期：卖点的终极形态
-
-**示例（系统签到）**：
-```
-开篇：每日签到获得小奖励
-中期：发现隐藏签到点，奖励更好
-后期：签到系统进化，可自定义奖励
-卖点始终是"签到"，但玩法在升级
-```
-
-### Q5: 读者说"卖点偏移了"，如何纠正？
-
-**A**: 三步纠偏法
-1. **立即回归**：下一章强化核心卖点
-2. **删减无关情节**：砍掉与卖点无关的支线
-3. **读者互动**：在作者说中重申核心卖点
-
-**示例**：
-```
-偏移情况：重生复仇文写成了种田文
-纠偏步骤：
-1. 下一章立即安排复仇情节
-2. 删减种田细节描写
-3. 作者说："接下来会加快复仇节奏"
+Pure gratification → satisfaction + pain + excitement
+No romance → relationships deeply integrated into the main plot
+Sweet romance → suffering followed by sweetness
 ```
 
 ---
 
-## 9. 核心卖点定位模板
+## 6. Consistency and Reader Expectations
 
-### 9.1 一句话卖点公式
+### 6.1 Five Principles
+
+**Opening promise = whole-story delivery**
+```
+Promise: Rebirth revenge
+Delivery: Every stage advances revenge
+Violation: Revenge opening becomes a farming story
+```
+
+**Balance the advantage**
+```
+✅ Gradual upgrades alongside growth
+❌ Invincible opening → helpless middle → invincible ending
+```
+
+**Keep the protagonist in character**
+```
+✅ Calm protagonist makes consistently rational choices
+❌ Calm early, suddenly reckless and suicidal later
+```
+
+**Keep world rules consistent**
+```
+✅ Stable cultivation hierarchy
+❌ Higher-level victories declared impossible early, then effortless later
+```
+
+**Maintain payoff frequency**
+```
+✅ Small payoff every 3–5 chapters; major payoff every 10–15
+❌ Dense early payoffs, then ten chapters without one
+```
+
+### 6.2 Expectation Management
+
+**Clear promise, timely delivery**
+```
+Chapter 1: Promise revenge
+Chapter 3: First small revenge pays the promise
+Chapter 10: First major revenge reinforces it
+```
+
+**Small goals, continuous satisfaction**
+```
+Ultimate goal: Become the strongest
+Stages:
+- First in class
+- First in school
+- First in the city
+Each completed goal gives readers achievement
+```
+
+**Leave selective gaps for suspense**
+```
+Known: The protagonist has rebirth knowledge
+Unknown: Will their actions change the future?
+Suspense: Can fate truly be rewritten?
+```
+
+**Refresh without abandoning the core**
+```
+First 10 chapters: Rebirth revenge through business
+Chapters 10–20: New enemy and political intrigue
+Chapters 20–30: Larger conspiracy and mystery
+Keep the selling point; change scenes and opponents
+```
+
+### 6.3 Drift Warnings
+
+**Signals**:
+- ⚠️ Comments ask why the story has become a different genre.
+- ⚠️ Subscription metrics decline.
+- ⚠️ The central selling point disappears for three consecutive chapters.
+- ⚠️ New elements steal its spotlight.
+
+**Corrections**:
+1. **Return quickly**: Reinforce the core in the next chapter.
+2. **Adjust pace**: Cut unrelated events.
+3. **Refocus**: Use dialogue to remind readers of the core.
+4. **Communicate**: Reaffirm the premise in author notes.
+
+---
+
+## 7. Practical Checklists
+
+### 7.1 Definition
+
+- [ ] Clear in **one sentence**?
+- [ ] **Distinctive**, not a generic genre description?
+- [ ] Generates **immediate interest**?
+
+**Test**:
+```
+Introduce the novel to a stranger:
+❌ “An urban rebirth story.” Too broad.
+✅ “Reborn as a villain leader, he uses past-life memories to redeem himself and rise.” Clear.
+```
+
+### 7.2 Element Alignment
+
+- [ ] Identity **maximizes expression** of the selling point?
+- [ ] Advantage **specifically serves** it?
+- [ ] World **amplifies** its value?
+- [ ] Plot reinforces it **every chapter**?
+
+### 7.3 Competitive Distinction
+
+- [ ] What **small innovation** separates it from similar works?
+- [ ] Is that enough for readers to **choose this book**?
+- [ ] Is it **sustainable** for 300,000+ Chinese characters?
+
+### 7.4 Sustainability
+
+- [ ] Supports **300,000+ Chinese characters**?
+- [ ] Has **room to evolve** instead of repeat?
+- [ ] Has ongoing **sources of conflict**?
+
+### 7.5 Promise Delivery
+
+- [ ] First promised payoff within **three chapters**?
+- [ ] Central appeal reinforced at least **every ten chapters**?
+- [ ] Expected developments delivered **without dragging**?
+
+---
+
+## 8. Common Questions
+
+### Q1: Too Many Selling Points to Choose One?
+
+**A**: Use elimination.
+- Remove each candidate in turn and see which absence breaks the whole story.
+- The irreplaceable element is the core.
+- Others become supporting appeals or payoff devices.
+
+**Example**:
+```
+Candidates: Rebirth + system + business conflict
+Remove rebirth → system + business still works
+Remove system → rebirth + business still works
+Remove business → rebirth + system becomes generic progression
+Conclusion: Business conflict is central; rebirth and system support it
+```
+
+### Q2: How Can It Sustain 300,000+ Chinese Characters?
+
+**A**: Use stepped escalation.
+- Divide the appeal into stages.
+- Increase difficulty while preserving the core.
+- Change settings, opponents, and rules, not the selling point.
+
+**Rule-based horror example**:
+```
+Stage 1: Basic rules, easy
+Stage 2: Combined rules, moderate
+Stage 3: Dynamic rules, difficult
+Stage 4: Ultimate rules, extreme
+The appeal remains rule solving while difficulty and depth increase
+```
+
+### Q3: How to Differentiate an Overused Selling Point?
+
+**A**: Combine creatively; see `creative-combination.md`.
+- Selling point A + viewpoint B = new appeal.
+- Selling point A + character C = new appeal.
+- Selling point A + world D = new appeal.
+
+```
+Conventional: Rebirth revenge with a male lead
+Variants: Female lead / antagonist viewpoint / supporting-character viewpoint
+```
+
+### Q4: Strong Opening, Weak Middle and End?
+
+**A**: Establish an upgrade path.
+- Opening: Basic form.
+- Middle: Challenges force evolution.
+- Ending: Ultimate form.
+
+**Check-in system example**:
+```
+Opening: Small daily rewards
+Middle: Hidden check-in locations offer better rewards
+Ending: Evolved system allows customized rewards
+Check-ins remain central; the mechanics evolve
+```
+
+### Q5: Readers Say the Selling Point Has Drifted?
+
+**A**: Three-step correction.
+1. Reinforce it in the next chapter.
+2. Remove unrelated subplots.
+3. Reaffirm it in author notes.
+
+```
+Drift: Rebirth revenge turned into farming
+Correction:
+1. Schedule revenge immediately
+2. Reduce farming detail
+3. Author note: “The revenge arc will pick up pace next”
+```
+
+---
+
+## 9. Design Templates
+
+### 9.1 One-Sentence Pitch
 
 ```markdown
-## 核心卖点定位
+## Core Selling Point
 
-**一句话卖点**：
-[主角身份/优势] + [核心行动] + [独特目标]
+**Pitch**:
+[Protagonist identity/advantage] + [core action] + [distinctive goal]
 
-**示例**：
-重生商战大佬（身份）+ 回到高考前（行动）+ 改写人生巅峰（目标）
+**Example**:
+Reborn business magnate + return before entrance exams + rewrite life's peak
 
-**独特体验**：
-读者能从这个卖点中获得什么？（爽/虐/燃/甜/悬疑等）
+**Distinctive experience**:
+What do readers gain: satisfaction, pain, excitement, sweetness, suspense?
 
-**情感共鸣**：
-这个卖点触发读者的哪种情感需求？（复仇/成长/逆袭/治愈等）
+**Emotional resonance**:
+Which need is activated: revenge, growth, comeback, healing?
 
-**读者承诺**：
-向读者承诺的核心阅读体验是什么？
+**Reader promise**:
+What core reading experience is promised?
 ```
 
-### 9.2 要素匹配设计表
+### 9.2 Element Alignment
 
 ```markdown
-## 核心要素匹配
+## Core Element Alignment
 
-### 主角设定
-- **身份**：[必须能最大化展现卖点]
-- **性格**：[必须与卖点匹配]
-- **动机**：[必须与卖点一致]
-- **成长路径**：[围绕卖点展开]
+### Protagonist
+- **Identity**: [Maximizes the selling point]
+- **Personality**: [Fits the selling point]
+- **Motivation**: [Consistent with the selling point]
+- **Growth**: [Develops around it]
 
-### 金手指设计
-- **类型**：[专门服务于卖点]
-- **核心功能**：[强化卖点的独特性]
-- **升级逻辑**：[与卖点深度绑定]
-- **限制条件**：[避免金手指抢风头]
+### Special Advantage
+- **Type**: [Specifically serves the selling point]
+- **Core function**: [Strengthens distinctiveness]
+- **Upgrades**: [Deeply connected to the selling point]
+- **Limits**: [Prevent it from taking over]
 
-### 世界观架构
-- **世界类型**：[放大卖点的价值]
-- **核心规则**：[与卖点相互支撑]
-- **冲突来源**：[围绕卖点设计]
-- **发展空间**：[为卖点提供持续舞台]
+### World
+- **Type**: [Amplifies value]
+- **Rules**: [Mutually support the selling point]
+- **Conflict sources**: [Designed around it]
+- **Room to grow**: [Provides a continuing stage]
 ```
 
-### 9.3 主线结构设计表
+### 9.3 Main Plot
 
 ```markdown
-## 主线结构（围绕卖点）
+## Main Plot Around the Selling Point
 
-### 终极目标
-[与核心卖点直接相关的终极目标]
+### Ultimate Goal
+[Directly related to the core appeal]
 
-### 阶段分解
+### Stages
 
-**第一阶段**（0-10万字）
-- 地图/场景：[具体设定]
-- 核心冲突：[与卖点相关]
-- 卖点体现：[如何展示卖点]
-- 成长收获：[推进卖点进度]
+**Stage 1** (0–100,000 Chinese characters)
+- Setting: [Concrete location]
+- Conflict: [Connected to the selling point]
+- Expression: [How the appeal is shown]
+- Growth: [Progress toward its fulfillment]
 
-**第二阶段**（10-30万字）
-- 地图/场景：[升级场景]
-- 核心冲突：[冲突升级]
-- 卖点体现：[深化卖点]
-- 成长收获：[卖点进化]
+**Stage 2** (100,000–300,000 Chinese characters)
+- Setting: [Expanded location]
+- Conflict: [Escalation]
+- Expression: [Deepening]
+- Growth: [Evolution]
 
-**第三阶段**（30万字+）
-- 地图/场景：[终极舞台]
-- 核心冲突：[终极对抗]
-- 卖点体现：[卖点的最强形态]
-- 成长收获：[卖点终极兑现]
+**Stage 3** (300,000+ Chinese characters)
+- Setting: [Ultimate stage]
+- Conflict: [Final confrontation]
+- Expression: [Strongest form]
+- Growth: [Ultimate fulfillment]
 
-### 小循环设计
-[每10-15章重复的情节模式，确保卖点持续强化]
+### Small Cycles
+[Plot pattern repeating every 10–15 chapters to reinforce the appeal]
 ```
 
-### 9.4 一致性检查表
+### 9.4 Consistency
 
 ```markdown
-## 卖点贯彻一致性检查
+## Selling-Point Consistency
 
-### 开篇承诺
-- [ ] 前3章是否明确展示核心卖点？
-- [ ] 承诺的爽点是否在开篇就有体现？
+### Opening Promise
+- [ ] Clear within three chapters?
+- [ ] Promised payoff appears in the opening?
 
-### 中期强化
-- [ ] 每10章是否至少强化一次卖点？
-- [ ] 卖点是否在每个小高潮都有体现？
+### Middle Reinforcement
+- [ ] Reinforced at least every ten chapters?
+- [ ] Present at every small climax?
 
-### 后期兑现
-- [ ] 终极高潮是否是卖点的最强表现？
-- [ ] 结局是否完整兑现开篇承诺？
+### Final Delivery
+- [ ] Final climax is the strongest expression?
+- [ ] Ending fully delivers the opening promise?
 
-### 全程一致
-- [ ] 金手指强度是否保持平衡？
-- [ ] 主角性格是否前后一致？
-- [ ] 世界观规则是否无矛盾？
-- [ ] 爽点频率是否稳定？
+### Throughout
+- [ ] Advantage stays balanced?
+- [ ] Protagonist remains in character?
+- [ ] World rules do not contradict?
+- [ ] Payoff frequency stays stable?
 ```
 
 ---
 
-## 10. 关联参考文档
+## 10. Related References
 
-本文档是「创意阶段」的核心方法论，完成后可参考：
+This is a core creative-stage method:
 
-- **前置步骤**：`inspiration-collection.md`（提供初步创意方向）
-- **前置步骤**：`market-positioning.md`（明确目标读者与市场定位）
-- **前置步骤**：`creative-combination.md`（通过元素组合强化卖点）
-- **下一步**：设定阶段的世界观构建、角色设定、故事框架（将卖点具体化）
-- **后续验证**：创作阶段的状态管理（检查卖点是否持续贯彻）
+- **Prerequisite**: `inspiration-collection.md`, initial directions.
+- **Prerequisite**: `market-positioning.md`, target readers and market position.
+- **Prerequisite**: `creative-combination.md`, strengthening appeal through combinations.
+- **Next**: Worldbuilding, characters, and story structure turn appeal into concrete design.
+- **Later validation**: State management during writing checks continued alignment.
 
 ---
 
-**使用建议**：核心卖点是整个创作的灵魂，应在创意阶段就明确定位，并在后续所有阶段（设定、框架、创作）中持续强化。每次大纲调整或情节设计前，都应回顾核心卖点，确保所有创作要素都服务于这个唯一的吸引力核心。
+**Usage note**: Define the core selling point during ideation and reinforce it through setting, structure, and drafting. Before changing outlines or designing events, revisit it so every element serves the same central appeal.

@@ -1,322 +1,322 @@
-# 章节规划技巧 (Chapter Planning)
+# Chapter Planning Techniques
 
-> **核心原则**: 每一章都是一个小故事，有开头、发展、高潮、结尾。读者看完后应该有"爽了"或"想看下一章"的感觉。
-
----
-
-## 1. 章节的黄金结构
-
-### 标准章节结构（3000字）
-```
-开头（300字）: 钩子，吸引读者继续看
-发展（1500字）: 推进剧情，制造冲突
-高潮（1000字）: 爽点/反转/打脸
-结尾（200字）: 悬念/钩子，引导订阅下一章
-```
-
-### 开头钩子的5种类型
-1. **悬念式**: "就在这时，一道黑影突然出现在林天身后！"
-2. **冲突式**: "叶良辰冷笑道：'今天，就是你的死期！'"
-3. **信息差**: "林天不知道的是，他刚才的举动已经暴露了身份。"
-4. **倒叙式**: "三天后，天剑宗会沦为一片废墟。而这一切，都源于今天的一个决定……"
-5. **承接式**: "（接上章）林天深吸一口气，推开了秘境的大门。"
+> **Core principle**: every chapter is a small story with a beginning, development, climax, and ending. Readers should finish feeling satisfied or eager for the next chapter.
 
 ---
 
-## 2. 章节节奏设计
+## 1. The golden chapter structure
 
-### 节奏类型
-
-#### A. 爽点章（70%）
-**目的**: 让读者爽，提升订阅
-**结构**:
+### Standard chapter structure (3,000 Chinese characters)
 ```
-1. 设置冲突（主角被挑衅/遇到危险）
-2. 主角展示实力（打脸/秒杀/装逼）
-3. 众人震惊（"这怎么可能！"）
-4. 主角收获（经验/宝物/名声）
+Opening (300): hook readers into continuing
+Development (1,500): advance plot and create conflict
+Climax (1,000): gratification/reversal/comeuppance
+Ending (200): suspense/hook encouraging subscription to the next chapter
 ```
 
-**示例**:
+### Five opening-hook types
+1. **Suspense**: “At that moment, a shadow suddenly appeared behind Lin Tian!”
+2. **Conflict**: “Ye Liangchen sneered. ‘Today is the day you die!’”
+3. **Information gap**: “What Lin Tian didn't know was that his action had already exposed his identity.”
+4. **Flash-forward**: “Three days later, the Heavenly Sword Sect would lie in ruins. And it all began with today's decision...”
+5. **Continuation**: “(Continuing from last chapter) Lin Tian drew a deep breath and pushed open the secret realm's gate.”
+
+---
+
+## 2. Chapter pacing design
+
+### Pacing types
+
+#### A. Gratification chapter (70%)
+**Purpose**: satisfy readers and increase subscriptions.
+**Structure**:
+```
+1. Establish conflict (protagonist provoked/in danger)
+2. Protagonist displays strength (turns tables/instant victory/shows off)
+3. Everyone is stunned (“How is this possible!”)
+4. Protagonist gains rewards (experience/treasure/reputation)
+```
+
+**Example**:
 ```markdown
-## 第50章：一剑斩金丹
-- 开头: 金丹长老嘲讽林天不自量力
-- 发展: 林天拔剑，展示剑意
-- 高潮: 一剑斩杀金丹长老，全场震惊
-- 结尾: 宗主现身："有趣，我要收你为亲传弟子。"（埋下下一章钩子）
+## Chapter 50: One Sword Slays a Golden Core
+- Opening: a Golden Core elder mocks Lin Tian's arrogance
+- Development: Lin Tian draws his sword and displays sword intent
+- Climax: one strike kills the elder; everyone is stunned
+- Ending: the sect leader appears: “Interesting. I'll take you as my direct disciple.” (next-chapter hook)
 ```
 
-#### B. 过渡章（20%）
-**目的**: 承上启下，铺垫伏笔
-**结构**:
+#### B. Transition chapter (20%)
+**Purpose**: connect stages and plant foreshadowing.
+**Structure**:
 ```
-1. 整理收获（清点战利品/总结战斗）
-2. 交代背景（补充世界观/引入新势力）
-3. 布置悬念（暗示下一个危机）
+1. Organize gains (inventory loot/review battle)
+2. Explain background (expand worldbuilding/introduce a faction)
+3. Set suspense (hint at the next crisis)
 ```
 
-**示例**:
+**Example**:
 ```markdown
-## 第51章：暗流涌动
-- 开头: 林天回到住处，清点从秘境获得的宝物
-- 发展: 介绍宝物的来历（补充设定）
-- 发展: 暗中有人监视林天（埋伏笔）
-- 结尾: "血神教的密探传回情报：'目标已锁定。'"
+## Chapter 51: Undercurrents
+- Opening: Lin Tian returns home and inventories treasures from the secret realm
+- Development: introduce the treasures' origins (expand settings)
+- Development: someone secretly watches Lin Tian (foreshadowing)
+- Ending: “The Blood God Cult's spy reports: ‘Target acquired.’”
 ```
 
-#### C. 刀子章（10%）
-**目的**: 制造虐点，引发情绪波动
-**结构**:
+#### C. Heartbreak chapter (10%)
+**Purpose**: create pain and emotional fluctuation.
+**Structure**:
 ```
-1. 主角遭遇重大打击（师尊被杀/亲人被掳）
-2. 主角悲痛欲绝
-3. 立下复仇誓言
+1. Protagonist suffers a major blow (master killed/family abducted)
+2. Protagonist is devastated
+3. Swears revenge
 ```
 
-**示例**:
+**Example**:
 ```markdown
-## 第200章：师尊陨落
-- 开头: 师尊为了保护林天，以一敌百
-- 发展: 林天被迫逃离，眼睁睁看着师尊被围杀
-- 高潮: 师尊临死前传功给林天："记住，报仇！"
-- 结尾: 林天跪地嘶吼："我发誓，血神教，我必灭你满门！"
+## Chapter 200: The Master's Fall
+- Opening: master fights a hundred enemies alone to protect Lin Tian
+- Development: Lin Tian is forced to flee, watching his master surrounded and killed
+- Climax: before dying, master transfers his power: “Remember. Avenge me!”
+- Ending: Lin Tian kneels and roars: “Blood God Cult, I swear I'll wipe you out!”
 ```
 
 ---
 
-## 3. 章节字数控制
+## 3. Chapter length control
 
-### 标准字数
-- **起点等长篇平台**: 3000字/章（最舒适）
-- **短篇平台（知乎/微信）**: 1500-2000字/章
-- **付费章节**: 2000字起（低于2000字读者会觉得不划算）
+### Standard lengths (Chinese characters)
+- **Long-form platforms such as Qidian**: 3,000/chapter (most comfortable)
+- **Short-fiction platforms (Zhihu/WeChat)**: 1,500–2,000/chapter
+- **Paid chapters**: at least 2,000 (less feels poor value to readers)
 
-### 字数分配黄金比例
+### Golden length allocation
 ```
-开头钩子: 10%（300字）
-剧情发展: 50%（1500字）
-高潮爽点: 33%（1000字）
-结尾钩子: 7%（200字）
+Opening hook: 10% (300 characters)
+Plot development: 50% (1,500)
+Climactic payoff: 33% (1,000)
+Ending hook: 7% (200)
 ```
 
-### 特殊情况
-- **大高潮章节**: 可以写到5000-6000字（如：宗门大比决赛、击败大BOSS）
-- **过渡章节**: 可以压缩到2500字（但不要低于2000字）
+### Special cases
+- **Major climax chapters**: may reach 5,000–6,000 characters (e.g. tournament final/major boss defeat).
+- **Transition chapters**: may be condensed to 2,500, but not below 2,000.
 
 ---
 
-## 4. 章节标题技巧
+## 4. Chapter-title techniques
 
-### 标题的作用
-- **吸引点击**: 在目录页脱颖而出
-- **剧透适度**: 让读者知道本章有什么看点，但不要完全剧透
+### What titles do
+- **Attract clicks**: stand out on the contents page.
+- **Moderate spoilers**: indicate the chapter's appeal without revealing everything.
 
-### 标题公式
+### Title formulas
 
-#### 公式 1: 核心事件
+#### Formula 1: Core event
 ```
-第1章：退婚之辱
-第50章：一剑斩金丹
-第100章：血洗叶家
+Chapter 1: The Humiliation of a Broken Engagement
+Chapter 50: One Sword Slays a Golden Core
+Chapter 100: Bloodbath at the Ye Clan
 ```
-**优点**: 直接，读者一看就知道本章内容
-**缺点**: 缺少悬念
+**Strength**: direct; readers immediately know the content.
+**Weakness**: little suspense.
 
-#### 公式 2: 悬念式
+#### Formula 2: Suspense
 ```
-第1章：神秘的声音
-第50章：他，来了
-第100章：那一剑的风情
+Chapter 1: A Mysterious Voice
+Chapter 50: He Has Arrived
+Chapter 100: The Grace of That Sword
 ```
-**优点**: 有悬念，吸引点击
-**缺点**: 标题党风险，内容要撑得住
+**Strength**: suspense attracts clicks.
+**Weakness**: risks clickbait; content must justify it.
 
-#### 公式 3: 对话式
+#### Formula 3: Dialogue
 ```
-第1章："你，不配！"
-第50章："这不可能！"
-第100章："我回来了。"
+Chapter 1: “You Aren't Worthy!”
+Chapter 50: “Impossible!”
+Chapter 100: “I'm Back.”
 ```
-**优点**: 有代入感，情绪强烈
-**缺点**: 用多了会审美疲劳
+**Strength**: immersive and emotionally strong.
+**Weakness**: overuse causes fatigue.
 
-#### 公式 4: 组合式（推荐）
+#### Formula 4: Combination (recommended)
 ```
-第50章：一剑斩金丹！全场震惊
-第100章：血洗叶家，复仇之路开启
-第200章：师尊陨落，"我必杀你！"
+Chapter 50: One Sword Slays a Golden Core! Everyone Is Stunned
+Chapter 100: Bloodbath at the Ye Clan, the Road to Revenge Begins
+Chapter 200: The Master's Fall: “I'll Kill You!”
 ```
-**优点**: 既有核心事件，又有情绪点
+**Strength**: combines a core event with an emotional beat.
 
 ---
 
-## 5. 章节间的衔接
+## 5. Connecting chapters
 
-### 衔接方式
+### Connection methods
 
-#### A. 直接承接
+#### A. Direct continuation
 ```
-第49章结尾: "林天深吸一口气，一剑斩出！"
-第50章开头: "剑光闪过，金丹长老瞳孔骤缩……"
+Chapter 49 ending: “Lin Tian drew a deep breath and struck with his sword!”
+Chapter 50 opening: “Sword light flashed; the Golden Core elder's pupils contracted...”
 ```
-**适用**: 战斗章节、高潮章节
+**Suitable for**: combat and climax chapters.
 
-#### B. 时间跳跃
+#### B. Time jump
 ```
-第49章结尾: "林天走进了秘境。"
-第50章开头: "三天后，林天从秘境中走出，气息大变。"
+Chapter 49 ending: “Lin Tian entered the secret realm.”
+Chapter 50 opening: “Three days later, Lin Tian emerged, his aura transformed.”
 ```
-**适用**: 过渡章节、修炼闭关
+**Suitable for**: transition chapters and cultivation retreats.
 
-#### C. 视角切换
+#### C. Viewpoint switch
 ```
-第49章: 主角视角（林天在秘境中探索）
-第50章: 反派视角（"宗主，林天进入秘境已经三天，要不要动手？"）
+Chapter 49: protagonist's viewpoint (Lin Tian explores the secret realm)
+Chapter 50: antagonist's viewpoint (“Sect Leader, Lin Tian has been inside for three days. Shall we act?”)
 ```
-**适用**: 多线叙事、埋伏笔
+**Suitable for**: multiple storylines and foreshadowing.
 
 ---
 
-## 6. 爽点密度控制
+## 6. Gratification density control
 
-### 爽点分级
-| 等级 | 爽感强度 | 频率 | 示例 |
+### Gratification tiers
+| Tier | Intensity | Frequency | Examples |
 |------|---------|------|------|
-| **S级** | 超级爽 | 每50-100章 | 打败大BOSS、飞升、灭敌对势力满门 |
-| **A级** | 很爽 | 每20-30章 | 打脸前未婚妻、夺得宗门大比第一 |
-| **B级** | 爽 | 每10章 | 秒杀挑衅者、获得神器 |
-| **C级** | 小爽 | 每3-5章 | 打脸龙套、赚到一笔灵石 |
+| **S** | Extremely satisfying | Every 50–100 chapters | Defeat major boss, ascend, annihilate an enemy faction |
+| **A** | Very satisfying | Every 20–30 chapters | Humiliate former fiancée, win sect tournament |
+| **B** | Satisfying | Every 10 chapters | Instantly defeat provocateur, obtain divine artifact |
+| **C** | Small payoff | Every 3–5 chapters | Humiliate an extra, earn spirit stones |
 
-### 爽点密度检查
-- **最低标准**: 每10章至少有1个B级或以上爽点
-- **理想状态**: 每5章1个C级 + 每10章1个B级 + 每30章1个A级
-- **禁忌**: 连续20章没有任何爽点（读者会弃书）
+### Density checks
+- **Minimum**: at least one B-tier or higher payoff every ten chapters.
+- **Ideal**: one C every five chapters + one B every ten + one A every thirty.
+- **Avoid**: twenty consecutive chapters without any gratification (readers abandon the book).
 
 ---
 
-## 7. 章节规划模板
+## 7. Chapter-planning templates
 
-### 模板 A: 战斗章
+### Template A: Combat chapter
 ```markdown
-## 第XX章：[标题]
-**字数**: 3000
-**主线剧情**: 主角 vs [敌人]
-**冲突来源**: [为什么打？]
-**战斗流程**:
-  1. 敌人嘲讽/轻视主角
-  2. 主角隐藏实力，先示弱
-  3. 敌人以为稳赢，放松警惕
-  4. 主角爆发，一招制敌
-  5. 众人震惊："他竟然这么强！"
-**爽点**: 打脸/秒杀/装逼
-**伏笔**: [埋什么坑？]
-**结尾钩子**: [引导下一章]
+## Chapter XX: [Title]
+**Length**: 3,000 Chinese characters
+**Main plot**: protagonist vs. [enemy]
+**Conflict source**: [Why fight?]
+**Battle sequence**:
+  1. Enemy mocks/underestimates protagonist
+  2. Protagonist conceals strength and feigns weakness
+  3. Enemy assumes victory and lowers guard
+  4. Protagonist erupts, defeating enemy in one move
+  5. Everyone is stunned: “He's that strong!”
+**Gratification**: comeuppance/instant victory/showing off
+**Foreshadowing**: [What thread is planted?]
+**Ending hook**: [Lead into next chapter]
 ```
 
-### 模板 B: 剧情章
+### Template B: Plot chapter
 ```markdown
-## 第XX章：[标题]
-**字数**: 3000
-**主线剧情**: [推进哪条主线？]
-**副线剧情**: [涉及哪些支线？]
-**新增信息**:
-  - 世界观补充: [介绍新势力/新地图]
-  - 人物关系: [建立新的联系]
-**爽点**: 无（过渡章）或 小爽（获得情报/宝物）
-**伏笔**: [为后续剧情埋坑]
-**结尾钩子**: [制造悬念]
+## Chapter XX: [Title]
+**Length**: 3,000 Chinese characters
+**Main plot**: [Which main storyline advances?]
+**Subplot**: [Which subplots are involved?]
+**New information**:
+  - Worldbuilding: [Introduce new faction/map]
+  - Relationships: [Establish new connections]
+**Gratification**: none (transition) or small payoff (information/treasure gained)
+**Foreshadowing**: [Set up later plot]
+**Ending hook**: [Create suspense]
 ```
 
-### 模板 C: 修炼章
+### Template C: Cultivation chapter
 ```markdown
-## 第XX章：突破！
-**字数**: 3000
-**主线剧情**: 主角突破到[新境界]
-**修炼过程**:
-  1. 回顾当前境界瓶颈
-  2. 顿悟/吃丹药/吸收能量
-  3. 描写突破时的异象（天地灵气汇聚/雷劫降临）
-  4. 突破成功，实力大涨
-**爽点**: 境界提升，战力飙升
-**对比**: 展示突破前后的实力差距（如：之前打不过的敌人，现在一招秒）
-**结尾钩子**: "就在这时，一股恐怖的气息锁定了林天……"
+## Chapter XX: Breakthrough!
+**Length**: 3,000 Chinese characters
+**Main plot**: protagonist breaks through to [new realm]
+**Cultivation process**:
+  1. Review the current realm's bottleneck
+  2. Epiphany/take pill/absorb energy
+  3. Describe breakthrough phenomena (gathering spiritual energy/heavenly tribulation)
+  4. Breakthrough succeeds; power surges
+**Gratification**: realm advancement and soaring combat strength
+**Comparison**: show the strength gap before and after (e.g. an unbeatable enemy now falls in one strike)
+**Ending hook**: “At that moment, a terrifying aura locked onto Lin Tian...”
 ```
 
 ---
 
-## 8. 章节自检清单
+## 8. Chapter self-check
 
-每写完一章，用此清单自检：
-- [ ] **字数**: 是否在2000-4000字区间？（付费章至少2000字）
-- [ ] **开头**: 前300字是否有足够的吸引力？
-- [ ] **冲突**: 本章是否有明确的冲突或推进？
-- [ ] **爽点**: 本章是否有至少1个小爽点？（如果是过渡章可以没有，但不能连续3章都没有）
-- [ ] **结尾**: 是否有钩子引导读者订阅下一章？
-- [ ] **逻辑**: 本章内容是否符合设定集和大纲？
-- [ ] **节奏**: 本章的节奏是快（战斗/打脸）还是慢（过渡/修炼）？是否与前后章形成对比？
-
----
-
-## 9. 常见章节问题与解决
-
-### 问题 1: 章节太水，读者骂"注水"
-**表现**: 大段环境描写、内心独白、重复前文内容
-**解决**:
-- 删除无用的环境描写（除非是首次进入新地图）
-- 内心独白不超过200字
-- 不要重复上一章的内容（除非是倒叙/回忆）
-
-### 问题 2: 章节太干，信息量过大
-**表现**: 一章引入5个新角色、3个新势力、10个新设定
-**解决**:
-- 每章最多引入2个新角色
-- 新设定分散到多章介绍
-- 用对话而非旁白介绍设定
-
-### 问题 3: 章节没有高潮，平淡无奇
-**表现**: 从头到尾都是"他做了A，然后做了B，然后做了C"
-**解决**:
-- 强制要求：每章至少有1个情绪高点（爽点/笑点/虐点/悬念）
-- 使用"抑扬法"：先压抑，再爆发
+After every chapter, check:
+- [ ] **Length**: 2,000–4,000 Chinese characters? (Paid chapters at least 2,000.)
+- [ ] **Opening**: sufficiently engaging in the first 300 characters?
+- [ ] **Conflict**: clear conflict or advancement?
+- [ ] **Gratification**: at least one small payoff? (Transition chapters may omit it, but not three chapters in a row.)
+- [ ] **Ending**: a hook encouraging subscription to the next chapter?
+- [ ] **Logic**: consistent with settings and outline?
+- [ ] **Pacing**: fast (combat/comeuppance) or slow (transition/cultivation)? Does it contrast with adjacent chapters?
 
 ---
 
-## 🛠️ 快速规划工具
+## 9. Common chapter problems and fixes
 
-### 10章规划表（Excel/Notion）
-| 章节 | 类型 | 主要剧情 | 爽点 | 结尾钩子 | 字数 |
+### Problem 1: Too padded; readers complain of filler
+**Symptoms**: large scenery passages, internal monologue, repeated earlier content.
+**Fixes**:
+- Remove useless scenery (unless first entering a new map).
+- Keep internal monologue within 200 Chinese characters.
+- Do not repeat the previous chapter (except flashbacks/recollections).
+
+### Problem 2: Too dry and information-heavy
+**Symptoms**: five new characters, three factions, and ten settings introduced in one chapter.
+**Fixes**:
+- Introduce at most two new characters per chapter.
+- Spread new settings across chapters.
+- Introduce settings through dialogue rather than narration.
+
+### Problem 3: No climax; flat throughout
+**Symptoms**: everything is “he did A, then B, then C”.
+**Fixes**:
+- Require at least one emotional high point (gratification/humor/heartbreak/suspense) per chapter.
+- Use suppression followed by release: pressure first, then eruption.
+
+---
+
+## 🛠️ Quick planning tool
+
+### Ten-chapter planning table (Excel/Notion)
+| Chapter | Type | Main plot | Gratification | Ending hook | Length |
 |------|------|---------|------|---------|------|
-| 41 | 战斗章 | 林天 vs 叶良辰 | 打脸前未婚妻 | "宗主：我要收你为徒" | 3000 |
-| 42 | 剧情章 | 成为亲传弟子 | 地位提升 | "长老派系暗中不满" | 3000 |
-| 43 | 过渡章 | 认识新队友 | 无 | "秘境即将开启" | 2500 |
-| 44 | 探险章 | 进入秘境 | 发现宝藏 | "遇到强大妖兽" | 3000 |
-| 45 | 战斗章 | 斩杀妖兽 | 获得神器 | "神器认主" | 3500 |
+| 41 | Combat | Lin Tian vs. Ye Liangchen | Humiliate former fiancée | “Sect Leader: I'll take you as my disciple” | 3,000 |
+| 42 | Plot | Become direct disciple | Status rises | “Elder faction secretly displeased” | 3,000 |
+| 43 | Transition | Meet new teammates | None | “Secret realm about to open” | 2,500 |
+| 44 | Exploration | Enter secret realm | Discover treasure | “Encounter powerful beast” | 3,000 |
+| 45 | Combat | Slay beast | Obtain divine artifact | “Artifact recognizes its master” | 3,500 |
 
-使用此表格，可以提前规划10-20章的节奏，确保爽点分布均匀。
+Use this table to plan pacing 10–20 chapters ahead and distribute gratification evenly.
 
 ---
 
-## 10. 结构化节点规范（CBN/CPNs/CEN）
+## 10. Structured-node specification (CBN/CPNs/CEN)
 
-> 供 `/webnovel-plan` Step 7 拆章时参考。节点是写作执行骨架，不追求严格语法学 SVO。
+> Reference for `/webnovel-plan` Step 7 chapter breakdown. Nodes are a writing-execution skeleton, not strict grammatical SVO.
 
-节点格式统一为：
+Unified node format:
 
-`主体 | 动作/变化 | 对象/结果`
+`subject | action/change | object/result`
 
-说明：
-- `动作/变化` 可以表示行动、判断、意识变化或状态转移。
-- `对象/结果` 可以是人、物、地点，也可以是结果状态。
+Notes:
+- `action/change` may represent an action, judgment, realization, or state transition.
+- `object/result` may be a person, object, location, or resulting state.
 
-示例：
-- `萧炎 | 抵达 | 迦南学院入口`
-- `萧炎 | 展示 | 异火控制力`
-- `药老 | 对萧炎产生 | 明确兴趣`
-- `萧炎 | 意识到 | 学院考核远比预想更严苛`
+Examples:
+- `Xiao Yan | arrives at | Jia Nan Academy entrance`
+- `Xiao Yan | demonstrates | control of Heavenly Flame`
+- `Yao Lao | develops toward Xiao Yan | clear interest`
+- `Xiao Yan | realizes | the academy assessment is far harsher than expected`
 
-字段含义：
-- `CBN`（章节起点）：每章固定 1 个，承接上一章 CEN。
-- `CPNs`（推进节点）：每章 2-4 个，按时间顺序排列。
-- `CEN`（章节终点）：每章固定 1 个，落到章末未闭合问题。
-- `必须覆盖节点`：每章最多 4 个，建议 `CBN + CEN + 1~2 个核心 CPN`。
-- `本章禁区`：不超过 5 条，只写硬禁区。
+Field meanings (retain the Chinese runtime field labels):
+- `CBN` (chapter beginning node): exactly one per chapter; connects to the previous CEN.
+- `CPNs` (progression nodes): 2–4 per chapter, in chronological order.
+- `CEN` (chapter ending node): exactly one per chapter; lands on the unresolved ending question.
+- `必须覆盖节点` (must-cover nodes): at most four; recommended `CBN + CEN + 1–2 core CPNs`.
+- `本章禁区` (chapter prohibitions): at most five; hard prohibitions only.

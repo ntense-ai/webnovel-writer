@@ -1,71 +1,71 @@
-## 定位
-Step 4 风格适配参考，将正文改写为网文风格并消除 AI 痕迹。
+## Role
+Step 4 style-adaptation reference: rewrite chapter prose in web-fiction style and remove AI traces.
 
-**中文优先原则**：本步骤的改写说明、改写日志、变更摘要一律使用简体中文表述。英文仅保留在 CLI flag、checker id、JSON 键名等不可改的机器标识上。
+**Chinese-first principle**: all rewrite explanations, rewrite logs, and change summaries in this step must use Simplified Chinese. Retain English only for immutable machine identifiers such as CLI flags, checker IDs, and JSON keys.
 
-**职责**：风格转换 + AI 痕迹消除 —— 句式改写、抽象→具体、网文口感、万能副词/神态模板替换。
+**Responsibilities**: style conversion + AI-trace removal: sentence restructuring, abstract-to-concrete conversion, web-fiction readability, and replacement of generic adverbs/expression templates.
 
-## 输入
-- 粗稿正文（Step 2A 输出）
-- 本章类型（战斗/对话/过渡/突破）
-- 钩子要求（类型 + 强度）
+## Inputs
+- Rough chapter draft (Step 2A output)
+- Chapter type (combat/dialogue/transition/breakthrough)
+- Hook requirements (type + strength)
 
-## 输出
-- 网文化正文（字数 ±10%）
-- 改写日志（记录主要调整）
+## Outputs
+- Web-fiction-style chapter prose (length within ±10%)
+- Rewrite log (record major adjustments)
 
-默认字数目标：
-- 常规章节默认 2000-2500 字（除非大纲或用户另有指定）。
+Default length target:
+- Standard chapters default to 2,000–2,500 Chinese characters unless the outline or user specifies otherwise.
 
-## 禁改项（红线）
-- ❌ 剧情走向
-- ❌ 事件顺序
-- ❌ 角色行为结果
-- ❌ 设定/能力描述
-- ❌ 伏笔内容
+## Forbidden changes (red lines)
+- ❌ Plot direction
+- ❌ Event order
+- ❌ Results of character actions
+- ❌ Setting/ability descriptions
+- ❌ Foreshadowing content
 
-## 硬约束（必须）
-- ✅ 长句（>40字）拆分，避免连续长句压读
-- ✅ 抽象判断 → 动作/反应/代价
-- ✅ 删除“总结式旁白”和大段纯解释
-- ✅ 章内至少有 1 个明确推进点（信息/行动/关系/局势其一）
+## Hard constraints (mandatory)
+- ✅ Split long sentences (>40 Chinese characters); avoid consecutive long sentences that burden reading
+- ✅ Abstract judgments → actions/reactions/costs
+- ✅ Remove summarizing narration and large blocks of pure explanation
+- ✅ At least one clear advancement per chapter (information/action/relationship/situation)
 
-## 软建议（优先执行）
-- ✅ 开头尽早进入冲突/风险/强情绪（建议前 200-400 字）
-- ✅ 后段或章末设置未闭合问题/期待锚点（不限定固定字数窗口）
-- ✅ 微兑现建议按章型安排 1-3 次，避免机械等间距
-- ✅ 每章优先出现 1 处“可量化变化”（地位/资源/关系/风险任一项）
-- ✅ 钩子类型优先“选择钩/危机钩”，但允许按题材切换
-- ✅ 对话保持“意图冲突”，减少无效寒暄
+## Soft recommendations (prioritize)
+- ✅ Enter conflict/risk/strong emotion early (preferably within the first 200–400 characters)
+- ✅ Place an unresolved question/anticipation anchor late or at the ending (no fixed character-count window)
+- ✅ Arrange 1–3 micro-payoffs according to chapter type, not mechanical equal spacing
+- ✅ Prefer one measurable change per chapter (status/resources/relationships/risk)
+- ✅ Prefer choice/crisis hooks, but switch according to genre
+- ✅ Maintain conflicting intentions in dialogue; reduce empty pleasantries
 
-## 分题材风格加权（新增）
-- **玄幻/修仙/高武**：动作与结果比重更高，术语解释后置。
-- **都市/直播/电竞**：信息节奏更快，强化“反馈-反应-反制”三连。
-- **言情/替身/狗血**：情绪弧线前置，关键场景必须有关系位移。
-- **悬疑/规则怪谈/克苏鲁**：线索投放要可回收，恐惧来自规则而非堆词。
+## Genre-specific style weighting (new)
+- **Xuanhuan/cultivation/high-martial**: emphasize actions and results; defer terminology explanations.
+- **Urban/livestream/esports**: faster information pacing; strengthen feedback–reaction–counteraction chains.
+- **Romance/substitute-lover/melodrama**: foreground emotional arcs; key scenes must shift relationships.
+- **Mystery/rules horror/cosmic horror**: clues must support later payoff; fear comes from rules, not piled-up adjectives.
 
-## AI痕迹快速替换（新增）
-- 把”他非常愤怒”改为”动作+生理+决策”的三段式表达。
-- 把”总而言之/可以说”改为直接结论动作，不做元叙述。
-- 连续三句同句式时，至少改一处为短句爆点。
-- 万能副词替换：”缓缓说道”→ 删副词加前置动作（”他搁下杯子——'不行。'”）。
-- 神态模板替换：”眸中闪过一丝X”→ 个性化微动作（”她无意识地拧起袖口”）。
-- said tag 替换：”XX淡淡道”→ 动作引导（”他没抬头——'随你。'”），全文 said tag 占比不超过 30%。
-- 内心套话替换：”心中暗道”→ 直接写内心句，删掉”心中暗道”四个字。
+## Quick AI-trace replacements (new)
+- Replace “He was very angry” with a three-part expression: action + physiology + decision.
+- Replace “In conclusion/one could say” with direct concluding action, not meta-narration.
+- If three consecutive sentences share a structure, turn at least one into a short, forceful sentence.
+- Generic adverb replacement: “said slowly” → remove the adverb and lead with action (“He set down the cup. ‘No.’”).
+- Expression-template replacement: “a trace of X flashed in her eyes” → individualized micro-action (“She unconsciously twisted her cuff”).
+- Said-tag replacement: “X said blandly” → action-led dialogue (“He didn't look up. ‘Suit yourself.’”); said tags must account for no more than 30% throughout.
+- Inner-monologue cliché replacement: “he thought to himself” → write the thought directly and remove the framing phrase.
 
-## 检查点（改写后验证）
-| 检查项 | 标准 | 不通过处理 |
+## Checkpoints (validate after rewriting)
+| Check | Standard | On failure |
 |--------|------|-----------|
-| 开头冲突 | 建议前200-400字进入冲突/风险/强情绪 | 补一段冲突导入 |
-| 期待锚点 | 后段或章末有未闭合问题/下一章动机 | 补“未闭合问题” |
-| 微兑现节奏 | 有 1-3 处微兑现，且非机械等间距 | 合并或重排兑现点 |
-| 长句比例 | >40字的句子 <10% | 拆分长句 |
-| 解释段 | 无连续>200字的纯解释 | 打散或删除 |
+| Opening conflict | Prefer conflict/risk/strong emotion within 200–400 characters | Add a conflict lead-in |
+| Anticipation anchor | Unresolved question/motive for next chapter late or at ending | Add an unresolved question |
+| Micro-payoff pacing | 1–3 micro-payoffs, not mechanically equidistant | Merge or rearrange payoffs |
+| Long-sentence ratio | Sentences >40 characters are <10% | Split long sentences |
+| Exposition | No consecutive block of pure explanation >200 characters | Break up or remove |
 
-## 章节类型适配（按大纲，不按字数）
-- **常规推进章（默认 2000-2500字）**: 执行全部硬约束 + 软建议优先落实
-- **过渡章（按大纲判定）**:
-  - 冲突导入可放宽到前 400 字
-  - 微兑现可降为 0-1 次，但仍需 1 个明确推进点
-  - 期待锚点强度可为 weak
-  - 过渡章身份由章纲/卷纲决定，禁止用字数阈值判定
+## Chapter-type adaptation (by outline, not length)
+- **Standard progression chapter (default 2,000–2,500 characters)**: apply all hard constraints and prioritize soft recommendations.
+- **Transition chapter (determined by outline)**:
+  - Conflict lead-in may extend to the first 400 characters.
+  - Micro-payoffs may drop to 0–1, but at least one clear advancement is still required.
+  - Anticipation-anchor strength may be weak.
+  - Transition status is determined by chapter/volume outline, never by a length threshold.

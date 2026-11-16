@@ -1,85 +1,85 @@
-# 新题材快速库：章末钩子 + 微兑现（电竞 / 直播文 / 克苏鲁）
+# Quick library for newer genres: ending hooks + micro-payoffs (esports / livestream / cosmic horror)
 
-用于 `webnovel-write` Step 1 内置合同：快速选一条章末钩子 + 一条微兑现，避免同质化。
-
----
-
-## 使用规则
-
-- 每章推荐：`1 个期待锚点（章末或后段） + 1-2 个微兑现`。
-- 同一钩子类型避免连续 3 章重复。
-- 若重复使用，必须给出差异化点（对象、代价、结果至少变 1 项）。
+For the built-in `webnovel-write` Step 1 contract: quickly choose an ending hook and a micro-payoff to avoid sameness.
 
 ---
 
-## 1) 电竞（esports）
+## Usage rules
 
-### 章末钩子库（优先）
-- **危机钩**：下一场对手临时换阵，核心战术被针对。
-- **选择钩**：主角必须在“保守拿分”与“搏命翻盘”间二选一。
-- **渴望钩**：距离晋级只差一局，但主力状态异常。
-- **情绪钩**：队友在采访中公开承担责任，引发舆论撕裂。
+- Recommended per chapter: `one anticipation anchor (ending or later section) + 1–2 micro-payoffs`.
+- Avoid repeating the same hook type for three consecutive chapters.
+- When reusing a type, differentiate it by changing at least one of target, cost, or result.
 
-### 微兑现库（高频）
-- 信息兑现：对手战术弱点被识别并验证。
-- 认可兑现：教练/队友首次公开认可主角决策。
-- 关系兑现：队内关键矛盾当章出现实质缓和。
-- 资源兑现：获得关键训练资源或战术权限。
+---
 
-### 快速片段
+## 1) Esports
+
+### Ending-hook library (prioritized)
+- **Crisis hook**: the next opponent changes its lineup at short notice, countering the core strategy.
+- **Choice hook**: the protagonist must choose between safely securing points and risking everything for a comeback.
+- **Desire hook**: one game away from qualification, but a key player is out of form.
+- **Emotional hook**: a teammate publicly takes responsibility in an interview, dividing public opinion.
+
+### Micro-payoff library (frequent)
+- Information payoff: identify and verify a weakness in the opponent's strategy.
+- Recognition payoff: coach/teammates publicly acknowledge the protagonist's decision for the first time.
+- Relationship payoff: a key team conflict materially eases within the chapter.
+- Resource payoff: gain crucial training resources or tactical authority.
+
+### Quick snippet
 ```text
-章末钩子：选择钩 - 决胜局是稳运营还是搏一波团战？
-微兑现：认可兑现 - 教练把最后一轮BP主导权交给主角。
+Ending hook: choice - Play the deciding game through steady macro play, or gamble on one team fight?
+Micro-payoff: recognition - The coach gives the protagonist control over the final draft.
 ```
 
 ---
 
-## 2) 直播文（livestream）
+## 2) Livestream fiction
 
-### 章末钩子库（优先）
-- **危机钩**：直播切片被恶意剪辑，负面词条冲上热搜。
-- **选择钩**：是立刻回应舆情，还是拿证据等明晚反杀。
-- **渴望钩**：平台首页推荐位只差最后一档数据。
-- **情绪钩**：核心粉丝团疑似倒戈，直播间气氛骤变。
+### Ending-hook library (prioritized)
+- **Crisis hook**: maliciously edited stream clips push a negative hashtag into trending searches.
+- **Choice hook**: respond to public opinion immediately, or gather evidence and counterattack tomorrow night?
+- **Desire hook**: only one final metrics threshold stands between the streamer and a homepage feature.
+- **Emotional hook**: the core fan group seems to turn against them; the stream's mood abruptly shifts.
 
-### 微兑现库（高频）
-- 资源兑现：拿到品牌试水单或关键合作窗口。
-- 认可兑现：观众口碑转向，弹幕从质疑变支持。
-- 信息兑现：爆料线索坐实，形成证据链一环。
-- 关系兑现：团队分工重构后效率提升并立刻见效。
+### Micro-payoff library (frequent)
+- Resource payoff: secure a brand trial order or crucial collaboration opportunity.
+- Recognition payoff: audience sentiment shifts; chat goes from doubt to support.
+- Information payoff: substantiate a tip, adding a link to the evidence chain.
+- Relationship payoff: reorganized team responsibilities immediately improve efficiency.
 
-### 快速片段
+### Quick snippet
 ```text
-章末钩子：危机钩 - 明早10点，对家要放“实锤”长文。
-微兑现：信息兑现 - 主角拿到可核验的原始后台截图。
+Ending hook: crisis - At 10 a.m. tomorrow, the rival will publish a long post of “hard evidence”.
+Micro-payoff: information - The protagonist obtains verifiable original backend screenshots.
 ```
 
 ---
 
-## 3) 克苏鲁（cosmic-horror）
+## 3) Cosmic horror
 
-### 章末钩子库（优先）
-- **悬念钩**：已破解的规则在新场景出现反常例外。
-- **危机钩**：封印节点提前失效，污染开始扩散。
-- **选择钩**：救同伴还是先阻断仪式，二者不可兼得。
-- **情绪钩**：主角理智值临界，记忆出现不可逆缺口。
+### Ending-hook library (prioritized)
+- **Suspense hook**: an already-decoded rule develops an abnormal exception in a new setting.
+- **Crisis hook**: a seal node fails early, and contamination starts spreading.
+- **Choice hook**: save a companion or stop the ritual first; both are impossible.
+- **Emotional hook**: the protagonist's sanity reaches its limit, leaving irreversible gaps in memory.
 
-### 微兑现库（高频）
-- 线索兑现：前文细节与新证据成功拼接成闭环。
-- 信息兑现：确认一条“可执行生存规则”。
-- 情绪兑现：角色在恐惧中完成一次主动决断。
-- 关系兑现：关键同伴关系从怀疑转为共担风险。
+### Micro-payoff library (frequent)
+- Clue payoff: earlier details and new evidence successfully form a closed loop.
+- Information payoff: confirm an actionable survival rule.
+- Emotional payoff: a character makes an active decision despite fear.
+- Relationship payoff: a crucial companion shifts from suspicion to shared risk.
 
-### 快速片段
+### Quick snippet
 ```text
-章末钩子：悬念钩 - 第七条规则在镜像房间里反着生效。
-微兑现：线索兑现 - 三章前的旧地图标记对应了污染源位置。
+Ending hook: suspense - Rule Seven works in reverse in the mirrored room.
+Micro-payoff: clue - A mark on the old map from three chapters ago matches the contamination source.
 ```
 
 ---
 
-## 低重复检查（写前30秒）
+## Low-repetition check (30 seconds before writing)
 
-- 本章钩子类型是否与最近 2 章相同？
-- 本章微兑现类型是否连续 3 章未变化？
-- 本章是否有“可量化变化”（结果/关系/资源/风险）？
+- Is this chapter's hook type the same as the last two chapters'?
+- Has the micro-payoff type remained unchanged for three chapters?
+- Does this chapter contain a measurable change (result/relationship/resource/risk)?

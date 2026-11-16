@@ -1,129 +1,129 @@
 ---
 name: pacing-control
-purpose: 节奏审查时加载，诊断灌水拖沓问题
+purpose: Load during pacing review to diagnose padding and sluggishness
 ---
 
 <context>
-此文件用于节奏审查和灌水诊断。Claude 已知叙事节奏技巧，这里只补充网文特定的信息密度标准和快节奏写法。
+This file supports pacing review and padding diagnosis. Claude already knows narrative pacing; this adds information-density standards and fast-paced techniques specific to web fiction.
 </context>
 
 <instructions>
 
-## 信息密度标准
+## Information-density standards
 
-**核心指标**: 每 1000 字至少推进 1 个实质性剧情点
+**Core metric**: advance at least one substantive plot point per 1,000 Chinese characters.
 
-**实质性剧情点**定义:
-- ✅ 主角获得新信息/线索/能力
-- ✅ 人际关系变化（好感度±10、仇恨度±10）
-- ✅ 战力提升/突破/学会新招式
-- ✅ 剧情转折（新冲突/新目标/新危机）
-- ✅ 伏笔埋下或回收
-- ❌ 纯粹风景描写（除非与剧情强相关）
-- ❌ 重复的内心独白
-- ❌ 无意义对话（寒暄问候）
+A **substantive plot point** means:
+- ✅ Protagonist gains new information/clue/ability
+- ✅ Relationship changes (affection ±10, hostility ±10)
+- ✅ Power gain/breakthrough/new technique
+- ✅ Plot turn (new conflict/goal/crisis)
+- ✅ Foreshadowing planted or paid off
+- ❌ Pure scenery description (unless strongly plot-relevant)
+- ❌ Repeated internal monologue
+- ❌ Meaningless dialogue (greetings/pleasantries)
 
-**评分标准**:
+**Scoring standards**:
 
-| 信息密度 | 爽点数量 | 无效内容 | 判定 |
+| Information density | Gratification beats | Ineffective content | Rating |
 |---------|---------|---------|------|
-| < 800 字/点 | ≥ 2 个 | 无 | 优秀 90-100 |
-| 800-1000 字/点 | 1 个 | 极少 | 良好 70-89 |
-| 1000-1500 字/点 | 1 个 | 有 | 及格 50-69 |
-| > 1500 字/点 | 0 个 | 大量 | 不及格，需重写 |
+| <800 characters/point | ≥2 | None | Excellent 90–100 |
+| 800–1,000 characters/point | 1 | Very little | Good 70–89 |
+| 1,000–1,500 characters/point | 1 | Some | Pass 50–69 |
+| >1,500 characters/point | 0 | Substantial | Fail; rewrite needed |
 
-## 快节奏 vs 慢节奏
+## Fast vs. slow pacing
 
-| 维度 | 慢节奏（传统小说） | 快节奏（网文） |
+| Dimension | Slow (traditional novels) | Fast (web fiction) |
 |------|--------------------|----------------|
-| 修炼 | 3 章描写修炼过程 | 3 段话交代，第 4 段直接突破 |
-| 铺垫 | 5000 字铺垫反派 | 500 字铺垫，直接冲突 |
-| 决策 | 主角纠结 2 章 | 主角纠结 2 段话立即行动 |
-| 副本 | 20 章完成 | 5-8 章完成 |
+| Cultivation | Three chapters describe training | Three paragraphs explain; breakthrough in the fourth |
+| Setup | 5,000 characters establish antagonist | 500 characters, then direct conflict |
+| Decision | Protagonist agonizes for two chapters | Two paragraphs of indecision, then immediate action |
+| Adventure instance | Completed in 20 chapters | Completed in 5–8 chapters |
 
-## 章节结构模板
+## Chapter-structure templates
 
-**标准章节（3000-5000 字）**:
+**Standard chapter (3,000–5,000 Chinese characters)**:
 ```
-开头 300-500 字：承接上章 + 设定场景
-铺垫 800-1200 字：引入本章核心冲突
-发展 1000-1500 字：推进剧情 + 爽点前奏
-高潮 500-800 字：本章爽点爆发
-结尾 300-500 字：余韵 + 引出下章悬念
-```
-
-**过渡章节（避免灌水）**:
-```
-回顾 200-300 字：上一阶段收获
-新目标 500-700 字：确立下一步计划
-准备 1000-1500 字：为下个篇章做准备
-小冲突 500-800 字：插入小爽点（必须有！）
-悬念 200-300 字：引出下一篇章
+Opening 300–500 characters: connect to previous chapter + establish scene
+Setup 800–1,200 characters: introduce this chapter's core conflict
+Development 1,000–1,500 characters: advance plot + prepare gratification
+Climax 500–800 characters: chapter gratification erupts
+Ending 300–500 characters: aftermath + suspense for next chapter
 ```
 
-## 分题材节奏标准
+**Transition chapter (avoid padding)**:
+```
+Recap 200–300 characters: gains from the previous stage
+New goal 500–700 characters: establish the next plan
+Preparation 1,000–1,500 characters: prepare for the next arc
+Minor conflict 500–800 characters: insert a small gratification beat (mandatory!)
+Suspense 200–300 characters: introduce the next arc
+```
 
-| 题材 | 爽点密度 | 信息密度 | 铺垫容忍度 |
+## Genre-specific pacing standards
+
+| Genre | Gratification density | Information density | Setup tolerance |
 |------|---------|---------|-----------|
-| 玄幻修仙 | 每 5-8 章 1 大爽点 | 500-1000 字/点 | 中等 |
-| 都市爽文 | 每 3-5 章 1 大爽点 | 400-800 字/点 | 低 |
-| 悬疑推理 | 每 10-15 章 1 大爽点 | 600-1200 字/点 | 高 |
-| 知乎短篇 | 每章至少 1 小爽点 | 300-500 字/点 | 极低 |
+| Xuanhuan/cultivation | One major payoff every 5–8 chapters | 500–1,000 characters/point | Moderate |
+| Urban power fantasy | One major payoff every 3–5 chapters | 400–800 characters/point | Low |
+| Mystery/detective | One major payoff every 10–15 chapters | 600–1,200 characters/point | High |
+| Zhihu short fiction | At least one small payoff/chapter | 300–500 characters/point | Extremely low |
 
 </instructions>
 
 <examples>
 
 <example>
-<input>修炼突破章节 - 原版 1200 字，1 个剧情点</input>
+<input>Cultivation breakthrough chapter: original 1,200 characters, one plot point</input>
 <output>
-❌ **灌水版**（1200 字，1 个剧情点）:
-林天盘膝坐下，开始运转功法...（500 字详细描写）
-灵气缓缓进入体内...（300 字过程描写）
-时间一分一秒过去...（200 字）
-终于突破！（50 字）
-→ 信息密度 = 1200 字/点 → 严重拖沓
+❌ **Padded version** (1,200 characters, one plot point):
+Lin Tian sat cross-legged and began circulating his cultivation technique... (500 characters of detail)
+Spiritual energy slowly entered his body... (300 characters describing the process)
+Time passed second by second... (200 characters)
+Finally, a breakthrough! (50 characters)
+→ Information density = 1,200 characters/point → seriously sluggish
 
-✅ **精简版**（90 字，3 个剧情点）:
-林天盘膝坐下，吞噬系统疯狂吸收天雷果能量。
-三个时辰后——"轰！"筑基八层！
-林天睁眼，拳头一握，空气爆鸣。
-门外传来惊呼："三天就突破了？"
-→ 信息密度 = 30 字/点 → 节奏紧凑
+✅ **Condensed version** (90 characters in the Chinese original, three plot points):
+Lin Tian sat cross-legged as the devouring system frantically absorbed the Heavenly Thunder Fruit's energy.
+Six hours later: boom! Foundation Establishment, eighth level!
+He opened his eyes and clenched a fist; the air cracked.
+A cry came from outside: “A breakthrough in just three days?”
+→ Information density = 30 characters/point → tight pacing
 </output>
 </example>
 
 <example>
-<input>赶路过渡场景</input>
+<input>Travel transition scene</input>
 <output>
-❌ **灌水版**（800 字）:
-林天走在山路上，看着两旁的树木...（内心独白 300 字）
-路上遇到一只兔子...（观察兔子 200 字）
-天空飘来几朵云...（描写天气 300 字）
+❌ **Padded version** (800 characters):
+Lin Tian walked along the mountain path, looking at the trees... (300 characters of internal monologue)
+He encountered a rabbit... (200 characters observing it)
+Clouds drifted across the sky... (300 characters describing weather)
 
-✅ **精简版**（80 字）:
-林天赶了三天路，终于抵达血煞秘境入口。刚踏入秘境，一股危险气息扑面而来。
+✅ **Condensed version** (80 characters in the Chinese original):
+After three days' travel, Lin Tian finally reached the Bloodbane Secret Realm's entrance. As soon as he stepped inside, an aura of danger struck him.
 </output>
 </example>
 
 <example>
-<input>检测到连续 500 字无剧情推进</input>
+<input>Detected 500 consecutive characters without plot advancement</input>
 <output>
-🔴 **严重拖沓标记**
+🔴 **Severe sluggishness flag**
 
-修正方案：
-A) 删除该段落
-B) 压缩为 1-2 句话交代
-C) 插入微冲突（路人挑衅/意外事件）
+Fix options:
+A) Delete the passage
+B) Condense it to 1–2 sentences
+C) Insert micro-conflict (a passerby's provocation/an unexpected incident)
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 信息密度 > 1500 字/点 → ✅ 压缩或增加剧情点
-❌ 整章无爽点 → ✅ 至少插入 1 个小爽点
-❌ 铺垫超过 2000 字仍未进入冲突 → ✅ 立即加速
-❌ 过渡章节纯过渡无冲突 → ✅ 必须有小爽点
-❌ 连续 500 字纯描写 → ✅ 删除或压缩
+❌ Information density >1,500 characters/point → ✅ Compress or add plot points
+❌ No gratification throughout chapter → ✅ Insert at least one small payoff
+❌ Setup exceeds 2,000 characters without conflict → ✅ Accelerate immediately
+❌ Transition chapter only transitions, with no conflict → ✅ Include a small payoff
+❌ 500 consecutive characters of pure description → ✅ Delete or condense
 </errors>

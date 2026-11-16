@@ -1,84 +1,84 @@
-# 新题材卷级节奏模板（电竞 / 直播文 / 克苏鲁）
+# Volume-level pacing templates for newer genres (esports / livestream / cosmic horror)
 
-用于 `webnovel-plan` 的 Step 3/4：先定卷级节奏，再落到章级分配。
-
----
-
-## 使用方式（先卷后章）
-
-1. 先确定本卷主任务（必须一句话可表达）。
-2. 按题材模板选本卷节奏结构（推进型 / 对抗型 / 回收型）。
-3. 将卷级目标拆到章节批次，再写每章钩子与微兑现。
+For `webnovel-plan` Steps 3/4: set volume pacing first, then allocate at chapter level.
 
 ---
 
-## 1) 电竞（esports）卷级节奏
+## Usage (volume before chapters)
 
-### 推荐 Strand 占比
-- Quest: 50-60%（赛程推进、战术执行、结果兑现）
-- Fire: 20-30%（队内关系、压力管理、信任重建）
-- Constellation: 15-20%（联赛生态、战队背景、舆论场）
-
-### 卷结构模板
-- **卷前 25%**：铺设赛制、队伍短板、当卷硬目标。
-- **卷中 50%**：双线推进（比赛胜负 + 队内磨合），至少 1 次逆风局。
-- **卷末 25%**：关键局连发（半决赛/决赛/晋级赛），回收本卷承诺。
-
-### 卷级检查
-- 每卷至少 1 个“战术决策改变战局”的章节。
-- 每卷至少 1 次“赛后舆论反转”或“评价体系逆转”。
-- 卷末 3 章内必须有明确赛果兑现。
+1. Establish the volume's main task (must fit one sentence).
+2. Select a pacing structure from the genre template (progression / confrontation / payoff).
+3. Break volume goals into chapter batches, then write each chapter's hook and micro-payoffs.
 
 ---
 
-## 2) 直播文（livestream）卷级节奏
+## 1) Esports volume pacing
 
-### 推荐 Strand 占比
-- Quest: 45-55%（账号目标、商业目标、事件处置）
-- Fire: 20-30%（团队关系、主播心理状态、信任冲突）
-- Constellation: 20-30%（平台机制、品牌博弈、舆论生态）
+### Recommended Strand proportions
+- Quest: 50–60% (competition progression, tactical execution, result payoffs)
+- Fire: 20–30% (team relationships, pressure management, rebuilding trust)
+- Constellation: 15–20% (league ecosystem, team backgrounds, public opinion)
 
-### 卷结构模板
-- **卷前 20%**：设定当卷 KPI（涨粉/转化/榜单/合作）。
-- **卷中 55%**：连续反馈回路（直播反馈→决策→数据变化）。
-- **卷末 25%**：大事件收口（公关战/平台赛/商业对赌）。
+### Volume-structure template
+- **First 25%**: establish competition format, team weaknesses, and the volume's hard goal.
+- **Middle 50%**: advance two lines (match results + team cohesion), including at least one uphill match.
+- **Final 25%**: successive crucial games (semifinal/final/qualifier), fulfilling the volume's promises.
 
-### 卷级检查
-- 每卷至少 2 次可量化数据跃迁（如在线峰值、转化率、榜单）。
-- 每卷至少 1 次“负面舆论→证据反转”闭环。
-- 卷末必须输出“下一卷更大目标”。
-
----
-
-## 3) 克苏鲁（cosmic-horror）卷级节奏
-
-### 推荐 Strand 占比
-- Quest: 40-50%（调查推进、规则破解、风险决策）
-- Fire: 10-20%（关系裂解、信任与背叛、心理支撑）
-- Constellation: 30-40%（规则系统、势力真相、污染扩散）
-
-### 卷结构模板
-- **卷前 30%**：投放异常现象与第一层规则。
-- **卷中 45%**：线索拼图 + 局部代价兑现（不能无伤推进）。
-- **卷末 25%**：阶段真相揭露 + 更高层威胁开启。
-
-### 卷级检查
-- 每卷至少 1 次“规则回收”与 1 次“规则升级”。
-- 每卷至少 1 个明确代价落地（理智/关系/资源之一）。
-- 卷末钩子优先“未闭合规则问题”，不是纯惊吓。
+### Volume checks
+- At least one chapter where a tactical decision changes the match.
+- At least one post-match public-opinion reversal or reversal of the evaluation system.
+- Deliver a clear match result within the final three chapters.
 
 ---
 
-## 快速落地模板（可直接填）
+## 2) Livestream volume pacing
+
+### Recommended Strand proportions
+- Quest: 45–55% (account goals, commercial goals, incident handling)
+- Fire: 20–30% (team relationships, streamer's mental state, trust conflicts)
+- Constellation: 20–30% (platform mechanisms, brand maneuvering, public-opinion ecosystem)
+
+### Volume-structure template
+- **First 20%**: set volume KPIs (follower growth/conversion/rankings/partnerships).
+- **Middle 55%**: ongoing feedback loops (stream feedback → decision → metric change).
+- **Final 25%**: resolve a major event (PR battle/platform competition/commercial performance wager).
+
+### Volume checks
+- At least two measurable metric leaps (e.g. peak concurrent viewers, conversion rate, ranking).
+- At least one complete negative-opinion → evidence-based reversal loop.
+- End the volume with a larger goal for the next one.
+
+---
+
+## 3) Cosmic-horror volume pacing
+
+### Recommended Strand proportions
+- Quest: 40–50% (investigation, decoding rules, risky decisions)
+- Fire: 10–20% (fracturing relationships, trust and betrayal, psychological support)
+- Constellation: 30–40% (rule systems, truth about factions, spreading contamination)
+
+### Volume-structure template
+- **First 30%**: introduce anomalies and the first layer of rules.
+- **Middle 45%**: assemble clues + realize localized costs (no cost-free progress).
+- **Final 25%**: reveal this stage's truth + open a higher-level threat.
+
+### Volume checks
+- At least one rule payoff and one rule escalation per volume.
+- At least one concrete cost paid (sanity/relationship/resources).
+- Prefer an unresolved rule question for the ending hook, not a pure jump scare.
+
+---
+
+## Quick implementation template (fill directly)
 
 ```markdown
-## 第 {volume_id} 卷节奏卡
-- 题材：{电竞|直播文|克苏鲁}
-- 本卷主任务：{一句话}
-- Strand 占比：Quest {x}% / Fire {y}% / Constellation {z}%
-- 关键里程碑：
+## Volume {volume_id} pacing card
+- Genre: {电竞|直播文|克苏鲁}
+- Main task: {一句话}
+- Strand proportions: Quest {x}% / Fire {y}% / Constellation {z}%
+- Key milestones:
   1) {中段事件}
   2) {卷末事件}
-- 卷末兑现：{必须兑现内容}
-- 下卷钩子：{下一卷核心问题}
+- Volume payoff: {必须兑现内容}
+- Next-volume hook: {下一卷核心问题}
 ```

@@ -1,339 +1,287 @@
-# Webnovel Writer Story System 渐进演进 Spec
+# Webnovel Writer Story System Incremental Evolution Spec
 
-> **日期**: 2026-04-12
-> **状态**: 草案 v1
-> **定位**: 基于当前系统真实状态的 superpowers 架构收敛 spec
-
----
-
-## 1. 文档定位
-
-### 1.1 这份 spec 解决什么问题
-
-[`current-system-diagnosis.md`](../../architecture/current-system-diagnosis.md) 已经明确指出：当前系统的主要问题，不是模型能力不够，而是：
-
-1. 真理源分散
-2. 缺少统一故事合同
-3. 缺少统一章节提交主链
-4. 上下文装配与数据回写都存在结构性缺口
-
-但诊断报告只回答了“哪里有问题”，没有回答“如何从当前系统稳态演进到新系统”。
-
-这份 spec 补的就是中间层：
-
-- 不重写现有项目历史
-- 不假装当前系统一无所有
-- 不直接把理想态蓝图当实施方案
-- 而是定义一条**从现状出发、逐步收束为 Story Contract 主链**的演进路线
-
-### 1.2 与其他文档的关系
-
-这份文档与现有文档的关系如下：
-
-- [`current-system-diagnosis.md`](../../architecture/current-system-diagnosis.md)
-  - 负责诊断当前系统的结构性问题
-- [`2026-04-12-story-system-pro-max-retrofit-spec.md`](./2026-04-12-story-system-pro-max-retrofit-spec.md)
-  - 负责保守改造思路
-- [`2026-04-12-webnovel-story-intelligence-system-spec.md`](./2026-04-12-webnovel-story-intelligence-system-spec.md)
-  - 负责理想态目标架构
-
-这份 spec 的定位是：
-
-- **以上三者之间的桥**
-- 用“现状基线 -> 阶段性收束 -> 最终合同系统”的方式，把诊断、retrofit、理想态串起来
-
-### 1.2.1 与 diagnosis / retrofit / ideal spec 的边界
-
-为避免这份文档与另外两份 story system spec 打架，这里明确边界：
-
-#### `current-system-diagnosis`
-
-负责回答：
-
-- 当前系统到底哪里有结构性缺口
-- 哪些问题是真问题
-- 哪些地方其实已经有半成品底座
-
-它不负责给出演进实施路径。
-
-#### `retrofit spec`
-
-负责回答：
-
-- 如何在尽量不破坏现有主链的前提下，补出最小可用的 `story_system`
-
-它偏向：
-
-- phase 1
-- 保守落地
-- 最小侵入
-
-#### `理想态 spec`
-
-负责回答：
-
-- 如果不考虑最小改动原则，最终最佳架构应该长什么样
-
-它偏向：
-
-- phase 2 以后
-- 最终目标
-- 完整合同系统
-
-#### 本 spec
-
-负责回答：
-
-- 如何从真实现状出发，把半成品中枢逐步收束成合同主链
-- 哪些旧链路先接入、哪些后降级、哪些最后替换
-
-换句话说：
-
-- 诊断文档定义问题
-- retrofit spec 定义保守补法
-- 理想态 spec 定义终局目标
-- **本 spec 定义从现状走到终局的渐进路径**
-
-### 1.3 一句话结论
-
-当前系统不是“推倒重来”型问题，而是“多个半成品中枢需要收束成一个主链”型问题。
-
-因此最优策略不是：
-
-- 再堆一个新脚本
-- 再加一层提示词补丁
-- 再给 `context_manager` 增加几条预算规则
-
-而是建立：
-
-- **统一故事合同层**
-- **统一章节提交主链**
-- **统一覆盖账本**
-- **统一事件主链**
-
-再把 `state / index / summary / memory / RAG` 统统降级为合同提交后的投影层。
+> **Date**: 2026-04-12
+> **Status**: Draft v1
+> **Purpose**: A superpowers architecture-convergence spec grounded in the actual system
 
 ---
 
-## 2. 当前基线
+## 1. Purpose and Scope
 
-### 2.1 当前系统已经存在的半成品中枢
+### 1.1 The Problem This Spec Addresses
 
-根据现状诊断，当前系统并不是完全无结构，而是已经存在以下可复用底座：
+[`current-system-diagnosis.md`](../../architecture/current-system-diagnosis.md) identifies structural problems rather than insufficient model capability:
+
+1. Fragmented sources of truth
+2. No unified story contracts
+3. No unified chapter-commit mainline
+4. Structural gaps in context assembly and data writeback
+
+The diagnosis explains what is wrong, not how to evolve safely from the current system.
+
+This spec supplies that bridge:
+
+- Do not rewrite existing project history.
+- Do not pretend the current system has nothing useful.
+- Do not treat an ideal blueprint as an implementation plan.
+- Define **a gradual route from current foundations to a Story Contract mainline**.
+
+### 1.2 Related Documents
+
+- [`current-system-diagnosis.md`](../../architecture/current-system-diagnosis.md): diagnoses structural problems.
+- [`2026-04-12-story-system-pro-max-retrofit-spec.md`](./2026-04-12-story-system-pro-max-retrofit-spec.md): conservative retrofit approach.
+- [`2026-04-12-webnovel-story-intelligence-system-spec.md`](./2026-04-12-webnovel-story-intelligence-system-spec.md): ideal target architecture.
+
+This spec bridges all three through current baseline → staged convergence → final contract system.
+
+### 1.2.1 Boundaries Between Diagnosis, Retrofit, Ideal, and Evolution
+
+#### Current-System Diagnosis
+
+Answers:
+- Where are the structural gaps?
+- Which problems are real?
+- Which partially built foundations already exist?
+
+It does not define an implementation path.
+
+#### Retrofit Spec
+
+Explains how to add a minimally viable `story_system` while disturbing the existing mainline as little as possible.
+
+Focus:
+- Phase 1
+- Conservative delivery
+- Minimal intrusion
+
+#### Ideal Spec
+
+Explains the best final architecture without imposing a minimal-change constraint.
+
+Focus:
+- Phase 2 onward
+- Final target
+- Complete contract system
+
+#### This Spec
+
+Explains:
+- How to converge partially built hubs into a contract mainline from the actual baseline.
+- Which old paths integrate first, become secondary later, and are replaced last.
+
+In short:
+- Diagnosis defines the problems.
+- Retrofit defines conservative additions.
+- Ideal architecture defines the destination.
+- **This spec defines the incremental journey.**
+
+### 1.3 One-Sentence Conclusion
+
+The system needs to converge several partially built hubs into one mainline, not be rebuilt from scratch.
+
+The best response is not another script, prompt patch, or `context_manager` budget rule. Establish:
+
+- **A unified story-contract layer**
+- **A unified chapter-commit mainline**
+- **A unified override ledger**
+- **A unified event mainline**
+
+Then make `state / index / summary / memory / RAG` projections of accepted contract-based commits.
+
+---
+
+## 2. Current Baseline
+
+### 2.1 Reusable Partial Hubs
+
+The diagnosis identifies existing foundations:
 
 1. `context_manager + context_ranker`
-   - 已能做上下文聚合、预算控制、优先级排序
+   - Context aggregation, budgets, and priority ranking.
 2. `genre_aliases.py + genre_profile_builder.py + genre-profiles.md`
-   - 已能做题材归一化、题材 hints 生成、题材画像构建
+   - Genre normalization, hints, and profiles.
 3. `reference_search.py + references/csv`
-   - 已能做条目检索与轻量打分
+   - Entry retrieval and lightweight scoring.
 4. `state_manager`
-   - 已能做结构化状态回写，并承担 `state.json + SQLite` 的双写同步
+   - Structured state writeback and dual synchronization of `state.json + SQLite`.
 5. `index.db`
-   - 已承载实体、关系、事件、索引等结构化事实
+   - Structured entities, relationships, events, and indexes.
 6. `memory writer / orchestrator / summaries`
-   - 已承担长期事实沉淀与章节摘要
+   - Long-term fact retention and chapter summaries.
 7. `override_contracts`
-   - 已经存在“违背记录”的雏形机制
+   - An initial mechanism for recording deviations.
 
-### 2.2 当前系统最根本的缺失
+### 2.2 Fundamental Missing Capabilities
 
-真正缺失的不是某一个模块，而是四个主链能力：
+Four mainline capabilities are missing, not merely an individual module:
 
-1. **统一故事真理源**
-   - 当前没有 `MASTER / VOLUME / CHAPTER` 合同家族作为单一真理源
-2. **统一章节提交主链**
-   - 写作后的状态回写仍是多处散写，不是一次章节提交、再多投影分发
-3. **统一设定演进账本**
-   - 当前只有追读力债务的 override 雏形，没有全局设定演进账本
-4. **统一事件主链**
-   - 当前已有很多 Delta 事件痕迹，但没有 canonical event log
+1. **Unified story truth**
+   - No `MASTER / VOLUME / CHAPTER` contract family as a single source of truth.
+2. **Unified chapter commits**
+   - Post-writing facts are scattered across writers rather than one commit distributed through projections.
+3. **Unified setting-evolution ledger**
+   - Only an initial reader-retention-debt override mechanism exists, not a global setting ledger.
+4. **Unified events**
+   - Many delta-event traces exist, but no canonical event log.
 
-### 2.3 演进判断
+### 2.3 Evolution Implication
 
-这意味着演进不能按“新增一个大模块，旧链路先不管”的方式做。
+Do not add a large new module while ignoring old paths. Follow this order:
 
-必须遵守：
+1. Establish unified contracts.
+2. Make runtime consume them.
+3. Make chapter commits the mainline.
+4. Demote old paths to projections and fallback.
 
-1. 先建立统一合同
-2. 再让运行时消费合同
-3. 再让章节提交变成主链
-4. 最后把旧链路降级为投影与回退
-
-如果顺序反过来，系统只会多一个并行中枢，而不是更收敛。
+Reversing the order creates another competing hub instead of convergence.
 
 ---
 
-## 3. 设计目标与非目标
+## 3. Goals and Non-Goals
 
-### 3.1 目标
+### 3.1 Eight Goals
 
-本演进 spec 要达成 8 个目标：
+1. Unified story contracts built on the existing system.
+2. Contract-first context assembly.
+3. Strong constraints before writing, not merely afterward.
+4. Outline-fulfillment validation and review contracts.
+5. Unified chapter commits.
+6. Unified override ledger.
+7. Canonical event log.
+8. Reposition existing modules as foundations and projections.
 
-1. 建立基于当前系统的统一故事合同体系
-2. 建立合同优先的上下文装配顺序
-3. 建立写前而不是写后的强约束输入
-4. 建立大纲履约校验与 review contract
-5. 建立统一章节提交主链
-6. 建立统一 override ledger
-7. 建立统一 canonical event log
-8. 把现有模块重定位为合同系统的底盘和投影层
+### 3.2 Non-Goals
 
-### 3.2 非目标
+This spec does not require:
 
-本 spec 明确不做以下承诺：
+1. Replacing every old path at once.
+2. Immediately retiring `context_manager`, `genre_*`, or `reference_search.py`.
+3. Automatic Markdown-to-CSV knowledge migration.
+4. A separate test for every CSV entry.
+5. A fully event-driven architecture in Phase 1.
 
-1. 不要求一次性替换全部旧链路
-2. 不要求一次性废弃 `context_manager`、`genre_*`、`reference_search.py`
-3. 不要求知识内容自动从 md 迁移到 csv
-4. 不要求对每个 CSV 条目编写测试
-5. 不要求在第一阶段就实现完全事件驱动架构
+### 3.3 Hard Constraints
 
-### 3.3 硬约束
+Throughout evolution:
 
-整个演进过程必须持续遵守以下约束：
-
-1. `AI味`、anti-AI、润色替换规则继续保留在 md，不进入 CSV
-2. CSV 知识迁移只允许人工整理与人工录入
-3. 演进不得制造新的双真理源
-4. 任一阶段的 implementation plan 都必须把**文档更新**作为显式任务
+1. AI-flavor, anti-AI, and polishing substitution rules stay in Markdown, not CSV.
+2. CSV knowledge migration is manually organized and entered only.
+3. Do not create new competing sources of truth.
+4. Every implementation plan must explicitly include **documentation updates**.
 
 ---
 
-## 4. 核心设计原则
+## 4. Design Principles
 
-### 4.1 收束，不并列
+### 4.1 Converge, Do Not Compete
 
-新系统的职责必须是**收束旧中枢**，不是与旧中枢并列竞争。
+The new system must consolidate old hubs, not stand alongside them.
 
-反模式：
+Anti-patterns:
+- Add `story_system` while `context_manager` independently generates another genre judgment.
+- Add contracts while treating `genre-profiles.md` as an equal authority.
+- Add chapter commits while allowing writeback to bypass them.
 
-- 新增 `story_system`，但 `context_manager` 仍单独输出另一套题材判断
-- 新增合同文件，但 `genre-profiles.md` 仍作为同级真源参与写作输入
-- 新增章节提交对象，但状态回写仍绕过它直接散写
+### 4.2 Contracts First, Runtime Facts Second
 
-### 4.2 合同优先，运行时补充
+Runtime input has two layers:
 
-运行时输入应拆成两层：
+1. **Contracts**: Genre/tone, reader-dealbreaker boundaries, system limits, volume/chapter goals.
+2. **Facts**: State, recent summaries, entities, reader signals.
 
-1. **合同层**
-   - 题材调性、毒点红线、系统边界、卷章目标
-2. **事实层**
-   - state、recent summaries、entity facts、reader signals
+Contracts describe how the story should be written; facts describe what has happened.
 
-原则上：
+### 4.3 Commit First, Project Afterward
 
-- 合同负责“应该怎么写”
-- 事实负责“已经发生了什么”
+After a chapter:
 
-### 4.3 提交优先，投影随后
+1. Form a structured commit.
+2. Validate contract and outline fulfillment.
+3. Only after acceptance, project into `state / index / summary / memory`.
 
-章节完成后的正确顺序必须是：
+Do not scatter writes first and reconcile them separately afterward.
 
-1. 形成结构化章节提交对象
-2. 校验其是否满足合同和大纲
-3. 只有提交通过，才向 `state / index / summary / memory` 投影
+### 4.4 Explicit Overrides, No Silent Drift
 
-而不是：
+Every setting change must answer:
 
-- 先散写
-- 再在各模块里尽量圆回来
+1. What changed?
+2. Which layer was the basis?
+3. Why?
+4. Does it affect a higher-level contract?
 
-### 4.4 显式覆盖，禁止静默漂移
+Without these answers, it is not valid setting evolution.
 
-任何设定变化必须回答四个问题：
+### 4.5 Mainline Before Precision
 
-1. 变了什么
-2. 基于哪一层改的
-3. 为什么改
-4. 是否影响上层合同
+The primary gap is orchestration, not accuracy. Build:
 
-如果回答不了，就不允许把它当作合法设定演进。
-
-### 4.5 先补主链，再补精度
-
-本项目当前最缺的是主链，不是精度。
-
-因此演进顺序必须是：
-
-1. 先补合同主链
-2. 再补提交主链
-3. 再补事件主链
-4. 最后再提升检索、推理、多标签融合精度
+1. Contract mainline
+2. Commit mainline
+3. Event mainline
+4. Better retrieval, reasoning, and multi-tag fusion precision
 
 ---
 
-## 5. 诊断问题到演进工作流的映射
+## 5. Mapping Diagnosis to Evolution Workstreams
 
-现状诊断中的 10 个问题，可以归并为 5 条演进工作流。
+The ten diagnosed problems form five workstreams.
 
-### 5.1 真理源收束工作流
+### 5.1 Converge Sources of Truth
 
-对应问题：
+Problems:
+- 1. Multiple authorities
+- 2. Missing Override Ledger
 
-- 1. 多头真理
-- 2. Override Ledger 缺口
+Actions:
+- Make contracts the only story authority.
+- Expand `override_contracts` from reader-retention debt to setting evolution.
 
-要解决的事：
+### 5.2 Contract-Based Context
 
-- 引入合同家族作为唯一故事真理源
-- 把 `override_contracts` 从追读力债务专用，扩展为故事设定演进账本
+Problems:
+- 3. Context truncation black hole
+- 4. Late knowledge binding and disconnected generalization
 
-### 5.2 上下文合同化工作流
+Actions:
+- Make `context_manager` contract-first.
+- Pre-aggregate general knowledge into book-specific contracts instead of ad hoc searches while writing.
 
-对应问题：
+### 5.3 Pre-Writing Validation
 
-- 3. 上下文截断黑洞
-- 4. 知识延迟绑定与泛化割裂
+Problems:
+- 5. Post-hoc inspection only
+- 6. No outline-fulfillment checks
 
-要解决的事：
+Actions:
+- Create review contracts.
+- Define pre-writing prohibitions, disambiguation domains, and post-writing fulfillment diffs.
 
-- 让 `context_manager` 合同优先
-- 把通用知识预聚合为当前书的专属合同，而不是让写作时临时散查
+### 5.4 Chapter Commits
 
-### 5.3 写前校验工作流
+Problems:
+- 7. Fragmented cross-storage transactions
+- 8. Contamination from late disambiguation
+- 9. Disambiguation warnings propagating forward
 
-对应问题：
+Actions:
+- Create one chapter-commit object.
+- Move disambiguation and fact extraction into commit validation rather than final writeback fallback.
 
-- 5. 事后验尸
-- 6. 缺乏大纲履约校验
+### 5.5 Event Mainline
 
-要解决的事：
+Problem:
+- 10. Event traces without a mainline
 
-- 建立 review contract
-- 建立写前禁区、写前消歧域、写后履约 diff
-
-### 5.4 章节提交工作流
-
-对应问题：
-
-- 7. 跨存储事务割裂
-- 8. 后置消歧污染风险
-- 9. 消歧警告向后传染
-
-要解决的事：
-
-- 引入统一章节提交对象
-- 把消歧和事实提取前移到提交校验链，而不是回写尾部兜底
-
-### 5.5 事件主链工作流
-
-对应问题：
-
-- 10. 事件只有痕迹没有主链
-
-要解决的事：
-
-- 定义 canonical event log
-- 让“事件”而不是“覆盖后的状态”成为演进触发器
+Actions:
+- Define a canonical event log.
+- Make events, rather than overwritten final state, trigger evolution.
 
 ---
 
-## 6. 演进后的总体架构
+## 6. Target Architecture
 
-### 6.1 总体分层
-
-演进后的系统分为六层：
+### 6.1 Six Layers
 
 1. `Knowledge Layer`
 2. `Reasoning Layer`
@@ -342,10 +290,10 @@
 5. `Chapter Commit Layer`
 6. `Projection Layer`
 
-### 6.2 总体链路
+### 6.2 Flow
 
 ```text
-用户意图 / 书籍题材诉求
+User intent / book genre requirements
         ↓
 Reasoning Layer
         ↓
@@ -355,7 +303,7 @@ MASTER / VOLUME / CHAPTER / REVIEW / ANTI_PATTERNS
         ↓
 context_manager(contract-first)
         ↓
-规划 / 写作 / 审查
+Planning / writing / review
         ↓
 CHAPTER_COMMIT
         ↓
@@ -364,23 +312,21 @@ Projection Writers
 state / index / summaries / memory / rag
 ```
 
-### 6.3 最终判断
+### 6.3 Architectural Conclusion
 
-未来系统的主链不应是：
-
+Replace the conceptual mainline:
 - `reference_search -> prompt -> reviewer -> data agent -> state`
 
-而应是：
-
+With:
 - `knowledge -> reasoning -> contract -> runtime pack -> chapter commit -> projections`
 
 ---
 
-## 7. 单一真理源与优先级规则
+## 7. Authority and Priority
 
-### 7.1 故事真理源
+### 7.1 Story Authority
 
-故事系统的唯一真理源应为合同家族：
+The contract family is the only story source of truth:
 
 1. `MASTER_SETTING.json`
 2. `VOLUME_BRIEF.json`
@@ -388,15 +334,14 @@ state / index / summaries / memory / rag
 4. `REVIEW_CONTRACT.json`
 5. `anti_patterns.json`
 
-其中：
+Within it:
+- `MASTER / VOLUME / CHAPTER` are the hierarchical authorities.
+- `anti_patterns.json` is a derived view and cannot become upstream truth.
+- `REVIEW_CONTRACT.json` is a derived review contract.
 
-- 分层真源是 `MASTER / VOLUME / CHAPTER`
-- `anti_patterns.json` 是派生视图，不反向成为真源
-- `REVIEW_CONTRACT.json` 是审查用派生合同
+### 7.2 Runtime Priority
 
-### 7.2 运行时优先级
-
-运行时拼上下文时，优先级固定为：
+Fixed context order:
 
 1. `chapter contract`
 2. `volume contract`
@@ -404,39 +349,27 @@ state / index / summaries / memory / rag
 4. `题材与调性推理.csv`
 5. `genre-profiles.md`
 6. `templates/genres/*.md`
-7. 其他局部 reference
+7. Other local references
 
-一旦合同存在：
+Once contracts exist, `context_manager`, `webnovel-plan`, `webnovel-write`, and `webnovel-review` must not produce conflicting global system judgments.
 
-- `context_manager`
-- `webnovel-plan`
-- `webnovel-write`
-- `webnovel-review`
+### 7.3 Post-Writing Authority
 
-都不得再输出与合同冲突的全局系统判断。
-
-### 7.3 写后真理源
-
-章节完成后，真理链固定为：
+After completion:
 
 1. `CHAPTER_COMMIT`
-2. 投影到 `state`
-3. 投影到 `index`
-4. 投影到 `summaries`
-5. 投影到 `memory`
+2. Projection to `state`
+3. Projection to `index`
+4. Projection to `summaries`
+5. Projection to `memory`
 
-也就是说：
-
-- `state / index / summary / memory` 不再是章节事实的并列真源
-- 它们是 `CHAPTER_COMMIT` 的派生投影
+These stores are no longer parallel fact authorities; they derive from `CHAPTER_COMMIT`.
 
 ---
 
-## 8. 合同体系设计
+## 8. Contract Design
 
-### 8.1 合同家族
-
-完整合同家族定义如下：
+### 8.1 Family
 
 1. `MASTER_SETTING`
 2. `VOLUME_BRIEF`
@@ -445,97 +378,83 @@ state / index / summaries / memory / rag
 5. `ANTI_PATTERNS`
 6. `CHAPTER_COMMIT`
 
-这里新增 `CHAPTER_COMMIT`，原因很简单：
+The first five govern before writing; `CHAPTER_COMMIT` governs afterward. Without it, fragmented writeback, missing fulfillment, and broken event chains remain unresolved.
 
-- 前五类合同负责“写之前”
-- `CHAPTER_COMMIT` 负责“写之后”
+### 8.2 Responsibilities
 
-如果没有它，系统就无法真正修复诊断里关于回写割裂、履约丢失、事件断链的问题。
+#### MASTER_SETTING
 
-### 8.2 合同职责
+Stable book-wide rules:
+- Genre and tone
+- World rules
+- Core characters
+- Special-advantage limits
+- Global reader dealbreakers
+- Global override policy
 
-#### `MASTER_SETTING`
+#### VOLUME_BRIEF
 
-负责全书级稳定系统：
+Volume-level rules:
+- Conflict axis
+- Payoff objectives
+- Stage-specific relationships
+- Pacing waveform
+- Additional boundaries
 
-- 题材与调性
-- 世界规则
-- 核心人设
-- 金手指边界
-- 全局毒点
-- 全局 override policy
+#### CHAPTER_BRIEF
 
-#### `VOLUME_BRIEF`
+Chapter execution:
+- Goal
+- Scene strategy
+- Hook
+- Must-cover nodes
+- Prohibited developments
+- Local overrides
 
-负责卷级系统：
+#### REVIEW_CONTRACT
 
-- 本卷冲突轴
-- 本卷兑现目标
-- 本卷阶段性角色关系
-- 本卷节奏波形
-- 本卷补充红线
+Required checks:
+- Blocking rules
+- Genre-specific risks
+- Outline fulfillment
+- Disambiguation
+- High-risk facts
 
-#### `CHAPTER_BRIEF`
+#### ANTI_PATTERNS
 
-负责本章执行：
+Flatten all visible levels' boundaries into a runtime view.
 
-- 本章目标
-- 本章场景策略
-- 本章 hook
-- must cover 节点
-- 本章禁区
-- 本章局部 override
+#### CHAPTER_COMMIT
 
-#### `REVIEW_CONTRACT`
+Final chapter result:
+- Contracts used
+- Facts established
+- Events produced
+- Outline/mandatory-node fulfillment
+- Disambiguation result
+- Review result
+- Completed projections
 
-负责本次审查必须检查的事项：
+### 8.3 Field Types
 
-- blocking rules
-- 题材特定风险
-- 大纲履约检查项
-- 消歧检查项
-- 高风险事实校验项
-
-#### `ANTI_PATTERNS`
-
-负责将可见层级的所有红线聚合为运行时平面视图。
-
-#### `CHAPTER_COMMIT`
-
-负责承载本章最终提交结果：
-
-- 使用了哪些合同
-- 实际发生了哪些事实
-- 实际产生了哪些事件
-- 是否完成了 outline/mandatory nodes
-- 消歧是否通过
-- review 是否通过
-- 哪些投影已完成
-
-### 8.3 字段类型
-
-仍采用三类字段策略：
-
+Keep:
 1. `locked`
 2. `append_only`
 3. `override_allowed`
 
-并保留 `lock_policy`：
-
+And `lock_policy`:
 1. `system_locked`
 2. `user_locked`
 3. `story_locked`
 
-### 8.4 覆盖规则
+### 8.4 Overrides
 
-优先级固定为：
-
+Priority:
 1. `chapter`
 2. `volume`
 3. `master`
 
-但这不是静默覆盖，而是必须记录：
-
+No silent overrides. Record:
 - `field`
 - `base_value`
 - `override_value`
@@ -544,46 +463,33 @@ state / index / summaries / memory / rag
 - `reason_tag`
 - `approved_by`
 
-### 8.5 override ledger 的新定位
+### 8.5 Override Ledger
 
-当前 `override_contracts` 不能废弃，而应演进为统一 override ledger 的底座。
+Retain `override_contracts` as the foundation of a unified ledger.
 
-演进后的职责：
+Responsibilities:
+1. Soft deviations in reader-retention debt.
+2. Controlled chapter/volume overrides of higher contracts.
+3. Proposals requiring `amend-master / amend-volume`.
 
-1. 记录追读力债务层面的软违背
-2. 记录卷章对上层故事合同的受控覆盖
-3. 记录需要上提到 `amend-master / amend-volume` 的提案
-
-最终应区分三类记录：
-
+Record categories:
 1. `soft_deviation`
 2. `contract_override`
 3. `amend_proposal`
 
 ---
 
-## 9. 章节提交主链设计
+## 9. Chapter-Commit Mainline
 
-### 9.1 为什么必须新增提交主链
+### 9.1 Why It Is Necessary
 
-当前系统的问题不是“写完后没保存”，而是“写完后被拆成多处异步散写”。
+The problem is not failure to save, but asynchronous scattered writes after generation. This creates inconsistent state, late-disambiguation contamination, lost fulfillment, and broken event chains.
 
-这会导致：
+Instead, form one commit and distribute it through projectors.
 
-- 状态不同步
-- 消歧后置污染
-- 履约丢失
-- 事件断链
+### 9.2 Minimal CHAPTER_COMMIT
 
-所以必须把章节完成后的提交改为：
-
-- 先形成一个统一提交对象
-- 再由投影器把它分发到各存储
-
-### 9.2 `CHAPTER_COMMIT` 最小结构
-
-最小应包含：
-
+Include:
 - `meta`
 - `contract_refs`
 - `outline_snapshot`
@@ -595,54 +501,45 @@ state / index / summaries / memory / rag
 - `entity_deltas`
 - `projection_status`
 
-### 9.3 提交流程
+### 9.3 Commit Flow
 
-标准链路应为：
+1. Read `CHAPTER_BRIEF`.
+2. Complete writing.
+3. Generate `REVIEW_CONTRACT`.
+4. Complete review.
+5. Draft `CHAPTER_COMMIT`.
+6. Validate fulfillment, disambiguation, and blocking rules.
+7. Mark the commit accepted only after success.
+8. Project to stores.
 
-1. 读取 `CHAPTER_BRIEF`
-2. 写作完成
-3. 生成 `REVIEW_CONTRACT`
-4. 完成审查
-5. 生成 `CHAPTER_COMMIT` 草案
-6. 校验履约、消歧、blocking rules
-7. 通过后标记 commit accepted
-8. 投影到各存储
+### 9.4 Projection Writers
 
-### 9.4 投影层职责
-
-投影层至少分成四个 writer：
-
+At minimum:
 1. `state_projection_writer`
 2. `index_projection_writer`
 3. `summary_projection_writer`
 4. `memory_projection_writer`
 
-未来可选：
-
+Optional later:
 5. `rag_projection_writer`
 
-### 9.5 失败语义
+### 9.5 Failure Semantics
 
-一旦 `CHAPTER_COMMIT` 未通过，不允许：
+If `CHAPTER_COMMIT` fails validation, do not:
+1. Partially write `state`.
+2. Partially write `index`.
+3. Save a summary first and repair state later.
+4. Let the next chapter read unconfirmed facts.
 
-1. 部分写入 `state`
-2. 部分写入 `index`
-3. 先写摘要再回头补状态
-4. 让下一章读取未确认事实
-
-也就是说：
-
-- “章节已生成”不等于“章节已提交”
-- 只有 `commit accepted` 才能进入事实主链
+Generated does not mean committed. Only `commit accepted` joins the factual mainline.
 
 ---
 
-## 10. canonical event log 设计
+## 10. Canonical Event Log
 
-### 10.1 当前问题
+### 10.1 Current Gap
 
-当前系统已经有：
-
+Existing local event structures include:
 - `state_changes`
 - `relationship_events`
 - `timeline_events`
@@ -650,18 +547,14 @@ state / index / summaries / memory / rag
 - `open_loops`
 - `reader_promises`
 
-但这些都还是局部事件，没有统一事件主链。
+They do not yet form a unified mainline.
 
-### 10.2 演进目标
+### 10.2 Target
 
-应新增统一事件视角：
+- Every chapter commit produces `accepted_events`.
+- Projections update from events, not only final-value overwrites.
 
-- 所有章节提交都必须产出 `accepted_events`
-- 投影层基于事件更新状态，而不是只根据最终值覆盖
-
-### 10.3 事件类型
-
-最小事件族建议包括：
+### 10.3 Minimal Event Family
 
 1. `character_state_changed`
 2. `relationship_changed`
@@ -674,315 +567,237 @@ state / index / summaries / memory / rag
 9. `open_loop_created`
 10. `open_loop_closed`
 
-### 10.4 事件与合同的关系
+### 10.4 Events and Contracts
 
-事件不直接修改 `MASTER / VOLUME / CHAPTER`。
+Events do not directly modify `MASTER / VOLUME / CHAPTER`.
 
-正确做法是：
+1. Enter events into `CHAPTER_COMMIT.accepted_events`.
+2. If an event meets criteria for a higher-level setting change, create an `amend proposal`.
+3. Update higher contracts after human confirmation.
 
-1. 事件先进入 `CHAPTER_COMMIT.accepted_events`
-2. 若事件触发上层设定变更条件，则生成 `amend proposal`
-3. 人工确认后再更新上层合同
-
-这样才能兼顾：
-
-- 文学反转的灵活性
-- 合同系统的稳定性
+This preserves both creative reversals and contract stability.
 
 ---
 
-## 11. 写前校验与写后校验
+## 11. Pre- and Post-Writing Validation
 
-### 11.1 写前校验
+### 11.1 Before Writing
 
-写前必须显式检查：
+Check explicitly:
+1. Visible chapter contracts exist.
+2. Prohibitions are complete.
+3. No unresolved high-priority disambiguation remains.
+4. Must-cover requirements are clear.
+5. Whether a local override summary is needed.
 
-1. 当前章可见合同是否存在
-2. 本章禁区是否完整
-3. 是否存在高优先级消歧 pending
-4. must cover 是否明确
-5. 当前章是否需要局部 override 摘要
+### 11.2 After Writing
 
-### 11.2 写后校验
-
-写后必须显式检查：
-
+Check explicitly:
 1. `blocking rules`
-2. `mandatory_nodes` 是否履约
-3. `anti_patterns` 是否命中
-4. 关键实体命名是否稳定
-5. 是否产生需要上提的设定修改
+2. `mandatory_nodes` fulfillment
+3. `anti_patterns` hits
+4. Stable names for key entities
+5. Setting amendments requiring escalation
 
-### 11.3 大纲履约机制
+### 11.3 Outline Fulfillment
 
-当前系统的缺口之一，是只记录“写了什么”，不校验“该写的写了没有”。
+The system currently records what was written without checking whether required content was written.
 
-因此 `CHAPTER_COMMIT` 必须新增：
-
+Add to `CHAPTER_COMMIT`:
 - `planned_nodes`
 - `covered_nodes`
 - `missed_nodes`
 - `extra_nodes`
 
-最低要求：
+At minimum, nonempty `missed_nodes` must prevent silent successful submission.
 
-- `missed_nodes` 非空时，不允许静默提交成功
+### 11.4 Earlier Disambiguation
 
-### 11.4 消歧机制前移
+Do not rely solely on final writeback fallback.
 
-消歧不能只在尾部回写阶段兜底。
+1. Before writing, supply a `disambiguation domain`: allowed frequent entities, aliases, and forms of address.
+2. After writing, validate again at `CHAPTER_COMMIT`.
 
-应拆成两段：
-
-1. 写前提供 `disambiguation domain`
-   - 当前章允许出现的高频实体、别名、称谓集合
-2. 写后在 `CHAPTER_COMMIT` 阶段再做提交校验
-
-只有无法通过两段机制解决时，才进入 `disambiguation_pending`。
+Only unresolved cases enter `disambiguation_pending`.
 
 ---
 
-## 12. 现有模块的演进路径
+## 12. Existing Module Evolution
 
-### 12.1 `reference_search.py`
+### 12.1 reference_search.py
 
-新定位：
+New role:
+- Low-level primitive
+- CSV retrieval engine
+- No system-aggregation responsibility
 
-- 底层 primitive
-- CSV 搜索内核
-- 不再承担系统聚合职责
+### 12.2 context_manager.py
 
-### 12.2 `context_manager.py`
+New role: Contract-first runtime assembler.
 
-新定位：
+Sequence:
+1. Phase 1 retains current structure.
+2. Phase 1 adds `story_contract` section.
+3. Phase 2 fixes pack priority: `chapter -> volume -> master -> old profile`.
+4. Phase 3 removes overlapping global-system generation.
 
-- 合同优先的运行时装配器
+### 12.3 genre_aliases.py / genre_profile_builder.py / genre-profiles.md
 
-演进顺序：
+New role: Active seed sources while route tables are built.
 
-1. phase 1 保留原有结构
-2. phase 1 新增 `story_contract` section
-3. phase 2 固定 pack 优先级为 `chapter -> volume -> master -> old profile`
-4. phase 3 移除与“全局系统生成”重叠的逻辑
+1. Manually migrate stable fields into `题材与调性推理.csv`.
+2. Make `story_system` prefer CSV.
+3. Demote `genre-profiles.md` to fallback/reference.
 
-### 12.3 `genre_aliases.py / genre_profile_builder.py / genre-profiles.md`
+### 12.4 state_manager
 
-新定位：
+New role: Coordinates `CHAPTER_COMMIT` projection writers, not chapter-fact authority.
 
-- route table 建设期间的活跃种子源
+Responsibilities:
+- Write accepted-commit state projections into `state.json`.
+- Synchronize SQLite.
+- Maintain local atomic writes and recovery.
 
-演进顺序：
+### 12.5 index.db
 
-1. 人工把稳定字段迁入 `题材与调性推理.csv`
-2. `story_system` 优先读 CSV
-3. `genre-profiles.md` 退化为回退源和参考源
+New role:
+- Fact retrieval
+- Event indexing
+- Audit history
 
-### 12.4 `state_manager`
+Not the primary source of story rules.
 
-新定位：
+### 12.6 Memory Writer / Orchestrator / Summaries
 
-- `CHAPTER_COMMIT` 的投影写入器协调层
+New role:
+- Supplemental facts
+- Historical recall
+- Foreshadowing resolution
 
-它不再承担“章节事实真源”的角色，而只负责：
+Stages:
+1. Phase 1 may retain current behavior.
+2. Phase 2 consumes accepted `CHAPTER_COMMIT` only.
+3. Phase 3 aligns with the canonical event log.
 
-- 把已接受 commit 的状态投影写入 `state.json`
-- 与 SQLite 同步
-- 维护局部原子写和恢复机制
+### 12.7 override_contracts
 
-### 12.5 `index.db`
+Foundation of the unified override ledger, no longer limited to reader-retention debt.
 
-新定位：
+### 12.8 scripts/data_modules/config.py
 
-- 事实检索层
-- 事件索引层
-- 审计回溯层
+Continue as the unified project configuration entry point.
 
-不再承担“故事规则主源”职责。
+Constraints:
+1. Reuse `DataModulesConfig` in Phase 1.
+2. Put new `story_system` configuration under a clear namespace.
+3. Do not create an independent parallel configuration tree.
 
-### 12.6 `memory writer / orchestrator / summaries`
-
-新定位：
-
-- 事实补充层
-- 历史回顾层
-- 伏笔回收层
-
-阶段要求：
-
-1. phase 1 可继续沿用现状
-2. phase 2 开始只消费已 accepted 的 `CHAPTER_COMMIT`
-3. phase 3 与 canonical event log 对齐
-
-### 12.7 `override_contracts`
-
-新定位：
-
-- 统一 override ledger 的底座
-
-不能继续只服务追读力债务。
-
-### 12.8 `scripts/data_modules/config.py`
-
-新定位：
-
-- 继续作为项目级统一配置入口
-
-演进约束：
-
-1. phase 1 直接复用现有 `DataModulesConfig`
-2. `story_system` 新增配置必须挂在明确命名空间下
-3. 禁止为 `story_system` 平行再造一套完全独立的配置树
-
-否则后果会非常直接：
-
-- runtime 一套预算
-- contract 一套预算
-- projection 一套路径
-
-三套配置分叉后，合同系统会在工程层面重新失真。
+Otherwise runtime budgets, contract budgets, and projection paths diverge, undermining contracts at the engineering level.
 
 ---
 
-## 13. 分阶段演进计划
+## 13. Staged Evolution
 
-### 13.1 Phase 0：现状收束准备
+### 13.1 Phase 0: Prepare Convergence
 
-目标：
+Goal: Clarify authority and priority without changing the main flow.
 
-- 不改主流程，只明确真源和优先级
+Deliver:
+1. Document current authority priority consistently.
+2. Identify contract injection into `context_manager`.
+3. Define transitional `genre-profiles.md` role.
+4. Define `override_contracts` expansion.
 
-交付：
+### 13.2 Phase 1: Contract Seeds
 
-1. 统一文档化当前真源优先级
-2. 明确 `context_manager` 的 contract 注入口
-3. 明确 `genre-profiles.md` 的过渡期定位
-4. 明确 `override_contracts` 的扩展方向
+Goal: Establish the first stable contracts.
 
-### 13.2 Phase 1：合同种子层
-
-目标：
-
-- 让系统第一次拥有稳定合同
-
-交付：
-
+Deliver:
 1. `题材与调性推理.csv`
-2. 最小 `MASTER_SETTING`
-3. 最小 `CHAPTER_BRIEF`
+2. Minimal `MASTER_SETTING`
+3. Minimal `CHAPTER_BRIEF`
 4. `anti_patterns.json`
-5. `context_manager` 读取合同
+5. Contract reads in `context_manager`
 
-此阶段仍允许：
+Still permitted:
+- Existing writing chain
+- Genre-profile fallback
+- No `VOLUME_BRIEF` yet
 
-- 保留旧写作链
-- 保留 `genre-profiles.md` 回退
-- 不引入 `VOLUME_BRIEF`
+### 13.3 Phase 2: Contract-First Runtime
 
-### 13.3 Phase 2：合同优先运行时
+Goal: Planning, writing, and review use contracts as primary input.
 
-目标：
-
-- 让写作、规划、审查都以合同为主输入
-
-交付：
-
+Deliver:
 1. `VOLUME_BRIEF`
 2. `REVIEW_CONTRACT`
-3. 写前禁区与消歧域
-4. 大纲履约 diff
-5. `context_manager` contract-first pack
+3. Pre-writing prohibitions and disambiguation domain
+4. Outline-fulfillment diff
+5. Contract-first context pack
 
-此阶段的关键变化：
+Ad hoc reference assembly stops being the default. Contract-first plus on-demand local references becomes normal.
 
-- “临时拼资料”不再是默认路径
-- “合同优先 + 局部 reference 按需加载”成为默认路径
+### 13.4 Phase 3: Chapter Commits
 
-### 13.4 Phase 3：章节提交主链
+Goal: All fact writeback passes through one chapter-commit object.
 
-目标：
-
-- 让所有事实回写经过统一章节提交对象
-
-交付：
-
+Deliver:
 1. `CHAPTER_COMMIT`
-2. 四类 projection writers
-3. accepted / rejected commit 语义
-4. 写后回写改为 commit 驱动
+2. Four projection writers
+3. Accepted/rejected semantics
+4. Commit-driven writeback
 
-此阶段完成后：
+Chapter authority moves from scattered writes to one commit.
 
-- 章节事实真源将从散写转为统一提交对象
+### 13.5 Phase 4: Unified Events
 
-### 13.5 Phase 4：统一事件主链
+Goal: Events become formal inputs to system evolution.
 
-目标：
+Deliver:
+1. Canonical event log
+2. Stable event-to-projection mappings
+3. Event-to-amend-proposal triggers
 
-- 让事件成为系统演进的正式输入
+### 13.6 Phase 5: Demote Old Paths
 
-交付：
+Goal: Old hubs become fallback or projection layers.
 
-1. canonical event log
-2. 事件到投影的稳定映射
-3. 事件到 amend proposal 的触发规则
-
-### 13.6 Phase 5：旧链路降级
-
-目标：
-
-- 把旧中枢从主链降级为回退或投影层
-
-退出条件：
-
-1. 合同已成为默认主输入
-2. `CHAPTER_COMMIT` 已成为默认提交主链
-3. `genre-profiles.md` 已完成高频题材迁移
-4. `context_manager` 不再独立生成与合同冲突的全局系统判断
+Exit criteria:
+1. Contracts are the default primary input.
+2. `CHAPTER_COMMIT` is the default submission mainline.
+3. Frequent genres have migrated out of `genre-profiles.md`.
+4. `context_manager` no longer independently generates conflicting global judgments.
 
 ---
 
-## 14. 数据与目录建议
+## 14. Data and Directories
 
-### 14.1 合同目录
+### 14.1 Contract Directory
 
-本项目已有权威**运行时**目录术语，后续 story system 必须复用，不得自造新说法。
+Reuse existing authoritative runtime directory terminology. This repository is the **plugin source development directory**, not the installed runtime root. Persisted paths must follow Claude Code's real installed runtime model.
 
-需要先明确一件事：
-
-- 当前这个仓库只是**插件源码开发目录**
-- 它不是插件安装后的运行时根目录
-- story system 的落盘路径必须基于**Claude Code 安装后的真实运行目录模型**来定义
-
-因此后续所有路径说明，都应基于运行时的三层目录：
+Three roots:
 
 1. `CLAUDE_PLUGIN_ROOT`
-   - Claude Code 插件安装目录
-   - 存放 `skills/ agents/ scripts/ references/`
-   - **不允许**在这里写入小说项目数据
+   - Installed plugin directory containing `skills/ agents/ scripts/ references/`.
+   - **Never write book project data here.**
 2. `WORKSPACE_ROOT`
-   - 当前工作区根目录，可通过 `.claude/.webnovel-current-project` 指针解析当前书项目
+   - Workspace root; `.claude/.webnovel-current-project` may point to the active book.
 3. `PROJECT_ROOT`
-   - **书项目根目录**
-   - 定义为：**包含 `.webnovel/state.json` 的目录**
+   - **Book project root**, defined as the directory containing **`.webnovel/state.json`**.
 
-`Story Contract` 和 `CHAPTER_COMMIT` 都是**某一本书**的持久化产物，因此必须落在 `PROJECT_ROOT`，而不是：
+Story Contracts and `CHAPTER_COMMIT` belong to a particular book, so persist under `PROJECT_ROOT`, not the source repository, installed plugin, or workspace root.
 
-- 当前源码仓库目录
-- `CLAUDE_PLUGIN_ROOT`
-- `WORKSPACE_ROOT`
-
-基于当前已有真实目录，可以直接参考：
-
+Existing directory example:
 - `WORKSPACE_ROOT = D:\wk\xiaoshuo`
 - `PROJECT_ROOT = D:\wk\xiaoshuo\凡人资本论`
-- 指针文件 = `D:\wk\xiaoshuo\.claude\.webnovel-current-project`
+- Pointer: `D:\wk\xiaoshuo\.claude\.webnovel-current-project`
 
-该例也说明两件事：
+This demonstrates:
+1. The project is one book inside a workspace.
+2. It may be its own Git repository; this example contains `.git/`.
 
-1. `PROJECT_ROOT` 是工作区内的某一本书目录
-2. `PROJECT_ROOT` 自身可以是一个独立 git 仓库（例如当前示例里就存在 `.git/`）
-
-建议目录如下：
+Suggested structure, with original runtime directory names preserved:
 
 ```text
 WORKSPACE_ROOT/
@@ -993,7 +808,7 @@ WORKSPACE_ROOT/
 └── ...
 
 PROJECT_ROOT/
-├── .git/                  # 可选：书项目自身可独立版本管理
+├── .git/                  # Optional independent book version control
 ├── 正文/
 ├── 大纲/
 ├── 设定集/
@@ -1018,181 +833,141 @@ PROJECT_ROOT/
         └── chapter_001.commit.md
 ```
 
-这里的 `.story-system/` 必须明确为：
+`.story-system/` is explicitly **relative to `PROJECT_ROOT`**, never the source repository, `CLAUDE_PLUGIN_ROOT`, `WORKSPACE_ROOT`, or arbitrary working directory.
 
-- **相对于 `PROJECT_ROOT`**
+Any implementation-plan use of “root” must distinguish all three named roots.
 
-而不是：
+### 14.1.1 Path Resolution
 
-- 当前源码仓库目录
-- `CLAUDE_PLUGIN_ROOT`
-- `WORKSPACE_ROOT`
-- 任意当前工作目录
+All runtime entry points follow existing rules:
 
-如果后续 implementation plan 中出现“根目录”表述，必须显式区分：
+1. Accept `WORKSPACE_ROOT` externally.
+2. Resolve the actual `PROJECT_ROOT` through `resolve_project_root(...)`.
+3. Base every `.story-system` read/write on that resolved root.
 
-1. `CLAUDE_PLUGIN_ROOT`
-2. `WORKSPACE_ROOT`
-3. `PROJECT_ROOT`
+Thus:
+- CLI `--project-root` may accept either a book root or workspace root.
+- Entry points resolve it.
+- Contracts and commits use only the final resolved project root.
+- A user currently at workspace level must still resolve the book before accessing `.story-system/`.
 
-### 14.1.1 路径解析约束
+### 14.2 Authority Rules
 
-所有运行时入口都应遵守现有统一规则：
+1. `*.json` is authoritative.
+2. `*.md` is a read-only rendering.
+3. The same applies in `reviews/` and `commits/`.
 
-1. 允许外部传入 `WORKSPACE_ROOT`
-2. 统一经 `resolve_project_root(...)` 解析到真实 `PROJECT_ROOT`
-3. 所有 `.story-system` 读写都基于解析后的 `PROJECT_ROOT`
+### 14.3 Names
 
-这意味着：
-
-- CLI 可以接受 `--project-root`，但它实际允许传入“书项目根目录或工作区根目录”
-- 入口层负责解析
-- 合同层和提交层只认最终解析后的 `PROJECT_ROOT`
-- 如果用户当前只站在 `WORKSPACE_ROOT`，也应先经统一入口解析到真实书项目，再操作 `.story-system/`
-
-### 14.2 真源规则
-
-规则固定为：
-
-1. `*.json` 是真源
-2. `*.md` 是只读渲染产物
-3. `reviews/` 和 `commits/` 也遵循相同规则
-
-### 14.3 命名规范
-
-统一使用零填充：
-
+Use zero padding:
 - `volume_001`
 - `chapter_001`
 
-不要把自然语言标题写进文件名。
+Do not put natural-language titles in filenames.
 
 ---
 
-## 15. 知识层承接策略
+## 15. Knowledge Layers
 
-### 15.1 CSV 的职责
+### 15.1 CSV Responsibilities
 
-CSV 继续承担：
+- Itemized knowledge
+- Routing knowledge
+- Structured boundaries
+- Search triggers and synonyms
 
-- 条目知识
-- 路由知识
-- 结构化红线
-- 检索触发词与同义词
+### 15.2 Markdown Responsibilities
 
-### 15.2 MD 的职责
+- Methodology
+- Review rules
+- Anti-AI guidance
+- Polishing, voice, and formatting
 
-MD 继续承担：
+### 15.3 Transitional Conclusion
 
-- 方法论
-- 审查规则
-- anti-AI
-- 润色、口吻、排版规范
+Do not claim CSV has fully replaced Markdown before evolution is complete.
 
-### 15.3 当前阶段的结论
-
-在演进完成前，不应说“CSV 已完全替代 MD”。
-
-正确说法是：
-
-- CSV 承担规则与路由
-- MD 承担方法论与执行手册
-- 合同负责把当前书真正需要的那部分结构化知识前置收束出来
+Instead:
+- CSV supplies rules and routes.
+- Markdown supplies methods and execution manuals.
+- Contracts consolidate the structured knowledge this particular book needs before writing.
 
 ---
 
-## 16. 测试与验证策略
+## 16. Testing and Verification
 
-### 16.1 总原则
+### 16.1 Principle
 
-不做“每条知识点一个测试”的重型方案。
+Avoid the heavyweight approach of one test per knowledge entry.
 
-### 16.2 必须验证的内容
+### 16.2 Required Coverage
 
-最小验证集应覆盖：
+1. Contract generation succeeds.
+2. Override rules work.
+3. `anti_patterns` aggregation is correct.
+4. `context_manager` reads contracts correctly.
+5. `REVIEW_CONTRACT` expresses blocking rules.
+6. `CHAPTER_COMMIT` blocks invalid writeback.
+7. Projection writers consume accepted commits only.
+8. Events enter the canonical event log.
 
-1. 合同生成成功
-2. 覆盖规则正确
-3. `anti_patterns` 聚合正确
-4. `context_manager` 能正确读取合同
-5. `REVIEW_CONTRACT` 能正确表达 blocking rules
-6. `CHAPTER_COMMIT` 能阻止未通过校验的回写
-7. projection writers 只消费 accepted commit
-8. 事件能进入 canonical event log
+### 16.3 Not Required
 
-### 16.3 不需要做的事
-
-不需要：
-
-1. 为每条 CSV 内容单独断言
-2. 为每个知识点做机械语义测试
-3. 把数据内容测试做成主工作量
+1. Assertions for every CSV entry.
+2. Mechanical semantic tests for every knowledge item.
+3. Making data-content testing the main workload.
 
 ---
 
-## 17. 文档与运维要求
+## 17. Documentation and Operations
 
-### 17.1 文档更新要求
+### 17.1 Documentation
 
-后续任何 implementation plan 都必须显式包含：
+Every implementation plan explicitly includes updates to:
+1. Contract schemas
+2. Directory structure
+3. Runtime flow
+4. Migration guidance
 
-1. 合同 schema 文档更新
-2. 目录结构文档更新
-3. 运行流程文档更新
-4. 迁移说明文档更新
+### 17.2 Operations
 
-### 17.2 运维接入要求
+`.story-system` must not become an operational blind spot. Integrate it into:
+1. Preflight
+2. Dashboard
+3. Health checks
+4. Backup/restore
 
-`.story-system` 不得成为运维盲区。
+### 17.3 Minimum Health Checks
 
-至少应接入：
-
-1. preflight
-2. dashboard
-3. health check
-4. backup / restore
-
-### 17.3 健康检查最低项
-
-最低应检查：
-
-1. `MASTER_SETTING.json` 是否存在
-2. 合同 schema 是否可读
-3. `chapter commit` 是否存在 rejected 未处理积压
-4. projection status 是否出现长期未完成
+1. `MASTER_SETTING.json` exists.
+2. Contract schemas are readable.
+3. No unhandled rejected chapter-commit backlog.
+4. No persistently incomplete projection status.
 
 ---
 
-## 18. 最终架构结论
+## 18. Final Architecture Conclusions
 
-这份演进 spec 的最终判断可以压缩成四句话：
-
-1. 当前系统的主要问题不是模块太少，而是主链缺失
-2. 现有的 `context_manager / genre_* / state_manager / memory / override_contracts` 都应保留，但要重定位
-3. 真正要新增的核心不是又一个检索入口，而是 `Story Contract + Chapter Commit + Override Ledger + Canonical Event Log`
-4. 当合同成为写前真源、提交成为写后真源后，系统才算真正从“多中枢缝合”进化为“统一故事操作系统”
+1. The central problem is a missing mainline, not too few modules.
+2. Retain but reposition `context_manager / genre_* / state_manager / memory / override_contracts`.
+3. The essential addition is `Story Contract + Chapter Commit + Override Ledger + Canonical Event Log`, not another search entry point.
+4. Contracts as pre-writing truth and commits as post-writing truth turn loosely connected hubs into a unified story operating system.
 
 ---
 
-## 19. 实施建议
+## 19. Implementation Advice
 
-如果后续进入开发，不建议直接从“事件总线”开工。
+Do not begin with an event bus. Follow:
 
-正确顺序应是：
+1. Working contract seeds
+2. Contract-first runtime
+3. `CHAPTER_COMMIT`
+4. Unified event mainline
 
-1. 先把合同种子层跑通
-2. 再让运行时 contract-first
-3. 再建立 `CHAPTER_COMMIT`
-4. 最后统一事件主链
+Otherwise a complete event model may create the illusion of progress while writing remains fragmented.
 
-否则项目会先陷入“事件建模很完整，但写作主链仍然散乱”的伪进展。
+The immediate next artifact is an implementation plan explicitly containing:
 
-这份 spec 的直接后续产物应当是：
-
-- implementation plan
-
-并且该 plan 必须显式包含：
-
-1. 文档更新任务
-2. 目录与路径语义更新任务
-3. runtime 接入点更新任务
+1. Documentation tasks
+2. Directory/path semantics tasks
+3. Runtime integration-point tasks

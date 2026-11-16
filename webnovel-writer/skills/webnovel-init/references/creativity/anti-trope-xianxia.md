@@ -1,159 +1,159 @@
-# 修仙/玄幻反套路库 (Xianxia Anti-Tropes)
+# Cultivation/Fantasy Anti-Trope Library
 
-> **定位**：修仙/玄幻题材的反常规限制和非套路爽点，用于驱动创意差异化。
+> **Purpose**: Unconventional constraints and payoffs for cultivation/fantasy fiction to drive distinctive ideas.
 
-## 目录
-- 一、常见套路（需要规避或反转）
-- 二、反常规限制（每项目至少选1条）
-- 三、非套路爽点（替代传统打脸）
-- 四、组合示例
-- 五、使用指南
+## Contents
+- I. Common Tropes to Avoid or Reverse
+- II. Unconventional Constraints (Choose at Least One per Project)
+- III. Unconventional Payoffs (Alternatives to Humiliating Rivals)
+- IV. Combination Examples
+- V. Usage Guide
 
 ---
 
-## 一、常见套路（需要规避或反转）
+## I. Common Tropes to Avoid or Reverse
 
-| 套路 | 问题 | 出现频率 |
+| Trope | Problem | Frequency |
 |------|------|---------|
-| 废材逆袭 | 过度使用，读者疲劳 | 极高 |
-| 退婚打脸 | 模式固化，缺乏新意 | 极高 |
-| 老爷爷传承 | 金手指来源单一 | 高 |
-| 签到系统 | 无脑升级，缺乏张力 | 高 |
-| 宗门大比 | 结构雷同 | 高 |
-| 秘境夺宝 | 流程化严重 | 中 |
-| 天才碾压 | 缺乏挑战感 | 中 |
+| Useless underdog's comeback | Overused; reader fatigue | Very high |
+| Broken engagement followed by vindication | Rigid, unoriginal pattern | Very high |
+| Elder mentor's inheritance | Repetitive source of special advantages | High |
+| Check-in system | Mindless upgrades without tension | High |
+| Sect tournament | Repetitive structure | High |
+| Secret-realm treasure hunt | Formulaic process | Medium |
+| Genius dominates everyone | Little sense of challenge | Medium |
 
 ---
 
-## 二、反常规限制（每项目至少选1条）
+## II. Unconventional Constraints (Choose at Least One per Project)
 
-### 2.1 金手指限制类
+### 2.1 Special-Advantage Limits
 
-| ID | 反套路规则 | 创意驱动 | 示例 |
+| ID | Anti-trope rule | Creative driver | Example |
 |----|-----------|---------|------|
-| XH-001 | 金手指每次使用消耗寿命 | 每次使用都是生死抉择 | 用一年寿命换一次突破 |
-| XH-002 | 金手指只能在特定条件下激活 | 创造条件成为剧情核心 | 只有濒死时才能使用 |
-| XH-003 | 金手指的奖励有随机负面效果 | 风险与收益并存 | 获得功法但随机封印一种感官 |
-| XH-004 | 金手指被多人共享（竞争关系） | 零和博弈 | 全世界只有10个系统宿主 |
-| XH-005 | 金手指会被他人夺取 | 隐藏与保护成为核心 | 被杀死后金手指转移 |
+| XH-001 | Each use consumes lifespan | Every use is a life-or-death choice | Trade one year of life for a breakthrough |
+| XH-002 | Activation requires specific conditions | Creating conditions drives the plot | Usable only near death |
+| XH-003 | Rewards have random negative effects | Risk accompanies reward | Gain a technique but randomly lose one sense |
+| XH-004 | Several competitors share the advantage | Zero-sum competition | Only 10 system hosts exist worldwide |
+| XH-005 | Others can seize the advantage | Concealment and protection become central | Killing a host transfers their advantage |
 
-### 2.2 修炼限制类
+### 2.2 Cultivation Limits
 
-| ID | 反套路规则 | 创意驱动 | 示例 |
+| ID | Anti-trope rule | Creative driver | Example |
 |----|-----------|---------|------|
-| XH-006 | 主角无法正常修炼 | 必须找到替代路径 | 经脉全断，只能炼体 |
-| XH-007 | 修炼速度与道德挂钩 | 善恶选择影响实力 | 杀人会降低修为 |
-| XH-008 | 境界突破需要特定情感体验 | 情感线与修炼线绑定 | 必须经历真正的绝望才能突破 |
-| XH-009 | 修炼资源极度稀缺 | 资源争夺成为核心 | 整个宗门每年只有10颗筑基丹 |
-| XH-010 | 境界越高寿命越短 | 追求力量的代价 | 金丹期只能活50年 |
+| XH-006 | Normal cultivation is impossible | Find an alternative path | Severed meridians leave only body cultivation |
+| XH-007 | Cultivation speed depends on morality | Moral choices affect strength | Killing lowers cultivation |
+| XH-008 | Breakthroughs require specific emotions | Emotional and cultivation arcs intertwine | Only genuine despair enables advancement |
+| XH-009 | Cultivation resources are extremely scarce | Resource competition dominates | An entire sect receives only 10 Foundation Establishment pills annually |
+| XH-010 | Higher realms shorten lifespan | Power has a price | Golden Core cultivators live only 50 years |
 
-### 2.3 战斗限制类
+### 2.3 Combat Limits
 
-| ID | 反套路规则 | 创意驱动 | 示例 |
+| ID | Anti-trope rule | Creative driver | Example |
 |----|-----------|---------|------|
-| XH-011 | 主角无法主动攻击 | 必须设计反击/借力打力 | 只能防御和反弹伤害 |
-| XH-012 | 越级战斗必有代价 | 胜利不是免费的 | 越级杀敌后昏迷三天 |
-| XH-013 | 战斗结果由规则裁定 | 智斗替代武斗 | 比斗由天道裁决，非实力决定 |
-| XH-014 | 杀人会继承对方的仇敌 | 杀戮的连锁反应 | 杀一人，其所有仇敌转移给你 |
-| XH-015 | 同门不能互相伤害 | 宗门内斗需要智谋 | 宗门禁制，同门出手会反噬 |
+| XH-011 | The protagonist cannot initiate attacks | Design counters and redirected force | Only defense and reflected damage are available |
+| XH-012 | Fighting above one's level always costs something | Victory is never free | Killing a stronger enemy causes a three-day coma |
+| XH-013 | Rules decide combat results | Intellectual contests replace brute force | Heaven adjudicates duels rather than raw strength |
+| XH-014 | Killing someone transfers their enemies | Violence creates chain reactions | Inherit every enemy of the person killed |
+| XH-015 | Sect members cannot harm one another | Internal conflict requires ingenuity | Sect wards inflict backlash on attackers |
 
-### 2.4 世界观限制类
+### 2.4 World Constraints
 
-| ID | 反套路规则 | 创意驱动 | 示例 |
+| ID | Anti-trope rule | Creative driver | Example |
 |----|-----------|---------|------|
-| XH-016 | 修仙者不能杀凡人 | 凡人成为棋子/保护对象 | 杀凡人会遭天谴 |
-| XH-017 | 修仙界资源总量固定 | 零和博弈的世界 | 灵气总量不变，有人强必有人弱 |
-| XH-018 | 高阶修士不能干预低阶事务 | 同阶竞争为主 | 金丹期不能对筑基期出手 |
-| XH-019 | 修仙者的秘密会被天道广播 | 隐藏秘密极难 | 突破时会暴露位置 |
-| XH-020 | 修仙界有"重置"机制 | 长线剧情的紧迫感 | 每千年天地大劫，一切归零 |
+| XH-016 | Cultivators cannot kill mortals | Mortals become pawns or protected people | Killing a mortal invokes heavenly punishment |
+| XH-017 | Total cultivation resources are fixed | A zero-sum world | Fixed spiritual energy means one person's gain weakens another |
+| XH-018 | Higher realms cannot intervene in lower-realm affairs | Competition stays within tiers | Golden Core cannot attack Foundation Establishment |
+| XH-019 | Heaven broadcasts cultivators' secrets | Concealment is difficult | Breakthroughs reveal one's location |
+| XH-020 | The cultivation world resets | Long-term urgency | A catastrophe every millennium resets everything |
 
 ---
 
-## 三、非套路爽点（替代传统打脸）
+## III. Unconventional Payoffs (Alternatives to Humiliating Rivals)
 
-### 3.1 智斗型爽点
+### 3.1 Intellectual Payoffs
 
-| ID | 爽点模式 | 描述 | 示例 |
+| ID | Pattern | Description | Example |
 |----|---------|------|------|
-| XH-S01 | 规则利用 | 利用世界规则反杀 | 利用"同门不能互伤"让敌人自爆 |
-| XH-S02 | 信息差逆转 | 主角知道敌人不知道的信息 | 敌人不知道主角已经突破 |
-| XH-S03 | 借刀杀人 | 不直接出手，借他人之力 | 引导两个敌人互相残杀 |
-| XH-S04 | 规则漏洞 | 发现并利用规则漏洞 | 发现禁制的盲区 |
-| XH-S05 | 长线布局 | 多章铺垫后的收网 | 三卷前埋的棋子发挥作用 |
+| XH-S01 | Rule exploitation | Turn world rules against enemies | Use the ban on harming sectmates to make an enemy self-destruct |
+| XH-S02 | Information reversal | Know something the enemy does not | The enemy does not know about a breakthrough |
+| XH-S03 | Borrowed blade | Use someone else's force | Lead two enemies into killing each other |
+| XH-S04 | Rule loophole | Discover and exploit gaps | Find a ward's blind spot |
+| XH-S05 | Long-term planning | Pay off many chapters of setup | A piece planted three volumes earlier becomes decisive |
 
-### 3.2 代价型爽点
+### 3.2 Cost-Based Payoffs
 
-| ID | 爽点模式 | 描述 | 示例 |
+| ID | Pattern | Description | Example |
 |----|---------|------|------|
-| XH-S06 | 牺牲换胜利 | 付出重大代价获胜 | 燃烧十年寿命击杀强敌 |
-| XH-S07 | 两败俱伤 | 与敌人同归于尽（但主角有后手） | 同归于尽后金手指复活 |
-| XH-S08 | 断尾求生 | 放弃某物换取生存 | 自断一臂逃出包围 |
-| XH-S09 | 代价转嫁 | 将代价转移给敌人 | 让敌人承担自己的天劫 |
-| XH-S10 | 延迟代价 | 先获胜，代价后付 | 先杀敌，三年后还债 |
+| XH-S06 | Sacrifice for victory | Win at a major price | Burn ten years of life to defeat a strong enemy |
+| XH-S07 | Mutual destruction | Fall together, but retain a contingency | The advantage resurrects the protagonist afterward |
+| XH-S08 | Sacrifice to survive | Abandon something to escape | Sever an arm to break an encirclement |
+| XH-S09 | Transfer the cost | Make an enemy pay | Force an enemy to bear the protagonist's tribulation |
+| XH-S10 | Delayed cost | Win now, pay later | Kill the enemy now; repay the debt in three years |
 
-### 3.3 反转型爽点
+### 3.3 Reversal Payoffs
 
-| ID | 爽点模式 | 描述 | 示例 |
+| ID | Pattern | Description | Example |
 |----|---------|------|------|
-| XH-S11 | 身份反转 | 主角真实身份揭露 | 废物少爷是转世大能 |
-| XH-S12 | 敌友反转 | 敌人变盟友或反之 | 追杀主角的人是父亲的旧友 |
-| XH-S13 | 规则反转 | 规则的真正含义与表面不同 | "禁止杀人"实际是"禁止被杀" |
-| XH-S14 | 时间反转 | 时间线的真相揭露 | 主角是从未来回来的 |
-| XH-S15 | 因果反转 | 因果关系与预期相反 | 主角不是被选中的，而是选中了系统 |
+| XH-S11 | Identity reversal | Reveal true identity | The useless young master is a reincarnated supreme expert |
+| XH-S12 | Friend/enemy reversal | An enemy becomes an ally, or vice versa | The pursuer is an old friend of the protagonist's father |
+| XH-S13 | Rule reversal | True meaning differs from the surface | “No killing” actually means “Do not be killed” |
+| XH-S14 | Timeline reversal | Reveal the timeline's truth | The protagonist returned from the future |
+| XH-S15 | Causal reversal | Reverse expected cause and effect | The protagonist chose the system, not the other way around |
 
 ---
 
-## 四、组合示例
+## IV. Combination Examples
 
-### 示例1：苟道修仙
-
-```
-反套路规则：XH-010（境界越高寿命越短）+ XH-009（资源极度稀缺）
-非套路爽点：XH-S05（长线布局）+ XH-S06（牺牲换胜利）
-
-核心冲突：主角追求长生，但修炼会缩短寿命
-创意驱动：如何在"修炼=减寿"的世界里活得最久？
-差异化：不追求最强，追求活得最久
-```
-
-### 示例2：规则修仙
+### Example 1: Cautious Survival Cultivation
 
 ```
-反套路规则：XH-013（战斗由规则裁定）+ XH-018（高阶不能干预低阶）
-非套路爽点：XH-S01（规则利用）+ XH-S04（规则漏洞）
+Anti-trope rules: XH-010 (higher realms shorten life) + XH-009 (extreme scarcity)
+Payoffs: XH-S05 (long-term planning) + XH-S06 (sacrifice for victory)
 
-核心冲突：实力不是决定因素，规则才是
-创意驱动：如何在规则框架内获得最大优势？
-差异化：智斗替代武斗，律师型主角
+Core conflict: The protagonist seeks longevity, but cultivation shortens life
+Creative driver: How can one live longest in a world where cultivation costs lifespan?
+Differentiation: Seek the longest life, not the greatest strength
 ```
 
-### 示例3：代价修仙
+### Example 2: Rule-Based Cultivation
 
 ```
-反套路规则：XH-001（金手指消耗寿命）+ XH-012（越级必有代价）
-非套路爽点：XH-S06（牺牲换胜利）+ XH-S10（延迟代价）
+Anti-trope rules: XH-013 (rules decide combat) + XH-018 (higher realms cannot intervene)
+Payoffs: XH-S01 (rule exploitation) + XH-S04 (rule loopholes)
 
-核心冲突：每次变强都在透支未来
-创意驱动：如何管理"代价债务"？
-差异化：资源管理型修仙，每次选择都有重量
+Core conflict: Rules, not strength, decide outcomes
+Creative driver: How can advantage be maximized within the rules?
+Differentiation: A lawyer-like protagonist; intellectual contests replace fighting
+```
+
+### Example 3: Cost-Driven Cultivation
+
+```
+Anti-trope rules: XH-001 (advantage consumes lifespan) + XH-012 (higher-level fights have costs)
+Payoffs: XH-S06 (sacrifice for victory) + XH-S10 (delayed cost)
+
+Core conflict: Every gain borrows against the future
+Creative driver: How should accumulated cost-debt be managed?
+Differentiation: Resource-management cultivation where every choice matters
 ```
 
 ---
 
-## 五、使用指南
+## V. Usage Guide
 
-### 5.1 选择流程
+### 5.1 Selection Process
 
-1. 从"反常规限制"中选择 1-2 条
-2. 从"非套路爽点"中选择 2-3 种作为主要爽点模式
-3. 检查组合是否产生"化学反应"
-4. 设计 2-3 个基于约束的独特剧情解法
+1. Choose 1–2 unconventional constraints.
+2. Choose 2–3 unconventional payoff patterns as the main modes.
+3. Check for meaningful synergy.
+4. Design 2–3 distinctive plot solutions based on the constraints.
 
-### 5.2 避免陷阱
+### 5.2 Pitfalls
 
-- ❌ 选择约束后又用金手指绕过
-- ❌ 约束只在前期有效，后期消失
-- ❌ 约束与爽点模式冲突
-- ✅ 约束贯穿全文
-- ✅ 约束驱动剧情发展
-- ✅ 约束与爽点相辅相成
+- ❌ Choosing constraints, then bypassing them with special advantages.
+- ❌ Constraints disappearing after the opening.
+- ❌ Constraints conflicting with payoff patterns.
+- ✅ Maintain constraints throughout.
+- ✅ Let constraints drive the plot.
+- ✅ Make constraints and payoffs reinforce each other.

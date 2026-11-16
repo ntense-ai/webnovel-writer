@@ -1,63 +1,63 @@
 ---
 name: naming-and-voice-gaps
-purpose: 跨 skill 通用缺陷补偿——命名同质化、口吻趋同、题材语汇漂移
+purpose: Cross-skill defect compensation for homogeneous names, converging voices, and genre vocabulary drift
 ---
 
 # Naming and Voice Gaps
 
-> 主服务 skill: `webnovel-write` Step 2（多角色对话、新角色命名）
-> 次服务 skill: `webnovel-init`（角色/书名设定）、`webnovel-plan`（章纲新角色）
-> 内容层级: 提醒层 / 缺陷补偿层 / 知识补充层
+> Primary skill: `webnovel-write` Step 2 (multi-character dialogue, naming new characters)
+> Secondary skills: `webnovel-init` (character/book naming), `webnovel-plan` (new characters in chapter outlines)
+> Content layers: Reminders / defect compensation / supplementary knowledge
 
 ---
 
-## 提醒层
+## Reminders
 
-- 新角色首次出场时，名字必须和当前活跃角色形成**可区分性**（声韵、字数、字形至少一项不同）
-- 三人以上对话必须让读者仅凭语气就能大致辨认说话人
-- 不同题材有不同的命名审美——玄幻可以古风，都市不能全员古风
+- On first appearance, a new character's name must be **distinguishable** from currently active characters in sound, length, or written form.
+- In dialogue among three or more people, readers should broadly identify the speaker from tone alone.
+- Naming aesthetics vary by genre: classical names fit fantasy, but not every character in an urban story.
 
-## 缺陷补偿层
+## Defect Compensation
 
-### 命名同质化
+### Homogeneous Names
 
-- ❌ 禁止同批角色共享高度相似的字形/声韵模式（如：萧炎、萧寒、萧尘同时出场）
-- ❌ 禁止全员使用冷峻古风字堆叠（如：凌寒、凌霜、凌月）
-- ✅ 必须在字数（双音节 vs 三音节）、声母/韵母、字义方向上形成差异
+- ❌ Do not give a group of characters highly similar written/sound patterns (e.g. Xiao Yan, Xiao Han, and Xiao Chen appearing together).
+- ❌ Do not stack cold, austere classical elements in every name (e.g. Ling Han, Ling Shuang, Ling Yue).
+- ✅ Vary length (two vs three syllables), initial/final sounds, and semantic associations.
 
-### 口吻趋同
+### Converging Voices
 
-- ❌ 禁止多角色对话全员同一书面腔——每个角色至少有 1-2 个口语标记
-- ❌ 禁止所有角色都用完整句、标准语序——暴躁者用短句、学者用长句、孩子用口语
-- ✅ 三人以上对话至少给出两类句长或词汇偏好差异
+- ❌ Do not give every character the same formal voice. Each needs at least 1-2 conversational markers.
+- ❌ Do not make everyone use complete sentences and standard word order. Hotheads use short sentences, scholars long ones, children colloquial language.
+- ✅ Dialogue among three or more people needs at least two distinct sentence-length or vocabulary preferences.
 
-### 题材语汇漂移
+### Genre Vocabulary Drift
 
-- ❌ 都市题材禁止大量使用"汝/吾/且慢"等古风词汇
-- ❌ 玄幻题材禁止使用现代网络梗（"yyds"、"绝绝子"）除非角色设定如此
-- ✅ 每个题材保持词汇一致性，跨题材用词需有设定依据
+- ❌ Avoid heavy use of archaic language such as "thou," "I, thy servant," or "stay thy hand" in urban fiction.
+- ❌ Avoid modern internet slang ("yyds," meaning "GOAT," or exaggerated online praise) in fantasy unless justified by characterization.
+- ✅ Maintain each genre's vocabulary consistency. Cross-genre wording needs a setting-based reason.
 
-### 情绪动词/副词套路化
+### Formulaic Emotional Verbs/Adverbs
 
-- ❌ 禁止高频使用"缓缓/淡淡/微微/轻轻"——同一章出现超过 3 次需替换
-- ❌ 禁止"嘴角微微上扬"作为唯一笑容表达
-- ✅ 用具体动作替代模糊副词：`他放下茶杯` 优于 `他缓缓放下茶杯`
+- ❌ Avoid frequent "slowly/subtly/slightly/gently": replace them if repeated more than 3 times in one chapter.
+- ❌ Do not use "the corners of his lips rose slightly" as the only way to describe a smile.
+- ✅ Replace vague adverbs with concrete action: `He set down the teacup` is better than `He slowly set down the teacup`.
 
-## 知识补充层
+## Supplementary Knowledge
 
-### 按题材命名风格示例
+### Naming Styles by Genre
 
-| 题材 | 推荐风格 | 正例 | 反例 |
+| Genre | Recommended style | Positive examples | Negative examples |
 |------|---------|------|------|
-| 玄幻 | 双/三音节，古风但不全员一个味 | 林烬、沈砚、顾停舟 | 凌寒、凌霜、凌月 |
-| 都市 | 常见中文名，区分年龄感 | 张远山、李小鹿、王铁柱 | 慕容玄霜、上官凌风 |
-| 仙侠 | 道号+俗名双轨 | 俗名陈三、道号清虚子 | 全员道号且风格雷同 |
-| 现言 | 日常化，区分社会阶层 | 顾辞、方小年、赵姐 | 全员三字古风名 |
+| Xuanhuan fantasy | Two/three syllables; classical but varied | Lin Jin, Shen Yan, Gu Tingzhou | Ling Han, Ling Shuang, Ling Yue |
+| Urban | Common Chinese names with age distinctions | Zhang Yuanshan, Li Xiaolu, Wang Tiezhu | Murong Xuanshuang, Shangguan Lingfeng |
+| Xianxia | Both religious and secular names | Secular name Chen San; Daoist name Qingxuzi | Everyone has similar Daoist names |
+| Contemporary romance | Everyday names reflecting social class | Gu Ci, Fang Xiaonian, Sister Zhao | Everyone has three-syllable classical names |
 
-### 口吻差异化示例
+### Differentiated Voice Examples
 
-| 角色类型 | 句长 | 词汇标记 | 示例 |
+| Character type | Sentence length | Vocabulary markers | Example |
 |---------|------|---------|------|
-| 暴躁少年 | 短句，断句多 | 口语化，带语气词 | "滚！别废话！" |
-| 老学究 | 长句，从句多 | 文言痕迹，引经据典 | "此事……若依老夫所见，恐怕不妥。" |
-| 市井商人 | 中等，话术感 | 客套+算计 | "张爷您说笑了，小本生意，哪敢怠慢。" |
+| Hotheaded youth | Short, fragmented | Colloquial, emphatic particles | "Get lost! Cut the crap!" |
+| Old scholar | Long, many clauses | Archaic traces, classical allusions | "This matter... in this old man's judgment, may be ill-advised." |
+| Street merchant | Medium, salesmanship | Politeness + calculation | "You're joking, Master Zhang. It's a small business; how could I neglect you?" |

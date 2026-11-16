@@ -1,36 +1,36 @@
-# 2026-06-10 全项目审查修复计划
+# 2026-06-10 Full-Project Audit Remediation Plan
 
-> **状态（2026-06-11 截断）：** 本计划随 v7 绞杀式收敛（`docs/architecture/story-repo-spec-2026-06-10.md`）截断收口。
-> - **已完成并保留**：Phase 0 全部（Task 1-6，正文数据安全）+ Task 7——这是 v6 用户数据与 v7 迁移器读取的地基。
-> - **作废**：Task 8-24（Phase 1 数据链）、Task 26-27、Task 29-34——目标模块（SQLite 投影、event log、v6 提示词、dashboard、CLI 样板）在 v7 中整体删除，不再修缮。
-> - **例外保留为独立候选**：Task 25（嵌入默认出网，隐私问题，若 v6 分支再发维护版则必修）、Task 28（CI 加固，仓库层面，v7 继续复用，可随时单独做）。
-> - 分支 `fix/audit-2026-06-10` 以 Phase 0 + Task 7 收口合入 master，作为 v6 最后一批数据安全维护。
+> **Status (closed out 2026-06-11):** This plan was curtailed by the v7 strangler-style consolidation (`docs/architecture/story-repo-spec-2026-06-10.md`).
+> - **Completed and retained**: all of Phase 0 (Tasks 1–6, manuscript safety) + Task 7. These underpin v6 user data and the v7 migration reader.
+> - **Canceled**: Tasks 8–24 (Phase 1 data pipeline), Tasks 26–27, and Tasks 29–34. Their target modules (SQLite projections, event log, v6 prompts, dashboard, CLI boilerplate) are removed wholesale in v7 rather than repaired.
+> - **Exceptions retained as independent candidates**: Task 25 (embedding network egress by default, a privacy issue; mandatory if another v6 maintenance release ships), Task 28 (repository-level CI hardening, reused by v7 and independently actionable at any time).
+> - Branch `fix/audit-2026-06-10` closes with Phase 0 + Task 7 merged into master as the final v6 data-safety maintenance batch.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 修复 2026-06-10 深度审查发现的全部高/中危问题：数据丢失路径、数据链不一致、skill 流程死锁、隐私出网默认值与守卫绕过。
+**Goal:** Fix all high/medium-risk issues found in the 2026-06-10 deep audit: data-loss paths, inconsistent data pipelines, skill workflow deadlocks, default privacy-related network egress, and guard bypasses.
 
-**Architecture:** 按伤害优先级分四个阶段（P0 数据安全 → P1 数据链与流程 → P2 安全隐私 → P3 质量卫生）。每个阶段独立可交付、全绿后再进下一阶段。修复以"先写探针测试复现问题 → 修复 → 验证"为节奏；过时的文案级断言按《测试是探针不是约束》原则直接改写。
+**Architecture:** Four phases ordered by harm (P0 data safety → P1 data pipeline and workflow → P2 security/privacy → P3 quality/hygiene). Each phase is independently deliverable; proceed only after all checks pass. Follow “write a probe test reproducing the problem → fix → verify”. Rewrite obsolete wording assertions directly under the principle “tests are probes, not constraints”.
 
-**Tech Stack:** Python 3.10+ / pytest（Windows 下设 `PYTHONUTF8=1`）/ SQLite / FastAPI。
+**Tech Stack:** Python 3.10+ / pytest (set `PYTHONUTF8=1` on Windows) / SQLite / FastAPI.
 
-**审查报告来源:** 本计划对应 2026-06-10 会话中六个维度的审查结论（数据链、提示词、代码质量、dashboard+hooks、数据安全+CI、仓库卫生+残余模块）。
+**Audit sources:** Findings from six dimensions in the 2026-06-10 session: data pipeline, prompts, code quality, dashboard+hooks, data safety+CI, and repository hygiene+residual modules.
 
-**运行测试:** `python -m pytest`（根目录 pytest.ini 已配置 testpaths 与 cov-fail-under=90）。
+**Run tests:** `python -m pytest` (root pytest.ini configures testpaths and cov-fail-under=90).
 
 ---
 
-## Phase 0 — P0 数据安全（正文是不可再生数据）
+## Phase 0 — P0 Data Safety (manuscripts are irreplaceable data)
 
-### Task 1: backup_manager 备份失败不得报告成功
+### Task 1: backup_manager must not report success after backup failure
 
 **Files:**
 - Modify: `webnovel-writer/scripts/backup_manager.py:150-166, 228-254`
 - Test: `webnovel-writer/scripts/tests/test_backup_manager.py`
 
-- [x] **Step 1: 写失败测试**：在 tmp git 仓库中故意不配置 `user.name/user.email`（`git config --local --unset` 或 `-c user.useConfigOnly=true`），调用 `backup()`，断言返回失败且输出包含"备份失败"、不产生 `ch{N}` tag。
-- [x] **Step 2: 运行确认现状是假成功**（当前会打印 ✅ 并打 tag 在旧 HEAD）。
-- [x] **Step 3: 修复 `_run_git_command`**：`check=False` 分支改为返回 `(result.returncode == 0, stdout, stderr)`；调用方据真实退出码判断。"nothing to commit" 改为从 stdout/stderr 文本判断（当前 `:233` 的 `if not success and "nothing to commit"` 是永假死代码，一并删除重写）：
+- [x] **Step 1: Write a failing test**: intentionally leave `user.name/user.email` unset in a temporary Git repository (`git config --local --unset` or `-c user.useConfigOnly=true`), call `backup()`, and assert failure, output containing the exact message `备份失败` (“backup failed”), and no `ch{N}` tag.
+- [x] **Step 2: Run to confirm the false-success behavior** (currently prints ✅ and tags the old HEAD).
+- [x] **Step 3: Fix `_run_git_command`**: change the `check=False` branch to return `(result.returncode == 0, stdout, stderr)`; callers use the real exit code. Detect “nothing to commit” from stdout/stderr text (the current `:233` `if not success and "nothing to commit"` is permanently false dead code; remove and rewrite it):
 
 ```python
 def _run_git_command(self, args, check=True):
@@ -44,17 +44,17 @@ def _run_git_command(self, args, check=True):
     return ok, result.stdout, result.stderr
 ```
 
-- [x] **Step 4: `backup()` 中 commit 失败时中止**：不打 tag、返回非零、输出含修复指引（提示运行 `git config user.name/user.email`）；"nothing to commit" 视为成功但提示"本章无变更"。
-- [x] **Step 5: 跑全部 backup 测试通过后提交** `fix: backup reports real git failures and aborts tagging`。
+- [x] **Step 4: Abort `backup()` if commit fails**: do not tag; return nonzero; output repair guidance (`git config user.name/user.email`). Treat “nothing to commit” as success but report “no changes in this chapter”.
+- [x] **Step 5: After all backup tests pass, commit** `fix: backup reports real git failures and aborts tagging`.
 
-### Task 2: rollback 改为前滚式恢复，去掉 detached HEAD 与硬编码 master
+### Task 2: Make rollback a forward-restoring operation; remove detached HEAD and hardcoded master
 
 **Files:**
 - Modify: `webnovel-writer/scripts/backup_manager.py:294-307`
 - Test: `webnovel-writer/scripts/tests/test_backup_manager.py`
 
-- [x] **Step 1: 写测试**：建 tmp 仓库（默认分支命名为 `main`），打两个 ch tag，回滚到 ch1 后断言：(a) 仍在原分支（`git symbolic-ref HEAD` 成功且为 main）；(b) 工作区内容等于 ch1；(c) `git log` 多出一个"rollback"提交（历史不丢）。
-- [x] **Step 2: 实现前滚式回滚**：
+- [x] **Step 1: Write tests**: create a temporary repository with default branch `main`, create two chapter tags, and roll back to ch1. Assert (a) still on original branch (`git symbolic-ref HEAD` succeeds and points to main); (b) working tree matches ch1; (c) `git log` has an additional “rollback” commit, preserving history.
+- [x] **Step 2: Implement forward-only rollback**:
 
 ```python
 def rollback(self, chapter: int) -> bool:
@@ -68,337 +68,337 @@ def rollback(self, chapter: int) -> bool:
     self._run_git_command(["add", "-A"], check=False)
     ok, _, err = self._run_git_command(
         ["commit", "-m", f"rollback: 恢复到 {tag} 备份点"], check=False)
-    # 工作区与 tag 相同则 commit 报 nothing to commit，视为成功
+    # If the working tree already matches the tag, "nothing to commit" counts as success
     return True
 ```
 
-- [x] **Step 3: 删除所有 `checkout master` 硬编码**；任何需要分支名的地方用 `git symbolic-ref --short HEAD` 探测。
-- [x] **Step 4: 测试通过后提交** `fix: rollback is forward-only, never detaches HEAD`。
+- [x] **Step 3: Remove all hardcoded `checkout master`**; detect branch names using `git symbolic-ref --short HEAD` wherever needed.
+- [x] **Step 4: After tests pass, commit** `fix: rollback is forward-only, never detaches HEAD`.
 
-### Task 3: 无 Git 时的降级备份必须覆盖正文，或醒目声明没有
+### Task 3: Degraded backup without Git must include manuscripts, or clearly state otherwise
 
 **Files:**
 - Modify: `webnovel-writer/scripts/backup_manager.py:175-195`
 - Test: `webnovel-writer/scripts/tests/test_backup_manager.py`
 
-- [x] **Step 1: 写测试**：模拟 git 不可用（monkeypatch `_git_available` 为 False），项目含 `正文/第0001章-x.md`，调用 `backup()` 后断言备份目录里存在该正文文件副本。
-- [x] **Step 2: 实现**：降级路径把 `正文/`、`大纲/`、`设定集/`、`.webnovel/state.json` 全部 `shutil.copytree/copy2` 进 `.webnovel/backups/snapshot_ch{N}_{ts}/`；输出明确列出备份了什么。保留按数量滚动清理（最多 10 个 snapshot）。
-- [x] **Step 3: 提交** `fix: degraded backup covers manuscript files`。
+- [x] **Step 1: Write test**: simulate unavailable Git (monkeypatch `_git_available` to False), with `正文/第0001章-x.md` in the project. After `backup()`, assert a copy of that manuscript exists in the backup directory.
+- [x] **Step 2: Implement**: in degraded mode, copy `正文/`, `大纲/`, `设定集/`, and `.webnovel/state.json` using `shutil.copytree/copy2` into `.webnovel/backups/snapshot_ch{N}_{ts}/`. Explicitly list what was backed up. Retain count-based rotation (maximum ten snapshots).
+- [x] **Step 3: Commit** `fix: degraded backup covers manuscript files`.
 
-### Task 4: init 重跑不得静默覆盖损坏的 state.json
+### Task 4: Rerunning init must not silently overwrite corrupt state.json
 
 **Files:**
 - Modify: `webnovel-writer/scripts/init_project.py:294-300,366`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_init_project_pruning.py`
 
-- [x] **Step 1: 写测试**：项目里放一个非法 JSON 的 state.json，重跑 init，断言 (a) 生成 `state.corrupt_*.json` 副本且内容等于原损坏文本；(b) 输出包含警告。
-- [x] **Step 2: 实现**：捕获 `json.JSONDecodeError` 时先 `shutil.copy2(state_path, state_path.with_name(f"state.corrupt_{ts}.json"))` 再重建，打印"⚠️ 原 state.json 已损坏，已另存为 ... 供手工抢救"。
-- [x] **Step 3: 提交** `fix: preserve corrupt state.json before rebuilding`。
+- [x] **Step 1: Write test**: place invalid JSON in state.json, rerun init, and assert (a) a `state.corrupt_*.json` copy contains the original damaged text; (b) output includes a warning.
+- [x] **Step 2: Implement**: upon `json.JSONDecodeError`, first call `shutil.copy2(state_path, state_path.with_name(f"state.corrupt_{ts}.json"))`, then rebuild. Print a warning that the original state.json was damaged and saved separately for manual recovery.
+- [x] **Step 3: Commit** `fix: preserve corrupt state.json before rebuilding`.
 
-### Task 5: 迁移脚本带错不精简、写回原子化
+### Task 5: Migration must not prune on errors; make writeback atomic
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/migrate_state_to_sqlite.py:235-258`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_migrate_state_to_sqlite.py`
 
-- [x] **Step 1: 写测试**：构造一条会迁移失败的实体（如非法类型触发 `stats["errors"] += 1`），跑迁移，断言 state.json 中 `entities_v3` 字段仍在、CLI 退出码非 0。
-- [x] **Step 2: 实现**：`if stats["errors"]: 跳过步骤5精简，输出"存在迁移错误，已保留原字段"`；步骤 5 的裸 `open('w')+json.dump` 改为 `security_utils.atomic_write_json(state_path, state, use_lock=True)`。
-- [x] **Step 3: 提交** `fix: migration never prunes state on partial failure`。
+- [x] **Step 1: Write test**: construct an entity that fails migration (e.g. invalid type triggers `stats["errors"] += 1`), run migration, and assert state.json retains `entities_v3` and CLI exits nonzero.
+- [x] **Step 2: Implement**: if `stats["errors"]` is nonzero, skip Step 5 pruning and report “migration errors exist; original fields retained”. Replace Step 5's bare `open('w')+json.dump` with `security_utils.atomic_write_json(state_path, state, use_lock=True)`.
+- [x] **Step 3: Commit** `fix: migration never prunes state on partial failure`.
 
-### Task 6: archive_manager 原子写 + 恢复顺序反转
+### Task 6: Atomic archive_manager writes + reverse restoration order
 
 **Files:**
 - Modify: `webnovel-writer/scripts/archive_manager.py:125-128, 494-508`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_archive_manager.py`
 
-- [x] **Step 1: `save_archive` 改用 `atomic_write_json`**（归档是数据被移出 state 后的唯一副本）。
-- [x] **Step 2: `restore_character` 顺序反转**：先恢复 SQLite，确认成功后才从归档 JSON 删除该角色；SQLite 失败时归档保持原样并返回错误。写测试：monkeypatch SQLite 恢复抛异常，断言归档文件未被修改。
-- [x] **Step 3: 提交** `fix: archive writes atomic, restore is delete-last`。
+- [x] **Step 1: Switch `save_archive` to `atomic_write_json`** (archive is the only copy after data leaves state).
+- [x] **Step 2: Reverse `restore_character` ordering**: restore SQLite first; remove character from archive JSON only after success. If SQLite fails, leave archive unchanged and return an error. Test: monkeypatch SQLite restoration to raise, then assert archive unchanged.
+- [x] **Step 3: Commit** `fix: archive writes atomic, restore is delete-last`.
 
 ---
 
-## Phase 1 — P1 数据链一致性与流程死锁
+## Phase 1 — P1 Data-Pipeline Consistency and Workflow Deadlocks
 
-### Task 7: SQLite 同步失败必须可见
+### Task 7: SQLite synchronization failures must be visible
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py:393-416, 450-451, 606-609`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py`
 
-- [x] `_sync_to_sqlite` 失败时：`save_state` 返回值携带 `sqlite_sync_ok=False`；`process-chapter` CLI 据此 `emit_error`（退出码非 0），错误信息提示运行 `webnovel.py projections retry --chapter N` 补偿。测试：monkeypatch `_sync_pending_patches_to_sqlite` 抛异常，断言 CLI 退出非 0 且 stdout JSON 含补偿指引。
-- [x] 提交 `fix: surface sqlite sync failures in process-chapter`。
+- [x] If `_sync_to_sqlite` fails, `save_state` returns `sqlite_sync_ok=False`; `process-chapter` CLI calls `emit_error` (nonzero exit), advising `webnovel.py projections retry --chapter N` for compensation. Test: monkeypatch `_sync_pending_patches_to_sqlite` to raise; assert nonzero exit and recovery guidance in stdout JSON.
+- [x] Commit `fix: surface sqlite sync failures in process-chapter`.
 
-### Task 8: get_state_changes / get_relationships 走 SQLite 回退
+### Task 8: get_state_changes / get_relationships use SQLite fallback
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py:972-977, 1005-1013`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py`
 
-- [ ] 仿照 `get_entity` 的 SQLite-first 模式：先查 `self._sql_state_manager.get_entity_state_changes / get_recent_relationships`，无结果再回退内存。测试：用一个新建 StateManager 实例（模拟跨进程）读取此前保存的 state_changes，断言非空。
-- [ ] 同步把 `record_state_change`（:953-966）改为只进 `_pending_state_changes`，删除向 `self._state["state_changes"]` 的追加。
-- [ ] 提交 `fix: state change reads hit sqlite, not stale memory`。
+- [ ] Follow `get_entity`'s SQLite-first pattern: query `self._sql_state_manager.get_entity_state_changes / get_recent_relationships` first; fall back to memory if empty. Test: a fresh StateManager instance (simulating another process) reads previously saved state_changes; assert nonempty.
+- [ ] Also change `record_state_change` (:953–966) to write only to `_pending_state_changes`; remove appending to `self._state["state_changes"]`.
+- [ ] Commit `fix: state change reads hit sqlite, not stale memory`.
 
-### Task 9: 事件镜像按章先删后插
+### Task 9: Delete then insert chapter event mirrors
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/event_log_store.py:109-146`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_event_log_store.py`
 
-- [ ] 测试：同章先写 events A，再整体覆盖写 events B（不同 event_id），断言 `story_events` 表里只剩 B。实现：`_write_sqlite_mirror` 在同一事务内 `DELETE FROM story_events WHERE chapter = ?` 后再 INSERT（JSON 文件是该章事实源）。
-- [ ] 提交 `fix: event mirror mirrors, not accumulates`。
+- [ ] Test: write events A for a chapter, then fully overwrite with events B (different event_id); assert only B remains in `story_events`. Implement `_write_sqlite_mirror` with `DELETE FROM story_events WHERE chapter = ?` followed by INSERT in the same transaction (the JSON file is the chapter's fact source).
+- [ ] Commit `fix: event mirror mirrors, not accumulates`.
 
-### Task 10: 投影 writer 复用 chapter_status 单调状态机
+### Task 10: Projection writer reuses the monotonic chapter_status state machine
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_projection_writer.py:59-65, 95`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_projection_writers.py`
 
-- [ ] 把 `StateManager.set_chapter_status` 的 rank 比较逻辑提取为模块级函数 `should_transition(old, new) -> bool`（同文件或 schemas.py），两处共用。测试：先投影 accepted commit 再重放历史 rejected commit，断言状态仍是 `chapter_committed`。
-- [ ] 提交 `fix: projection respects chapter status monotonicity`。
+- [ ] Extract `StateManager.set_chapter_status` rank comparison into module-level `should_transition(old, new) -> bool` (same file or schemas.py), shared by both sites. Test: project accepted commit, then replay historical rejected commit; status must remain `chapter_committed`.
+- [ ] Commit `fix: projection respects chapter status monotonicity`.
 
-### Task 11: total_words 统一为投影重算口径
+### Task 11: Standardize total_words on projection recalculation
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py:280-285`
-- Test: 改写涉及 `update_progress` 增量口径的既有断言（探针原则）
+- Test: rewrite existing assertions expecting incremental `update_progress` counting (probe principle)
 
-- [ ] `update_progress` 不再累加 `total_words`，只更新 `current_chapter/last_updated`；字数一律由 `StateProjectionWriter` 全量重算。grep 全仓库 `total_words` 的写入点确认只剩投影一处。
-- [ ] 提交 `fix: single source of truth for total_words`。
+- [ ] `update_progress` no longer adds to `total_words`; update only `current_chapter/last_updated`. Always recalculate word count fully in `StateProjectionWriter`. Grep the repository for `total_words` writes and confirm projection is the sole writer.
+- [ ] Commit `fix: single source of truth for total_words`.
 
-### Task 12: add_entity 别名并入 pending 事务
+### Task 12: Include add_entity aliases in the pending transaction
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py:839-854`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_state_manager_extra.py`
 
-- [ ] 别名写入改为追加到 `_pending_alias_entries`，统一在 `_sync_pending_patches_to_sqlite` 落库。测试：`add_entity` 后不调 `save_state` 直接查 SQLite，断言别名尚未落库；`save_state` 后断言已落库。
-- [ ] 提交 `fix: alias writes go through pending patch transaction`。
+- [ ] Append alias writes to `_pending_alias_entries`, then persist together in `_sync_pending_patches_to_sqlite`. Test: after `add_entity` but before `save_state`, query SQLite and assert alias absent; after `save_state`, assert present.
+- [ ] Commit `fix: alias writes go through pending patch transaction`.
 
-### Task 13: SQLite 连接统一 WAL + busy_timeout + 批量事务
+### Task 13: Standardize SQLite connections on WAL + busy_timeout + batch transactions
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/index_manager.py:626-634`（`_get_conn`）
-- Test: 现有测试回归即可
+- Modify: `webnovel-writer/scripts/data_modules/index_manager.py:626-634` (`_get_conn`)
+- Test: existing regression tests suffice
 
-- [ ] `_get_conn` 中执行 `PRAGMA journal_mode=WAL; PRAGMA busy_timeout=8000`。投影路径上把"每方法一次 commit"合并为单连接单事务（`IndexProjectionWriter.apply` 持有一个连接传入各写方法）。
-- [ ] 提交 `perf: WAL + single transaction per projection`。
+- [ ] Execute `PRAGMA journal_mode=WAL; PRAGMA busy_timeout=8000` in `_get_conn`. Replace per-method commits along projection paths with one connection and transaction (`IndexProjectionWriter.apply` holds one connection and passes it to write methods).
+- [ ] Commit `perf: WAL + single transaction per projection`.
 
-### Task 14: projection_log 持锁追加 + compact
+### Task 14: Locked projection_log appends + compaction
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/projection_log.py:101-119`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_projection_log.py`
 
-- [ ] 追加前持 `FileLock(path + ".lock")`；新增 `compact_projection_log(project_root, keep_per_chapter=3)` 函数并挂到 `webnovel.py projections compact` 子命令。测试：写 5 条同章 run 后 compact，断言只剩 3 条且为最新。
-- [ ] 提交 `fix: projection log locked appends + compact command`。
+- [ ] Hold `FileLock(path + ".lock")` before appending; add `compact_projection_log(project_root, keep_per_chapter=3)` and expose it as `webnovel.py projections compact`. Test: write five runs for one chapter, compact, and assert only the latest three remain.
+- [ ] Commit `fix: projection log locked appends + compact command`.
 
-### Task 15: legacy 提交路径加护栏
+### Task 15: Guard the legacy commit path
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/memory_contract_adapter.py:71-120, 147-156`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_memory_contract_adapter.py`
 
-- [ ] `_commit_chapter_legacy` 入口检测：该章已存在 accepted commit 文件时拒绝执行并报错"该章已走 Story System 主链，禁止 legacy 双写"。docstring 标注 deprecated。
-- [ ] `chapter_commit_service.py:182-188`：amend proposal 的持久化挪到投影成功之后（或写入时带 `projection_run_id`，投影失败的 run 对应提案在 `projections retry` 成功前不进 pending 列表）。测试：投影全失败时断言 override_ledger 无新增 pending 提案。
-- [ ] 提交 `fix: legacy commit path refuses to double-write mainline chapters`。
+- [ ] At `_commit_chapter_legacy` entry, reject execution if an accepted commit file already exists for the chapter, explaining that a Story System mainline chapter cannot be double-written through legacy. Mark docstring deprecated.
+- [ ] `chapter_commit_service.py:182-188`: persist amend proposals only after successful projection (or include `projection_run_id` and exclude proposals for failed runs from pending until `projections retry` succeeds). Test: if all projections fail, override_ledger gains no new pending proposal.
+- [ ] Commit `fix: legacy commit path refuses to double-write mainline chapters`.
 
-### Task 16: 清理危险死代码
+### Task 16: Remove dangerous dead code
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py:708-711`
 
-- [ ] 删除 `_save_state`（全仓库无调用方、绕过 pending 合并语义）。grep 确认无引用后提交 `chore: remove dangerous dead _save_state`。
+- [ ] Delete `_save_state` (no repository callers; bypasses pending-merge semantics). Grep to confirm no references, then commit `chore: remove dangerous dead _save_state`.
 
-### Task 17: write SKILL blocking 死锁解除
-
-**Files:**
-- Modify: `webnovel-writer/skills/webnovel-write/SKILL.md`（L162 Step 3、L245、L327-331）
-- Test: `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`（若有相关断言联动改）
-
-- [ ] Step 3 改为：blocking 定点修复后**必须重跑 review-pipeline 重新生成 review_results.json**（清零已修复项），然后才进 Step 4；并补"作者裁决保留当前版本"出口：引用 `references/review/blocking-override-guidelines.md`，写明用 override ledger 命令记录后 commit 可带 `--override-ref` 通过。两条路径都要与 `chapter_commit_service.py:45` 的 `rejected = bool(review.blocking_count)` 判定自洽（override 路径需确认 service 支持，不支持则在 service 增加 override_ref 豁免逻辑——先读 `chapter_commit_service.py` 与 `override_ledger_service.py` 确认现有机制再动笔）。
-- [ ] 提交 `fix(skill): unblock the blocking-fix path in write flow`。
-
-### Task 18: 提示词中的错误命令修正
+### Task 17: Resolve the write SKILL blocking deadlock
 
 **Files:**
-- Modify: `webnovel-writer/skills/webnovel-query/SKILL.md:78`、`webnovel-writer/agents/reviewer.md:30`
+- Modify: `webnovel-writer/skills/webnovel-write/SKILL.md` (L162 Step 3, L245, L327–331)
+- Test: `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py` (update related assertions if any)
 
-- [ ] `memory-contract query-rules --chapter {n}` → `--domain {domain}`（对照 `memory_cli.py:90` 实参）；reviewer.md 的 `index get-state-changes --limit 20` 补必填 `--entity "{entity_id}"`。逐条在本地实际执行一次验证不报 argparse 错。
-- [ ] 提交 `fix(skill): correct CLI invocations in query skill and reviewer agent`。
+- [ ] Change Step 3: after targeted blocking fixes, **rerun review-pipeline to regenerate review_results.json**, clearing fixed issues, before Step 4. Add an “author chooses to retain current version” exit: reference `references/review/blocking-override-guidelines.md`, explain recording via override ledger commands and passing `--override-ref` to commit. Both paths must agree with `chapter_commit_service.py:45`'s `rejected = bool(review.blocking_count)` decision. Verify override support in the service; if absent, add override_ref exemption logic. Read `chapter_commit_service.py` and `override_ledger_service.py` before drafting changes.
+- [ ] Commit `fix(skill): unblock the blocking-fix path in write flow`.
 
-### Task 19: 统一入口与 chapter_commit 参数口径对齐
+### Task 18: Correct erroneous prompt commands
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/webnovel.py:554-559` 或 `webnovel-writer/scripts/chapter_commit.py:23-26`
+- Modify: `webnovel-writer/skills/webnovel-query/SKILL.md:78`, `webnovel-writer/agents/reviewer.md:30`
+
+- [ ] Change `memory-contract query-rules --chapter {n}` to `--domain {domain}` (compare actual arguments in `memory_cli.py:90`); add required `--entity "{entity_id}"` to reviewer.md's `index get-state-changes --limit 20`. Execute each locally once to verify no argparse error.
+- [ ] Commit `fix(skill): correct CLI invocations in query skill and reviewer agent`.
+
+### Task 19: Align unified entrypoint and chapter_commit argument contracts
+
+**Files:**
+- Modify: `webnovel-writer/scripts/data_modules/webnovel.py:554-559` or `webnovel-writer/scripts/chapter_commit.py:23-26`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py`
 
-- [ ] 统一为 required（推荐，强制契约）：`webnovel.py` 侧四个参数加 `required=True`，缺参时报错发生在统一入口层、信息面向作者。测试：缺 `--review-result` 调用，断言错误信息含参数名与示例。
-- [ ] 提交 `fix: align chapter-commit arg contract between entrypoints`。
+- [ ] Make them required consistently (recommended, enforcing the contract): add `required=True` to the four arguments in `webnovel.py`. Missing-argument errors should occur at the unified entrypoint and be author-friendly. Test: call without `--review-result`; assert error includes argument name and example.
+- [ ] Commit `fix: align chapter-commit arg contract between entrypoints`.
 
-### Task 20: 修复 genre-profiles 死链（题材画像复活）
+### Task 20: Repair dead genre-profiles paths (restore genre profiles)
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/config.py`（新增 `references_dir` 解析）、`webnovel-writer/scripts/data_modules/context_manager.py:337-338`、`webnovel-writer/scripts/data_modules/memory_contract_adapter.py:245`
+- Modify: `webnovel-writer/scripts/data_modules/config.py` (add `references_dir` resolution), `webnovel-writer/scripts/data_modules/context_manager.py:337-338`, `webnovel-writer/scripts/data_modules/memory_contract_adapter.py:245`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_context_manager.py`
 
-- [ ] config 新增解析顺序：`{project_root}/.claude/references/`（用户覆盖）→ `{plugin_root}/references/`（默认，由 `Path(__file__).resolve().parents[2] / "references"` 推导）。两处读取点改用 `config.references_dir / "genre-profiles.md"`。
-- [ ] 测试改造：现有手搓 `.claude/references` 的测试保留（验证覆盖优先级），新增"无项目级文件时回退插件目录"的测试。
-- [ ] 提交 `fix: genre profiles resolve to plugin references by default`。
+- [ ] Add config resolution order: `{project_root}/.claude/references/` (user override) → `{plugin_root}/references/` (default, derived from `Path(__file__).resolve().parents[2] / "references"`). Both readers use `config.references_dir / "genre-profiles.md"`.
+- [ ] Retain tests manually constructing `.claude/references` to verify override priority; add a test falling back to plugin directory when project-level files are absent.
+- [ ] Commit `fix: genre profiles resolve to plugin references by default`.
 
-### Task 21: story_system_engine base_context 必空 bug
+### Task 21: Fix story_system_engine's always-empty base_context bug
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py:125, 412-423`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py`
 
-- [ ] `_apply_reasoning` 的早退分支也为每行设置 `_priority_rank`：base_context 来源行设 0、dynamic 行设 1（保持 base 优先），保证 `build()` 的 `< 999` 过滤不再误杀。测试：用没有裁决规则行的题材跑 `build()`，断言 `master_setting.base_context` 非空。
-- [ ] 提交 `fix: base_context survives the no-reasoning path`。
+- [ ] `_apply_reasoning`'s early-return branch must also set `_priority_rank` per row: base_context rows get 0, dynamic rows 1 (base retains priority), so `build()`'s `< 999` filter does not wrongly discard them. Test: run `build()` for a genre without adjudication-rule rows; assert nonempty `master_setting.base_context`.
+- [ ] Commit `fix: base_context survives the no-reasoning path`.
 
-### Task 22: extract_chapter_context 载荷去重
+### Task 22: Deduplicate extract_chapter_context payload
 
 **Files:**
 - Modify: `webnovel-writer/scripts/extract_chapter_context.py:321-354`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py`
 
-- [ ] 顶层 `outline`/`previous_summaries`/`state_summary` 与 `core.*` 二选一：保留 `core.*`（ContextManager 已排序），顶层字段删除；消费方（context-agent.md 中引用了哪些键先 grep 确认）同步更新。测试断言 payload 中大纲文本只出现一次。
-- [ ] 提交 `fix: dedupe chapter context payload`。
+- [ ] Choose between top-level `outline`/`previous_summaries`/`state_summary` and `core.*`: retain `core.*` (already ordered by ContextManager), remove top-level fields, and update consumers (first grep context-agent.md to identify referenced keys). Test: outline text appears only once in payload.
+- [ ] Commit `fix: dedupe chapter context payload`.
 
-### Task 23: 伏笔紧急度量纲统一
+### Task 23: Unify foreshadowing urgency units
 
 **Files:**
 - Modify: `webnovel-writer/skills/webnovel-query/references/advanced/foreshadowing.md`
 
-- [ ] 公式改为 0-100 量纲：`紧急度 = min(100, (已过章节/目标章节) × 层级权重 × 33.3)` 或直接改为与 `urgency_utils` 的 high/medium/low≈100/60/20 对齐的阈值表；删除与"核心 50-300 章"矛盾的"核心 >50 章未回收即 Critical"行，改为"超过该伏笔自身 target 章节数即 Critical"。示例数值同步重算。
-- [ ] 提交 `fix(ref): foreshadowing urgency uses runtime 0-100 scale`。
+- [ ] Use a 0–100 scale: `urgency = min(100, (elapsed chapters / target chapters) × tier weight × 33.3)`, or use a threshold table aligned with `urgency_utils` high/medium/low≈100/60/20. Remove “core unresolved >50 chapters is Critical”, which contradicts “core 50–300 chapters”; replace with “Critical when the thread's own target chapter count is exceeded”. Recalculate examples.
+- [ ] Commit `fix(ref): foreshadowing urgency uses runtime 0-100 scale`.
 
-### Task 24: 散件正确性修复打包
+### Task 24: Batch miscellaneous correctness fixes
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/rag_adapter.py:1477, 615-649`、`api_client.py`（9 处 print）、`knowledge_query.py:17,46`、`webnovel.py:127, 583`、`update_state.py:344-351,609-611`、`config.py:30-48,60`、`context_manager.py:790-829`
-- Test: 各对应测试文件
+- Modify: `webnovel-writer/scripts/data_modules/rag_adapter.py:1477, 615-649`, `api_client.py` (nine print sites), `knowledge_query.py:17,46`, `webnovel.py:127, 583`, `update_state.py:344-351,609-611`, `config.py:30-48,60`, `context_manager.py:790-829`
+- Test: corresponding test files
 
-- [ ] rag_adapter `index-chapter` 用 `adapter.config.project_root` 替代未定义 `config`；`vector_search` 行解包 `chapter` 改名 `row_chapter`。
-- [ ] api_client 全部 `[WARN]/[ERR]/[WARMUP]` 改 `file=sys.stderr`。
-- [ ] knowledge_query 连接前 `is_file()` 检查，缺失时输出含修复建议的友好错误。
-- [ ] `webnovel.py` `int(e.code or 0)` 对非 int code 打印后返回 1；`knowledge` subparsers 加 `required=True`。
-- [ ] update_state `update_strand_tracker` 失败累计并以非零退出。
-- [ ] config `.env` 值 `strip().strip("\"'")`；`_load_dotenv` 从模块导入时移到 `from_project_root` 显式调用。
-- [ ] context_manager CLI 失败路径 `sys.exit(1)`。
-- [ ] 每修一处先在对应测试文件加探针测试。完成后提交 `fix: batch correctness fixes from audit`。
+- [ ] In rag_adapter `index-chapter`, replace undefined `config` with `adapter.config.project_root`; rename row-unpacked `chapter` in `vector_search` to `row_chapter`.
+- [ ] Send all api_client `[WARN]/[ERR]/[WARMUP]` output to `file=sys.stderr`.
+- [ ] knowledge_query checks `is_file()` before connecting; if absent, give a friendly error with repair advice.
+- [ ] For `webnovel.py`'s `int(e.code or 0)`, print non-integer codes and return 1; add `required=True` to `knowledge` subparsers.
+- [ ] Accumulate update_state `update_strand_tracker` failures and exit nonzero.
+- [ ] Strip config `.env` values with `strip().strip("\"'")`; move `_load_dotenv` from import time to an explicit call in `from_project_root`.
+- [ ] Use `sys.exit(1)` on context_manager CLI failure paths.
+- [ ] Add a probe in the matching test file before every fix. Commit `fix: batch correctness fixes from audit`.
 
 ---
 
-## Phase 2 — P2 安全与隐私
+## Phase 2 — P2 Security and Privacy
 
-### Task 25: 嵌入出网需要显式配置
+### Task 25: Embedding network egress requires explicit configuration
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/api_client.py`（embed/rerank 调用入口）、`vector_projection_writer.py:236-246`
+- Modify: `webnovel-writer/scripts/data_modules/api_client.py` (embed/rerank call entrypoints), `vector_projection_writer.py:236-246`
 - Test: `webnovel-writer/scripts/data_modules/tests/test_vector_projection_writer.py`
-- Docs: `webnovel-writer/README.md`、`docs/guides/rag-and-config.md`
+- Docs: `webnovel-writer/README.md`, `docs/guides/rag-and-config.md`
 
-- [ ] `EMBED_API_KEY` 为空时 vector 投影直接返回 `{"status": "skipped", "reason": "no_api_key"}`，不发任何 HTTP 请求。测试：key 为空 + monkeypatch aiohttp 断言零请求。
-- [ ] 文档新增"数据出网说明"小节：明确写出默认端点、发送内容（摘要/场景/事件文本）、如何关闭。
-- [ ] 提交 `fix: no network egress without explicit api key`。
+- [ ] If `EMBED_API_KEY` is empty, vector projection returns `{"status": "skipped", "reason": "no_api_key"}` immediately, without HTTP requests. Test: empty key + monkeypatched aiohttp; assert zero requests.
+- [ ] Add a “Data egress” documentation section specifying default endpoints, transmitted content (summary/scene/event text), and how to disable it.
+- [ ] Commit `fix: no network egress without explicit api key`.
 
-### Task 26: 写守卫 hook 加固
+### Task 26: Harden the write-guard hook
 
 **Files:**
 - Modify: `webnovel-writer/hooks/guard_runtime_write.py:61-67, 101-110`
 - Test: `webnovel-writer/scripts/tests/test_hooks.py`
 
-- [ ] 正则修复：`\b(>|out-file|...)` 中 `>` 单独处理（`(?:^|\s)>{1,2}(?:\s|$)|\b(out-file|set-content|add-content|copy-item|move-item|cp|mv|rm|tee|sed|python|python3)\b`）；测试用例覆盖 `echo x > .webnovel/state.json`、`mv a .webnovel/state.json`、`tee .webnovel/index.db`。
-- [ ] `_deny` 的 JSON 决策输出改打 stdout（退出码 2 保留），`systemMessage` 才能被宿主解析。
-- [ ] 提交 `fix(hooks): close redirect/unix-command bypass in write guard`。
+- [ ] Fix regex: handle `>` separately in `\b(>|out-file|...)` (`(?:^|\s)>{1,2}(?:\s|$)|\b(out-file|set-content|add-content|copy-item|move-item|cp|mv|rm|tee|sed|python|python3)\b`). Cover `echo x > .webnovel/state.json`, `mv a .webnovel/state.json`, and `tee .webnovel/index.db` in tests.
+- [ ] Send `_deny` JSON decision output to stdout (retain exit code 2) so the host can parse `systemMessage`.
+- [ ] Commit `fix(hooks): close redirect/unix-command bypass in write guard`.
 
-### Task 27: dashboard 最小防护
+### Task 27: Minimal dashboard protection
 
 **Files:**
-- Modify: `webnovel-writer/dashboard/app.py`、`server.py`
+- Modify: `webnovel-writer/dashboard/app.py`, `server.py`
 - Test: `webnovel-writer/scripts/tests/test_dashboard_security.py`
 
-- [ ] 加 `TrustedHostMiddleware(allowed_hosts=["localhost", "127.0.0.1"])`（防 DNS rebinding）；`--host` 非回环地址时打印醒目警告"整个项目将对网络可见"；支持 `WEBNOVEL_DASHBOARD_TOKEN` 环境变量，设置后所有 `/api/*` 校验 `Authorization: Bearer`。测试：伪 Host 头请求返回 400；带错误 token 返回 401。
-- [ ] 顺手修 `app.py:175` `_inspect_vector_db` 连接泄漏（包 `closing()`）。
-- [ ] 提交 `fix(dashboard): trusted host + optional token auth`。
+- [ ] Add `TrustedHostMiddleware(allowed_hosts=["localhost", "127.0.0.1"])` against DNS rebinding. Warn prominently that the entire project becomes network-visible when `--host` is non-loopback. Support `WEBNOVEL_DASHBOARD_TOKEN`; when set, all `/api/*` validate `Authorization: Bearer`. Test: forged Host returns 400; incorrect token returns 401.
+- [ ] Also fix `_inspect_vector_db` connection leak at `app.py:175` using `closing()`.
+- [ ] Commit `fix(dashboard): trusted host + optional token auth`.
 
-### Task 28: CI 加固
-
-**Files:**
-- Modify: `.github/workflows/plugin-version.yml`、`.github/workflows/plugin-release.yml:43-51, 108`
-
-- [ ] plugin-version.yml 顶部加 `permissions: contents: read`。
-- [ ] release 的 `workflow_dispatch` version 输入加 `[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1` 前置校验；`softprops/action-gh-release@v2` pin 到具体 commit SHA；`git ls-remote` 区分查询失败（退出码非 0 且非"未找到"）与 tag 不存在。
-- [ ] 注意：不要动 README 版本表相关检查（CI 硬约束）。提交 `ci: least privilege + input validation + pinned action`。
-
-### Task 29: 首次运行体验
+### Task 28: CI hardening
 
 **Files:**
-- Modify: `webnovel-writer/skills/webnovel-init/SKILL.md`（Step 0 预检）、`webnovel-writer/hooks/hooks.json`
-- Test: 手动验证
+- Modify: `.github/workflows/plugin-version.yml`, `.github/workflows/plugin-release.yml:43-51, 108`
 
-- [ ] init SKILL 的 Step 0 增加一行指令：先运行 `python -X utf8 "{plugin_root}/scripts/webnovel.py" doctor --format json`，存在 blocker（缺 pydantic/aiohttp 等）时向作者展示一键安装命令 `python -m pip install -r "{plugin_root}/scripts/requirements.txt"` 并等待完成再继续（doctor 已有 `python.import.*` 检查，无需新代码）。
-- [ ] hooks.json 保持 `python`，但 `session_start.py` 在 `webnovel.py` 调用失败（FileNotFoundError/非零退出）时输出一行"⚠️ Python 环境异常，运行 /webnovel-doctor 检查"——守卫 hook 的 fail-open 风险在 doctor 报告中体现（新增 check：`shutil.which("python")` 探测）。
-- [ ] 提交 `feat: dependency preflight in init + doctor python check`。
+- [ ] Add top-level `permissions: contents: read` to plugin-version.yml.
+- [ ] Validate release `workflow_dispatch` version input first with `[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1`. Pin `softprops/action-gh-release@v2` to a specific commit SHA. Distinguish failed `git ls-remote` queries (nonzero exit other than “not found”) from nonexistent tags.
+- [ ] Do not change README version-table checks (hard CI constraint). Commit `ci: least privilege + input validation + pinned action`.
+
+### Task 29: First-run experience
+
+**Files:**
+- Modify: `webnovel-writer/skills/webnovel-init/SKILL.md` (Step 0 preflight), `webnovel-writer/hooks/hooks.json`
+- Test: manual verification
+
+- [ ] Add an init SKILL Step 0 instruction: first run `python -X utf8 "{plugin_root}/scripts/webnovel.py" doctor --format json`. If blockers exist (missing pydantic/aiohttp, etc.), show the author the one-command installation `python -m pip install -r "{plugin_root}/scripts/requirements.txt"` and wait for completion. Doctor already has `python.import.*` checks; no new code needed.
+- [ ] Keep `python` in hooks.json, but have `session_start.py` print a one-line Python-environment warning recommending `/webnovel-doctor` if the `webnovel.py` call fails (FileNotFoundError/nonzero exit). Surface guard-hook fail-open risk in the doctor report (new check using `shutil.which("python")`).
+- [ ] Commit `feat: dependency preflight in init + doctor python check`.
 
 ---
 
-## Phase 3 — P3 质量与卫生（可与 Phase 2 并行）
+## Phase 3 — P3 Quality and Hygiene (may run alongside Phase 2)
 
-### Task 30: 提示词重复下沉
+### Task 30: Extract duplicated prompts into shared references
 
 **Files:**
 - Create: `webnovel-writer/references/shared/author-report-contract.md`
-- Modify: `webnovel-writer/skills/{webnovel-init,webnovel-plan,webnovel-write,webnovel-review}/SKILL.md`、`webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`、`webnovel-writer/references/index/reference-loading-map.md`
+- Modify: `webnovel-writer/skills/{webnovel-init,webnovel-plan,webnovel-write,webnovel-review}/SKILL.md`, `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`, `webnovel-writer/references/index/reference-loading-map.md`
 
-- [ ] "作者友好过程提示与恢复契约"+"最终报告契约"两节（4 个 skill 重复约 60-70 行）抽到共享文件，各 SKILL 留一行引用 + stage 差异参数。SubagentRun JSON 模板同理只在共享文件保留一份。`test_prompt_integrity.py` 的文案断言按探针原则改为断言引用行存在。loading-map 登记新文件。SKILL 改动遵循"只写指令"原则——不留解释性注释。
-- [ ] 提交 `refactor(skill): hoist author report contract to shared reference`。
+- [ ] Extract “author-friendly progress and recovery contract” + “final report contract” (roughly 60–70 lines duplicated across four skills) into a shared file. Each SKILL retains a one-line reference + stage-specific parameters. Keep only one shared SubagentRun JSON template. Under the probe principle, replace wording assertions in `test_prompt_integrity.py` with assertions that the reference exists. Register the file in loading-map. SKILL edits follow the “instructions only” principle; no explanatory comments.
+- [ ] Commit `refactor(skill): hoist author report contract to shared reference`.
 
-### Task 31: 提示词过期内容清理
+### Task 31: Clean up outdated prompt content
 
 **Files:**
-- Modify: `webnovel-writer/templates/genres/*.md`（34 个 XML 实体段 + 30 个 Pack 编号）、`webnovel-writer/references/index/reference-loading-map.md`、`webnovel-writer/references/genre-profiles.md`、`webnovel-writer/references/shared/core-constraints.md:6-7`、`webnovel-writer/references/review-schema.md:3`、`webnovel-writer/references/review/blocking-override-guidelines.md:3,8,39`、`webnovel-writer/skills/webnovel-write/references/style-adapter.md:9`、`webnovel-writer/skills/webnovel-write/references/anti-ai-guide.md`
+- Modify: `webnovel-writer/templates/genres/*.md` (34 XML entity sections + 30 Pack numbers), `webnovel-writer/references/index/reference-loading-map.md`, `webnovel-writer/references/genre-profiles.md`, `webnovel-writer/references/shared/core-constraints.md:6-7`, `webnovel-writer/references/review-schema.md:3`, `webnovel-writer/references/review/blocking-override-guidelines.md:3,8,39`, `webnovel-writer/skills/webnovel-write/references/style-adapter.md:9`, `webnovel-writer/skills/webnovel-write/references/anti-ai-guide.md`
 
-- [ ] 批量删 genre 模板的 `<entity .../>` 扩展段与悬空 Pack 编号行（脚本化 sed/python 批改后抽查 3 个文件）。
-- [ ] loading-map 对照 8 个 SKILL 重新核账步骤号；genre-profiles 为缺失题材补段或在 §2 头部写明 fallback 规则（命中失败 → 使用 shuangwen 基线段）；§3 删除 Checkers/`project.genre` 旧引用。
-- [ ] anti-ai-guide 三方矛盾裁决：保留文件、头部"加载时机"改为"润色阶段按需"，与 polish-guide 重叠词条合并，登记进 loading-map 非直接调用表。
-- [ ] 各文件头部步骤号修正（core-constraints/review-schema/blocking-override/style-adapter）。
-- [ ] 提交 `docs(ref): purge stale protocol fragments and fix loading map drift`。
+- [ ] Bulk-delete genre templates' `<entity .../>` extension sections and dangling Pack-number lines (script with sed/python, then spot-check three files).
+- [ ] Reconcile loading-map step numbers against all eight SKILL files. Add missing genre-profiles sections or state a fallback rule at the start of §2 (no match → shuangwen baseline). Remove old Checkers/`project.genre` references from §3.
+- [ ] Resolve the three-way anti-ai-guide contradiction: retain the file, change its loading timing to “on demand during polishing”, merge terms overlapping polish-guide, and register it in loading-map's indirect-reference table.
+- [ ] Correct heading step numbers in core-constraints/review-schema/blocking-override/style-adapter.
+- [ ] Commit `docs(ref): purge stale protocol fragments and fix loading map drift`.
 
-### Task 32: CLI 样板抽取
+### Task 32: Extract CLI boilerplate
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/cli_runtime.py`
-- Modify: `entity_linker.py`、`index_manager.py`、`rag_adapter.py`、`state_manager.py`、`sql_state_manager.py`、`style_sampler.py` 各 `main()`，`webnovel.py:306-381`
+- Modify: `main()` in `entity_linker.py`, `index_manager.py`, `rag_adapter.py`, `state_manager.py`, `sql_state_manager.py`, `style_sampler.py`; `webnovel.py:306-381`
 
-- [ ] 提供 `resolve_config(args) -> DataModulesConfig`（封装 normalize_global_project_root + resolve_project_root + from_project_root）与 `run_cli(fn)` 装饰器（统一 emit_success/emit_error + 退出码）。六个入口迁移；`webnovel.py` 的 run-ledger/run-log 复抄段改为转发。现有 CLI 测试全量回归。
-- [ ] 提交 `refactor: extract cli_runtime, dedupe six entrypoints`。
+- [ ] Provide `resolve_config(args) -> DataModulesConfig` wrapping normalize_global_project_root + resolve_project_root + from_project_root, and `run_cli(fn)` decorator unifying emit_success/emit_error + exit codes. Migrate six entrypoints; replace copied run-ledger/run-log code in `webnovel.py` with forwarding. Run all existing CLI regression tests.
+- [ ] Commit `refactor: extract cli_runtime, dedupe six entrypoints`.
 
-### Task 33: 性能修复
-
-**Files:**
-- Modify: `webnovel-writer/scripts/data_modules/rag_adapter.py:583-650, 721-758`、`webnovel-writer/scripts/status_reporter.py:370-460`
-
-- [ ] vector 直连路径复用 hybrid 的 `vector_full_scan_max_vectors` 预筛；bm25 命中 chunk 改 `WHERE chunk_id IN (...)` 一次取回；status_reporter 开头一次性 `SELECT * FROM entities/chapters` 建 dict，删除循环内单查。用现有测试回归 + 千章模拟数据手测对比耗时（可选）。
-- [ ] 提交 `perf: kill N+1 queries in rag and status reporter`。
-
-### Task 34: 仓库与测试卫生
+### Task 33: Performance fixes
 
 **Files:**
-- Modify: `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py`（或其 fixture）、`sitecustomize.py`、`.github/workflows/plugin-version.yml`、根 `requirements.txt` 三份、`webnovel-writer/scripts/update_state.py:159-178`、`webnovel-writer/scripts/data_modules/summary_projection_writer.py:20`
+- Modify: `webnovel-writer/scripts/data_modules/rag_adapter.py:583-650, 721-758`, `webnovel-writer/scripts/status_reporter.py:370-460`
 
-- [ ] 找到向仓库根写 `.tmp_story_system_engine/case_*` 的测试，改用 pytest `tmp_path`；删除根目录现存 231 个残留目录。
-- [ ] `sitecustomize.py`：移出仓库（或改名 `sitecustomize.py.example` + README 说明），避免影响分发用户。
-- [ ] CI 增加 dist 同步校验 step：`npm ci && npm run build` 后 `git diff --exit-code webnovel-writer/dashboard/frontend/dist`（或对比构建哈希），防止前端源码与 dist 漂移。
-- [ ] requirements 关键依赖加上界（`fastapi>=0.110,<1`、`pydantic>=2,<3` 等）；确认 dashboard 的 httpx 是否仅测试用，是则移到测试依赖。
-- [ ] update_state 备份文件按数量滚动清理（保留最近 20 个）；summary 投影写改 tmp+replace。
-- [ ] 提交 `chore: test/repo hygiene batch`。
+- [ ] Reuse hybrid's `vector_full_scan_max_vectors` prefilter in the direct-vector path; fetch BM25 hit chunks in one `WHERE chunk_id IN (...)` query. At status_reporter startup, build dictionaries with one `SELECT * FROM entities/chapters` pass and remove per-loop queries. Run existing regression tests and optionally compare timing with simulated thousand-chapter data.
+- [ ] Commit `perf: kill N+1 queries in rag and status reporter`.
+
+### Task 34: Repository and test hygiene
+
+**Files:**
+- Modify: `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py` (or fixture), `sitecustomize.py`, `.github/workflows/plugin-version.yml`, the three `requirements.txt` files including root, `webnovel-writer/scripts/update_state.py:159-178`, `webnovel-writer/scripts/data_modules/summary_projection_writer.py:20`
+
+- [ ] Find tests writing `.tmp_story_system_engine/case_*` at repository root; use pytest `tmp_path` instead. Remove the existing 231 residual directories.
+- [ ] Move `sitecustomize.py` out of the repository, or rename to `sitecustomize.py.example` with README guidance, to avoid affecting distribution users.
+- [ ] Add CI dist synchronization check: after `npm ci && npm run build`, run `git diff --exit-code webnovel-writer/dashboard/frontend/dist` (or compare build hashes) to prevent source/dist drift.
+- [ ] Add upper bounds to key requirements (`fastapi>=0.110,<1`, `pydantic>=2,<3`, etc.). Check whether dashboard httpx is test-only; if so, move it to test dependencies.
+- [ ] Rotate update_state backups by count (keep latest twenty); write summary projections through temporary file + replace.
+- [ ] Commit `chore: test/repo hygiene batch`.
 
 ---
 
-## 验收清单（整体）
+## Overall acceptance checklist
 
-- [ ] `python -m pytest`（PYTHONUTF8=1）全绿，覆盖率 ≥90% 不回退
-- [ ] 手动冒烟：新建 tmp 项目跑 init → 写一章 → review → chapter-commit → projections retry → dashboard 启动
-- [ ] `git grep -n "checkout master"` 在 scripts 下零命中
-- [ ] 无 key 环境跑一次 chapter-commit，抓包/日志确认零出网请求
-- [ ] README 版本表未被改动（CI 硬约束）
+- [ ] `python -m pytest` with PYTHONUTF8=1 fully passes; coverage ≥90% without regression
+- [ ] Manual smoke test: create temporary project, init → write one chapter → review → chapter-commit → projections retry → start dashboard
+- [ ] `git grep -n "checkout master"` returns no matches under scripts
+- [ ] Run chapter-commit without a key; packet capture/logs confirm zero outbound requests
+- [ ] README version table unchanged (hard CI constraint)

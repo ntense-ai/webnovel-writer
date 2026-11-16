@@ -1,109 +1,109 @@
-# 系统架构与模块设计
+# System Architecture and Module Design
 
-## 核心理念
+## Core Principles
 
-### 真源划分
+### Sources of Truth
 
-- 写前真源：`.story-system/MASTER_SETTING.json`、`volumes/`、`chapters/`、`reviews/`
-- 写后真源：accepted `CHAPTER_COMMIT`
-- `.webnovel/state.json`、`index.db`、`summaries/`、`memory_scratchpad.json`：只作为投影 / read-model
-- `references/genre-profiles.md`：fallback-only
+- Prewrite source of truth: `.story-system/MASTER_SETTING.json`, `volumes/`, `chapters/`, `reviews/`
+- Postwrite source of truth: accepted `CHAPTER_COMMIT`
+- `.webnovel/state.json`, `index.db`, `summaries/`, `memory_scratchpad.json`: projections / read models only
+- `references/genre-profiles.md`: fallback-only
 
-### 防幻觉三定律
+### Three Anti-Hallucination Laws
 
-| 定律 | 说明 | 执行方式 |
+| Law | Description | Enforcement |
 |------|------|----------|
-| **大纲即法律** | 遵循大纲，不擅自发挥 | Context Agent 强制加载章节大纲 |
-| **设定即物理** | 遵守设定，不自相矛盾 | Reviewer Agent 内置一致性审查 |
-| **发明需识别** | 新实体必须入库管理 | Data Agent 自动提取并消歧 |
+| **The outline is law** | Follow the outline; do not improvise beyond it | Context Agent must load the chapter outline |
+| **Settings are physics** | Respect established settings; avoid contradictions | Reviewer Agent includes consistency checks |
+| **Inventions must be identified** | New entities must be registered and managed | Data Agent automatically extracts and disambiguates them |
 
-### Strand Weave 节奏系统
+### Strand Weave Pacing System
 
-| Strand | 含义 | 理想占比 | 说明 |
+| Strand | Meaning | Ideal share | Description |
 |--------|------|----------|------|
-| **Quest** | 主线剧情 | 60% | 推动核心冲突 |
-| **Fire** | 感情线 | 20% | 人物关系发展 |
-| **Constellation** | 世界观扩展 | 20% | 背景/势力/设定 |
+| **Quest** | Main plot | 60% | Advances the central conflict |
+| **Fire** | Relationship arc | 20% | Develops character relationships |
+| **Constellation** | World expansion | 20% | Background, factions, and setting |
 
-节奏红线：
+Pacing limits:
 
-- Quest 连续不超过 5 章
-- Fire 断档不超过 10 章
-- Constellation 断档不超过 15 章
+- No more than 5 consecutive Quest chapters
+- No Fire gap longer than 10 chapters
+- No Constellation gap longer than 15 chapters
 
-## 总体架构图
+## Overall Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                      Claude Code                           │
+│                      Claude Code                            │
 ├─────────────────────────────────────────────────────────────┤
-│  Skills (7个):                                             │
-│    init / plan / write / review / query / learn / dashboard │
+│  Skills (7):                                                │
+│    init / plan / write / review / query / learn / dashboard  │
 ├─────────────────────────────────────────────────────────────┤
-│  Agents (3个):                                             │
-│    Context Agent / Data Agent / Reviewer (含六维审查)        │
+│  Agents (3):                                                │
+│    Context Agent / Data Agent / Reviewer (six dimensions)    │
 ├─────────────────────────────────────────────────────────────┤
-│  Data Layer:                                               │
-│    state.json / index.db (SQLite) / vectors.db             │
+│  Data Layer:                                                │
+│    state.json / index.db (SQLite) / vectors.db                │
 ├─────────────────────────────────────────────────────────────┤
-│  Story System:                                             │
-│    .story-system/ (合同·提交·事件)                           │
+│  Story System:                                              │
+│    .story-system/ (contracts, commits, events)                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Agent 分工
+## Agent Responsibilities
 
-### Context Agent（读）
+### Context Agent (Read)
 
-- 文件：`agents/context-agent.md`
-- 职责：在写作前构建"创作任务书"，提供本章上下文、约束和追读力策略。
+- File: `agents/context-agent.md`
+- Responsibility: Build a writing brief before drafting, supplying chapter context, constraints, and reader-retention strategies.
 
-### Data Agent（写）
+### Data Agent (Write)
 
-- 文件：`agents/data-agent.md`
-- 职责：从正文提取 `accepted_events / state_deltas / entity_deltas / summary_text` 等 commit artifacts，交给 `chapter-commit` 驱动 projection writers 更新 `state.json`、`index.db`、摘要与长期记忆。
+- File: `agents/data-agent.md`
+- Responsibility: Extract commit artifacts such as `accepted_events / state_deltas / entity_deltas / summary_text` from the prose and pass them to `chapter-commit`, which drives projection writers to update `state.json`, `index.db`, summaries, and long-term memory.
 
-### Reviewer（审）
+### Reviewer (Review)
 
-- 文件：`agents/reviewer.md`
-- 职责：章节质量审查，内部包含以下六个审查维度：
+- File: `agents/reviewer.md`
+- Responsibility: Review chapter quality across these six dimensions:
 
-| 审查维度 | 检查重点 |
+| Review dimension | Focus |
 |----------|----------|
-| High-point Checker | 爽点密度与质量 |
-| Consistency Checker | 设定一致性（战力/地点/时间线） |
-| Pacing Checker | Strand 比例与断档 |
-| OOC Checker | 人物行为是否偏离人设 |
-| Continuity Checker | 场景与叙事连贯性 |
-| Reader-pull Checker | 钩子强度、期待管理、追读力 |
+| High-point Checker | Density and quality of satisfying payoffs |
+| Consistency Checker | Setting consistency (power levels, locations, timeline) |
+| Pacing Checker | Strand proportions and gaps |
+| OOC Checker | Whether character behavior deviates from established characterization |
+| Continuity Checker | Scene and narrative continuity |
+| Reader-pull Checker | Hook strength, expectation management, and reader retention |
 
-## Story System（合同驱动体系）
+## Story System (Contract-Driven Architecture)
 
-Story System 以 `.story-system/` 为独立运行面，由以下几部分组成：
+Story System uses `.story-system/` as an independent runtime surface and consists of:
 
-- **合同种子**：`MASTER_SETTING.json` + 章节合同 + 反模式配置
-- **合同优先运行时**：卷合同 (`volumes/`) + 审查合同 (`reviews/`) + 写前校验
-- **章节提交链**：`commits/chapter_XXX.commit.json` + state/index/summary/memory 投影
-- **事件审计链**：`events/chapter_XXX.events.json` + 修订提案 + 覆写账本
+- **Contract seeds**: `MASTER_SETTING.json` + chapter contracts + anti-pattern configuration
+- **Contract-first runtime**: Volume contracts (`volumes/`) + review contracts (`reviews/`) + prewrite validation
+- **Chapter commit chain**: `commits/chapter_XXX.commit.json` + state/index/summary/memory projections
+- **Event audit chain**: `events/chapter_XXX.events.json` + revision proposals + override ledger
 
-当前默认即 contract-first + commit-first：`.story-system/` 为主链真源，旧的 `.webnovel/*` 降级为投影 / read-model，`preflight` 与 dashboard 暴露 runtime health。
+The current default is contract-first + commit-first: `.story-system/` is the main pipeline source of truth, legacy `.webnovel/*` is downgraded to projections / read models, and `preflight` and the dashboard expose runtime health.
 
-核心链路：
+Core pipeline:
 
 ```text
 story-system --persist
-    -> 写入合同种子（MASTER_SETTING.json 等）
+    -> Write contract seeds (MASTER_SETTING.json, etc.)
 story-system --emit-runtime-contracts --chapter N
-    -> 生成运行时合同 + 写前校验
+    -> Generate runtime contracts and validate before writing
 chapter-commit --chapter N
-    -> 提交 accepted commit + 执行各投影写入
+    -> Submit an accepted commit and execute projection writes
 story-events --chapter N / --health
-    -> 事件审计与健康检查
+    -> Event audit and health checks
 preflight / dashboard
-    -> story runtime health / fallback 状态 / latest commit 状态
+    -> Story runtime health / fallback status / latest commit status
 ```
 
-事件审计链不另起第二套投影循环，事件路由仅负责声明式激活 writer，
-实际执行入口仍是 `ChapterCommitService.apply_projections()`。
+The event audit chain does not introduce a second projection loop. Event routing only activates writers declaratively;
+execution still enters through `ChapterCommitService.apply_projections()`.
 
-详细设计见：`docs/archive/architecture/story-system-phase5.md`
+For the detailed design, see `docs/archive/architecture/story-system-phase5.md`.

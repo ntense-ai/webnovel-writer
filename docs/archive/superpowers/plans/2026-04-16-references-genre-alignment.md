@@ -1,10 +1,10 @@
-# References 题材体系对齐与结构补全 Implementation Plan
+# References Genre Alignment and Structural Completion Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 建立权威题材枚举，让 CSV `适用题材` 列、路由表、裁决表、搜索脚本全部对齐到同一套枚举值；补上校验脚本和结构层缺口。
+**Goal:** Establish authoritative genre enums, aligning the CSV `适用题材` column, routing table, reasoning table, and search script to one set of values; fill validation-script and structural gaps.
 
-**Architecture:** 两层题材体系（15 个 canonical_genre + 37 个 platform_tag）驱动全链路。`genre-canonical.md` 是人类可读真源，`GENRE_CANONICAL` Python 常量是机器可读真源，`validate_csv.py` 校验两者与实际 CSV 数据的一致性。所有改动只涉及 `references/csv/`、`scripts/reference_search.py`、`scripts/validate_csv.py` 和 `scripts/data_modules/story_system_engine.py`，不触碰 skill 文本或 contract 产出结构。
+**Architecture:** A two-layer genre system (15 canonical_genre + 37 platform_tag values) drives the entire pipeline. `genre-canonical.md` is the human-readable source of truth; Python constant `GENRE_CANONICAL` is the machine-readable source. `validate_csv.py` checks consistency between both and actual CSV data. Changes are limited to `references/csv/`, `scripts/reference_search.py`, `scripts/validate_csv.py`, and `scripts/data_modules/story_system_engine.py`; do not change skill prose or contract output structures.
 
 **Tech Stack:** Python 3.10+, pytest, csv (stdlib)
 
@@ -15,15 +15,15 @@
 
 ---
 
-### Task 1: 在 reference_search.py 中添加 GENRE_CANONICAL 常量与映射
+### Task 1: Add GENRE_CANONICAL constants and mappings to reference_search.py
 
 **Files:**
 - Modify: `webnovel-writer/scripts/reference_search.py:84-154`
 - Test: `webnovel-writer/scripts/tests/test_reference_search.py`
 
-- [ ] **Step 1: 写失败测试 — canonical 常量存在且完整**
+- [ ] **Step 1: Write failing tests: canonical constants exist and are complete**
 
-在 `webnovel-writer/scripts/tests/test_reference_search.py` 末尾添加：
+Append to `webnovel-writer/scripts/tests/test_reference_search.py`:
 
 ```python
 class TestGenreCanonical:
@@ -57,14 +57,14 @@ class TestGenreCanonical:
         assert PLATFORM_TO_CANONICAL["科幻末世"] == "科幻"
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run tests to confirm failure**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py::TestGenreCanonical -v`
 Expected: FAIL — `ImportError: cannot import name 'GENRE_CANONICAL'`
 
-- [ ] **Step 3: 在 reference_search.py 中添加常量**
+- [ ] **Step 3: Add constants to reference_search.py**
 
-在 `reference_search.py` 的 `CSV_CONFIG` 之前（约第 84 行）插入：
+Insert before `CSV_CONFIG` in `reference_search.py` (around line 84):
 
 ```python
 # ---------------------------------------------------------------------------
@@ -78,7 +78,7 @@ GENRE_CANONICAL: set[str] = {
 }
 
 PLATFORM_TO_CANONICAL: Dict[str, str] = {
-    # 男频
+    # Male-oriented categories
     "都市日常": "都市", "都市修真": "都市", "都市高武": "都市",
     "战神赘婿": "都市", "都市种田": "都市", "都市脑洞": "都市",
     "传统玄幻": "玄幻", "玄幻脑洞": "玄幻",
@@ -89,7 +89,7 @@ PLATFORM_TO_CANONICAL: Dict[str, str] = {
     "悬疑脑洞": "悬疑", "悬疑灵异": "悬疑",
     "游戏体育": "游戏",
     "动漫衍生": "衍生", "男频衍生": "衍生",
-    # 女频
+    # Female-oriented categories
     "古风世情": "古言", "宫斗宅斗": "古言", "古言脑洞": "古言",
     "现言脑洞": "现言", "青春甜宠": "现言", "星光璀璨": "现言",
     "职场婚恋": "现言", "豪门总裁": "现言",
@@ -135,12 +135,12 @@ def resolve_genre(genre: Optional[str]) -> Optional[str]:
     return g  # unresolvable — pass through
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run tests to confirm success**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py::TestGenreCanonical -v`
 Expected: 3 tests PASS
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -150,15 +150,15 @@ git commit -m "feat: add GENRE_CANONICAL constants and resolve_genre() to refere
 
 ---
 
-### Task 2: 让 _genre_matches 和 search() 使用 resolve_genre
+### Task 2: Use resolve_genre in _genre_matches and search()
 
 **Files:**
 - Modify: `webnovel-writer/scripts/reference_search.py:74-82, 294-335`
 - Test: `webnovel-writer/scripts/tests/test_reference_search.py`
 
-- [ ] **Step 1: 写失败测试 — platform_tag 可作为 --genre 匹配 canonical 值**
+- [ ] **Step 1: Write failing tests: platform_tag supplied as --genre matches canonical values**
 
-在 `test_reference_search.py` 的 `TestGenreCanonical` 类中追加：
+Append to `TestGenreCanonical` in `test_reference_search.py`:
 
 ```python
     def test_resolve_genre_canonical_passthrough(self):
@@ -192,14 +192,14 @@ git commit -m "feat: add GENRE_CANONICAL constants and resolve_genre() to refere
         assert out["data"]["total"] >= 0  # may be 0 if no 都市 rows, but no error
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run tests to confirm failure**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py::TestGenreCanonical::test_search_with_platform_tag_genre -v`
-Expected: 可能 PASS（因为 `都市日常` 字符串包含 `都市` 子串恰好匹配），也可能匹配不精确。关键测试是 `resolve_genre` 相关的三个。
+Expected: May PASS because `都市日常` contains the substring `都市`, or may match imprecisely. The three `resolve_genre` tests are the key checks.
 
-- [ ] **Step 3: 修改 _genre_matches 和 search 函数**
+- [ ] **Step 3: Modify _genre_matches and search**
 
-修改 `reference_search.py` 的 `_genre_matches` 函数（约第 74 行）：
+Modify `_genre_matches` in `reference_search.py` (around line 74):
 
 ```python
 def _genre_matches(row: Dict[str, str], genre: Optional[str]) -> bool:
@@ -218,7 +218,7 @@ def _genre_matches(row: Dict[str, str], genre: Optional[str]) -> bool:
     return resolved_genre in cell_genres
 ```
 
-修改 `search` 函数（约第 294 行），在函数开头加 resolve：
+Modify `search` (around line 294), resolving genre at the start:
 
 ```python
 def search(
@@ -234,14 +234,14 @@ def search(
     # but keeps original genre in the response envelope for traceability
 ```
 
-具体改动：在 `search()` 函数体第一行加 `resolved = resolve_genre(genre)`，然后将 `_genre_matches(row, genre)` 调用改为 `_genre_matches(row, resolved)`，返回结果中保持 `"genre": genre`（原始输入，便于追溯）。
+Specifically, add `resolved = resolve_genre(genre)` as the first statement in `search()`, then replace `_genre_matches(row, genre)` with `_genre_matches(row, resolved)`. Retain `"genre": genre` in output for traceability to the original input.
 
-- [ ] **Step 4: 运行全部测试确认通过**
+- [ ] **Step 4: Run all tests to confirm success**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py -v`
-Expected: ALL PASS（包含旧有测试，确保不回归）
+Expected: ALL PASS (including existing tests to prevent regressions)
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -251,15 +251,15 @@ git commit -m "feat: _genre_matches resolves platform tags and legacy values to 
 
 ---
 
-### Task 3: CSV_CONFIG 增加 prefix 和 required_cols 字段
+### Task 3: Add prefix and required_cols fields to CSV_CONFIG
 
 **Files:**
 - Modify: `webnovel-writer/scripts/reference_search.py:88-154`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_csv_config.py`
 
-- [ ] **Step 1: 写失败测试 — 每个 CSV_CONFIG entry 都有 prefix 和 required_cols**
+- [ ] **Step 1: Write failing tests: every CSV_CONFIG entry has prefix and required_cols**
 
-在 `test_csv_config.py` 末尾追加：
+Append to `test_csv_config.py`:
 
 ```python
 def test_csv_config_has_prefix_field():
@@ -291,14 +291,14 @@ def test_csv_config_prefix_matches_actual_data():
                 )
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run tests to confirm failure**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest data_modules/tests/test_csv_config.py -v`
 Expected: FAIL — `KeyError: 'prefix'`
 
-- [ ] **Step 3: 给 CSV_CONFIG 每个 entry 补 prefix 和 required_cols**
+- [ ] **Step 3: Add prefix and required_cols to every CSV_CONFIG entry**
 
-修改 `reference_search.py` 中的 `CSV_CONFIG`，给每张表追加两个字段：
+Modify `CSV_CONFIG` in `reference_search.py`, adding two fields per table:
 
 ```python
 CSV_CONFIG: Dict[str, Dict[str, Any]] = {
@@ -387,12 +387,12 @@ CSV_CONFIG: Dict[str, Dict[str, Any]] = {
 }
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run tests to confirm success**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest data_modules/tests/test_csv_config.py -v`
 Expected: ALL PASS
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -402,15 +402,15 @@ git commit -m "feat: add prefix and required_cols to CSV_CONFIG"
 
 ---
 
-### Task 4: 创建 validate_csv.py 校验脚本
+### Task 4: Create the validate_csv.py validation script
 
 **Files:**
 - Create: `webnovel-writer/scripts/validate_csv.py`
 - Create: `webnovel-writer/scripts/tests/test_validate_csv.py`
 
-- [ ] **Step 1: 写失败测试 — validate_csv 模块可导入并执行**
+- [ ] **Step 1: Write failing tests: validate_csv imports and runs**
 
-创建 `webnovel-writer/scripts/tests/test_validate_csv.py`：
+Create `webnovel-writer/scripts/tests/test_validate_csv.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -450,24 +450,24 @@ class TestValidateCsvRuns:
         assert "warnings" in data
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run tests to confirm failure**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_validate_csv.py -v`
 Expected: FAIL — script not found
 
-- [ ] **Step 3: 实现 validate_csv.py**
+- [ ] **Step 3: Implement validate_csv.py**
 
-创建 `webnovel-writer/scripts/validate_csv.py`：
+Create `webnovel-writer/scripts/validate_csv.py`:
 
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-CSV 数据校验工具。
+CSV data validation tool.
 
-基于 CSV_CONFIG 和 GENRE_CANONICAL 校验 references/csv/ 下所有表的数据质量。
+Validate data quality in all references/csv/ tables using CSV_CONFIG and GENRE_CANONICAL.
 
-用法:
+Usage:
     python validate_csv.py
     python validate_csv.py --csv-dir path/to/csv
     python validate_csv.py --format json
@@ -639,17 +639,17 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run tests to confirm success**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_validate_csv.py -v`
 Expected: 2 tests PASS
 
-- [ ] **Step 5: 运行校验脚本看实际输出，记录当前 warnings 数量**
+- [ ] **Step 5: Run validator, inspect actual output, and record current warning count**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python validate_csv.py`
-Expected: 0 errors（结构正确），多个 warnings（`适用题材` 非 canonical 值 + 裁决规则缺 canonical 覆盖）
+Expected: 0 errors (valid structure), multiple warnings (noncanonical `适用题材` values + missing canonical coverage in reasoning rules)
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -659,16 +659,16 @@ git commit -m "feat: add validate_csv.py — schema, ID, prefix, genre, delimite
 
 ---
 
-### Task 5: 给 题材与调性推理.csv 增加 canonical_genre 列
+### Task 5: Add canonical_genre column to 题材与调性推理.csv
 
 **Files:**
 - Modify: `webnovel-writer/references/csv/题材与调性推理.csv`
 - Modify: `webnovel-writer/scripts/reference_search.py` (CSV_CONFIG for 题材与调性推理)
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py:115-159`
 
-- [ ] **Step 1: 写失败测试 — engine route 输出包含 canonical_genre**
+- [ ] **Step 1: Write failing test: engine route output includes canonical_genre**
 
-在 `webnovel-writer/scripts/data_modules/tests/` 下找到或创建 `test_story_system_engine.py`，追加：
+Find or create `test_story_system_engine.py` under `webnovel-writer/scripts/data_modules/tests/`, then append:
 
 ```python
 def test_route_output_includes_canonical_genre(tmp_path):
@@ -692,22 +692,22 @@ def test_route_output_includes_canonical_genre(tmp_path):
     }
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run tests to confirm failure**
 
 Expected: FAIL — `KeyError: 'canonical_genre'`
 
-- [ ] **Step 3: 修改 CSV 和代码**
+- [ ] **Step 3: Modify CSV and code**
 
-**3a.** 给 `题材与调性推理.csv` 加一列 `canonical_genre`，放在 `题材/流派` 后面。每行手工填入对应的 canonical 值。例如：
+**3a.** Add `canonical_genre` after `题材/流派` in `题材与调性推理.csv`. Manually fill the corresponding canonical value for every row. Example:
 
 | 编号 | 题材/流派 | canonical_genre | ... |
 |------|----------|----------------|-----|
 | GR-001 | 玄幻退婚流 | 玄幻 | ... |
 | GR-002 | 规则动物园 | 悬疑 | ... |
 
-当前 8 行全部需要填 `canonical_genre`。
+All eight current rows need `canonical_genre`.
 
-**3b.** 修改 `reference_search.py` 的 `CSV_CONFIG["题材与调性推理"]`，在 `output_cols` 中添加 `"canonical_genre"`：
+**3b.** In `reference_search.py`, add `"canonical_genre"` to `output_cols` in `CSV_CONFIG["题材与调性推理"]`:
 
 ```python
 "题材与调性推理": {
@@ -721,7 +721,7 @@ Expected: FAIL — `KeyError: 'canonical_genre'`
 },
 ```
 
-**3c.** 修改 `story_system_engine.py` 的 `_route` 方法（约第 141-158 行），在 return dict 的 `meta` 中加入 `canonical_genre`：
+**3c.** Modify `_route` in `story_system_engine.py` (around lines 141–158), adding `canonical_genre` to returned `meta`:
 
 ```python
         primary_genre = str(matched.get("题材/流派") or genre or "").strip()
@@ -745,22 +745,22 @@ Expected: FAIL — `KeyError: 'canonical_genre'`
         }
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run tests to confirm success**
 
 Run the new test + existing engine tests (if any).
 
-- [ ] **Step 5: 同步修改 _load_reasoning 使用 canonical_genre**
+- [ ] **Step 5: Also change _load_reasoning to use canonical_genre**
 
-修改 `story_system_engine.py` 的 `_load_reasoning` 方法（约第 261-276 行）：engine 的 `build()` 在调用 `_load_reasoning` 时应传入 `canonical_genre` 而非 `primary_genre`，确保裁决规则匹配的是 canonical 值。
+Modify `_load_reasoning` in `story_system_engine.py` (around lines 261–276): engine `build()` should pass `canonical_genre`, not `primary_genre`, so reasoning rules match canonical values.
 
-找到 `build()` 中调用 `_load_reasoning` 的位置，将参数从 `route["meta"]["primary_genre"]` 改为 `route["meta"]["canonical_genre"]`。
+Find `_load_reasoning` in `build()` and change the argument from `route["meta"]["primary_genre"]` to `route["meta"]["canonical_genre"]`.
 
-- [ ] **Step 6: 运行全部相关测试**
+- [ ] **Step 6: Run all related tests**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/ data_modules/tests/test_csv_config.py -v`
 Expected: ALL PASS
 
-- [ ] **Step 7: 提交**
+- [ ] **Step 7: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -770,7 +770,7 @@ git commit -m "feat: add canonical_genre column to route table, thread through e
 
 ---
 
-### Task 6: 迁移现有 CSV 的 适用题材 列到 canonical 枚举
+### Task 6: Migrate existing CSV 适用题材 columns to canonical enums
 
 **Files:**
 - Modify: `webnovel-writer/references/csv/命名规则.csv`
@@ -782,45 +782,45 @@ git commit -m "feat: add canonical_genre column to route table, thread through e
 - Modify: `webnovel-writer/references/csv/金手指与设定.csv`
 - Modify: `webnovel-writer/references/csv/裁决规则.csv`
 
-**注意：此任务是手工数据修改。每个 CSV 需要逐行检查 `适用题材` 列，将非 canonical 值替换为 canonical 枚举值。**
+**Note: this is manual data editing. Inspect every CSV row’s `适用题材` field and replace noncanonical values with canonical enums.**
 
-- [ ] **Step 1: 运行 validate_csv.py 获取完整 warning 列表**
+- [ ] **Step 1: Run validate_csv.py for the complete warning list**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python validate_csv.py --format json > /tmp/csv_warnings.json`
 
-这将输出所有 `适用题材值不在 canonical 枚举中` 的 warning，作为迁移工作清单。
+This outputs all warnings that applicable-genre values are outside the canonical enum, forming the migration checklist.
 
-- [ ] **Step 2: 按迁移映射表逐文件修改**
+- [ ] **Step 2: Edit each file using the migration mapping**
 
-打开每个 CSV 文件，根据 `genre-canonical.md` 的"现有非枚举值迁移映射"表做替换：
+Open each CSV and apply the existing non-enum value migration mapping in `genre-canonical.md`:
 
-迁移原则：
+Migration rules:
 - `谍战` → `历史`
 - `刑侦|惊悚|推理|规则怪谈` → `悬疑`
 - `末世|赛博朋克` → `科幻`
 - `军事|武侠` → `历史`
 - `网游|电竞|竞技|体育` → `游戏`
 - `高武` → `都市`
-- `系统文|无限流` → 改为实际背景题材（`玄幻`/`都市`/`悬疑`）
-- `狗血|爽文|深度剧情|现实向|群像|史诗` → 删除该值，改为具体适用题材或 `全部`
-- `动作|心理|战争|灾难|长篇|知乎短篇` → 删除该值，改为具体适用题材或 `全部`
+- `系统文|无限流` → use the actual setting genre (`玄幻`/`都市`/`悬疑`)
+- `狗血|爽文|深度剧情|现实向|群像|史诗` → remove that value; use a specific applicable genre or `全部`
+- `动作|心理|战争|灾难|长篇|知乎短篇` → remove that value; use a specific applicable genre or `全部`
 - `校园|青春|娱乐圈|职场` → `现言`
-- `商战|商业` → `都市` 或 `现言`
+- `商战|商业` → `都市` or `现言`
 - `同人|轻小说` → `衍生`
 
-每个文件改完后保存（保持 UTF-8 with BOM 编码）。
+Save each modified file, preserving UTF-8 with BOM.
 
-- [ ] **Step 3: 运行 validate_csv.py 确认 warnings 归零或大幅减少**
+- [ ] **Step 3: Run validate_csv.py; confirm zero or substantially fewer warnings**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python validate_csv.py`
-Expected: 0 errors, `适用题材` 相关 warnings 归零（只剩裁决规则覆盖 warnings）
+Expected: 0 errors, zero `适用题材` warnings (only reasoning-coverage warnings remain)
 
-- [ ] **Step 4: 运行现有搜索测试确认不回归**
+- [ ] **Step 4: Run existing search tests to check regressions**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py -v`
 Expected: ALL PASS
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -830,29 +830,29 @@ git commit -m "refactor: migrate all CSV 适用题材 values to canonical genre 
 
 ---
 
-### Task 7: 更新 CSV README 的题材分类章节
+### Task 7: Update the CSV README genre section
 
 **Files:**
 - Modify: `webnovel-writer/references/csv/README.md:166-170`
 
-- [ ] **Step 1: 替换旧的番茄分类为新的 canonical 枚举引用**
+- [ ] **Step 1: Replace old Fanqie classification with the canonical enum reference**
 
-将 README.md 第 166-170 行的旧分类：
+Replace the old classification at README.md lines 166–170:
 
 ```markdown
-## 适用题材（番茄分类）
+## Applicable genres (Fanqie classification)
 
-**男频：** 都市、玄幻、仙侠、奇幻、武侠、历史、军事、科幻、悬疑、游戏、体育、轻小说
+**Male-oriented:** 都市、玄幻、仙侠、奇幻、武侠、历史、军事、科幻、悬疑、游戏、体育、轻小说
 
-**女频：** 现言、古言、幻言、悬疑、轻小说
+**Female-oriented:** 现言、古言、幻言、悬疑、轻小说
 ```
 
-替换为：
+With:
 
-```markdown
-## 适用题材枚举
+````markdown
+## Applicable genre enum
 
-`适用题材` 列只允许填写以下 15 个 canonical 值或 `全部`：
+The `适用题材` column accepts only these 15 canonical values or `全部`:
 
 ```
 都市  玄幻  仙侠  奇幻  科幻
@@ -860,15 +860,15 @@ git commit -m "refactor: migrate all CSV 适用题材 values to canonical genre 
 幻言  年代  种田  快穿  衍生
 ```
 
-完整的两层题材体系（canonical + 番茄 platform_tag 映射）见 `genre-canonical.md`。
+See `genre-canonical.md` for the complete two-layer system (canonical + Fanqie platform_tag mappings).
 
-**禁止**在 `适用题材` 列中填写：
-- 番茄子分类名（如"都市日常""战神赘婿"）——这些是 platform_tag，只用于路由表
-- 套路名（如"退婚流""系统流"）——这些住在 `桥段套路.csv`
-- 调性/场景/形式标签（如"爽文""动作""短篇"）——不属于题材体系
-```
+**Do not** put these in `适用题材`:
+- Fanqie subcategories (e.g. `都市日常`, `战神赘婿`): these are platform_tag values used only in routing tables
+- Trope names (e.g. `退婚流`, `系统流`): these belong in `桥段套路.csv`
+- Tone/scene/format labels (e.g. `爽文`, `动作`, `短篇`): these are not genres
+````
 
-- [ ] **Step 2: 提交**
+- [ ] **Step 2: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -878,54 +878,54 @@ git commit -m "docs: update CSV README genre section to reference canonical enum
 
 ---
 
-### Task 8: 创建 references/README.md 顶层索引
+### Task 8: Create top-level references/README.md index
 
 **Files:**
 - Create: `webnovel-writer/references/README.md`
 
-- [ ] **Step 1: 创建文件**
+- [ ] **Step 1: Create file**
 
-```markdown
+````markdown
 # References
 
-本目录存放 webnovel-writer 的所有参考资料，供 skills 和 scripts 在运行时读取。
+This directory contains all webnovel-writer references, read by skills and scripts at runtime.
 
-## 目录结构
+## Directory structure
 
-| 子目录/文件 | 职责 | 消费方式 |
+| Directory/file | Responsibility | Consumption |
 |-------------|------|----------|
-| `csv/` | 结构化知识条目（9 张表） | `reference_search.py` BM25 检索 |
-| `csv/README.md` | CSV schema 规范与录入规则 | 人工参考 |
-| `csv/genre-canonical.md` | 题材权威枚举（canonical + platform_tag 映射） | 人工参考 + 代码常量对照 |
-| `genre-profiles.md` | 题材 profile（fallback，高频题材已迁入 Story Contracts） | ContextManager 直接 Read |
-| `reading-power-taxonomy.md` | 追读力分类学 | Skills 直接 Read |
-| `review-schema.md` | 审查输出格式定义 | webnovel-review Read |
-| `index/` | 元数据索引（loading-map、gap-register） | 人工参考 |
-| `outlining/` | 大纲相关参考 | webnovel-plan Read |
-| `review/` | 审查相关参考 | webnovel-review Read |
-| `shared/` | 跨 skill 共享参考 | 多 skill Read |
+| `csv/` | Structured knowledge entries (nine tables) | `reference_search.py` BM25 retrieval |
+| `csv/README.md` | CSV schemas and entry rules | Human reference |
+| `csv/genre-canonical.md` | Authoritative genre enum (canonical + platform_tag mapping) | Human reference + comparison with code constants |
+| `genre-profiles.md` | Genre profiles (fallback; common genres moved to Story Contracts) | ContextManager direct Read |
+| `reading-power-taxonomy.md` | Reader-retention taxonomy | Skills direct Read |
+| `review-schema.md` | Review output format | webnovel-review Read |
+| `index/` | Metadata indexes (loading-map, gap-register) | Human reference |
+| `outlining/` | Outline references | webnovel-plan Read |
+| `review/` | Review references | webnovel-review Read |
+| `shared/` | Cross-skill shared references | Multiple skills Read |
 
-## md vs CSV 边界
+## Markdown vs. CSV boundary
 
-- **md**：流程规范、方法论、审查 schema、硬约束、润色指导
-- **CSV**：可条目化的写作知识、命名规则、场景技法、桥段模板
+- **Markdown**: workflow standards, methodology, review schemas, hard constraints, polishing guidance
+- **CSV**: itemized writing knowledge, naming rules, scene techniques, plot templates
 
-md 是写给大模型当行为闸门的，CSV 是写给搜索引擎当知识库的。
+Markdown provides behavioral gates for the model; CSV provides a knowledge base for search.
 
-## 消费链路
+## Consumption pipeline
 
-init → plan → write → review 的完整 reference 消费路径见 `index/reference-loading-map.md`。
+See `index/reference-loading-map.md` for the full init → plan → write → review reference-consumption path.
 
-## 校验
+## Validation
 
 ```bash
 cd webnovel-writer/scripts
-python validate_csv.py          # 文本输出
-python validate_csv.py --format json  # JSON 输出
+python validate_csv.py          # Text output
+python validate_csv.py --format json  # JSON output
 ```
-```
+````
 
-- [ ] **Step 2: 提交**
+- [ ] **Step 2: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -935,14 +935,14 @@ git commit -m "docs: add top-level references/README.md directory index"
 
 ---
 
-### Task 9: 端到端冒烟测试
+### Task 9: End-to-end smoke tests
 
 **Files:**
 - Test: `webnovel-writer/scripts/tests/test_reference_search.py`
 
-- [ ] **Step 1: 添加端到端冒烟测试**
+- [ ] **Step 1: Add end-to-end smoke tests**
 
-在 `test_reference_search.py` 末尾添加：
+Append to `test_reference_search.py`:
 
 ```python
 class TestEndToEndSmoke:
@@ -978,12 +978,12 @@ class TestEndToEndSmoke:
         assert len(data["errors"]) == 0, f"CSV validation errors: {data['errors']}"
 ```
 
-- [ ] **Step 2: 运行全部测试**
+- [ ] **Step 2: Run all tests**
 
 Run: `cd "D:/wk/novel skill/webnovel-writer/webnovel-writer/scripts" && python -m pytest tests/test_reference_search.py tests/test_validate_csv.py data_modules/tests/test_csv_config.py -v`
 Expected: ALL PASS
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: Commit**
 
 ```bash
 cd "D:/wk/novel skill/webnovel-writer"
@@ -995,14 +995,14 @@ git commit -m "test: add end-to-end smoke tests for genre canonical pipeline"
 
 ## Task Summary
 
-| Task | 内容 | 依赖 |
+| Task | Content | Dependencies |
 |------|------|------|
-| 1 | GENRE_CANONICAL 常量 + PLATFORM_TO_CANONICAL 映射 + resolve_genre() | 无 |
-| 2 | _genre_matches 和 search() 接入 resolve_genre | Task 1 |
-| 3 | CSV_CONFIG 加 prefix / required_cols | 无（可与 1 并行） |
-| 4 | validate_csv.py 校验脚本 | Task 1 + 3 |
-| 5 | 题材与调性推理.csv 加 canonical_genre 列，engine 接入 | Task 1 |
-| 6 | 全部 CSV 适用题材列迁移到 canonical | Task 2 |
-| 7 | CSV README 更新题材章节 | Task 6 |
-| 8 | references/README.md 顶层索引 | 无（可与任何 task 并行） |
-| 9 | 端到端冒烟测试 | Task 2 + 4 + 6 |
+| 1 | GENRE_CANONICAL constants + PLATFORM_TO_CANONICAL mappings + resolve_genre() | None |
+| 2 | Integrate resolve_genre into _genre_matches and search() | Task 1 |
+| 3 | Add prefix / required_cols to CSV_CONFIG | None (may run alongside Task 1) |
+| 4 | validate_csv.py validator | Task 1 + 3 |
+| 5 | Add canonical_genre to 题材与调性推理.csv and integrate engine | Task 1 |
+| 6 | Migrate all CSV 适用题材 columns to canonical values | Task 2 |
+| 7 | Update CSV README genre section | Task 6 |
+| 8 | Top-level references/README.md index | None (may run alongside any task) |
+| 9 | End-to-end smoke tests | Task 2 + 4 + 6 |

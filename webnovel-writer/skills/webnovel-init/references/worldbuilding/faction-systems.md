@@ -1,179 +1,179 @@
-# 势力体系设计指南 (Faction Systems)
+# Faction System Design Guide
 
-> **核心原则**: 势力不是背景板，而是剧情的推动器。好的势力设计能让主角的每一次选择都充满戏剧张力。
+> **Core principle**: Factions are plot engines, not scenery. Good faction design fills every protagonist choice with dramatic tension.
 
 ---
 
-## 1. 势力分层架构 (Hierarchy)
+## 1. Faction Hierarchy
 
-### 金字塔模型
+### Pyramid Model
 ```
-顶层势力 (1-3个)
-  ↓ 控制/影响
-中层势力 (5-10个)
-  ↓ 依附/对抗
-底层势力 (数十个)
-  ↓ 争夺资源
-散修/平民 (无数)
+Top-tier factions (1–3)
+  ↓ Control/influence
+Mid-tier factions (5–10)
+  ↓ Dependency/opposition
+Low-tier factions (dozens)
+  ↓ Competition for resources
+Independent cultivators/commoners (countless)
 ```
 
-### 顶层势力 (Top-Tier)
-- **定义**: 掌握世界规则的制定权（如：修仙界的六大圣地）
-- **特征**:
-  - 拥有最强战力（至少有一位顶尖强者坐镇）
-  - 控制核心资源（如：唯一的传送阵、最大的灵脉）
-  - 历史悠久（传承千年以上）
-- **与主角关系**: 初期仰望 → 中期接触 → 后期制衡/取代
+### Top Tier
+- **Definition**: Holds the authority to set world rules, such as six great sacred lands.
+- **Characteristics**:
+  - Highest combat strength, with at least one supreme expert.
+  - Control of key resources, such as the only teleportation array or largest spiritual vein.
+  - Long history, with traditions spanning a millennium or more.
+- **Relationship to protagonist**: Admired from afar → direct contact → counterbalanced/replaced.
 
-### 中层势力 (Mid-Tier)
-- **定义**: 区域霸主（如：一城一国的统治者）
-- **特征**:
-  - 在顶层势力的夹缝中求生存
-  - 内部派系林立，政治斗争激烈
-  - 对底层势力有绝对话语权
-- **与主角关系**: 初期庇护所 → 中期跳板 → 后期被超越
+### Middle Tier
+- **Definition**: Regional rulers, such as the masters of a city or nation.
+- **Characteristics**:
+  - Survive between the top powers.
+  - Numerous internal factions and fierce politics.
+  - Absolute influence over lower-tier organizations.
+- **Relationship to protagonist**: Refuge → stepping stone → surpassed.
 
-### 底层势力 (Low-Tier)
-- **定义**: 家族、帮派、小宗门
-- **特征**:
-  - 资源匮乏，随时可能灭亡
-  - 依附于中层势力以获得保护
-  - 主角的新手村
-- **与主角关系**: 起点 → 快速超越 → 回归时碾压
-
----
-
-## 2. 势力关系网 (Relationship Network)
-
-### 四大关系类型
-
-#### A. 世仇 (Blood Feud)
-- **成因**: 历史积怨（如：争夺圣地、灭族之恨）
-- **特点**: 见面必打，不死不休
-- **剧情作用**: 主角加入一方，自动树敌另一方
-
-#### B. 利益同盟 (Alliance)
-- **成因**: 共同利益（如：对抗兽潮、开发秘境）
-- **特点**: 表面和气，暗地较劲
-- **剧情作用**: 合作任务中暴露各方真面目，产生新矛盾
-
-#### C. 附庸关系 (Vassal)
-- **成因**: 实力差距悬殊，弱者依附强者
-- **特点**: 强者提供保护，弱者上贡资源
-- **剧情作用**: 主角所在势力被欺压，激发反抗剧情
-
-#### D. 中立竞争 (Neutral Competition)
-- **成因**: 没有深仇大恨,但在争夺同一资源
-- **特点**: 井水不犯河水，除非利益冲突
-- **剧情作用**: 比武招亲、拍卖会竞价、秘境夺宝
+### Lower Tier
+- **Definition**: Clans, gangs, and small sects.
+- **Characteristics**:
+  - Few resources and constant risk of destruction.
+  - Depend on middle-tier protection.
+  - Serve as the protagonist's starting environment.
+- **Relationship to protagonist**: Starting point → quickly surpassed → overwhelmed on the protagonist's return.
 
 ---
 
-## 3. 势力设计模板 (Templates)
+## 2. Relationship Networks
 
-### 模板 1: 宗门/学院
+### Four Main Types
+
+#### A. Blood Feud
+- **Cause**: Historical grievances, such as competition for sacred lands or extermination of a clan.
+- **Features**: Fight on sight; hostility ends only with death.
+- **Plot function**: Joining one side automatically makes the other an enemy.
+
+#### B. Alliance
+- **Cause**: Shared interests, such as resisting a beast tide or exploring a secret realm.
+- **Features**: Outward cooperation and hidden rivalry.
+- **Plot function**: Joint missions reveal true motives and create new conflicts.
+
+#### C. Vassalage
+- **Cause**: A large power gap makes the weak dependent on the strong.
+- **Features**: Protection in exchange for tribute.
+- **Plot function**: Oppression of the protagonist's faction sparks rebellion.
+
+#### D. Neutral Competition
+- **Cause**: No deep hatred, but competition for the same resource.
+- **Features**: Noninterference until interests collide.
+- **Plot function**: Marriage tournaments, auction bidding, and treasure contests.
+
+---
+
+## 3. Templates
+
+### Template 1: Sect/Academy
 ```markdown
-**名称**: 天剑宗
-**类型**: 剑修宗门（顶层势力）
-**核心资源**:
-  - 祖师遗留的剑冢（内有百把神剑）
-  - 掌握一条极品剑灵脉
-**标志性功法**: 《万剑归宗诀》
-**势力等级**: S级（六大圣地之一）
-**内部结构**:
-  - 宗主一脉（务实派）
-  - 大长老一脉（守旧派）
-  - 剑阁长老（中立派）
-**外交策略**:
-  - 与天云宗世代联姻
-  - 与魔道势力不死不休
-  - 对中立商会保持友好
-**主角定位**: 外门弟子 → 亲传弟子 → 接任宗主
+**Name**: Heavenly Sword Sect
+**Type**: Sword-cultivation sect (top tier)
+**Core resources**:
+  - Founder's sword tomb containing one hundred divine swords
+  - A supreme-grade sword-energy vein
+**Signature technique**: Ten Thousand Swords Return to the Origin
+**Rank**: S (one of the six sacred lands)
+**Internal structure**:
+  - Sect master's faction (pragmatists)
+  - Grand elder's faction (traditionalists)
+  - Sword Pavilion elders (neutral)
+**Diplomacy**:
+  - Generations of marriage alliances with Tianyun Sect
+  - Implacable hostility toward demonic factions
+  - Friendly relations with neutral merchant associations
+**Protagonist's position**: Outer disciple → personal disciple → sect master
 ```
 
-### 模板 2: 家族/血脉
+### Template 2: Clan/Bloodline
 ```markdown
-**名称**: 叶家
-**类型**: 修仙世家（中层势力）
-**核心资源**:
-  - 祖传血脉（火属性天赋）
-  - 三座城池的税收
-**标志性功法**: 《焚天诀》
-**势力等级**: A级（地方豪门）
-**内部结构**:
-  - 嫡系（纯血）vs 旁系（杂血）
-  - 长房、二房、三房的权力斗争
-**外交策略**:
-  - 依附于天剑宗
-  - 联合其他家族对抗朝廷
-**主角定位**: 被逐出家族 → 荣归故里打脸
+**Name**: Ye Clan
+**Type**: Cultivation family (middle tier)
+**Core resources**:
+  - Ancestral bloodline with fire affinity
+  - Tax revenue from three cities
+**Signature technique**: Heaven-Burning Art
+**Rank**: A (regional elite family)
+**Internal structure**:
+  - Main line (pure blood) versus branch lines (mixed blood)
+  - Power struggles between the first, second, and third households
+**Diplomacy**:
+  - Vassal of Heavenly Sword Sect
+  - Allies with other clans against the court
+**Protagonist's position**: Expelled from the clan → triumphant return and vindication
 ```
 
-### 模板 3: 反派组织
+### Template 3: Antagonist Organization
 ```markdown
-**名称**: 血神教
-**类型**: 魔道邪教（顶层反派）
-**核心资源**:
-  - 禁忌的血祭之法
-  - 掌控一片死灵之地
-**标志性功法**: 《血神经》
-**势力等级**: S级（魔道三大势力之首）
-**内部结构**:
-  - 教主（半疯状态，实力恐怖）
-  - 四大护法（各有异心）
-  - 无数狂信徒
-**外交策略**:
-  - 与正道势力不死不休
-  - 暗中扶植傀儡王朝
-**主角定位**: 宿敌（杀主角全家的凶手）
+**Name**: Blood God Cult
+**Type**: Demonic cult (top-tier antagonist)
+**Core resources**:
+  - Forbidden blood-sacrifice methods
+  - Control of a land of the undead
+**Signature technique**: Blood God Scripture
+**Rank**: S (foremost of the three demonic powers)
+**Internal structure**:
+  - Cult leader (half-mad and terrifyingly powerful)
+  - Four guardians (each with private ambitions)
+  - Countless zealots
+**Diplomacy**:
+  - Implacable hostility toward righteous factions
+  - Secretly supports puppet dynasties
+**Protagonist's relationship**: Arch-enemy responsible for murdering their family
 ```
 
 ---
 
-## 4. 势力剧情引擎 (Plot Drivers)
+## 4. Faction Plot Engines
 
-### 内部矛盾（推动主角崛起）
-1. **权力斗争**: 主角被卷入派系之争，被迫站队。
-2. **资源分配**: 核心资源（如灵脉、传承）的争夺。
-3. **叛徒/内鬼**: 势力内部有人勾结外敌。
+### Internal Conflicts That Drive the Protagonist's Rise
+1. **Power struggles**: The protagonist is drawn into factional disputes and forced to choose a side.
+2. **Resource allocation**: Competition for core assets such as spiritual veins or inheritances.
+3. **Traitors/infiltrators**: Insiders collude with external enemies.
 
-### 外部冲突（创造危机）
-1. **灭门危机**: 敌对势力突然来袭，主角被迫背水一战。
-2. **资源争夺**: 秘境开启，各大势力混战。
-3. **联盟破裂**: 原本的盟友因利益分配不均反目。
-
----
-
-## 5. 势力崛起剧情线 (Rise to Power)
-
-主角从零开始建立自己的势力（适用于爽文）。
-
-### 阶段 1: 草创期
-- **起因**: 主角被原势力背叛/逐出，或发现某个被遗弃的宗门遗址。
-- **初始成员**: 3-5人的小队（死党、救命恩人、被救的弱者）。
-- **第一桶金**: 夺取小型资源点（如：矿脉、药园）。
-
-### 阶段 2: 扩张期
-- **招兵买马**: 收服散修、吸纳小家族。
-- **建立名声**: 通过击败强敌、救助弱者、公开挑战旧势力。
-- **占领地盘**: 从一座城扩张到一个区域。
-
-### 阶段 3: 争霸期
-- **制度建设**: 建立功法库、炼丹房、藏书阁。
-- **外交手段**: 与其他中层势力结盟，孤立敌对势力。
-- **培养死忠**: 提拔心腹，形成核心圈子。
-
-### 阶段 4: 霸主期
-- **挑战顶层**: 击败或收服原六大圣地。
-- **制定新规则**: 改变世界的运行方式（如：废除奴隶制、开放传承）。
+### External Conflicts That Create Crises
+1. **Threat of annihilation**: A sudden enemy assault forces a last stand.
+2. **Resource contests**: A secret realm opens and major powers clash.
+3. **Broken alliances**: Unequal rewards turn former allies against each other.
 
 ---
 
-## 🛠️ 设计检查清单
+## 5. Rise-to-Power Arc
 
-在 `/webnovel-plan` 阶段，检查势力设计是否合格：
-- [ ] **层级清晰**: 顶层、中层、底层势力是否有明显的实力差距？
-- [ ] **关系复杂**: 至少有3对以上的敌对/同盟关系？
-- [ ] **内部矛盾**: 每个重要势力是否有内部派系斗争？
-- [ ] **剧情推动**: 势力冲突是否能自然产生新的剧情线？
-- [ ] **主角定位**: 主角在每个阶段与各大势力的关系是否明确？
+The protagonist builds a faction from nothing, suitable for payoff-driven fiction.
+
+### Stage 1: Founding
+- **Cause**: Betrayal/expulsion by the old faction, or discovery of an abandoned sect site.
+- **Initial members**: A team of 3–5: friends, a benefactor, or vulnerable people the protagonist saved.
+- **First resources**: Capture a small mine or medicinal garden.
+
+### Stage 2: Expansion
+- **Recruitment**: Win over independent cultivators and absorb small clans.
+- **Reputation**: Defeat strong enemies, protect the weak, and openly challenge old powers.
+- **Territory**: Expand from one city to an entire region.
+
+### Stage 3: Contention
+- **Institutions**: Establish technique archives, alchemy rooms, and libraries.
+- **Diplomacy**: Ally with other middle-tier factions to isolate enemies.
+- **Loyal core**: Promote trusted followers and create an inner circle.
+
+### Stage 4: Hegemony
+- **Challenge the top**: Defeat or absorb the original six sacred lands.
+- **New rules**: Change how the world works, such as abolishing slavery or opening inheritances to everyone.
+
+---
+
+## 🛠️ Design Checklist
+
+During `/webnovel-plan`, check:
+- [ ] **Clear hierarchy**: Are there obvious strength gaps between top, middle, and lower tiers?
+- [ ] **Complex relationships**: Are there at least three hostile/allied pairs?
+- [ ] **Internal conflict**: Does every important faction have competing internal groups?
+- [ ] **Plot generation**: Do faction conflicts naturally produce new storylines?
+- [ ] **Protagonist position**: Is the protagonist's relationship with major factions clear at every stage?

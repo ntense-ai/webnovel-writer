@@ -1,53 +1,53 @@
 ---
 name: plot-signal-vs-spoiler
-purpose: plan 章纲拆分时区分"信号"与"剧透"
+purpose: Distinguish signals from spoilers when splitting chapter outlines in plan
 ---
 
 # Plot Signal vs Spoiler
 
-> 主服务 skill: `webnovel-plan` 章纲拆分（Step 7）
-> 内容层级: 提醒层 / 缺陷补偿层 / 知识补充层
+> Primary skill: `webnovel-plan` chapter-outline breakdown (Step 7)
+> Content layers: Reminders / defect compensation / supplementary knowledge
 
 ---
 
-## 提醒层
+## Reminders
 
-- 章纲要给写作方向，不是把读者体验提前讲完
-- 章纲是写给**作者**的执行指令，不是写给**读者**的预告
-- 结构化节点（CBN/CPNs/CEN）描述的是"发生什么"，不是"读者感受什么"
+- Chapter outlines guide writing; they must not reveal the entire reader experience in advance.
+- An outline is an execution instruction for the **author**, not a preview for the **reader**.
+- Structured nodes (CBN/CPNs/CEN) describe "what happens," not "what the reader feels."
 
-## 缺陷补偿层
+## Defect Compensation
 
-### 禁止的剧透式写法
+### Prohibited Spoiler-Style Writing
 
-- ❌ 用揭底句做普通章纲信号：`主角意识到一切都是骗局`（这是高潮揭示，不应在章纲中暴露）
-- ❌ 用读者视角总结情感：`读者会为主角的选择感到震撼`（章纲不写读者反应）
-- ❌ 在早期章纲中泄露后期反转：`这个角色其实是卧底`（应在反转章才出现）
+- ❌ Use a reveal as an ordinary outline signal: `The protagonist realizes everything is a scam` (a climactic revelation, not something to expose in advance).
+- ❌ Summarize emotion from the reader's perspective: `Readers will be shocked by the protagonist's choice` (outlines do not describe reader reactions).
+- ❌ Reveal a later twist in an early chapter outline: `This character is actually an undercover agent` (belongs only in the reveal chapter).
 
-### 必须区分的两类信息
+### Two Types of Information to Distinguish
 
-| 类型 | 定义 | 章纲中的表达方式 |
+| Type | Definition | Outline expression |
 |------|------|----------------|
-| **信号**（Signal） | 读者可感知的承诺——暗示有事要发生 | `主角注意到老者的异常举动` |
-| **剧透**（Spoiler） | 作者内部真相——直接揭示结果 | `老者是隐藏的大宗师` |
+| **Signal** | A reader-perceivable promise suggesting something will happen | `The protagonist notices the old man's unusual behavior` |
+| **Spoiler** | An author-only truth directly revealing the outcome | `The old man is a hidden grandmaster` |
 
-章纲中只写**信号**，不写**剧透**。例外：当章纲本身就是揭示章时，可以写真相。
+Use **signals**, not **spoilers**, in chapter outlines. Exception: the outline may state the truth when the chapter itself is the reveal.
 
-## 知识补充层
+## Supplementary Knowledge
 
-### 正反例对比
+### Positive and Negative Examples
 
-**例 1：伏笔设置**
+**Example 1: Foreshadowing**
 
-- ✅ 信号写法：`萧炎在药材铺发现一枚奇怪的戒指，戒指微微发烫`
-- ❌ 剧透写法：`萧炎获得药老戒指，戒指中封印着斗尊级强者的灵魂`
+- ✅ Signal: `Xiao Yan finds a strange ring in the herb shop; it feels slightly warm.`
+- ❌ Spoiler: `Xiao Yan obtains Yao Lao's ring, which seals the soul of a Dou Zun-level expert.`
 
-**例 2：角色动机**
+**Example 2: Character Motivation**
 
-- ✅ 信号写法：`云韵主动邀请萧炎参加比赛，态度反常地热情`
-- ❌ 剧透写法：`云韵想利用萧炎的异火来解除自己的寒毒`
+- ✅ Signal: `Yun Yun invites Xiao Yan to the competition, showing unusual enthusiasm.`
+- ❌ Spoiler: `Yun Yun wants to use Xiao Yan's Heavenly Flame to cure her cold poison.`
 
-**例 3：冲突升级**
+**Example 3: Conflict Escalation**
 
-- ✅ 信号写法：`纳兰嫣然的侍从出现在城门口，阻止萧炎通行`
-- ❌ 剧透写法：`纳兰家族决定提前毁约，派人拦截萧炎以防他到达约定地点`
+- ✅ Signal: `Nalan Yanran's attendants appear at the city gate and block Xiao Yan's passage.`
+- ❌ Spoiler: `The Nalan family decides to break the agreement early and sends people to stop Xiao Yan reaching the agreed location.`

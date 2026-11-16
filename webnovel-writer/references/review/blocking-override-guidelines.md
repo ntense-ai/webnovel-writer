@@ -1,47 +1,47 @@
 ---
 name: blocking-override-guidelines
-purpose: review Step 6 blocking issue 用户裁决参考
+purpose: User adjudication reference for blocking issues in review Step 6
 ---
 
 # Blocking Override Guidelines
 
-> 主服务 skill: `webnovel-review` Step 6
-> 次服务 skill: `webnovel-write` Step 3（blocking 循环时参考）
-> 内容层级: 提醒层 / 缺陷补偿层 / 知识补充层
+> Primary skill: `webnovel-review` Step 6
+> Secondary skill: `webnovel-write` Step 3 (consult during blocking loops)
+> Content layers: Reminders / defect compensation / supplementary knowledge
 
 ---
 
-## 提醒层
+## Reminders
 
-- 只有用户明确承担风险时才允许 override blocking issue
-- override 不等于"问题不存在"，而是"用户决定接受后果"
-- override 后仍应在审查报告中保留原始 issue 记录
+- Override a blocking issue only when the user explicitly accepts the risk.
+- An override means "the user accepts the consequences," not "the issue does not exist."
+- Preserve the original issue in the review report after an override.
 
-## 缺陷补偿层
+## Defect Compensation
 
-以下情况**禁止建议 override**：
+**Do not suggest overrides** for:
 
-- issue 涉及**设定冲突**（角色能力、世界规则、势力关系与设定集矛盾）
-- issue 涉及**时间线冲突**（事件顺序、时间跨度与已有章节矛盾）
-- issue 涉及**事实错误**（角色死亡后复活、已销毁道具再次出现等）
-- issue 涉及**连续性断裂**（上章结尾与本章开头无法衔接）
+- **Setting conflicts**: Character abilities, world rules, or faction relationships contradict the setting bible.
+- **Timeline conflicts**: Event order or elapsed time contradicts existing chapters.
+- **Factual errors**: A dead character returns to life, a destroyed item reappears, etc.
+- **Broken continuity**: The previous chapter's ending cannot connect to this chapter's opening.
 
-以下情况**可以考虑 override**（但仍需用户确认）：
+**Overrides may be considered** for the following (user confirmation is still required):
 
-- issue 是**节奏偏差**（本章偏慢/偏快，但不影响剧情正确性）
-- issue 是**角色风格软偏差**（如对话偏书面，但与人设相符）
-- issue 是**结构化节点未完全覆盖**（可选节点未落地，但必须节点已覆盖）
+- **Pacing deviations**: The chapter is slow or fast without compromising plot correctness.
+- **Soft character-style deviations**: For example, formal dialogue that still fits the character.
+- **Incomplete structured-node coverage**: Optional nodes were omitted but all required nodes are covered.
 
-## 知识补充层
+## Supplementary Knowledge
 
-### 可 override 的典型场景
+### Typical Overridable Cases
 
-1. **过渡章节奏偏慢**：reviewer 报告 pacing_score 低，但本章是故意铺垫，用户确认后 override
-2. **对话风格偏书面**：reviewer 标记 character（对话风格偏离），但角色设定就是学者/官员，书面语合理
-3. **可选节点未覆盖**：CPN 中某个可选推进节点在正文中隐含但未显式展开
+1. **Slow transitional chapter**: The reviewer reports a low pacing_score, but deliberate setup explains the pacing. Override after user confirmation.
+2. **Formal dialogue**: The reviewer flags character (dialogue-style deviation), but scholarly or official characterization makes formal language appropriate.
+3. **Optional node omitted**: An optional CPN progression node is implicit in the prose but not explicitly developed.
 
-### 不可 override 的典型场景
+### Typical Non-Overridable Cases
 
-1. **角色能力超出当前境界**：主角使用了尚未觉醒的能力
-2. **地点穿越**：上章在 A 城，本章无交代突然在 B 城
-3. **已死角色复活**：被明确写死的角色在后续章节中出现
+1. **Abilities beyond the current realm**: The protagonist uses an ability not yet awakened.
+2. **Unexplained location jump**: The previous chapter takes place in City A; this one suddenly starts in City B without explanation.
+3. **Dead character returns**: A character explicitly killed appears in later chapters.

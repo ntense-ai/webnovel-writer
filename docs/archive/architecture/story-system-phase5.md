@@ -1,46 +1,46 @@
 # Story System Phase 5
 
-## 核心结论
+## Core Conclusions
 
-- 写前真源：`.story-system/MASTER_SETTING.json`、`volumes/*.json`、`chapters/*.json`、`reviews/*.review.json`
-- 写后真源：accepted `CHAPTER_COMMIT`
-- `.webnovel/state.json`、`index.db`、`summaries/`、`memory_scratchpad.json`：投影 / read-model
-- `references/genre-profiles.md`：fallback-only
+- Pre-writing source of truth: `.story-system/MASTER_SETTING.json`, `volumes/*.json`, `chapters/*.json`, and `reviews/*.review.json`
+- Post-writing source of truth: accepted `CHAPTER_COMMIT`
+- `.webnovel/state.json`, `index.db`, `summaries/`, and `memory_scratchpad.json`: projections / read-models
+- `references/genre-profiles.md`: fallback-only
 
-## 默认链路
+## Default Pipeline
 
 ```text
 story-system --persist/--emit-runtime-contracts
-    -> 生成 MASTER / VOLUME / CHAPTER / REVIEW 合同
+    -> generate MASTER / VOLUME / CHAPTER / REVIEW contracts
 context / query / write / review
-    -> 默认读取合同主链
+    -> read the contract mainline by default
 chapter-commit --chapter N
     -> accepted CHAPTER_COMMIT
     -> state / index / summary / memory projection writers
 preflight + dashboard
-    -> 暴露 story runtime health / fallback 状态 / latest commit 状态
+    -> expose story runtime health / fallback status / latest commit status
 ```
 
-## 运行时优先级
+## Runtime Priority
 
 1. Story Contracts
-2. latest accepted `CHAPTER_COMMIT`
-3. `.webnovel/*` read-model
-4. `genre-profiles.md` 等 legacy fallback
+2. Latest accepted `CHAPTER_COMMIT`
+3. `.webnovel/*` read-models
+4. Legacy fallbacks such as `genre-profiles.md`
 
-## Phase 5 落地结果
+## Phase 5 Implementation Results
 
-- `ContextManager`、`memory_contract_adapter`、`extract_chapter_context` 已默认走 contract-first + commit-first
-- `webnovel-write` / `webnovel-query` / `webnovel-review` / `webnovel-plan` 与 `context-agent` / `data-agent` 已切到新主链叙述
-- `preflight` 与 dashboard 已直接暴露 `story_runtime` / `story-runtime/health`
-- 旧 state-first 心智模型降级为兼容层，不再伪装为主链
+- `ContextManager`, `memory_contract_adapter`, and `extract_chapter_context` now default to contract-first + commit-first.
+- `webnovel-write` / `webnovel-query` / `webnovel-review` / `webnovel-plan` and `context-agent` / `data-agent` now describe the new mainline.
+- `preflight` and the dashboard directly expose `story_runtime` / `story-runtime/health`.
+- The legacy state-first mental model is downgraded to a compatibility layer and no longer presented as the mainline.
 
-## 运维含义
+## Operational Implications
 
-- 看到 `.webnovel/state.json` 与 `.story-system/commits/` 不一致时，优先检查 commit 链与 projection 状态
-- `fallback_sources` 非空表示主链不完整，系统仍可兼容运行，但不能视为 fully-mainline-ready
-- 排查写后问题时，优先检查：
+- If `.webnovel/state.json` disagrees with `.story-system/commits/`, inspect the commit chain and projection status first.
+- Nonempty `fallback_sources` means the mainline is incomplete. The system can still run in compatibility mode, but is not fully-mainline-ready.
+- When troubleshooting post-writing issues, inspect these in order:
   1. `.story-system/commits/chapter_XXX.commit.json`
   2. `projection_status`
   3. `story-events --health`
-  4. `.webnovel/*` 投影结果
+  4. `.webnovel/*` projection results

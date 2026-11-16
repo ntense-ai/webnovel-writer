@@ -1,31 +1,31 @@
 ---
 name: webnovel-plan
-description: 基于总纲生成卷纲、时间线和章纲，并把新增设定增量写回现有设定集。
+description: Generate volume outlines, timelines, and chapter outlines from the master outline, and incrementally write new settings back into the existing setting collection.
 allowed-tools: Read Write Edit Bash AskUserQuestion
-argument-hint: "[卷号，如 1]"
+argument-hint: "[volume number, e.g. 1]"
 ---
 
 # Outline Planning
 
-主 agent 职责：基于总纲增量细化卷纲/时间线/章纲，把新增设定写回设定集，并刷新 Story System 写作合同。不重做全局故事，不重写整份总纲或设定集。
+Main agent responsibility: incrementally refine volume outlines/timelines/chapter outlines from the master outline, write new settings back to the setting collection, and refresh Story System writing contracts. Do not redesign the global story or rewrite the entire master outline or setting collection.
 
-## 执行原则
+## Operating principles
 
-1. 只做增量补齐，不重写整份总纲或设定集。
-2. 先锁定卷级节奏，再批量拆章。
-3. 时间线是硬约束，所有章纲必须带时间字段。
-4. 若发现总纲与设定冲突，先阻断，再等用户裁决。
-5. 优先级链：用户明确要求 > 总纲核心冲突与卷末高潮 > 时间线硬约束 > skill 默认流程 > reference 建议。
+1. Fill gaps incrementally; do not rewrite the entire master outline or setting collection.
+2. Lock down volume pacing before breaking chapters down in batches.
+3. The timeline is a hard constraint; every chapter outline must contain time fields.
+4. If the master outline conflicts with settings, block first and await the user's decision.
+5. Priority chain: explicit user requirements > master outline's core conflict and volume-ending climax > hard timeline constraints > skill default workflow > reference suggestions.
 
-## 阻断条件
+## Blocking conditions
 
-- 项目根不合法或总纲缺失。
-- 总纲缺少卷名 / 章节范围 / 核心冲突 / 卷末高潮 → 阻断并请求用户补全。
-- Step 2 / Step 8 发现设定冲突 → 标记 `BLOCKER`，等待用户裁决。
-- 批量拆章时时间回跳且未标注闪回 → 阻断当前批次。
-- Step 9 验证失败 → 只重做失败批次，不覆盖整卷。
+- Invalid project root or missing master outline.
+- Master outline lacks volume title / chapter range / core conflict / volume-ending climax → block and ask the user to fill them in.
+- Setting conflict found in Step 2 / Step 8 → mark `BLOCKER` and await a user decision.
+- Time jumps backward during batch chapter planning without being marked as a flashback → block the current batch.
+- Step 9 validation fails → redo only the failed batch; do not overwrite the whole volume.
 
-## 环境准备
+## Environment preparation
 
 ```bash
 export WORKSPACE_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
@@ -36,26 +36,26 @@ export PROJECT_ROOT="$(python "${SCRIPTS_DIR}/webnovel.py" --project-root "${WOR
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" placeholder-scan --format text
 ```
 
-规划开始 / 结束都运行 `placeholder-scan`；plan 阶段发现占位先警告并补齐相关文件，进入写章前不得保留当前章相关实体的 `[待...]` / `暂名` / `{占位}`。
+Run `placeholder-scan` at both the start and end of planning. During plan, warn about placeholders and complete the relevant files. Before chapter writing, no `[待...]` / `暂名` / `{占位}` placeholders may remain for entities relevant to the current chapter.
 
-## 读取策略（按阶段触发，不预读全部 reference）
+## Reading strategy (trigger by stage; do not preload every reference)
 
-每个 reference 只在对应 Step 触发时读取，且优先区段读：先用 `Grep` 匹配 `^#{2,4} ` 定位标题锚点行号，再用 `Read` 的 offset/limit 取目标段。
+Read each reference only when its corresponding step triggers it, preferably by section: use `Grep` with `^#{2,4} ` to locate heading-anchor line numbers, then use `Read` offset/limit for the target section.
 
-| 触发 | 读取方式 | 文件 |
+| Trigger | Reading mode | File |
 |------|---------|------|
-| Step 4 | 全文 | `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md` |
-| Step 5 | 全文 | `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md` |
-| Step 6 always | 区段 | `${SKILL_ROOT}/../../references/genre-profiles.md`（仅当前 genre 的 `### 2.x` 段） |
-| Step 6 always | 全文 | `${SKILL_ROOT}/../../references/shared/strand-weave-pattern.md` |
-| 章纲拆分 always | 区段 | `${SKILL_ROOT}/../../references/outlining/plot-signal-vs-spoiler.md` |
-| Step 6 需要爽点 | 区段 | `${SKILL_ROOT}/../../references/shared/cool-points-guide.md` |
-| Step 6/7 需要冲突 | 区段 | `${SKILL_ROOT}/references/outlining/conflict-design.md` |
-| Step 6/7 特定节奏 | 区段 | `${SKILL_ROOT}/references/outlining/genre-volume-pacing.md` |
-| Step 7 追读力分析 | 区段 | `${SKILL_ROOT}/../../references/reading-power-taxonomy.md` |
-| Step 7 章纲细化 + 节点规范 | 区段 | `${SKILL_ROOT}/references/outlining/chapter-planning.md` |
+| Step 4 | Full text | `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md` |
+| Step 5 | Full text | `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md` |
+| Step 6 always | Section | `${SKILL_ROOT}/../../references/genre-profiles.md` (only the current genre's `### 2.x` section) |
+| Step 6 always | Full text | `${SKILL_ROOT}/../../references/shared/strand-weave-pattern.md` |
+| Chapter breakdown always | Section | `${SKILL_ROOT}/../../references/outlining/plot-signal-vs-spoiler.md` |
+| Step 6 needs gratification beats | Section | `${SKILL_ROOT}/../../references/shared/cool-points-guide.md` |
+| Step 6/7 needs conflict | Section | `${SKILL_ROOT}/references/outlining/conflict-design.md` |
+| Step 6/7 specific pacing | Section | `${SKILL_ROOT}/references/outlining/genre-volume-pacing.md` |
+| Step 7 reader-retention analysis | Section | `${SKILL_ROOT}/../../references/reading-power-taxonomy.md` |
+| Step 7 chapter refinement + node specification | Section | `${SKILL_ROOT}/references/outlining/chapter-planning.md` |
 
-CSV 创作参考用检索读，不 `cat` 整表：
+Search CSV creative references; do not `cat` entire tables:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 爽点与节奏 --query "{卷级核心冲突}" --genre "${GENRE}"
@@ -63,132 +63,132 @@ python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 桥段�
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 命名规则 --query "角色命名" --genre "${GENRE}"
 ```
 
-## 执行流程
+## Procedure
 
-### Step 1：加载项目数据并确认前置条件
+### Step 1: Load project data and verify prerequisites
 
 ```bash
-# 项目配置/投影状态（兼容读取，不作为写后事实真源）
+# Project configuration/projection state (compatibility read, not the post-writing source of truth)
 cat "$PROJECT_ROOT/.webnovel/state.json"
 
-# 总纲（全局蓝图）；确认卷名/章节范围/核心冲突/卷末高潮，不足则阻断
+# Master outline (global blueprint); verify volume title/chapter range/core conflict/volume-ending climax; block if insufficient
 cat "$PROJECT_ROOT/大纲/总纲.md"
 
-# 题材（来自 init 配置快照，后续 CSV 检索和裁决匹配依赖此值）；写后主链真源仍是 .story-system/
+# Genre (from the init configuration snapshot; later CSV searches and decision matching depend on it); .story-system/ remains the post-writing main-pipeline source of truth
 GENRE="$(python -X utf8 -c "import json; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
 ```
 
-按需读取设定集：`设定集/世界观.md`、`设定集/力量体系.md`、`设定集/主角卡.md`、`设定集/反派设计.md`、`.webnovel/idea_bank.json`。
+Read settings on demand: `设定集/世界观.md`, `设定集/力量体系.md`, `设定集/主角卡.md`, `设定集/反派设计.md`, `.webnovel/idea_bank.json`.
 
-**跨卷状态读取**（已有已完成卷，即 `.webnovel/summaries/` 下有文件时必须执行）：
+**Cross-volume state reading** (mandatory when completed volumes already exist, i.e. `.webnovel/summaries/` contains files):
 
 ```bash
-# 最近 5 章摘要
+# Summaries of the last five chapters
 for ch in $(seq $((START_CH - 5)) $((START_CH - 1))); do
   cat "$PROJECT_ROOT/.webnovel/summaries/ch$(printf '%04d' $ch).md" 2>/dev/null
 done
 
-# 核心角色当前状态 / 核心关系当前状态 / 活跃伏笔（跨卷未回收）
+# Current core-character state / core relationships / active foreshadowing (unresolved across volumes)
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-entity-state --entity "{protagonist_id}" --at-chapter {上一卷最后章}
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-relationships --entity "{protagonist_id}" --at-chapter {上一卷最后章}
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" memory-contract get-open-loops
 ```
 
-### Step 2：补齐设定基线
+### Step 2: Complete the setting baseline
 
-让设定集从骨架进入"可规划、可写作"。增量补齐，不清空、不重写整文件；发现冲突先列出并阻断。
+Move the setting collection from a skeleton to a state ready for planning and writing. Fill gaps incrementally; do not clear or rewrite entire files. List conflicts and block if any are found.
 
-- `设定集/世界观.md`：世界边界、社会结构、关键地点用途。
-- `设定集/力量体系.md`：境界链、限制、代价与冷却。
-- `设定集/主角卡.md`：欲望、缺陷、初始资源与限制。
-- `设定集/反派设计.md`：小/中/大反派层级与镜像关系。
+- `设定集/世界观.md`: world boundaries, social structure, purposes of key locations.
+- `设定集/力量体系.md`: realm chain, restrictions, costs, and cooldowns.
+- `设定集/主角卡.md`: desire, flaw, starting resources, and limitations.
+- `设定集/反派设计.md`: minor/intermediate/major antagonist tiers and mirror relationships.
 
-### Step 3：选择目标卷并确认范围
+### Step 3: Select the target volume and confirm scope
 
-确认卷名、章节范围、核心冲突，以及是否有特殊要求（视角、情感线、题材偏移）。
+Confirm volume title, chapter range, core conflict, and any special requirements (viewpoint, emotional arcs, genre shifts).
 
-### Step 4：生成卷节拍表
+### Step 4: Generate the volume beat sheet
 
-加载模板 `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md`。
+Load `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md`.
 
-硬要求：必须填写中段反转，确无则写"无（理由：...）"；危机链至少 3 次递增；卷末新钩子必须能落到最后一章的章末未闭合问题。
+Hard requirements: fill in the midpoint reversal; if genuinely absent, write “None (reason: ...)”. Include at least three escalating crises. The new volume-ending hook must resolve into an unanswered question at the end of the final chapter.
 
-输出文件：`大纲/第{volume_id}卷-节拍表.md`
+Output file: `大纲/第{volume_id}卷-节拍表.md`
 
-### Step 5：生成卷时间线表
+### Step 5: Generate the volume timeline
 
-加载模板 `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md`。
+Load `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md`.
 
-硬要求：必须明确时间体系与本卷时间跨度；有倒计时事件时列出并标记 D-N。
+Hard requirements: specify the time system and this volume's duration; list countdown events, if any, and mark them D-N.
 
-输出文件：`大纲/第{volume_id}卷-时间线.md`
+Output file: `大纲/第{volume_id}卷-时间线.md`
 
-### Step 6：生成卷纲骨架
+### Step 6: Generate the volume-outline skeleton
 
-必读 `${SKILL_ROOT}/../../references/genre-profiles.md` 与 `${SKILL_ROOT}/../../references/shared/strand-weave-pattern.md`；按需读取爽点 / 冲突 / 节奏 reference（见读取策略表）。
+Required reading: `${SKILL_ROOT}/../../references/genre-profiles.md` and `${SKILL_ROOT}/../../references/shared/strand-weave-pattern.md`; read gratification / conflict / pacing references on demand (see reading-strategy table).
 
-卷纲必须明确：卷摘要、关键人物与反派层级、Strand 分布、爽点密度规划、伏笔规划、约束触发规划。
+The volume outline must specify: volume summary, key characters and antagonist tiers, Strand distribution, gratification-beat density plan, foreshadowing plan, and constraint-trigger plan.
 
-跨卷一致性检查（非首卷必须执行）：
+Cross-volume consistency checks (mandatory after the first volume):
 
-- 上一卷未回收的伏笔必须出现在新卷伏笔规划中（继续推进或标记回收）。
-- 角色关系变化必须延续，不能当上一卷没发生过。
-- 主角能力 / 境界必须承接，不回退也不跳级（除非有剧情解释）。
+- Unresolved foreshadowing from the previous volume must appear in the new volume's foreshadowing plan (continued development or marked for payoff).
+- Character relationship changes must carry forward; do not act as if the previous volume never happened.
+- Protagonist abilities / cultivation realm must carry forward without regression or skipped levels (unless explained by the plot).
 
-### Step 7：批量生成章纲
+### Step 7: Generate chapter outlines in batches
 
-批次规则：默认 `10章/批`；复杂题材或多线并进降到 `8章/批`；简单升级流放宽到 `12章/批`；不建议单批超过 `12章`。
+Batch rules: default `10 chapters/batch`; reduce to `8 chapters/batch` for complex genres or multiple simultaneous storylines; expand to `12 chapters/batch` for simple progression fiction. More than `12 chapters` per batch is not recommended.
 
-按需读取 `${SKILL_ROOT}/../../references/reading-power-taxonomy.md` 与 `${SKILL_ROOT}/references/outlining/chapter-planning.md`。
+Read `${SKILL_ROOT}/../../references/reading-power-taxonomy.md` and `${SKILL_ROOT}/references/outlining/chapter-planning.md` on demand.
 
-每章必须包含：目标、阻力、代价、时间锚点、章内时间跨度、与上章时间差、倒计时状态、爽点、Strand、反派层级、视角/主角、关键实体、本章变化、章末未闭合问题、钩子，以及结构化节点 `CBN`、`CPNs`、`CEN`、`必须覆盖节点`、`本章禁区`。
+Each chapter must include: goal, resistance, cost, time anchor, elapsed time within the chapter, time gap from the previous chapter, countdown status, gratification beat, Strand, antagonist tier, viewpoint/protagonist, key entities, chapter changes, unresolved chapter-ending question, hook, and structured nodes `CBN`, `CPNs`, `CEN`, `必须覆盖节点` (must-cover nodes), and `本章禁区` (chapter prohibitions).
 
-#### 结构化节点
+#### Structured nodes
 
-节点格式统一为 `主体 | 动作/变化 | 对象/结果`（写作执行骨架，不追求严格语法 SVO）。完整格式说明、字段细则与示例见 `${SKILL_ROOT}/references/outlining/chapter-planning.md` 的「结构化节点规范」，按需区段读，不在本文件内联。
+Use the unified node format `subject | action/change | object/result` (a writing-execution skeleton, not strict grammatical SVO). Full format explanations, field details, and examples are in the structured-node specification section of `${SKILL_ROOT}/references/outlining/chapter-planning.md`. Read that section on demand; do not inline it here.
 
-核心约束：
+Core constraints:
 
-- 每章固定 1 个 `CBN`、`2-4 个 CPN`、固定 1 个 `CEN`；`CPNs` 按时间顺序排列。
-- 相邻章节 `CEN -> 下一章 CBN` 必须逻辑承接（首章和末章除外）。
-- `必须覆盖节点`最多 4 个，建议 `CBN + CEN + 1~2 个核心 CPN`；可选节点只作建议，不作 fail 主依据。
-- `本章禁区`不超过 5 条，只写本章绝对不能发生的硬禁区，不写风格类建议。
-- 向后兼容：旧项目章纲缺失上述字段时，下游流程正常执行，仅跳过结构化检查。
+- Exactly one `CBN`, `2–4 CPNs`, and one `CEN` per chapter; arrange `CPNs` chronologically.
+- Adjacent chapters' `CEN -> next chapter CBN` must connect logically (except the first and final chapters).
+- At most four `必须覆盖节点`; recommended: `CBN + CEN + 1–2 core CPNs`. Optional nodes are suggestions only, not primary grounds for failure.
+- At most five `本章禁区` entries; include only hard prohibitions on what absolutely must not happen in this chapter, not style suggestions.
+- Backward compatibility: if old project outlines lack these fields, downstream workflows run normally and skip only structured checks.
 
-输出文件：`大纲/第{volume_id}卷-详细大纲.md`
+Output file: `大纲/第{volume_id}卷-详细大纲.md`
 
-### Step 8：把新增设定写回现有设定集
+### Step 8: Write new settings back into the existing collection
 
-输入：卷节拍表、卷时间线表、卷详细大纲、现有设定集文件。
+Inputs: volume beat sheet, volume timeline, detailed volume outline, and existing setting files.
 
-写回规则：只增量补充相关段落；新角色写入角色卡或角色组；新势力 / 地点 / 规则写入世界观或力量体系；新反派层级写入反派设计。
+Writeback rules: add incrementally to relevant sections only; put new characters into character sheets or groups; new factions / locations / rules into worldbuilding or power systems; new antagonist tiers into antagonist design.
 
-硬规则：若发现与总纲或既有设定冲突，标记 `BLOCKER` 并停止后续更新。
+Hard rule: if a conflict with the master outline or existing settings is found, mark `BLOCKER` and stop subsequent updates.
 
-### Step 9：验证、保存并更新状态
+### Step 9: Validate, save, and update state
 
-必须通过：节拍表 / 时间线表 / 详细大纲均存在且非空；每章时间字段齐全；时间线单调递增；倒计时推进正确；新设定已回写；`BLOCKER=0`；有节点时相邻章节 `CEN -> CBN` 无明显逻辑冲突且每章`必须覆盖节点`不超过 4 个。
+Required checks: beat sheet / timeline / detailed outline all exist and are nonempty; every chapter has complete time fields; timeline is monotonically increasing; countdowns advance correctly; new settings have been written back; `BLOCKER=0`; where nodes exist, adjacent `CEN -> CBN` have no obvious logical conflicts and each chapter has at most four `必须覆盖节点`.
 
-验证全部通过后，生成显式结构化写回文件 `大纲/第{volume_id}卷-总纲写回.json`（只写规划中显式列出的伏笔 / 开放环，禁止从卷纲自由文本推断）：
+After all checks pass, generate an explicit structured writeback file `大纲/第{volume_id}卷-总纲写回.json` (write only foreshadowing / open loops explicitly listed in the plan; never infer them from free-form volume-outline text):
 
 ```json
 {
   "next_volume_anchor": {
     "volume": 2,
-    "volume_name": "下一卷卷名",
-    "core_conflict": "下一卷核心冲突",
-    "volume_end_climax": "下一卷卷末高潮"
+    "volume_name": "Next volume title",
+    "core_conflict": "Next volume's core conflict",
+    "volume_end_climax": "Next volume's ending climax"
   },
   "foreshadow_writeback": [
-    {"content": "本卷规划明确新增的伏笔", "buried_chapter": "第10章", "payoff_chapter": "", "level": "卷级"}
+    {"content": "New foreshadowing explicitly added by this volume's plan", "buried_chapter": "第10章", "payoff_chapter": "", "level": "卷级"}
   ],
   "open_loop_writeback": [
-    {"content": "本卷结束后仍持续开放的问题", "buried_chapter": "", "payoff_chapter": "", "level": "持续开放环"}
+    {"content": "A question that remains open after this volume ends", "buried_chapter": "", "payoff_chapter": "", "level": "持续开放环"}
   ]
 }
 ```
 
-执行最小总纲写回（只更新 `大纲/总纲.md` 的 V+1 卷名 / 核心冲突 / 卷末高潮与伏笔表，不生成下一卷详细大纲 / 节拍表 / 时间线 / 章纲）：
+Perform minimal master-outline writeback (update only volume V+1's title / core conflict / ending climax and the foreshadowing table in `大纲/总纲.md`; do not generate the next volume's detailed outline / beat sheet / timeline / chapter outlines):
 
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" master-outline-sync \
@@ -197,7 +197,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" master-outlin
   --format text
 ```
 
-更新状态：
+Update state:
 
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" update-state -- \
@@ -205,9 +205,9 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" update-state 
   --chapters-range "{start}-{end}"
 ```
 
-### Step 10：刷新 Story System 写作合同（本次规划已落到具体章节时必须执行）
+### Step 10: Refresh Story System writing contracts (mandatory once planning reaches specific chapters)
 
-genre 从 `state.json` 初始化配置快照读取；写前主链真源是 `.story-system/` 合同树。必须先从详细大纲解析真实 `CHAPTER_GOAL`，禁止传 `{章纲目标}` / `第N章章纲目标` 这类占位文本。
+Read genre from the `state.json` initialization configuration snapshot; the pre-writing main-pipeline source of truth is the `.story-system/` contract tree. First parse the actual `CHAPTER_GOAL` from the detailed outline; never pass placeholders such as `{章纲目标}` / `第N章章纲目标`.
 
 ```bash
 GENRE="$(python -X utf8 -c "import json; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
@@ -216,25 +216,25 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" sto
   --genre "${GENRE}" --chapter {chapter_num} --persist --emit-runtime-contracts --format both
 ```
 
-生成后必须把 `.story-system/MASTER_SETTING.json`、`.story-system/volumes/`、`.story-system/chapters/`、`.story-system/reviews/` 视为后续写作主链输入。进入写章前不得保留当前章相关实体的 `[待...]` / `暂名` / `{占位}`。
+After generation, treat `.story-system/MASTER_SETTING.json`, `.story-system/volumes/`, `.story-system/chapters/`, and `.story-system/reviews/` as main-pipeline inputs for subsequent writing. Before writing, no `[待...]` / `暂名` / `{占位}` placeholders may remain for entities relevant to the current chapter.
 
-## 硬失败条件
+## Hard-failure conditions
 
-- 节拍表 / 时间线表 / 详细大纲不存在或为空。
-- 中段反转缺失且未给出理由。
-- 任一章节缺少时间字段；时间回跳且未标注闪回；倒计时算术冲突。
-- 与总纲核心冲突或卷末高潮明显冲突。
-- 存在 `BLOCKER` 未裁决。
+- Beat sheet / timeline / detailed outline is missing or empty.
+- Midpoint reversal missing without a reason.
+- Any chapter lacks time fields; time moves backward without a flashback marker; countdown arithmetic conflicts.
+- Obvious conflict with the master outline's core conflict or volume-ending climax.
+- Unresolved `BLOCKER` remains.
 
-## 恢复规则
+## Recovery rules
 
-1. 只重做失败批次，不覆盖整卷文件。
-2. 最后一个批次无效时，只删除并重写该批次。
-3. 仅在全部验证通过后更新状态。
+1. Redo only failed batches; do not overwrite whole-volume files.
+2. If the final batch is invalid, delete and rewrite only that batch.
+3. Update state only after all validations pass.
 
-## 作者友好过程提示与恢复契约
+## Author-friendly progress and recovery contract
 
-规划开始前先说明本次会经历：检查总纲与设定 -> 生成节拍表 -> 生成时间线 -> 拆章纲 -> 写回新增设定 -> 刷新写作合同。过程提示用作者语言，不直接输出原始 JSON、traceback 或长命令日志；技术详情写入 `.webnovel/logs/run_last.log`：
+Before planning begins, explain the stages: check master outline and settings -> generate beat sheet -> generate timeline -> break down chapter outlines -> write back new settings -> refresh writing contracts. Use author-friendly language in progress updates, not raw JSON, tracebacks, or long command logs. Write technical details to `.webnovel/logs/run_last.log`:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" run-log \
@@ -243,11 +243,11 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" run
   --format text
 ```
 
-过程提示每次不超过两行，只说当前动作和影响，例如“正在拆本卷章纲：会把每章目标、时间锚点和禁区写清楚”。少打扰确认策略：默认继续推进；只有总纲 / 设定冲突、时间线回跳、卷末钩子取舍、需要覆盖已有规划时才询问。
+Limit each progress update to two lines describing only the current action and impact, e.g. “Breaking this volume into chapter outlines: each chapter's goal, time anchor, and prohibitions will be specified.” Minimize interruptions: continue by default; ask only for master-outline / setting conflicts, backward timeline jumps, volume-ending hook tradeoffs, or overwriting existing plans.
 
-需要用户裁决时使用有限选项，并说明影响；例如沿用总纲 / 修改设定 / 暂停规划。卡住时必须说明卡点、已完成内容和恢复建议，例如“节拍表和时间线已保留，第 21-30 章拆分失败；重新运行 `/webnovel-plan {volume_id}` 会只重做失败批次”。
+When a user decision is needed, offer finite choices and explain consequences, e.g. follow the master outline / modify settings / pause planning. When stuck, explain the blocker, completed work, and recovery advice, e.g. “The beat sheet and timeline are retained, but chapters 21–30 failed to break down; rerunning `/webnovel-plan {volume_id}` will redo only the failed batch.”
 
-不可恢复故障才在最终报告提示 `.webnovel/logs/run_last.log`；平时只保留日志，不打扰作者。收尾必须调用作者报告 helper：
+Mention `.webnovel/logs/run_last.log` in the final report only for unrecoverable failures; otherwise retain logs without bothering the author. Always call the author-report helper when finishing:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" user-report \
@@ -256,44 +256,44 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" use
   --format text
 ```
 
-## 作者友好最终报告契约
+## Author-friendly final report contract
 
-最终回复必须面向作者，不输出原始 JSON、traceback 或长命令日志。使用固定三段式，并以一句总状态开头：
+The final reply must address the author, without raw JSON, tracebacks, or long command logs. Use the fixed three-part format, beginning with one overall-status sentence:
 
 ```text
-总状态：已完成 / 部分完成 / 需要你处理 / 未完成。
+Overall status: Completed / Partially completed / Needs your attention / Not completed.
 
-一、产生的文件与完成情况
+1. Files produced and completion status
 - ...
 
-二、过程中遇到的问题与异常耗时
-- 已自动处理：...
-- 建议确认：...
-- 必须处理：...
+2. Issues and unusually long steps encountered
+- Automatically handled: ...
+- Suggested for confirmation: ...
+- Must address: ...
 
-三、下一步建议
+3. Recommended next steps
 - ...
 ```
 
-必须汇报：
-- `大纲/第{volume_id}卷-节拍表.md`。
-- `大纲/第{volume_id}卷-时间线.md`。
-- `大纲/第{volume_id}卷-详细大纲.md`。
-- 新增设定写回了哪些设定集文件。
-- `大纲/第{volume_id}卷-总纲写回.json`。
-- `master-outline-sync`、`update-state`、Story System 合同刷新是否完成。
-- 占位符、时间线、节点承接是否通过。
+Must report:
+- `大纲/第{volume_id}卷-节拍表.md`.
+- `大纲/第{volume_id}卷-时间线.md`.
+- `大纲/第{volume_id}卷-详细大纲.md`.
+- Which setting files received new settings.
+- `大纲/第{volume_id}卷-总纲写回.json`.
+- Whether `master-outline-sync`, `update-state`, and Story System contract refresh completed.
+- Whether placeholder, timeline, and node-continuity checks passed.
 
-异常分类：
-- 已自动处理：只重做失败批次、补齐非阻断占位、重跑合同刷新。
-- 建议确认：新增角色名、势力名、卷末钩子需要作者看一眼。
-- 必须处理：总纲 / 设定冲突、时间线回跳、`BLOCKER` 未裁决、当前章相关占位残留。
+Issue categories:
+- Automatically handled: redoing only failed batches, filling non-blocking placeholders, rerunning contract refresh.
+- Suggested for confirmation: new character names, faction names, or volume-ending hooks worth the author's review.
+- Must address: master-outline / setting conflicts, backward timeline jumps, unresolved `BLOCKER`, remaining placeholders relevant to the current chapter.
 
-下一步建议必须使用任务化语言 + 可复制命令，例如：
+Next-step suggestions must use task-oriented language plus copyable commands, for example:
 
 ```text
-- 接下来可以写第一章：
+- Next, write the first chapter:
   /webnovel-write 1
 ```
 
-不写 token 统计；如需排查故障，只给日志路径或建议运行 `/webnovel-doctor`。
+Do not report token statistics; for troubleshooting, provide only the log path or suggest `/webnovel-doctor`.

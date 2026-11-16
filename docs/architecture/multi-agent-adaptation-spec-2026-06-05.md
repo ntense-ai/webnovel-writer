@@ -1,33 +1,33 @@
-# Webnovel Writer 多宿主与多智能体适配 Spec
+# Webnovel Writer Multi-Host and Multi-Agent Adaptation Spec
 
-> 日期：2026-06-05
-> 状态：草案 v2
-> 基线：`master` 当前插件形态，`.claude-plugin/plugin.json` 与 marketplace 版本为 `6.1.0`
-> 来源：基于 PR #110 的 review 结论重写，修正过期的 7 Skill / hooks / doctor / runtime 状态描述
-> 定位：把 Webnovel Writer 在不破坏 Claude Code 现有体验的前提下，演进为可验证、可生成、可降级的多宿主写作插件
-
----
-
-## 1. 背景
-
-PR #110 的方向是对的：Webnovel Writer 不应该永远只被 Claude Code 的表达方式绑定。它已经有完整的写作运行时、Story System、RAG、Dashboard、Agent 分工和发布校验，下一步可以考虑多宿主适配。
-
-但 PR #110 的原始 spec 使用了旧基线：
-
-- 只列出 7 个 Skill，漏掉 `/webnovel-doctor`。
-- 把 hooks 描述为“当前未形成 bootstrap”，但当前主干已经有 `hooks/hooks.json`、`session_start.py` 和 `guard_runtime_write.py`。
-- 没有把 `project-status`、`doctor`、`write-gate`、`projections retry/replay`、`.webnovel/projection_log.jsonl` 纳入最终形态。
-- 新增文档放在 `docs/superpowers/specs/`，但当前 `superpowers` 已归档到 `docs/archive/superpowers/`。
-
-因此，本 spec 以当前 `v6.1.0` 运行时为基线重新定义多宿主适配方案。
+> Date: 2026-06-05
+> Status: Draft v2
+> Baseline: Current `master` plugin; `.claude-plugin/plugin.json` and marketplace version `6.1.0`
+> Source: Rewritten from the PR #110 review, correcting obsolete descriptions of seven Skills / hooks / doctor / runtime
+> Purpose: Evolve Webnovel Writer into a verifiable, generatable, gracefully degradable multi-host writing plugin without disrupting Claude Code
 
 ---
 
-## 2. 当前真实基线
+## 1. Background
 
-### 2.1 Claude Code 插件结构
+PR #110 points in the right direction: Webnovel Writer should not remain bound exclusively to Claude Code's conventions. It already has a complete writing runtime, Story System, RAG, Dashboard, Agent responsibilities, and release validation. Multi-host adaptation is a reasonable next step.
 
-当前插件根为 `webnovel-writer/`，符合官方 `plugin-dev` 对 Claude Code 插件结构的要求：
+However, the original PR #110 spec used an outdated baseline:
+
+- It listed seven Skills, omitting `/webnovel-doctor`.
+- It described hooks as lacking bootstrap, although main already has `hooks/hooks.json`, `session_start.py`, and `guard_runtime_write.py`.
+- It omitted `project-status`, `doctor`, `write-gate`, `projections retry/replay`, and `.webnovel/projection_log.jsonl` from the target design.
+- It put new documents under `docs/superpowers/specs/`, although `superpowers` is now archived under `docs/archive/superpowers/`.
+
+This spec therefore redefines multi-host adaptation against the current `v6.1.0` runtime.
+
+---
+
+## 2. Actual Current Baseline
+
+### 2.1 Claude Code Plugin Structure
+
+The plugin root is `webnovel-writer/`, following the official `plugin-dev` Claude Code structure:
 
 ```text
 webnovel-writer/
@@ -58,106 +58,104 @@ webnovel-writer/
 └── dashboard/
 ```
 
-### 2.2 当前 8 个 Skill
+### 2.2 Current Eight Skills
 
-| Skill | 当前职责 | 多宿主适配时的地位 |
+| Skill | Current responsibility | Multi-host role |
 |---|---|---|
-| `/webnovel-init` | 初始化新书项目 | 保留为项目创建入口 |
-| `/webnovel-plan` | 规划卷纲、章纲、运行时合同 | 保留为规划入口 |
-| `/webnovel-write` | 写章主链，调用 gate、agent、commit、projection | 多宿主适配的最高优先级主流程 |
-| `/webnovel-review` | 审查章节范围 | 保留为可独立调用的质量入口 |
-| `/webnovel-query` | 只读查询项目状态、设定和记忆 | 保留为跨宿主只读查询入口 |
-| `/webnovel-learn` | 追加项目经验记忆 | 保留为受控写入入口 |
-| `/webnovel-dashboard` | 启动只读 Dashboard | 保留 Claude Code 主路径，其他宿主可降级为 CLI 提示 |
-| `/webnovel-doctor` | 阶段感知体检目录、文件、DB、RAG、依赖 | 必须纳入所有宿主的安装后自检路径 |
+| `/webnovel-init` | Initialize a book project | Retain as project-creation entry |
+| `/webnovel-plan` | Plan volume/chapter outlines and runtime contracts | Retain as planning entry |
+| `/webnovel-write` | Main chapter workflow: gates, agents, commit, projection | Highest-priority multi-host workflow |
+| `/webnovel-review` | Review a chapter range | Retain as independently callable quality entry |
+| `/webnovel-query` | Read-only project-state, setting, and memory queries | Cross-host read-only query entry |
+| `/webnovel-learn` | Append project experience memory | Controlled-write entry |
+| `/webnovel-dashboard` | Launch read-only Dashboard | Preserve Claude Code main path; other hosts may fall back to CLI guidance |
+| `/webnovel-doctor` | Phase-aware checks of directories, files, DB, RAG, dependencies | Required post-installation self-check on every host |
 
-### 2.3 当前 4 个 Agent
+### 2.3 Current Four Agents
 
-| 当前文件 | 当前职责 | 目标规范名 |
+| Current file | Responsibility | Target canonical name |
 |---|---|---|
-| `context-agent.md` | 写前上下文与任务书组装 | `webnovel-context-agent` |
-| `reviewer.md` | 多维审查与 blocking issue 输出 | `webnovel-reviewer` |
-| `data-agent.md` | 提取 commit artifacts，不直接写 projection | `webnovel-data-agent` |
-| `deconstruction-agent.md` | 拆解参考书和结构学习 | `webnovel-deconstruction-agent` |
+| `context-agent.md` | Assemble pre-writing context and brief | `webnovel-context-agent` |
+| `reviewer.md` | Multidimensional review and blocking issues | `webnovel-reviewer` |
+| `data-agent.md` | Extract commit artifacts; never write projections directly | `webnovel-data-agent` |
+| `deconstruction-agent.md` | Reference-book analysis and structural learning | `webnovel-deconstruction-agent` |
 
-当前文件名不能直接删除或重命名，因为现有 Skill 文案和用户习惯可能仍引用旧名。目标规范名必须通过兼容迁移引入。
+Do not immediately delete or rename current files: existing Skills and user habits may reference them. Introduce canonical names through compatible migration.
 
-### 2.4 当前 Runtime CLI
+### 2.4 Current Runtime CLI
 
-所有确定性动作已经统一从 `scripts/webnovel.py` 进入。多宿主适配必须复用这些 runtime 命令，不为每个宿主重写一套业务逻辑。
+All deterministic actions enter through `scripts/webnovel.py`. Reuse these commands across hosts rather than rewriting business logic per host.
 
-关键命令：
-
-| 命令 | 作用 |
+| Command | Purpose |
 |---|---|
-| `preflight` | 快速环境与项目根检查 |
-| `project-status` | 机器可读短状态、phase、下一步 |
-| `doctor` | 阶段感知项目体检与修复建议 |
-| `write-gate` | 写前、提交前、提交后三个自然边界校验 |
-| `story-system` | Story System 合同与运行时数据 |
-| `chapter-commit` | 章节事实提交，驱动 projection |
-| `projections retry/replay` | 基于已有 commit 补跑或重放投影 |
-| `status` | 旧宏观创作健康报告，保持原语义 |
+| `preflight` | Quick environment and project-root checks |
+| `project-status` | Short machine-readable status, phase, next step |
+| `doctor` | Phase-aware project diagnostics and repair advice |
+| `write-gate` | Validate three natural boundaries: prewrite, precommit, postcommit |
+| `story-system` | Story System contracts and runtime data |
+| `chapter-commit` | Commit chapter facts and drive projection |
+| `projections retry/replay` | Retry/replay projections from existing commits |
+| `status` | Existing high-level creative-health report; preserve its semantics |
 
-### 2.5 当前 Hook
+### 2.5 Current Hooks
 
-当前已经存在 Claude Code 插件级 hooks：
+Claude Code plugin-level hooks already exist:
 
-- `SessionStart`：只运行 `project-status --format summary`，给新会话提供短状态。
-- `PreToolUse`：对直接写 `.story-system/commits/`、`.webnovel/state.json`、`index.db`、`vectors.db`、`memory_scratchpad.json`、`projection_log.jsonl` 等危险路径做兜底阻断。
+- `SessionStart`: Runs only `project-status --format summary` to give a new session short status.
+- `PreToolUse`: Fallback protection against direct writes to dangerous paths such as `.story-system/commits/`, `.webnovel/state.json`, `index.db`, `vectors.db`, `memory_scratchpad.json`, and `projection_log.jsonl`.
 
-hook 是轻量守卫，不是业务状态机。
+Hooks are lightweight guards, not business state machines.
 
-### 2.6 当前验证能力
+### 2.6 Current Validation
 
-当前已有两类基础验证：
+Two foundations already exist:
 
-- `scripts/validate_plugin_package.py`：按官方 `plugin-dev` 思路检查 manifest、Skill / Agent frontmatter、hooks wrapper、README 版本、路径可移植性。
-- `scripts/run_behavior_evals.py` + `evals/fixtures/behavior/fast.json`：检查 8 个 Skill 的关键行为契约、Agent 边界、commit/projection、Dashboard 只读语义。
+- `scripts/validate_plugin_package.py`: Applies official `plugin-dev` principles to manifest, Skill/Agent frontmatter, hook wrapper, README version, and portable paths.
+- `scripts/run_behavior_evals.py` + `evals/fixtures/behavior/fast.json`: Checks key behavioral contracts of eight Skills, Agent boundaries, commit/projection, and read-only Dashboard semantics.
 
-多宿主适配必须扩展这两类验证，而不是新造一套互不相干的检查。
-
----
-
-## 3. 目标
-
-### 3.1 一句话目标
-
-把 Webnovel Writer 从“Claude Code 单宿主插件”升级为：
-
-> 以现有 Python runtime 和 Story System 为唯一业务核心，向多个宿主生成轻量 adapter 的长篇写作插件。
-
-### 3.2 具体目标
-
-1. 保留 Claude Code 现有安装、Skill、Agent、hook 和 CLI 体验。
-2. 让 Codex、Cursor、Gemini CLI、OpenCode、GitHub Copilot CLI 等宿主可以通过 adapter 消费同一套写作能力。
-3. 所有宿主都复用 `scripts/webnovel.py` 和 `data_modules`，不复制 Story System、commit、projection、doctor、gate 逻辑。
-4. 每个宿主的支持状态必须可验证，有 manifest 校验、smoke 测试和行为 eval。
-5. 当宿主不支持 subagent 或 hook 时，有明确降级模式，不假装已经调用了不存在的能力。
-6. 所有新增插件组件继续符合官方 `plugin-dev` 的结构、frontmatter、hooks、路径和验证要求。
+Extend these foundations rather than inventing unrelated validation systems.
 
 ---
 
-## 4. 非目标
+## 3. Goals
 
-本 spec 不做这些事：
+### 3.1 One-Sentence Goal
 
-- 不重写 Story System 主链。
-- 不拆掉现有 8 个 Skill。
-- 不改变 `webnovel.py status` 的旧健康报告语义。
-- 不把 `doctor`、`project-status`、`write-gate`、`projection_log` 重新设计成另一套平行系统。
-- 不把 hooks 变成隐藏业务流程。
-- 不自动启动 Docker、Dashboard、RAG 服务或外部依赖。
-- 不把 `docs/superpowers/` 重新作为活跃文档区；活跃架构 spec 进入 `docs/architecture/`。
-- 不承诺未经官方文档和本地验证的外部宿主能力。
+Upgrade Webnovel Writer from a Claude Code-only plugin to:
+
+> A long-form writing plugin whose sole business core is the existing Python runtime and Story System, with lightweight generated adapters for multiple hosts.
+
+### 3.2 Specific Goals
+
+1. Preserve existing Claude Code installation, Skills, Agents, hooks, and CLI experience.
+2. Let Codex, Cursor, Gemini CLI, OpenCode, GitHub Copilot CLI, and other hosts consume the same capabilities through adapters.
+3. Reuse `scripts/webnovel.py` and `data_modules` everywhere; do not duplicate Story System, commit, projection, doctor, or gate logic.
+4. Verify each host's support through manifest validation, smoke tests, and behavior evals.
+5. Define explicit fallbacks for hosts without subagents/hooks; never pretend unsupported capabilities were invoked.
+6. Keep all new components compliant with official `plugin-dev` structure, frontmatter, hooks, paths, and validation requirements.
 
 ---
 
-## 5. 设计原则
+## 4. Non-Goals
 
-### 5.1 Runtime 是唯一业务真源
+This spec does not:
 
-Skill、Agent、hook、adapter 都只是入口或调度层。真正能修改项目事实的动作必须进入 runtime：
+- Rewrite the Story System main workflow.
+- Dismantle the existing eight Skills.
+- Change the old creative-health semantics of `webnovel.py status`.
+- Redesign `doctor`, `project-status`, `write-gate`, or `projection_log` into a parallel system.
+- Turn hooks into hidden business workflows.
+- Automatically start Docker, Dashboard, RAG services, or external dependencies.
+- Reactivate `docs/superpowers/`; active architecture specs belong in `docs/architecture/`.
+- Promise external host capabilities without official documentation and local verification.
+
+---
+
+## 5. Design Principles
+
+### 5.1 Runtime Is the Sole Business Source of Truth
+
+Skills, Agents, hooks, and adapters are entry/scheduling layers. Actions that modify project facts must enter runtime:
 
 ```text
 Skill / host command
@@ -171,76 +169,74 @@ data_modules
 projection read-models
 ```
 
-任何宿主 adapter 都不能直接写 `.story-system/commits/` 或 `.webnovel/*` read-model。
+No host adapter may directly write `.story-system/commits/` or `.webnovel/*` read models.
 
-### 5.2 Claude Code 是第一支持宿主
+### 5.2 Claude Code Remains the Primary Host
 
-Claude Code 当前体验必须保持稳定：
+Preserve its current experience:
 
-- `.claude-plugin/plugin.json` 保持官方位置。
-- `skills/`、`agents/`、`hooks/` 保持插件根层级。
-- Claude hooks 继续使用 `${CLAUDE_PLUGIN_ROOT}`，符合官方 `plugin-dev`。
-- `/webnovel-*` Skill 名称继续有效。
+- Keep `.claude-plugin/plugin.json` in the official location.
+- Keep `skills/`, `agents/`, and `hooks/` at plugin-root level.
+- Continue `${CLAUDE_PLUGIN_ROOT}` in Claude hooks, as required by official `plugin-dev`.
+- Keep `/webnovel-*` Skill names valid.
 
-### 5.3 Adapter 尽量薄
+### 5.3 Keep Adapters Thin
 
-各宿主 adapter 只负责：
+Adapters handle only:
 
-- manifest / metadata
-- tool name mapping
-- agent frontmatter 转换
-- command 暴露方式
-- hook 能力降级
-- smoke/eval 启动方式
+- Manifest / metadata
+- Tool-name mapping
+- Agent frontmatter conversion
+- Command exposure
+- Hook capability fallback
+- Smoke/eval invocation
 
-adapter 不负责：
+Adapters do not:
 
-- 改写写作流程
-- 解释 Story System
-- 校验 chapter artifacts
-- 执行 projection
-- 自己维护项目状态
+- Rewrite writing workflows
+- Interpret Story System
+- Validate chapter artifacts
+- Execute projections
+- Maintain their own project state
 
-### 5.4 不相信手写矩阵
+### 5.4 Do Not Trust Handwritten Capability Matrices
 
-外部宿主能力变化很快。spec 不把“某宿主现在支持什么”写成不可验证的口头事实。
+External hosts change quickly. Do not treat unverified claims about current support as permanent facts.
 
-每个宿主 adapter 必须有自己的 `support.md` 或等价记录，包含：
+Each adapter needs `support.md` or equivalent containing:
 
-- 官方文档链接
-- 核验日期
-- 支持的 manifest 字段
-- 支持的 skill / command / agent / hook / MCP 能力
-- 不支持能力的降级规则
-- 本仓库对应的 smoke 测试命令
+- Official documentation links
+- Verification date
+- Supported manifest fields
+- Supported skill / command / agent / hook / MCP capabilities
+- Fallbacks for unsupported capabilities
+- Corresponding repository smoke-test commands
 
 ### 5.5 UTF-8 First
 
-所有新增脚本和 adapter 生成器必须显式 UTF-8：
+All new scripts and adapter generators must explicitly use UTF-8:
 
-- Python 文件头保留 UTF-8。
-- 文本读写使用 `encoding="utf-8"`。
-- Windows 子进程优先使用 `python -X utf8`。
-- 不依赖系统默认 GBK 编码。
+- Retain UTF-8 Python file headers.
+- Read/write text with `encoding="utf-8"`.
+- Prefer `python -X utf8` for Windows subprocesses.
+- Do not depend on system-default GBK.
 
-### 5.6 渐进迁移
+### 5.6 Incremental Migration
 
-多宿主适配必须逐步引入：
+Introduce multi-host support gradually:
 
-1. 先锁定现状和验证。
-2. 再补 adapter 目录与生成器。
-3. 再迁移 Agent 规范名和 Skill 文案。
-4. 最后接入跨宿主 smoke/eval。
+1. Lock down the baseline and validation.
+2. Add adapter directories and generator.
+3. Migrate canonical Agent names and Skill wording.
+4. Add cross-host smoke/evals.
 
-不能一次性重命名 Agent 或大改 Skill，避免破坏 Claude Code 现有用户。
+Do not rename all Agents or overhaul Skills in one step; protect existing Claude Code users.
 
 ---
 
-## 6. 目标架构
+## 6. Target Architecture
 
-### 6.1 目标结构
-
-最终结构建议如下：
+### 6.1 Proposed Structure
 
 ```text
 webnovel-writer/
@@ -255,20 +251,20 @@ webnovel-writer/
 │   ├── webnovel-learn/
 │   ├── webnovel-dashboard/
 │   ├── webnovel-doctor/
-│   └── using-webnovel-writer/        # 可选，跨宿主使用说明与工具映射
+│   └── using-webnovel-writer/        # Optional cross-host usage and tool mapping
 ├── agents/
-│   ├── context-agent.md              # 旧名兼容
-│   ├── reviewer.md                   # 旧名兼容
-│   ├── data-agent.md                 # 旧名兼容
-│   ├── deconstruction-agent.md       # 旧名兼容
-│   └── aliases.json                  # 可选，声明旧名到规范名的映射
+│   ├── context-agent.md              # Legacy-name compatibility
+│   ├── reviewer.md                   # Legacy-name compatibility
+│   ├── data-agent.md                 # Legacy-name compatibility
+│   ├── deconstruction-agent.md       # Legacy-name compatibility
+│   └── aliases.json                  # Optional legacy-to-canonical mapping
 ├── hooks/
-│   ├── hooks.json                    # Claude Code 源 hook
+│   ├── hooks.json                    # Claude Code source hooks
 │   ├── session_start.py
 │   └── guard_runtime_write.py
 ├── adapters/
 │   ├── README.md
-│   ├── registry.json                 # 宿主 adapter 注册表
+│   ├── registry.json                 # Host adapter registry
 │   ├── claude/
 │   ├── codex/
 │   ├── cursor/
@@ -279,7 +275,7 @@ webnovel-writer/
 │   ├── webnovel.py
 │   ├── validate_plugin_package.py
 │   ├── run_behavior_evals.py
-│   └── generate_host_artifacts.py    # 新增，生成非 Claude adapter 产物
+│   └── generate_host_artifacts.py    # New non-Claude adapter generator
 ├── evals/
 │   └── fixtures/
 ├── references/
@@ -288,156 +284,156 @@ webnovel-writer/
 └── dashboard/
 ```
 
-说明：
+Notes:
 
-- `adapters/` 是 adapter 源码和模板，不是生成产物。
-- `dist/` 用于生成后的宿主包，默认不提交。
-- 只有小型、稳定、必须被宿主直接发现的 manifest 可以提交；提交前必须通过 drift check。
+- `adapters/` contains adapter sources/templates, not generated output.
+- `dist/` holds generated host packages and is not committed by default.
+- Only small, stable manifests requiring direct host discovery may be committed, after passing drift checks.
 
-### 6.2 业务源与生成产物
+### 6.2 Business Sources and Generated Output
 
-| 类型 | 路径 | 是否事实源 | 是否提交 |
+| Type | Path | Source of truth? | Commit? |
 |---|---|---:|---:|
-| Claude 插件 manifest | `.claude-plugin/plugin.json` | 是 | 是 |
-| Skill 源文件 | `skills/*/SKILL.md` | 是 | 是 |
-| Agent 源文件 | `agents/*.md` | 是 | 是 |
-| Claude hook 源文件 | `hooks/hooks.json`、`hooks/*.py` | 是 | 是 |
-| Runtime | `scripts/`、`data_modules/` | 是 | 是 |
-| Adapter 模板 | `adapters/<host>/` | 是 | 是 |
-| 生成器 | `scripts/generate_host_artifacts.py` | 是 | 是 |
-| 非 Claude 生成包 | `dist/<host>/webnovel-writer/` | 否 | 否 |
-| 小型宿主 manifest 快照 | `.codex-plugin/plugin.json` 等 | 视宿主而定 | 需 drift check |
+| Claude plugin manifest | `.claude-plugin/plugin.json` | Yes | Yes |
+| Skill sources | `skills/*/SKILL.md` | Yes | Yes |
+| Agent sources | `agents/*.md` | Yes | Yes |
+| Claude hook sources | `hooks/hooks.json`, `hooks/*.py` | Yes | Yes |
+| Runtime | `scripts/`, `data_modules/` | Yes | Yes |
+| Adapter templates | `adapters/<host>/` | Yes | Yes |
+| Generator | `scripts/generate_host_artifacts.py` | Yes | Yes |
+| Generated non-Claude package | `dist/<host>/webnovel-writer/` | No | No |
+| Small host-manifest snapshot | `.codex-plugin/plugin.json`, etc. | Host-dependent | Requires drift check |
 
 ---
 
-## 7. 环境变量与路径策略
+## 7. Environment Variables and Paths
 
-### 7.1 Claude Code 路径保持不变
+### 7.1 Preserve Claude Code Paths
 
-在 Claude Code 插件组件里继续使用：
+Continue using this in Claude Code plugin components:
 
 ```text
 ${CLAUDE_PLUGIN_ROOT}
 ```
 
-这是官方 `plugin-dev` 推荐方式，不能为了跨宿主把 Claude hook 或 Claude Skill 里的路径粗暴替换掉。
+Official `plugin-dev` recommends it. Do not blindly replace paths in Claude hooks or Skills for cross-host compatibility.
 
-### 7.2 Runtime 可增加兼容解析
+### 7.2 Compatible Runtime Resolution
 
-Python runtime 可以支持更通用的插件根解析顺序：
+Python runtime may support a generic plugin-root resolution order:
 
-1. 显式 CLI 参数。
-2. `WEBNOVEL_PLUGIN_ROOT`。
-3. `CLAUDE_PLUGIN_ROOT`。
-4. 当前脚本路径向上推导。
+1. Explicit CLI argument.
+2. `WEBNOVEL_PLUGIN_ROOT`.
+3. `CLAUDE_PLUGIN_ROOT`.
+4. Derivation upward from the current script path.
 
-但这属于 runtime 兼容层，不代表 Claude 插件文档主变量要改名。
+This is runtime compatibility, not a reason to rename the primary variable in Claude plugin documentation.
 
-### 7.3 Skill 文案中的路径写法
+### 7.3 Paths in Skill Instructions
 
-Claude Code Skill 里的可执行示例继续用：
+Keep executable Claude Code examples in this form:
 
 ```bash
 python -X utf8 "${CLAUDE_PLUGIN_ROOT}/scripts/webnovel.py" ...
 ```
 
-跨宿主说明放到 `using-webnovel-writer` 或 `skills/*/references/host-tools.md`，不要把所有宿主变量塞进每个 Skill 主体。
+Put cross-host explanations in `using-webnovel-writer` or `skills/*/references/host-tools.md`; do not pack every host's variables into every Skill body.
 
 ---
 
-## 8. Skill 适配规范
+## 8. Skill Adaptation
 
-### 8.1 保留当前 8 个业务 Skill
+### 8.1 Preserve All Eight Business Skills
 
-多宿主适配不能删减当前 8 个 Skill，也不能让 `/webnovel-doctor` 成为 Claude-only 的遗漏项。
+Do not remove existing Skills or accidentally leave `/webnovel-doctor` Claude-only.
 
-每个 Skill 必须满足：
+Every Skill must have:
 
-- `SKILL.md` 有 `name` 和具体触发型 `description`。
-- 主体只写流程、边界和必要命令。
-- 详细工具映射、宿主差异、参考规则放进 `references/`。
-- 确定性校验交给 runtime 命令，不靠自然语言提醒。
+- `name` and a concrete trigger-oriented `description` in `SKILL.md`.
+- Only workflow, boundaries, and necessary commands in the main body.
+- Detailed tool mappings, host differences, and reference rules in `references/`.
+- Deterministic validation through runtime commands, not natural-language reminders.
 
-### 8.2 新增可选总入口 Skill
+### 8.2 Optional General Entry Skill
 
-可以新增：
+May add:
 
 ```text
 skills/using-webnovel-writer/SKILL.md
 ```
 
-用途：
+Purposes:
 
-- 给非 Claude 宿主提供统一使用说明。
-- 解释当前宿主下的工具名映射。
-- 引导先运行 `project-status`，必要时运行 `doctor`。
-- 说明不支持 subagent/hook 的降级模式。
+- Unified usage guidance for non-Claude hosts.
+- Tool-name mapping for the current host.
+- Start with `project-status`, then `doctor` when needed.
+- Explain fallback modes without subagents/hooks.
 
-限制：
+Limits:
 
-- 不替代 8 个业务 Skill。
-- 不复制每个 Skill 的完整流程。
-- 不承载题材知识和 Story System schema。
+- Does not replace the eight business Skills.
+- Does not duplicate their complete workflows.
+- Does not contain genre knowledge or Story System schemas.
 
-### 8.3 写章 Skill 的硬要求
+### 8.3 Chapter-Writing Requirements
 
-`webnovel-write` 是多宿主适配的核心验收对象。任何宿主的写章流程都必须保留：
+`webnovel-write` is the core acceptance target. Every host must preserve:
 
-1. 写前调用 `write-gate --stage prewrite`。
-2. 提交前调用 `write-gate --stage precommit`。
-3. 提交事实只能走 `chapter-commit`。
-4. 提交后调用 `write-gate --stage postcommit`。
-5. projection 失败时提示 `projections retry --chapter N`。
-6. 不能直接手写 read-model。
+1. `write-gate --stage prewrite` before writing.
+2. `write-gate --stage precommit` before committing.
+3. Fact submission exclusively through `chapter-commit`.
+4. `write-gate --stage postcommit` after committing.
+5. `projections retry --chapter N` guidance after projection failure.
+6. No direct manual read-model writes.
 
 ---
 
-## 9. Agent 适配规范
+## 9. Agent Adaptation
 
-### 9.1 规范名与旧名兼容
+### 9.1 Canonical Names and Legacy Compatibility
 
-目标规范名使用 `webnovel-` 前缀：
+Use the `webnovel-` prefix:
 
-| 旧名 | 规范名 |
+| Legacy name | Canonical name |
 |---|---|
 | `context-agent` | `webnovel-context-agent` |
 | `reviewer` | `webnovel-reviewer` |
 | `data-agent` | `webnovel-data-agent` |
 | `deconstruction-agent` | `webnovel-deconstruction-agent` |
 
-迁移方式：
+Migration:
 
-1. 先在文档和 adapter registry 中声明映射。
-2. 再让生成器为不同宿主输出规范名。
-3. 最后逐步修改 Skill 正文使用规范名。
-4. 旧名至少保留一个小版本周期，避免破坏现有调用。
+1. Declare mappings in documentation and adapter registry.
+2. Make the generator emit canonical names for each host.
+3. Gradually update Skill bodies to canonical names.
+4. Retain legacy names for at least one minor-version cycle.
 
-### 9.2 Agent 边界
+### 9.2 Agent Boundaries
 
-所有宿主都必须遵守现有边界：
+Every host must preserve:
 
-- `context-agent` 只负责写前上下文和任务书。
-- `reviewer` 只负责审查和 blocking 输出。
-- `data-agent` 只产出 commit artifacts，不直接写 projection。
-- `deconstruction-agent` 只负责参考拆解和经验沉淀。
+- `context-agent`: Pre-writing context and brief only.
+- `reviewer`: Review and blocking output only.
+- `data-agent`: Commit artifacts only; no direct projection writes.
+- `deconstruction-agent`: Reference analysis and accumulated learning only.
 
-### 9.3 无 subagent 宿主的降级模式
+### 9.3 Hosts Without Subagents
 
-如果宿主不能稳定调用 subagent：
+If reliable subagent invocation is unavailable:
 
-- 进入 compatibility mode。
-- 主 agent 按同一份任务书和 artifact schema 执行。
-- 输出必须明确说明“未调用 subagent，使用兼容模式”。
-- 仍然必须通过 `artifact_validator`、`write-gate` 和行为 eval。
-- 不允许声称已经调用了不存在的 subagent。
+- Enter compatibility mode.
+- The main agent follows the same brief and artifact schemas.
+- Explicitly report "No subagent invoked; compatibility mode used."
+- Still pass `artifact_validator`, `write-gate`, and behavior evals.
+- Never claim an unavailable subagent was called.
 
 ---
 
-## 10. Hook 适配规范
+## 10. Hook Adaptation
 
-### 10.1 Claude Code hook 保持现状
+### 10.1 Preserve Claude Code Hooks
 
-当前 Claude Code hook 是有效基线：
+The valid baseline is:
 
 ```text
 hooks/hooks.json
@@ -445,86 +441,86 @@ hooks/session_start.py
 hooks/guard_runtime_write.py
 ```
 
-必须继续满足官方 `plugin-dev`：
+Continue official `plugin-dev` compliance:
 
-- `hooks/hooks.json` 使用 wrapper 格式：外层包含 `description` 与 `hooks`。
-- command hook 使用 `${CLAUDE_PLUGIN_ROOT}`。
-- hook 脚本只做轻量、确定性、可快速退出的检查。
+- `hooks/hooks.json` uses the wrapper format with outer `description` and `hooks`.
+- Command hooks use `${CLAUDE_PLUGIN_ROOT}`.
+- Hook scripts perform only lightweight, deterministic, quick-exit checks.
 
-### 10.2 其他宿主 hook 可选
+### 10.2 Other Host Hooks Are Optional
 
-其他宿主是否支持 hook，由对应 adapter 的 `support.md` 和 smoke test 决定。
+Support is determined by the adapter's `support.md` and smoke tests.
 
-若宿主不支持 hook：
+Without hooks:
 
-- 不影响核心写作流程。
-- 通过 `project-status` / `doctor` / `write-gate` 显式命令补足。
-- 不能让某个关键能力只存在于 hook 中。
+- Core writing still works.
+- Explicit `project-status` / `doctor` / `write-gate` commands fill the gap.
+- No critical capability may exist only in a hook.
 
-### 10.3 hook 禁止做的事
+### 10.3 Hook Prohibitions
 
-hook 不允许：
+Hooks must not:
 
-- 自动写 commit。
-- 自动改正文。
-- 自动改设定。
-- 自动安装依赖。
-- 自动启动长驻服务。
-- 写入章节流程状态。
+- Automatically write commits.
+- Automatically edit prose.
+- Automatically edit settings.
+- Automatically install dependencies.
+- Automatically start persistent services.
+- Write chapter-workflow state.
 
 ---
 
-## 11. Doctor 与状态入口
+## 11. Doctor and Status Entry Points
 
-### 11.1 所有宿主共享同一状态入口
+### 11.1 Shared Status Entry
 
-多宿主适配必须统一使用：
+All hosts use:
 
 ```bash
 python -X utf8 "<PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" project-status --format summary
 ```
 
-当短状态显示异常时，再运行：
+When short status reports a problem, run:
 
 ```bash
 python -X utf8 "<PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" doctor --format text
 ```
 
-### 11.2 不新增第二套 status
+### 11.2 No Second Status System
 
-`status` 继续保留宏观创作健康报告语义。
+`status` retains high-level creative-health reporting.
 
-短状态只用 `project-status`。
+Only `project-status` supplies short status.
 
-深度体检只用 `doctor`。
+Only `doctor` supplies deep diagnostics.
 
-### 11.3 doctor 的跨宿主价值
+### 11.3 Cross-Host Doctor Value
 
-`doctor` 是多宿主适配的安装后第一检查入口，必须能回答：
+`doctor` is the first post-installation check and must answer:
 
-- 项目根是否解析正确。
-- 当前 phase 是什么。
-- 当前 phase 应该有哪些文件。
-- 目录、JSON、SQLite 是否完整。
-- RAG 配置是否存在。
-- Python 依赖是否安装。
-- Dashboard 产物是否存在。
-- projection 是否失败。
-- 缺失项怎么修。
+- Was the project root resolved correctly?
+- What is the current phase?
+- Which files should exist in that phase?
+- Are directories, JSON, and SQLite intact?
+- Is RAG configured?
+- Are Python dependencies installed?
+- Do Dashboard build artifacts exist?
+- Have projections failed?
+- How should missing items be repaired?
 
 ---
 
-## 12. Adapter 设计
+## 12. Adapter Design
 
-### 12.1 Adapter registry
+### 12.1 Registry
 
-新增：
+Add:
 
 ```text
 adapters/registry.json
 ```
 
-建议结构：
+Suggested structure:
 
 ```json
 {
@@ -546,24 +542,24 @@ adapters/registry.json
 }
 ```
 
-`supports` 不能手写猜测，必须由该宿主 `support.md` 和 smoke test 支撑。
+Do not guess `supports`; substantiate it with that host's `support.md` and smoke tests.
 
-### 12.2 每个宿主目录
+### 12.2 Per-Host Directory
 
-每个宿主 adapter 至少包含：
+Each adapter contains at least:
 
 ```text
 adapters/<host>/
-├── support.md              # 官方文档核验记录
-├── manifest.template.*     # 需要时才有
-├── tool-mapping.md         # 工具名与降级规则
-├── agent-mapping.json      # 规范 agent 名与宿主表达
-└── smoke.md                # 本地验证命令
+├── support.md              # Official-documentation verification record
+├── manifest.template.*     # Only when needed
+├── tool-mapping.md         # Tool names and fallback rules
+├── agent-mapping.json      # Canonical Agent names and host representation
+└── smoke.md                # Local verification commands
 ```
 
-### 12.3 生成器
+### 12.3 Generator
 
-新增生成器：
+Add:
 
 ```bash
 python -X utf8 scripts/generate_host_artifacts.py --target all
@@ -571,238 +567,236 @@ python -X utf8 scripts/generate_host_artifacts.py --target codex
 python -X utf8 scripts/generate_host_artifacts.py --check
 ```
 
-生成器负责：
+The generator:
 
-- 读取 adapter registry。
-- 读取 Skill / Agent / hook 源文件。
-- 生成宿主 manifest。
-- 生成宿主 agent 配置。
-- 生成宿主 command / skill 入口。
-- 生成 drift manifest。
+- Reads adapter registry.
+- Reads Skill / Agent / hook sources.
+- Generates host manifests.
+- Generates host Agent configuration.
+- Generates host command / Skill entries.
+- Generates a drift manifest.
 
-生成器不负责：
+It does not:
 
-- 修改业务源文件。
-- 联网下载依赖。
-- 改写 Story System schema。
-- 运行写作流程。
+- Modify business sources.
+- Download dependencies.
+- Rewrite Story System schemas.
+- Run writing workflows.
 
 ---
 
-## 13. 验证与 CI
+## 13. Validation and CI
 
-### 13.1 Package validator 扩展
+### 13.1 Package Validator Extensions
 
-当前 `validate_plugin_package.py` 继续作为基础。后续扩展检查：
+Keep `validate_plugin_package.py` as the foundation. Add checks for:
 
-- `adapters/registry.json` schema。
-- 每个 adapter 是否有 `support.md`。
-- 每个 adapter 是否声明 smoke 命令。
-- 生成产物是否含本机绝对路径。
-- 小型提交 manifest 是否与生成器输出一致。
-- `docs/README.md` 是否索引活跃 spec。
+- `adapters/registry.json` schema.
+- `support.md` for each adapter.
+- Declared smoke commands for each adapter.
+- Machine-local absolute paths in generated output.
+- Agreement between committed small manifests and generator output.
+- Active-spec indexing in `docs/README.md`.
 
-### 13.2 Behavior eval 扩展
+### 13.2 Behavior Eval Extensions
 
-当前 fast eval 已覆盖 8 个 Skill。后续增加：
+Fast eval already covers eight Skills. Add:
 
-- 每个宿主至少一个 install / discover smoke。
-- 每个宿主至少一个 `project-status` smoke。
-- `webnovel-doctor` 在每个宿主都有可执行说明。
-- `webnovel-write` 在至少一个非 Claude 宿主完成兼容模式验收。
-- 无 subagent 宿主不得声称调用 subagent。
+- At least one install / discovery smoke per host.
+- At least one `project-status` smoke per host.
+- Executable `webnovel-doctor` guidance on every host.
+- `webnovel-write` compatibility-mode acceptance on at least one non-Claude host.
+- No claims of subagent invocation on hosts without subagents.
 
-### 13.3 Drift check
+### 13.3 Drift Check
 
-如果提交了任何生成 manifest 或 generated adapter 文件，CI 必须运行：
+If any generated manifests/adapters are committed, CI must run:
 
 ```bash
 python -X utf8 scripts/generate_host_artifacts.py --check
 ```
 
-失败时说明：
+On failure, explain:
 
-- 哪个源文件变化导致 drift。
-- 应该重新运行哪个生成命令。
-- 哪些生成文件需要提交。
+- Which source change caused drift.
+- Which generation command to rerun.
+- Which generated files to commit.
 
-### 13.4 外部能力核验
+### 13.4 Verify External Capabilities
 
-每次实现某个宿主 adapter 前，必须重新核验官方文档。
+Recheck official documentation before implementing each host adapter.
 
-核验结果写入：
+Record findings in:
 
 ```text
 adapters/<host>/support.md
 ```
 
-`support.md` 至少包含：
+Include at least:
 
-- 核验日期。
-- 官方链接。
-- 支持能力。
-- 不支持能力。
-- 本仓库采用的降级策略。
-
----
-
-## 14. 迁移计划
-
-### Phase 0：锁定现状
-
-目标：让 spec 和当前主干一致。
-
-改动：
-
-- 新增本 spec 到 `docs/architecture/`。
-- 更新 `docs/README.md` 索引。
-- 不新增 `docs/superpowers/` 活跃目录。
-
-验收：
-
-- 文档列出 8 个 Skill。
-- 文档列出当前 hooks。
-- 文档列出 doctor、project-status、write-gate、projections、projection_log。
-- `git diff --check` 通过。
-
-### Phase 1：Adapter 研究记录与注册表
-
-目标：先验证外部宿主能力，不写大规模生成器。
-
-改动：
-
-- 新增 `adapters/README.md`。
-- 新增 `adapters/registry.json`。
-- 为每个目标宿主新增 `support.md`。
-- 每个 `support.md` 只记录官方文档核验结果和本项目降级策略。
-
-影响：
-
-- 不影响现有 Claude Code 用户。
-- 不影响 runtime。
-
-### Phase 2：Agent 规范名与兼容映射
-
-目标：引入 `webnovel-*` 规范 Agent 名，但不破坏旧名。
-
-改动：
-
-- 新增 `agents/aliases.json` 或等价映射。
-- 更新 adapter registry 使用规范名。
-- 更新 behavior eval，确保旧名与规范名不会互相漂移。
-
-影响：
-
-- Claude Code 现有 Skill 仍可调用旧名。
-- 后续宿主生成优先使用规范名。
-
-### Phase 3：Skill 瘦身与宿主工具映射
-
-目标：减少 Skill 主体中的 Claude-only 工具表达。
-
-改动：
-
-- 新增 `skills/using-webnovel-writer/`。
-- 把跨宿主工具映射放到 references。
-- 保留 Claude Code 示例中的 `${CLAUDE_PLUGIN_ROOT}`。
-- 不把每个宿主的完整说明复制进 8 个业务 Skill。
-
-影响：
-
-- Skill 更短，更容易被不同宿主消费。
-- 当前 Claude Code 命令不变。
-
-### Phase 4：生成器与 drift check
-
-目标：让非 Claude adapter 可生成、可检查。
-
-改动：
-
-- 新增 `scripts/generate_host_artifacts.py`。
-- 生成 `dist/<host>/webnovel-writer/`。
-- 扩展 `validate_plugin_package.py` 检查 adapter。
-- CI 增加 drift check。
-
-影响：
-
-- 新增开发工具，不改变用户项目数据。
-- 生成文件默认不提交。
-
-### Phase 5：跨宿主 smoke 与行为 eval
-
-目标：证明“能发现、能体检、能执行核心流程或明确降级”。
-
-改动：
-
-- 扩展 `run_behavior_evals.py`。
-- 每个宿主至少有 discover / project-status / doctor smoke。
-- 至少一个非 Claude 宿主完成 `webnovel-write` 兼容模式验收。
-
-影响：
-
-- 发布前检查时间增加。
-- 适配声明更可信。
-
-### Phase 6：发布文档与版本治理
-
-目标：用户知道哪个宿主支持到什么程度。
-
-改动：
-
-- README 增加多宿主支持表。
-- `docs/guides/commands.md` 增加非 Claude 使用口径。
-- `docs/operations/plugin-release.md` 增加 adapter 发布检查。
-- release note 明确每个宿主支持等级。
-
-影响：
-
-- 避免用户误以为所有宿主都已完整支持。
-- 降低 issue 中的环境误解。
+- Verification date.
+- Official links.
+- Supported capabilities.
+- Unsupported capabilities.
+- This repository's fallback strategy.
 
 ---
 
-## 15. 风险与控制
+## 14. Migration Plan
 
-| 风险 | 影响 | 控制 |
+### Phase 0: Lock the Baseline
+
+Goal: Align the spec with current main.
+
+Changes:
+
+- Add this spec under `docs/architecture/`.
+- Update `docs/README.md`.
+- Do not create an active `docs/superpowers/` directory.
+
+Acceptance:
+
+- Eight Skills documented.
+- Current hooks documented.
+- doctor, project-status, write-gate, projections, projection_log documented.
+- `git diff --check` passes.
+
+### Phase 1: Adapter Research Records and Registry
+
+Goal: Verify external capabilities before building a large generator.
+
+Changes:
+
+- Add `adapters/README.md`.
+- Add `adapters/registry.json`.
+- Add `support.md` for every target host.
+- Record only official-documentation verification and project fallback strategy.
+
+Impact:
+
+- No impact on current Claude Code users.
+- No runtime impact.
+
+### Phase 2: Canonical Agent Names and Compatibility Mapping
+
+Goal: Introduce `webnovel-*` names without breaking legacy names.
+
+Changes:
+
+- Add `agents/aliases.json` or equivalent.
+- Use canonical names in adapter registry.
+- Update behavior evals to prevent legacy/canonical drift.
+
+Impact:
+
+- Existing Claude Code Skills can still call old names.
+- Future host generation prefers canonical names.
+
+### Phase 3: Slim Skills and Map Host Tools
+
+Goal: Reduce Claude-only tool expressions in Skill bodies.
+
+Changes:
+
+- Add `skills/using-webnovel-writer/`.
+- Put cross-host tool mapping in references.
+- Preserve `${CLAUDE_PLUGIN_ROOT}` in Claude Code examples.
+- Do not duplicate complete host instructions across eight Skills.
+
+Impact:
+
+- Shorter Skills, easier host consumption.
+- Existing Claude Code commands unchanged.
+
+### Phase 4: Generator and Drift Check
+
+Goal: Generate and verify non-Claude adapters.
+
+Changes:
+
+- Add `scripts/generate_host_artifacts.py`.
+- Generate `dist/<host>/webnovel-writer/`.
+- Extend `validate_plugin_package.py` for adapters.
+- Add CI drift check.
+
+Impact:
+
+- New developer tooling; no user-project data changes.
+- Generated files uncommitted by default.
+
+### Phase 5: Cross-Host Smoke and Behavior Evals
+
+Goal: Prove discovery, diagnostics, and core execution or explicit fallback.
+
+Changes:
+
+- Extend `run_behavior_evals.py`.
+- Discovery / project-status / doctor smoke for every host.
+- `webnovel-write` compatibility acceptance on at least one non-Claude host.
+
+Impact:
+
+- Longer pre-release checks.
+- More credible adaptation claims.
+
+### Phase 6: Release Documentation and Version Governance
+
+Goal: Users understand each host's support level.
+
+Changes:
+
+- Add README multi-host support table.
+- Add non-Claude usage guidance to `docs/guides/commands.md`.
+- Add adapter release checks to `docs/operations/plugin-release.md`.
+- State per-host support tiers in release notes.
+
+Impact:
+
+- Avoid implying full support everywhere.
+- Reduce environment misunderstandings in issues.
+
+---
+
+## 15. Risks and Controls
+
+| Risk | Impact | Control |
 |---|---|---|
-| 外部宿主能力描述过期 | spec 很快失真 | 每个 adapter 用 `support.md` 记录官方核验日期和链接 |
-| 为每个宿主复制业务流程 | 逻辑漂移 | adapter 只调 `webnovel.py`，不复制 runtime |
-| 重命名 Agent 破坏旧流程 | 现有用户调用失败 | 旧名兼容一个小版本周期以上 |
-| hook 被误当业务流程 | 隐藏副作用 | hook 只做状态提示和危险写入兜底 |
-| Skill 主体继续膨胀 | token 消耗高 | 详细内容下沉 references，确定性动作下沉 scripts |
-| 生成产物漂移 | 发布包和源不一致 | `generate_host_artifacts.py --check` |
-| Windows 中文路径失败 | 用户无法运行 | 所有新增 Python I/O 使用 UTF-8，命令用 `python -X utf8` |
+| Outdated external-host capability claims | Spec quickly becomes inaccurate | Official verification date and links in each `support.md` |
+| Duplicated business workflows per host | Logic drift | Adapters call `webnovel.py`; no runtime duplication |
+| Agent renaming breaks old workflows | Existing calls fail | Legacy compatibility for at least one minor-version cycle |
+| Hooks mistaken for business workflows | Hidden side effects | Only status hints and dangerous-write guards |
+| Skill bodies keep growing | High token cost | Details in references, deterministic actions in scripts |
+| Generated output drifts | Package/source mismatch | `generate_host_artifacts.py --check` |
+| Chinese Windows paths fail | Users cannot run | UTF-8 Python I/O; `python -X utf8` commands |
 
 ---
 
-## 16. 验收清单
+## 16. Acceptance Checklist
 
-最终完成时必须满足：
-
-- [ ] Claude Code 原安装流程不破坏。
-- [ ] 8 个现有 Skill 仍可发现。
-- [ ] `/webnovel-doctor` 保留并进入多宿主自检路径。
-- [ ] 当前 hooks 保持 plugin-dev wrapper 格式。
-- [ ] `project-status`、`doctor`、`write-gate`、`projections` 都是跨宿主共享 runtime 入口。
-- [ ] `status` 仍保留旧宏观健康报告语义。
-- [ ] Agent 规范名有 `webnovel-` 前缀，旧名有兼容映射。
-- [ ] 每个 adapter 都有 `support.md`，包含官方文档核验日期和链接。
-- [ ] 每个 adapter 都有 smoke 命令或明确阻断原因。
-- [ ] 生成器可生成非 Claude 宿主产物。
-- [ ] drift check 能发现生成产物不一致。
-- [ ] package validator 覆盖 adapter registry、support.md 和 manifest 漂移。
-- [ ] behavior eval 覆盖 8 个 Skill 和至少一个非 Claude 兼容写作流程。
-- [ ] README 和 release note 明确每个宿主的支持等级。
+- [ ] Existing Claude Code installation remains intact.
+- [ ] All eight existing Skills remain discoverable.
+- [ ] `/webnovel-doctor` remains and participates in cross-host self-checks.
+- [ ] Current hooks retain the plugin-dev wrapper format.
+- [ ] `project-status`, `doctor`, `write-gate`, and `projections` are shared cross-host runtime entries.
+- [ ] `status` retains its old high-level health-report semantics.
+- [ ] Canonical Agent names use `webnovel-`; legacy names have mappings.
+- [ ] Every adapter has `support.md` with official verification date and links.
+- [ ] Every adapter has a smoke command or explicit blocker.
+- [ ] Generator produces non-Claude artifacts.
+- [ ] Drift checks detect inconsistent generated output.
+- [ ] Package validator covers registry, support.md, and manifest drift.
+- [ ] Behavior eval covers eight Skills and at least one non-Claude compatible writing workflow.
+- [ ] README/release notes clearly state per-host support tiers.
 
 ---
 
-## 17. 简短结论
+## 17. Conclusion
 
-这次多宿主适配的核心不是“再写一套插件”，而是：
+The point is not to write another plugin, but to:
 
-- 保住当前 `v6.1.0` 已经做好的 runtime 基线。
-- 把 Claude Code 作为第一宿主继续维护。
-- 用 adapter 和生成器把同一套能力暴露给其他宿主。
-- 用 doctor、project-status、write-gate、projection log 和 eval 证明它真的能用。
+- Preserve the runtime baseline already delivered in `v6.1.0`.
+- Maintain Claude Code as the primary host.
+- Expose the same capabilities elsewhere through adapters and a generator.
+- Prove usability with doctor, project-status, write-gate, projection logs, and evals.
 
-这样改，后续扩展宿主时不会把项目重新打散，也不会让用户在多个看起来相似、实际语义不同的入口里迷路。
+This keeps future host expansion from fragmenting the project or confusing users with similar-looking entry points that behave differently.

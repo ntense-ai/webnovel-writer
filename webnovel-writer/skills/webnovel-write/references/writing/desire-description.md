@@ -1,260 +1,260 @@
 ---
 name: desire-description
-purpose: 欲念描写时按需加载
+purpose: Load on demand when describing desire
 ---
 
 <context>
-此文件用于欲念描写参考。核心原则：感官真实性 + 情感层次感 + 文学性升华 + 健康导向。感官描写服务于情感表达，暗示留白胜过直白描写。
+Reference for describing desire. Core principles: sensory authenticity + emotional layers + literary elevation + healthy framing. Sensory description serves emotion; implication and omission are stronger than explicit depiction.
 </context>
 
 <instructions>
 
-## 一、核心原则
+## 1. Core principles
 
 ```
-感官描写服务于情感表达
-情节推进优先于感官刺激
-文学美感与感官体验平衡
-暗示留白胜过直白描写
+Sensory description serves emotional expression
+Plot progression comes before sensory stimulation
+Balance literary beauty with sensory experience
+Implication and omission beat explicit description
 ```
 
-**尺度把控**:
+**Restraint**:
 ```
-暗示 > 描写
-情感 > 感官
-美感 > 刺激
+Implication > description
+Emotion > sensation
+Beauty > stimulation
 ```
 
 ---
 
-## 二、五感基础
+## 2. Five-sense foundations
 
-### 触觉描写
-| 层次 | 描写重点 | 示例词汇 |
+### Touch
+| Layer | Focus | Example vocabulary |
 |------|----------|----------|
-| 温度 | 冷热感知 | 滚烫、冰凉、温热 |
-| 质感 | 粗糙光滑 | 丝滑、粗粝、柔软 |
-| 压力 | 轻重缓急 | 轻抚、紧握、按压 |
-| 电流感 | 触电般 | 酥麻、颤栗、战栗 |
+| Temperature | Heat/cold | Scalding, icy, warm |
+| Texture | Rough/smooth | Silky, coarse, soft |
+| Pressure | Light/heavy, slow/urgent | Caress, grip, press |
+| Electric sensation | Shock-like | Tingling, shivering, trembling |
 
-### 嗅觉描写
-| 类型 | 情感关联 | 示例 |
+### Smell
+| Type | Emotional association | Example |
 |------|----------|------|
-| 体香 | 亲密、熟悉 | 淡淡的香气 |
-| 气息 | 存在感 | 温热的呼吸 |
-| 环境香 | 氛围营造 | 檀香、花香 |
+| Personal scent | Intimacy, familiarity | A faint fragrance |
+| Breath | Presence | Warm breath |
+| Environmental scent | Atmosphere | Sandalwood, flowers |
 
-### 听觉描写
-| 类型 | 效果 | 示例 |
+### Sound
+| Type | Effect | Example |
 |------|------|------|
-| 呼吸声 | 情绪变化 | 急促、平稳、颤抖 |
-| 心跳声 | 内心状态 | 砰砰跳、漏跳一拍 |
-| 低语声 | 亲密感 | 耳畔呢喃 |
-| 环境音 | 氛围 | 雨声、风声 |
+| Breathing | Emotional change | Quick, steady, trembling |
+| Heartbeat | Inner state | Pounding, skipping a beat |
+| Whisper | Intimacy | Murmuring by the ear |
+| Ambient sound | Atmosphere | Rain, wind |
 
-### 视觉描写
-| 焦点 | 描写重点 | 技巧 |
+### Sight
+| Focus | Description | Technique |
 |------|----------|------|
-| 眼神 | 情感传递 | 深邃、迷离、炽热 |
-| 表情 | 情绪变化 | 微红、颤抖、咬唇 |
-| 动作 | 状态展现 | 轻颤、僵硬、放松 |
-| 光影 | 氛围营造 | 昏暗、朦胧、斑驳 |
+| Gaze | Convey emotion | Deep, hazy, ardent |
+| Expression | Emotional change | Blushing, trembling, biting lip |
+| Movement | Show state | Slight tremor, stiffness, relaxation |
+| Light/shadow | Atmosphere | Dim, misty, dappled |
 
-### 味觉描写
-| 类型 | 隐喻意义 | 示例 |
+### Taste
+| Type | Metaphorical meaning | Example |
 |------|----------|------|
-| 甜 | 幸福、满足 | 甜蜜的滋味 |
-| 苦 | 苦涩、遗憾 | 苦涩的泪水 |
-| 咸 | 泪水、汗水 | 咸涩的味道 |
+| Sweet | Happiness, satisfaction | A sweet taste |
+| Bitter | Sorrow, regret | Bitter tears |
+| Salty | Tears, sweat | A salty tang |
 
 ---
 
-## 三、感官交织
+## 3. Interweaving senses
 
-### 交织模式
-| 模式 | 特点 | 适用场景 |
+### Patterns
+| Pattern | Feature | Suitable use |
 |------|------|----------|
-| 并列式 | 多感官同时呈现 | 全面展现场景 |
-| 递进式 | 感官强度逐步升级 | 情感发展 |
-| 对比式 | 感官形成对比 | 制造张力 |
-| 通感式 | 感官混淆交融 | 诗意表达 |
+| Parallel | Multiple senses simultaneously | Present a scene fully |
+| Progressive | Gradually intensify sensation | Emotional development |
+| Contrasting | Contrast senses | Create tension |
+| Synesthetic | Blend sensory channels | Poetic expression |
 
-### 感官配合策略
+### Combinations
 ```
-视觉 + 触觉 → 临场感
-嗅觉 + 听觉 → 环境感
-味觉 + 触觉 → 亲密感
-视觉 + 听觉 → 电影感
-嗅觉 + 触觉 → 私密感
+Sight + touch → immediacy
+Smell + sound → sense of environment
+Taste + touch → closeness
+Sight + sound → cinematic quality
+Smell + touch → privacy
 ```
 
-### 感官主次分配
-- 确定主导感官（1-2种）
-- 辅助感官点缀
-- 避免感官过载
-- 保持节奏变化
+### Primary/secondary allocation
+- Choose 1–2 dominant senses.
+- Use secondary senses as accents.
+- Avoid sensory overload.
+- Maintain rhythmic variation.
 
 ---
 
-## 四、欲念层次
+## 4. Layers of desire
 
 ```
-浅层吸引（外在吸引）
+Surface attraction (outward appeal)
     ↓
-中层渴望（情感需求）
+Intermediate longing (emotional need)
     ↓
-深层欲念（本能驱动）
+Deep desire (instinctive drive)
 ```
 
-### 欲念表达方式
-| 方式 | 说明 | 效果 |
+### Expression methods
+| Method | Description | Effect |
 |------|------|------|
-| 身体反应 | 生理变化 | 真实感 |
-| 心理活动 | 内心独白 | 代入感 |
-| 行为暗示 | 动作细节 | 含蓄美 |
-| 环境映射 | 环境呼应 | 氛围感 |
+| Physical reaction | Physiological change | Authenticity |
+| Mental activity | Inner monologue | Identification |
+| Behavioral suggestion | Action details | Subtle beauty |
+| Environmental reflection | Echoes in surroundings | Atmosphere |
 
-### 欲念克制技巧
+### Restraint techniques
 ```
-想要靠近 → 却保持距离
-想要触碰 → 却收回手
-想要开口 → 却沉默
+Wants to approach → keeps a distance
+Wants to touch → withdraws the hand
+Wants to speak → stays silent
 ```
 
 ---
 
-## 五、氛围营造
+## 5. Building atmosphere
 
-### 氛围要素
-| 要素 | 作用 | 技巧 |
+### Elements
+| Element | Role | Techniques |
 |------|------|------|
-| 光线 | 基调设定 | 昏暗、朦胧、柔和 |
-| 空间 | 私密感 | 封闭、狭小、独处 |
-| 时间 | 特殊性 | 深夜、黄昏、雨天 |
-| 声音 | 环境感 | 寂静、雨声、音乐 |
+| Light | Establish tone | Dim, hazy, soft |
+| Space | Privacy | Enclosed, narrow, alone together |
+| Time | Special quality | Late night, dusk, rainy day |
+| Sound | Environment | Silence, rain, music |
 
-### 氛围递进
+### Progression
 ```
-日常氛围 → 暧昧氛围 → 紧张氛围 → 高潮氛围 → 余韵氛围
+Everyday → romantic ambiguity → tension → emotional peak → lingering resonance
 ```
 
-### 氛围与情感对应
-| 氛围 | 情感 | 描写重点 |
+### Atmosphere and emotion
+| Atmosphere | Emotion | Focus |
 |------|------|----------|
-| 温馨 | 安心、依赖 | 温暖、柔和 |
-| 暧昧 | 心动、期待 | 若即若离 |
-| 紧张 | 渴望、克制 | 呼吸、心跳 |
-| 炽热 | 释放、沉溺 | 感官爆发 |
+| Warm | Safety, reliance | Warmth, softness |
+| Ambiguous romance | Attraction, anticipation | Near yet distant |
+| Tense | Longing, restraint | Breath, heartbeat |
+| Intense | Release, immersion | Sensory surge |
 
 ---
 
-## 六、节奏把控
+## 6. Pacing control
 
-### 情感节奏曲线
+### Emotional curve
 ```
-平静 → 波动 → 上升 → 高潮 → 余韵
+Calm → fluctuation → rise → peak → resonance
 ```
 
-### 节奏控制技巧
-| 阶段 | 节奏 | 描写重点 |
+### Techniques
+| Stage | Pace | Focus |
 |------|------|----------|
-| 铺垫期 | 慢 | 氛围、暗示 |
-| 发展期 | 渐快 | 感官递进 |
-| 高潮期 | 快 | 感官爆发 |
-| 收束期 | 慢 | 余韵、回味 |
+| Setup | Slow | Atmosphere, implication |
+| Development | Gradually faster | Sensory escalation |
+| Peak | Fast | Sensory surge |
+| Resolution | Slow | Resonance, aftertaste |
 
-### 句式节奏
+### Sentence rhythm
 ```
-长句 → 舒缓、细腻
-短句 → 紧张、急促
-断句 → 强调、爆发
+Long sentences → gentle, delicate
+Short sentences → tense, urgent
+Fragments → emphasis, eruption
 ```
 
 ---
 
-## 七、隐喻与留白
+## 7. Metaphor and omission
 
-### 常用隐喻
-| 本体 | 喻体 | 效果 |
+### Common metaphors
+| Subject | Image | Effect |
 |------|------|------|
-| 欲望 | 火焰 | 炽热、燃烧 |
-| 渴望 | 潮水 | 涌动、淹没 |
-| 克制 | 冰 | 冷却、压抑 |
-| 释放 | 决堤 | 爆发、失控 |
+| Desire | Flame | Heat, burning |
+| Longing | Tide | Surging, engulfing |
+| Restraint | Ice | Cooling, suppression |
+| Release | Breaking dam | Eruption, loss of control |
 
-### 留白技巧
+### Omission
 ```
-❌ 直接描写过程
-✅ 描写前奏 + 省略号 + 描写余韵
+❌ Describe the process explicitly
+✅ Describe the prelude + ellipsis + aftermath
 ```
 
-### 暗示手法
-- 动作暗示：手指轻颤、呼吸急促
-- 环境暗示：窗帘飘动、烛火摇曳
-- 对话暗示：欲言又止、话中有话
-- 时间暗示：不知过了多久
+### Suggestion techniques
+- Action: trembling fingers, quickened breathing.
+- Environment: drifting curtains, flickering candles.
+- Dialogue: words left unsaid, double meanings.
+- Time: an unspecified interval has passed.
 
 ---
 
-## 八、心理配合
+## 8. Psychological coordination
 
-### 心理描写层次
+### Layers
 ```
-表层意识（在想什么）
+Surface awareness (what they think)
     ↓
-情感波动（感受什么）
+Emotional fluctuation (what they feel)
     ↓
-本能反应（身体反应）
+Instinctive response (physical reaction)
 ```
 
-### 心理与感官配合
-| 感官 | 心理反应 | 示例 |
+### Psychology and sensation
+| Sense | Psychological response | Example |
 |------|----------|------|
-| 触觉 | 战栗、紧张 | 触碰时心跳加速 |
-| 嗅觉 | 沉醉、迷失 | 被气息包围 |
-| 听觉 | 敏感、期待 | 听到呼吸声 |
-| 视觉 | 心动、渴望 | 目光交汇 |
+| Touch | Shivering, tension | Heart quickens at contact |
+| Smell | Enchantment, disorientation | Surrounded by a scent |
+| Sound | Sensitivity, anticipation | Hearing breathing |
+| Sight | Attraction, longing | Eyes meet |
 
-### 内心独白技巧
+### Inner-monologue technique
 ```
-❌ "她觉得很心动"
-✅ "心跳声大得仿佛他都能听见"
+❌ “She felt attracted to him.”
+✅ “Her heartbeat was so loud she thought he must hear it.”
 ```
 
 ---
 
-## 九、场景应用
+## 9. Scene applications
 
-### 初次心动
+### First attraction
 ```
-感官：视觉为主
-心理：好奇、紧张
-节奏：慢、细腻
-重点：眼神、小动作
-```
-
-### 暧昧拉扯
-```
-感官：触觉+嗅觉
-心理：期待、克制
-节奏：时快时慢
-重点：若即若离
+Senses: mainly sight
+Psychology: curiosity, nervousness
+Pace: slow, delicate
+Focus: gaze, small movements
 ```
 
-### 情感确认
+### Romantic push and pull
 ```
-感官：多感官交织
-心理：确定、满足
-节奏：递进到高潮
-重点：情感释放
+Senses: touch + smell
+Psychology: anticipation, restraint
+Pace: alternating fast and slow
+Focus: near yet distant
 ```
 
-### 分离思念
+### Confirming feelings
 ```
-感官：嗅觉+触觉回忆
-心理：怅然、渴望
-节奏：慢、沉重
-重点：感官记忆
+Senses: multiple senses interwoven
+Psychology: certainty, satisfaction
+Pace: builds to an emotional peak
+Focus: emotional release
+```
+
+### Separation and longing
+```
+Senses: remembered smell + touch
+Psychology: melancholy, longing
+Pace: slow, heavy
+Focus: sensory memory
 ```
 
 </instructions>
@@ -262,50 +262,50 @@ purpose: 欲念描写时按需加载
 <examples>
 
 <example>
-<input>并列式感官交织</input>
+<input>Parallel sensory weaving</input>
 <output>
-他的手指划过她的脸颊【触觉】，
-带着淡淡的烟草味【嗅觉】，
-她听到自己心跳加速的声音【听觉】。
+His fingers brushed her cheek [touch],
+carrying a faint scent of tobacco [smell],
+and she heard her own heartbeat quicken [sound].
 </output>
 </example>
 
 <example>
-<input>递进式感官升级</input>
+<input>Progressive sensory escalation</input>
 <output>
-先是若有若无的香气【嗅觉·弱】，
-然后是指尖的轻触【触觉·中】，
-最后是灼热的呼吸喷在耳边【触觉+听觉·强】。
+First, a barely perceptible fragrance [smell: weak],
+then a light touch of fingertips [touch: moderate],
+finally warm breath beside her ear [touch + sound: strong].
 </output>
 </example>
 
 <example>
-<input>欲念克制</input>
+<input>Restrained desire</input>
 <output>
-他的手悬在半空，指尖离她的脸颊只有一寸。
-那么近，近得能感受到她肌肤的温度。
-但他终究没有碰下去。
-缓缓收回手，攥成拳。
+His hand hovered, fingertips an inch from her cheek.
+So close he could feel the warmth of her skin.
+But he did not touch her.
+He slowly withdrew his hand and closed it into a fist.
 </output>
 </example>
 
 <example>
-<input>留白技巧</input>
+<input>Omission technique</input>
 <output>
-烛火摇曳，在墙上投下两道交缠的影子。
-……
-不知过了多久，窗外的雨已经停了。
-她靠在他怀里，听着他平稳的心跳声。
+Candlelight flickered, casting two entwined shadows on the wall.
+...
+After an unknown interval, the rain outside had stopped.
+She leaned against him, listening to his steady heartbeat.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 感官堆砌（五感全用且篇幅相当） → ✅ 精简，突出主感官
-❌ 节奏单一（全程一个节奏） → ✅ 增加变化，长短句交替
-❌ 过于直白（直接描写过程） → ✅ 增加隐喻和留白
-❌ 与情感脱节（纯感官无情感） → ✅ 加强心理描写配合
-❌ 物化人物 → ✅ 尊重人物，感官服务情感
-❌ 低俗表达 → ✅ 追求文学美感
+❌ Sensory piling (all five senses in equal measure) → ✅ Simplify and emphasize dominant senses
+❌ One unchanging rhythm → ✅ Add variation; alternate long and short sentences
+❌ Too explicit (directly depicting the process) → ✅ Add metaphor and omission
+❌ Disconnected from emotion (sensation alone) → ✅ Coordinate with psychology
+❌ Objectifying characters → ✅ Respect characters; sensation serves emotion
+❌ Vulgar expression → ✅ Pursue literary beauty
 </errors>

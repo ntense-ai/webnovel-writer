@@ -1,40 +1,40 @@
-# Webnovel Writer 系统架构图
+# Webnovel Writer System Architecture Diagrams
 
-> 生成日期：2026-04-15
-> 覆盖范围：init → plan → write 全链路的读写关系
+> Generated: 2026-04-15
+> Scope: read/write relationships across the complete init → plan → write pipeline
 
-## 总链路
+## Overall Pipeline
 
 ```mermaid
 graph TB
-    subgraph USER["用户（User）"]
-        U_INPUT["用户输入"]
+    subgraph USER["User"]
+        U_INPUT["User input"]
     end
 
-    subgraph INIT["/webnovel-init（项目初始化）"]
-        INIT_COLLECT["Step 1-7: 交互收集"]
-        INIT_GEN["执行生成"]
-        INIT_STORY["story-system 初始化"]
+    subgraph INIT["/webnovel-init（Project initialization）"]
+        INIT_COLLECT["Step 1-7: Interactive collection"]
+        INIT_GEN["Run generation"]
+        INIT_STORY["story-system initialization"]
     end
 
-    subgraph PLAN["/webnovel-plan（大纲规划）"]
-        PLAN_LOAD["Step 1: 加载数据"]
-        PLAN_SETTING["Step 2: 补齐设定"]
-        PLAN_VOLUME["Step 3-6: 卷级规划"]
-        PLAN_CHAPTER["Step 7: 拆章纲"]
-        PLAN_WRITEBACK["Step 8: 设定写回"]
-        PLAN_STORY["story-system 刷新"]
+    subgraph PLAN["/webnovel-plan（Outline planning）"]
+        PLAN_LOAD["Step 1: Load data"]
+        PLAN_SETTING["Step 2: Complete settings"]
+        PLAN_VOLUME["Step 3-6: Volume planning"]
+        PLAN_CHAPTER["Step 7: Break down chapter outlines"]
+        PLAN_WRITEBACK["Step 8: Write settings back"]
+        PLAN_STORY["story-system refresh"]
     end
 
-    subgraph WRITE["/webnovel-write（写章流程）"]
-        W_PREFLIGHT["准备: preflight"]
-        W_STORY["准备: story-system 刷新合同树"]
+    subgraph WRITE["/webnovel-write（Chapter-writing workflow）"]
+        W_PREFLIGHT["Preparation: preflight"]
+        W_STORY["Preparation: story-system refresh contract tree"]
         W_STEP1["Step 1: context-agent"]
-        W_STEP2["Step 2: 起草正文"]
-        W_STEP3["Step 3: reviewer 审查"]
-        W_STEP4["Step 4: 润色"]
+        W_STEP2["Step 2: Draft prose"]
+        W_STEP3["Step 3: reviewer assessment"]
+        W_STEP4["Step 4: Polishing"]
         W_STEP5["Step 5: data-agent + commit"]
-        W_STEP6["Step 6: git 备份"]
+        W_STEP6["Step 6: Git backup"]
     end
 
     U_INPUT --> INIT_COLLECT
@@ -46,18 +46,18 @@ graph TB
     W_PREFLIGHT --> W_STORY --> W_STEP1 --> W_STEP2 --> W_STEP3 --> W_STEP4 --> W_STEP5 --> W_STEP6
 ```
 
-## Init 阶段读写
+## Init Read/Write Flow
 
 ```mermaid
 graph LR
     subgraph INIT["/webnovel-init"]
-        I1["交互收集（7 步）"]
+        I1["Interactive collection (7 steps)"]
         I2["init_project.py"]
-        I3["Patch 总纲"]
+        I3["Patch master outline"]
         I4["story-system CLI"]
     end
 
-    subgraph STORE_INIT["产出文件"]
+    subgraph STORE_INIT["Output files"]
         S_STATE["state.json"]
         S_SETTING["设定集/*.md"]
         S_OUTLINE["大纲/总纲.md"]
@@ -66,7 +66,7 @@ graph LR
         S_ANTI["anti_patterns.json"]
     end
 
-    subgraph REF_INIT["读取参考"]
+    subgraph REF_INIT["Reference inputs"]
         R_GENRE_TROPES["genre-tropes.md"]
         R_GENRE_PROFILE["genre-profiles.md"]
         R_WORLD["worldbuilding/*.md"]
@@ -76,9 +76,9 @@ graph LR
 
     R_GENRE_TROPES -->|"Read"| I1
     R_GENRE_PROFILE -->|"Read"| I1
-    R_WORLD -->|"Read（按需）"| I1
-    R_CREATIVE -->|"Read（按需）"| I1
-    R_CSV_NAME -->|"reference_search（命名）"| I1
+    R_WORLD -->|"Read (as needed)"| I1
+    R_CREATIVE -->|"Read (as needed)"| I1
+    R_CSV_NAME -->|"reference_search (naming)"| I1
 
     I1 --> I2
     I2 -->|"Write"| S_STATE
@@ -93,71 +93,71 @@ graph LR
     I4 -->|"Write"| S_MASTER
     I4 -->|"Write"| S_ANTI
 
-    subgraph CSV_ENGINE["story-system 引擎"]
-        CSV_ROUTE["题材与调性推理.csv（路由）"]
-        CSV_REASON["裁决规则.csv（裁决）"]
-        CSV_BASE["基础表 x5（命名/人设/技法/设定/场景）"]
-        CSV_DYN["动态表 x2（桥段/爽点）"]
+    subgraph CSV_ENGINE["story-system engine"]
+        CSV_ROUTE["题材与调性推理.csv (routing)"]
+        CSV_REASON["裁决规则.csv (adjudication)"]
+        CSV_BASE["5 base tables (naming/characters/techniques/settings/scenes)"]
+        CSV_DYN["2 dynamic tables (plot beats/payoffs)"]
     end
 
-    CSV_ROUTE -->|"Read（路由匹配）"| I4
-    CSV_REASON -->|"Read（裁决匹配）"| I4
-    CSV_BASE -->|"Read（BM25 检索）"| I4
-    CSV_DYN -->|"Read（BM25 检索）"| I4
+    CSV_ROUTE -->|"Read (route matching)"| I4
+    CSV_REASON -->|"Read (adjudication matching)"| I4
+    CSV_BASE -->|"Read (BM25 retrieval)"| I4
+    CSV_DYN -->|"Read (BM25 retrieval)"| I4
 ```
 
-## Plan 阶段读写
+## Plan Read/Write Flow
 
 ```mermaid
 graph LR
     subgraph PLAN["/webnovel-plan"]
-        P1["Step 1: 加载"]
-        P2["Step 2: 补设定"]
-        P3["Step 4-5: 节拍表+时间线"]
-        P4["Step 6: 卷纲"]
-        P5["Step 7: 拆章纲"]
-        P6["Step 8: 设定写回"]
+        P1["Step 1: Load"]
+        P2["Step 2: Complete settings"]
+        P3["Step 4-5: Beat sheet + timeline"]
+        P4["Step 6: Volume outline"]
+        P5["Step 7: Break down chapter outlines"]
+        P6["Step 8: Write settings back"]
         P7["story-system"]
     end
 
-    subgraph READ_PLAN["读取"]
+    subgraph READ_PLAN["Inputs"]
         R_STATE2["state.json"]
         R_OUTLINE2["大纲/总纲.md"]
         R_SETTING2["设定集/*.md"]
         R_IDEA2["idea_bank.json"]
-        R_SUMMARY["summaries/（跨卷时）"]
-        R_KNOWLEDGE["knowledge query（跨卷时）"]
-        R_LOOPS["memory-contract get-open-loops（跨卷时）"]
+        R_SUMMARY["summaries/ (between volumes)"]
+        R_KNOWLEDGE["knowledge query (between volumes)"]
+        R_LOOPS["memory-contract get-open-loops (between volumes)"]
         R_MASTER2["MASTER_SETTING.json"]
     end
 
-    subgraph WRITE_PLAN["写入"]
+    subgraph WRITE_PLAN["Outputs"]
         W_BEAT["大纲/第X卷-节拍表.md"]
         W_TIMELINE["大纲/第X卷-时间线.md"]
         W_DETAIL["大纲/第X卷-详细大纲.md"]
-        W_SETTING2["设定集/*.md（增量）"]
+        W_SETTING2["设定集/*.md (incremental)"]
         W_VOLUME["volumes/volume_NNN.json"]
         W_CHAP_CONTRACT["chapters/chapter_NNN.json"]
         W_REVIEW_CONTRACT["reviews/chapter_NNN.review.json"]
     end
 
-    subgraph REF_PLAN["参考"]
+    subgraph REF_PLAN["References"]
         R_GP["genre-profiles.md"]
         R_STRAND["strand-weave-pattern.md"]
         R_COOL["cool-points-guide.md"]
-        R_CSV_PLAN["CSV 检索（场景/命名）"]
+        R_CSV_PLAN["CSV retrieval (scenes/naming)"]
     end
 
     R_STATE2 -->|"Read"| P1
     R_OUTLINE2 -->|"Read"| P1
     R_SETTING2 -->|"Read"| P1
-    R_IDEA2 -->|"Read（按需）"| P1
-    R_SUMMARY -->|"Read（跨卷）"| P1
-    R_KNOWLEDGE -->|"Bash（跨卷）"| P1
-    R_LOOPS -->|"Bash（跨卷）"| P1
-    R_MASTER2 -->|"Read（调性参照）"| P4
+    R_IDEA2 -->|"Read (as needed)"| P1
+    R_SUMMARY -->|"Read (between volumes)"| P1
+    R_KNOWLEDGE -->|"Bash (between volumes)"| P1
+    R_LOOPS -->|"Bash (between volumes)"| P1
+    R_MASTER2 -->|"Read (tone reference)"| P4
 
-    P2 -->|"Write（增量）"| W_SETTING2
+    P2 -->|"Write (incremental)"| W_SETTING2
     P3 -->|"Write"| W_BEAT
     P3 -->|"Write"| W_TIMELINE
     P4 --> P5
@@ -165,10 +165,10 @@ graph LR
 
     R_GP -->|"Read"| P4
     R_STRAND -->|"Read"| P4
-    R_COOL -->|"Read（按需）"| P4
-    R_CSV_PLAN -->|"Bash（检索）"| P4
+    R_COOL -->|"Read (as needed)"| P4
+    R_CSV_PLAN -->|"Bash (retrieval)"| P4
 
-    P6 -->|"Write（增量）"| W_SETTING2
+    P6 -->|"Write (incremental)"| W_SETTING2
 
     P5 --> P7
     R_STATE2 -->|"Read genre"| P7
@@ -177,43 +177,43 @@ graph LR
     P7 -->|"Write"| W_REVIEW_CONTRACT
 ```
 
-## Write 阶段读写（核心链路）
+## Write Read/Write Flow (Core Pipeline)
 
 ```mermaid
 graph TB
-    subgraph PREP["准备阶段"]
+    subgraph PREP["Preparation"]
         PRE1["preflight + where"]
         PRE2["story-system CLI"]
     end
 
-    subgraph STEP1["Step 1: context-agent（子代理）"]
+    subgraph STEP1["Step 1: context-agent (subagent)"]
         CA_LOAD["load-context"]
-        CA_READ["Read 章纲原文"]
-        CA_QUERY["按需 query-entity / query-rules"]
-        CA_OUT["输出: 写作任务书"]
+        CA_READ["Read original chapter outline"]
+        CA_QUERY["query-entity / query-rules as needed"]
+        CA_OUT["Output: writing brief"]
     end
 
-    subgraph STEP2["Step 2: 起草正文"]
-        S2_WRITE["Write 正文"]
-        S2_CSV["reference_search（按需）"]
+    subgraph STEP2["Step 2: Draft prose"]
+        S2_WRITE["Write prose"]
+        S2_CSV["reference_search (as needed)"]
     end
 
-    subgraph STEP3["Step 3: reviewer（子代理）"]
-        REV_READ["Read 正文"]
-        REV_CONTRACT["Read 审查合同"]
+    subgraph STEP3["Step 3: reviewer (subagent)"]
+        REV_READ["Read prose"]
+        REV_CONTRACT["Read review contract"]
         REV_OUT["Write review_results.json"]
         REV_PIPE["review-pipeline --save-metrics"]
     end
 
-    subgraph STEP4["Step 4: 润色"]
+    subgraph STEP4["Step 4: Polishing"]
         S4_REF["Read polish-guide / typesetting / style-adapter"]
-        S4_EDIT["Edit 正文"]
+        S4_EDIT["Edit prose"]
     end
 
     subgraph STEP5["Step 5: data-agent + commit"]
-        DA_READ["Read 正文"]
+        DA_READ["Read prose"]
         DA_ENTITY["Bash: get-core-entities / recent-appearances"]
-        DA_ARTIFACTS["Write 4份 artifacts"]
+        DA_ARTIFACTS["Write 4 artifacts"]
         COMMIT["chapter-commit CLI"]
         PROJ["projection writers x5"]
     end
@@ -222,19 +222,19 @@ graph TB
         GIT["git add + commit"]
     end
 
-    %% 数据存储
-    subgraph STORES["数据存储"]
-        ST_STATE["state.json（状态）"]
-        ST_INDEX["index.db（实体/关系）"]
-        ST_SUMMARY["summaries/chNNNN.md（摘要）"]
-        ST_MEMORY["memory_scratchpad.json（记忆）"]
-        ST_VECTOR["vector_db（向量索引）"]
-        ST_COMMIT["commits/chapter_NNN.commit.json（写后真源）"]
+    %% Data stores
+    subgraph STORES["Data stores"]
+        ST_STATE["state.json (state)"]
+        ST_INDEX["index.db (entities/relationships)"]
+        ST_SUMMARY["summaries/chNNNN.md (summaries)"]
+        ST_MEMORY["memory_scratchpad.json (memory)"]
+        ST_VECTOR["vector_db (vector index)"]
+        ST_COMMIT["commits/chapter_NNN.commit.json (post-writing source of truth)"]
         ST_CHAPTER["正文/第NNNN章.md"]
-        ST_TMP["tmp/*.json（中间产物）"]
+        ST_TMP["tmp/*.json (intermediate artifacts)"]
     end
 
-    subgraph CONTRACTS["合同树（.story-system/）"]
+    subgraph CONTRACTS["Contract tree (.story-system/)"]
         CT_MASTER["MASTER_SETTING.json"]
         CT_VOLUME["volumes/volume_NNN.json"]
         CT_CHAPTER["chapters/chapter_NNN.json"]
@@ -242,27 +242,27 @@ graph TB
         CT_ANTI["anti_patterns.json"]
     end
 
-    subgraph OUTLINE["大纲"]
+    subgraph OUTLINE["Outline"]
         OL_DETAIL["大纲/第X卷-详细大纲.md"]
     end
 
-    subgraph CSV["CSV 知识层"]
-        CSV_R["题材与调性推理.csv（路由）"]
-        CSV_J["裁决规则.csv（裁决）"]
-        CSV_ALL["基础表+动态表 x7"]
+    subgraph CSV["CSV knowledge layer"]
+        CSV_R["题材与调性推理.csv (routing)"]
+        CSV_J["裁决规则.csv (adjudication)"]
+        CSV_ALL["7 base + dynamic tables"]
     end
 
-    subgraph REFS["润色参考"]
+    subgraph REFS["Polishing references"]
         REF_POLISH["polish-guide.md"]
         REF_TYPE["typesetting.md"]
         REF_STYLE["style-adapter.md"]
     end
 
-    %% 准备阶段
+    %% Preparation
     ST_STATE -->|"Read genre"| PRE2
-    CSV_R -->|"Read（路由）"| PRE2
-    CSV_J -->|"Read（裁决）"| PRE2
-    CSV_ALL -->|"Read（BM25）"| PRE2
+    CSV_R -->|"Read (routing)"| PRE2
+    CSV_J -->|"Read (adjudication)"| PRE2
+    CSV_ALL -->|"Read (BM25)"| PRE2
     PRE2 -->|"Write"| CT_MASTER
     PRE2 -->|"Write"| CT_VOLUME
     PRE2 -->|"Write"| CT_CHAPTER
@@ -272,13 +272,13 @@ graph TB
     %% Step 1
     PRE2 --> CA_LOAD
     CA_LOAD -->|"Bash: load-context"| ST_STATE
-    CA_LOAD -.->|"内含 contracts"| CT_MASTER
-    CA_LOAD -.->|"内含 summaries"| ST_SUMMARY
-    CA_LOAD -.->|"内含 protagonist"| ST_STATE
-    CA_LOAD -.->|"内含 loops"| ST_STATE
+    CA_LOAD -.->|"includes contracts"| CT_MASTER
+    CA_LOAD -.->|"includes summaries"| ST_SUMMARY
+    CA_LOAD -.->|"includes protagonist"| ST_STATE
+    CA_LOAD -.->|"includes loops"| ST_STATE
     CA_READ -->|"Read"| OL_DETAIL
-    CA_QUERY -->|"Bash（按需）"| ST_INDEX
-    CA_OUT -->|"输出任务书"| STEP2
+    CA_QUERY -->|"Bash (as needed)"| ST_INDEX
+    CA_OUT -->|"Output brief"| STEP2
 
     %% Step 2
     S2_CSV -->|"Bash: reference_search"| CSV_ALL
@@ -315,23 +315,23 @@ graph TB
     PROJ --> GIT
 ```
 
-## 六层主链总览
+## Six-Layer Mainline Overview
 
 ```mermaid
 graph TB
-    subgraph L1["Layer 1: 知识层（Knowledge）"]
-        CSV_TABLES["9 张 CSV 表"]
-        CSV_CONFIG["CSV_CONFIG（per-table 注册）"]
-        REF_MD["reference md 文件"]
+    subgraph L1["Layer 1: Knowledge"]
+        CSV_TABLES["9 CSV tables"]
+        CSV_CONFIG["CSV_CONFIG (per-table registration)"]
+        REF_MD["reference Markdown files"]
     end
 
-    subgraph L2["Layer 2: 裁决层（Reasoning）"]
+    subgraph L2["Layer 2: Reasoning"]
         ROUTE["题材与调性推理.csv → _route()"]
         REASON["裁决规则.csv → _load_reasoning()"]
         APPLY["_apply_reasoning() + _rank_anti_patterns()"]
     end
 
-    subgraph L3["Layer 3: 合同层（Contract）"]
+    subgraph L3["Layer 3: Contract"]
         MASTER["MASTER_SETTING.json"]
         VOLUME["VOLUME_BRIEF"]
         CHAPTER["CHAPTER_BRIEF + reasoning"]
@@ -339,19 +339,19 @@ graph TB
         ANTI_P["anti_patterns.json"]
     end
 
-    subgraph L4["Layer 4: 上下文层（Context）"]
-        CTX_MGR["context_manager.py（纯 JSON）"]
-        LOAD_CTX["load-context（轻量基础包）"]
-        KNOW_Q["knowledge_query.py（时序查询）"]
+    subgraph L4["Layer 4: Context"]
+        CTX_MGR["context_manager.py (pure JSON)"]
+        LOAD_CTX["load-context (lightweight base package)"]
+        KNOW_Q["knowledge_query.py (temporal queries)"]
     end
 
-    subgraph L5["Layer 5: 提交层（Commit）"]
-        DA["data-agent（提取事实）"]
-        COMMIT_SVC["chapter-commit（写后真源）"]
+    subgraph L5["Layer 5: Commit"]
+        DA["data-agent (extract facts)"]
+        COMMIT_SVC["chapter-commit (post-writing source of truth)"]
         PROJ_ROUTER["EventProjectionRouter"]
     end
 
-    subgraph L6["Layer 6: 投影层（Projection）"]
+    subgraph L6["Layer 6: Projection"]
         PW_STATE["state_projection_writer"]
         PW_INDEX["index_projection_writer"]
         PW_SUMMARY["summary_projection_writer"]
@@ -359,7 +359,7 @@ graph TB
         PW_VECTOR["vector_projection_writer"]
     end
 
-    subgraph STORES["存储"]
+    subgraph STORES["Storage"]
         S_STATE["state.json"]
         S_INDEX["index.db"]
         S_SUMMARY["summaries/"]
@@ -400,31 +400,31 @@ graph TB
     PW_VECTOR -->|"Write"| S_VECTOR
 ```
 
-## 题材流通路径
+## Genre Data Flow
 
 ```mermaid
 graph LR
-    INIT_USER["用户选择题材（如'修仙'）"]
-    STATE_GENRE["state.json<br/>project.genre='修仙'<br/>（init 配置快照 / read-model）"]
+    INIT_USER["User selects a genre (e.g. '修仙', cultivation)"]
+    STATE_GENRE["state.json<br/>project.genre='修仙'<br/> (init configuration snapshot / read-model)"]
     
     STORY_CLI["story-system CLI<br/>--genre '修仙'"]
     
     ROUTE_TABLE["题材与调性推理.csv<br/>_route(): fallback"]
-    REASON_TABLE["裁决规则.csv<br/>_load_reasoning('修仙')<br/>别名匹配→东方仙侠"]
+    REASON_TABLE["裁决规则.csv<br/>_load_reasoning('修仙')<br/>alias match → 东方仙侠 (Eastern xianxia)"]
     
     MASTER_OUT["MASTER_SETTING.json<br/>route.primary_genre"]
     CHAPTER_OUT["chapter_NNN.json<br/>reasoning.genre='东方仙侠'<br/>reasoning.style_priority<br/>reasoning.pacing_strategy"]
     
-    CTX_AGENT["context-agent<br/>从 load-context 读取<br/>reasoning 字段"]
+    CTX_AGENT["context-agent<br/>Read reasoning fields<br/>from load-context"]
     
-    BRIEF["写作任务书 第4段<br/>'保持冷硬算计感...'"]
+    BRIEF["Writing brief, section 4<br/>'Keep a cold, calculating feel...'"]
 
-    INIT_USER -->|"init 写入"| STATE_GENRE
+    INIT_USER -->|"init writes"| STATE_GENRE
     STATE_GENRE -->|"Read genre"| STORY_CLI
     STORY_CLI -->|"query"| ROUTE_TABLE
     STORY_CLI -->|"genre fallback"| REASON_TABLE
     STORY_CLI -->|"persist"| MASTER_OUT
     STORY_CLI -->|"persist"| CHAPTER_OUT
     CHAPTER_OUT -->|"load-context"| CTX_AGENT
-    CTX_AGENT -->|"翻译为自然语言"| BRIEF
+    CTX_AGENT -->|"Translate into natural language"| BRIEF
 ```

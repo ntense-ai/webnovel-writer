@@ -1,59 +1,59 @@
-# 插件发版指南
+# Plugin Release Guide
 
-本项目的发布说明优先面向中文网文作者：先说明这版对写书有什么帮助，再补维护者关心的 CLI、schema、测试和 CI 细节。
+Release notes for this project prioritize Chinese-language web-novel authors: first explain how the release helps them write, then provide CLI, schema, testing, and CI details for maintainers.
 
-## 发版前审计
+## Pre-Release Audit
 
-发布说明必须覆盖“上一个正式版本 tag 到本次发布提交”的全部变化，而不是只写最后一次提交。
+Release notes must cover all changes from the previous official version tag to the release commit, not just the latest commit.
 
-发版前先确认版本边界：
+First establish the version boundary:
 
 ```bash
 git tag --list "v*" --sort=-v:refname
-git log --oneline v上一版本..HEAD
-git diff --stat v上一版本..HEAD
+git log --oneline vPREVIOUS_VERSION..HEAD
+git diff --stat vPREVIOUS_VERSION..HEAD
 ```
 
-把变化分成四类：
+Classify changes into four groups:
 
-- 给作者看的变化：写章、审查、规划、查询、恢复、文档等用户能感受到的变化。
-- 兼容性：是否需要迁移旧书项目，是否改变现有 `/webnovel-*` 命令习惯。
-- 已知影响：跳过项、限制、需要注意的风险。
-- 给维护者：新增 CLI、schema、helper、测试、CI、内部重构。
+- Author-facing changes: noticeable improvements to writing, review, planning, queries, recovery, documentation, and other user workflows.
+- Compatibility: whether existing book projects need migration or established `/webnovel-*` usage changes.
+- Known impact: skipped items, limitations, and risks to note.
+- Maintainer details: new CLI commands, schemas, helpers, tests, CI, and internal refactoring.
 
-## 发布说明来源
+## Release Note Sources
 
-每个正式版本都必须有两份文档：
+Every official release must have two documents:
 
-- `CHANGELOG.md`：长期更新日志。
-- `releases/vX.Y.Z.md`：GitHub Release 正文的唯一来源。
+- `CHANGELOG.md`: The long-term changelog.
+- `releases/vX.Y.Z.md`: The sole source for the GitHub Release body.
 
-README 只保留一句中文用户收益摘要，例如：
+Keep only a one-sentence author-benefit summary in the README, for example:
 
 ```md
-| **v6.2.0 (当前)** | 写章结果更清楚，失败后更好恢复 |
+| **v6.2.0 (current)** | Clearer writing results and easier recovery after failures |
 ```
 
-不要把 README 当完整 changelog。
+Do not use the README as a complete changelog.
 
-## 版本同步
+## Version Synchronization
 
-写好 `CHANGELOG.md` 和 `releases/vX.Y.Z.md` 后，再同步版本号和 README 摘要：
+After writing `CHANGELOG.md` and `releases/vX.Y.Z.md`, synchronize the version numbers and README summary:
 
 ```bash
-python -X utf8 webnovel-writer/scripts/sync_plugin_version.py --version X.Y.Z --release-notes "一句中文用户收益"
+python -X utf8 webnovel-writer/scripts/sync_plugin_version.py --version X.Y.Z --release-notes "One-sentence author benefit"
 ```
 
-该命令会更新：
+This command updates:
 
 - `webnovel-writer/.claude-plugin/plugin.json`
 - `.claude-plugin/marketplace.json`
-- `README.md` 版本徽章
-- `README.md` 当前版本行
+- The `README.md` version badge
+- The `README.md` current-version row
 
-## 本地校验
+## Local Validation
 
-提交前至少运行：
+Before committing, run at least:
 
 ```bash
 python -X utf8 webnovel-writer/scripts/sync_plugin_version.py --check --expected-version X.Y.Z
@@ -62,33 +62,33 @@ python -X utf8 webnovel-writer/scripts/validate_plugin_package.py
 git diff --check
 ```
 
-涉及代码或提示词变化时，还要运行对应 pytest、行为评估或 smoke test，并把结果写进 `releases/vX.Y.Z.md` 的“验证”小节。
+For code or prompt changes, also run the relevant pytest suites, behavioral evaluations, or smoke tests, and record results in the verification section of `releases/vX.Y.Z.md`.
 
-## 自动发版
+## Automated Releases
 
-1. 确认本地校验通过。
-2. 提交并推送版本说明和版本元数据到 `master`。
-3. `Plugin Release` 工作流会自动：
-   - 校验 `plugin.json`、`marketplace.json`、README 版本一致。
-   - 校验 `CHANGELOG.md` 和 `releases/vX.Y.Z.md` 存在且覆盖上个 tag。
-   - 校验插件包结构。
-   - 创建并推送 `vX.Y.Z` tag。
-   - 使用 `releases/vX.Y.Z.md` 创建 GitHub Release。
+1. Confirm that local validation passes.
+2. Commit and push release notes and version metadata to `master`.
+3. The `Plugin Release` workflow automatically:
+   - Checks that versions in `plugin.json`, `marketplace.json`, and README match.
+   - Checks that `CHANGELOG.md` and `releases/vX.Y.Z.md` exist and cover changes since the previous tag.
+   - Validates the plugin package structure.
+   - Creates and pushes the `vX.Y.Z` tag.
+   - Creates the GitHub Release using `releases/vX.Y.Z.md`.
 
-如果对应 tag 已存在，工作流不会重复打 tag；如果 GitHub Release 已存在，也会自动跳过。若之前只创建了 tag 但 Release 缺失，重跑工作流会补建 Release。
+If the tag already exists, the workflow does not create it again; it also skips an existing GitHub Release. If a previous attempt created the tag but not the Release, rerunning the workflow creates the missing Release.
 
-也可以在 Actions 页面手动选择 `Plugin Release` 兜底触发。手动运行时可以输入 `version`，也可以留空让工作流从 `plugin.json` 读取当前版本。
+You can also manually trigger `Plugin Release` from the Actions page as a fallback. Supply `version`, or leave it empty to read the current version from `plugin.json`.
 
-## 自动版本校验
+## Automated Version Checks
 
-`Plugin Version Check` 工作流会在 Push / PR 时自动检查：
+The `Plugin Version Check` workflow automatically checks on Push / PR that:
 
-- 版本元数据一致。
-- README 版本徽章一致。
-- 当前版本有 release note。
-- `CHANGELOG.md` 包含当前版本。
+- Version metadata is consistent.
+- The README version badge is consistent.
+- Release notes exist for the current version.
+- `CHANGELOG.md` includes the current version.
 
-触发文件：
+Trigger files:
 
 - `.claude-plugin/marketplace.json`
 - `webnovel-writer/.claude-plugin/plugin.json`

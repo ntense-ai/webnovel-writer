@@ -1,361 +1,363 @@
-# 追读力分类标准 (Reading Power Taxonomy)
+# Reading Power Taxonomy
 
-> **定位**：本文档定义"追读力"相关的统一分类标准，供 Step 1.5 / Context Agent / Checkers 共享使用。
+> **Purpose**: Unified reader-retention classifications shared by Step 1.5 / Context Agent / Checkers.
 >
-> **主服务 skill**: `webnovel-write` Step 1
-> **次服务 skill**: `webnovel-plan` Step 7（按需）、`webnovel-review` Step 4
-> **内容层级**: 提醒层 / 知识补充层
+> **Primary skill**: `webnovel-write` Step 1
+> **Secondary skills**: `webnovel-plan` Step 7 (as needed), `webnovel-review` Step 4
+> **Content layers**: Reminders / supplementary knowledge
 >
-> **原则**：所有分类用于"指导性建议"，不做硬性评分裁决。
+> **Principle**: Classifications provide guidance, not rigid scoring decisions.
 >
 ---
 
-## 一、钩子类型 (Hook Types)
+## I. Hook Types
 
-### 1.1 现有类型（兼容映射）
+### 1.1 Existing Types (Compatibility Mapping)
 
-| 旧类型 | 新 Taxonomy | 说明 |
+| Legacy type | New taxonomy | Description |
 |--------|-------------|------|
-| 危机型 | 危机钩 (Crisis Hook) | 敌人出现/危险逼近 |
-| 反常型 | 悬念钩 (Mystery Hook) | 信息缺口/未解之谜 |
-| 利益型 | 渴望钩 (Desire Hook) | 好事即将发生/奖励可期 |
+| `危机型` | Crisis Hook (`危机钩`) | Enemy appears / danger approaches |
+| `反常型` | Mystery Hook (`悬念钩`) | Information gap / unsolved mystery |
+| `利益型` | Desire Hook (`渴望钩`) | Good things approaching / expected reward |
 
-### 1.2 扩展类型
+Chinese names in backticks are retained runtime labels.
 
-#### 1.2.1 情绪钩 (Emotion Hook)
+### 1.2 Extended Types
 
-**定义**：通过触发读者的强烈情绪反应（愤怒/心疼/共情/不公/羞耻/心动）来驱动阅读。
+#### 1.2.1 Emotion Hook (`情绪钩`)
 
-**触发场景**：
-- 主角遭受不白之冤
-- 被信任的人背叛
-- 弱者被欺凌
-- 关系突破/心动时刻
+**Definition**: Drive reading by triggering strong emotion (anger/protectiveness/empathy/injustice/embarrassment/attraction).
 
-**题材适配**：
-| 题材 | 偏好情绪 | 强度建议 |
+**Trigger scenarios**:
+- The protagonist is falsely accused.
+- A trusted person betrays them.
+- The weak are bullied.
+- A relationship breakthrough / moment of attraction.
+
+**Genre fit**:
+| Genre | Preferred emotion | Suggested intensity |
 |------|---------|---------|
-| 言情 | 心疼/心动/羞耻 | strong |
-| 爽文 | 愤怒/不公 | medium→strong |
-| 悬疑 | 共情/恐惧 | medium |
+| Romance | Protectiveness/attraction/embarrassment | strong |
+| Wish fulfillment | Anger/injustice | medium→strong |
+| Mystery | Empathy/fear | medium |
 
-**过渡章降级**：可用"轻情绪"（如淡淡的担忧/期待）替代强情绪。
+**Transitional-chapter reduction**: Mild emotions such as faint worry/anticipation may replace intense ones.
 
-**软提示问句**：
-- 本章结尾读者会产生什么情绪？
-- 这个情绪是否足以让他们想知道"接下来怎么办"？
+**Guiding questions**:
+- What emotion will readers feel at the chapter's end?
+- Is it enough to make them wonder "what happens next"?
 
-**常见误用**：
-- ❌ 情绪无来由（没有铺垫就要求读者共情）
-- ❌ 情绪与角色行为不匹配
-- ❌ 过度煽情导致疲劳
+**Common misuse**:
+- ❌ Unmotivated emotion: demanding empathy without setup.
+- ❌ Emotion mismatched with character behavior.
+- ❌ Excessive sentimentality causing fatigue.
 
-**示例**：
-- 爽文："萧炎看着倒在血泊中的药老，拳头攥紧——他发誓，这笔账一定要讨回来。"
-- 言情："她终于明白，那个从不解释的男人，一直在用自己的方式保护她。"
-- 悬疑："监控里那个身影，分明是三天前已经死去的人。"
+**Examples**:
+- Wish fulfillment: "Xiao Yan clenched his fists at the sight of Yao Lao lying in blood. He swore this debt would be repaid."
+- Romance: "She finally understood: the man who never explained himself had been protecting her in his own way all along."
+- Mystery: "The figure on the surveillance footage was unmistakably the person who had died three days earlier."
 
 ---
 
-#### 1.2.2 选择钩 (Choice Hook)
+#### 1.2.2 Choice Hook (`选择钩`)
 
-**定义**：通过设置两难抉择/高风险决策来驱动阅读，读者想知道角色会如何选择。
+**Definition**: Drive reading with dilemmas/high-risk decisions; readers want to know what the character chooses.
 
-**触发场景**：
-- 生死二选一
-- 利益与道义冲突
-- 误会导致的抉择
-- 时间压力下的决定
+**Trigger scenarios**:
+- A life-or-death choice.
+- Self-interest conflicts with morality.
+- A misunderstanding forces a decision.
+- A choice under time pressure.
 
-**题材适配**：
-| 题材 | 偏好选择类型 | 强度建议 |
+**Genre fit**:
+| Genre | Preferred choice | Suggested intensity |
 |------|-------------|---------|
-| 悬疑 | 真相vs安全 | strong |
-| 言情 | 感情vs现实 | medium→strong |
-| 爽文 | 冒险vs稳妥 | medium |
+| Mystery | Truth vs safety | strong |
+| Romance | Love vs practical reality | medium→strong |
+| Wish fulfillment | Risk vs caution | medium |
 
-**过渡章降级**：可用"小选择"（如去哪/见谁/信谁）替代生死抉择。
+**Transitional-chapter reduction**: Small choices (where to go / whom to meet / whom to trust) may replace life-or-death dilemmas.
 
-**软提示问句**：
-- 角色面临什么选择？
-- 两个选项各有什么代价？
-- 读者会站在哪一边？
+**Guiding questions**:
+- What choice does the character face?
+- What does each option cost?
+- Which side will readers take?
 
-**常见误用**：
-- ❌ 选择没有代价（假两难）
-- ❌ 正确答案太明显
-- ❌ 选择与角色性格不符
+**Common misuse**:
+- ❌ Choices without cost (false dilemmas).
+- ❌ An obvious correct answer.
+- ❌ A choice inconsistent with characterization.
 
-**示例**：
-- 悬疑："门后传来女儿的哭声，但规则明确写着：不要开门。"
-- 言情："机票已经订好，行李已经打包——她只需要决定，要不要回头看他最后一眼。"
-- 爽文："吞下这颗丹药，有三成概率突破，七成概率走火入魔。"
+**Examples**:
+- Mystery: "His daughter was crying behind the door, but the rule was explicit: Do not open it."
+- Romance: "The flight was booked and her bags packed. All she had to decide was whether to turn back for one last look at him."
+- Wish fulfillment: "Swallowing this pill offered a thirty-percent chance of breakthrough and a seventy-percent chance of cultivation deviation."
 
 ---
 
-#### 1.2.3 渴望钩 (Desire Hook)
+#### 1.2.3 Desire Hook (`渴望钩`)
 
-**定义**：通过展示可期待的奖励/成就/进展来驱动阅读，读者想看到愿望实现的过程。
+**Definition**: Drive reading with anticipated rewards/achievements/progress; readers want to see wishes fulfilled.
 
-**触发场景**：
-- 突破在即
-- 宝物将得
-- 复仇时机成熟
-- 关系即将进展
-- 真相呼之欲出
+**Trigger scenarios**:
+- A breakthrough is imminent.
+- Treasure is within reach.
+- The moment for revenge has arrived.
+- A relationship is about to advance.
+- The truth is nearly visible.
 
-**子类型**：
-| 子类型 | 描述 | 示例 |
+**Subtypes**:
+| Subtype | Description | Example |
 |--------|------|------|
-| 成长渴望 | 想看主角变强 | "再有三天，就能突破了" |
-| 关系渴望 | 想看CP发糖 | "她答应了那个约定" |
-| 复仇渴望 | 想看反派倒霉 | "王少不知道，他的末日近在眼前" |
-| 真相渴望 | 想知道谜底 | "答案或许就在这块玉佩里" |
-| 收获渴望 | 想看获得好东西 | "这朵火莲，足以让他脱胎换骨" |
+| Growth | Want to see the protagonist strengthen | "Three more days, and he could break through." |
+| Relationship | Want to see the couple grow closer | "She agreed to the promise." |
+| Revenge | Want to see the villain suffer | "Young Master Wang did not know his downfall was at hand." |
+| Truth | Want the answer | "Perhaps the answer lay in this jade pendant." |
+| Reward | Want a valuable gain | "This fire lotus could transform him completely." |
 
-**题材适配**：
-| 题材 | 偏好渴望类型 | 强度建议 |
+**Genre fit**:
+| Genre | Preferred desire | Suggested intensity |
 |------|-------------|---------|
-| 爽文 | 成长/复仇/收获 | strong |
-| 言情 | 关系/真相 | medium→strong |
-| 悬疑 | 真相 | strong |
+| Wish fulfillment | Growth/revenge/reward | strong |
+| Romance | Relationship/truth | medium→strong |
+| Mystery | Truth | strong |
 
-**过渡章降级**：可用"小期待"（如即将见到某人/即将到达某地）替代大期待。
+**Transitional-chapter reduction**: Smaller expectations (meeting someone / reaching a place soon) may replace major ones.
 
-**软提示问句**：
-- 读者在期待什么？
-- 这个期待什么时候会实现？
-- 本章是否给了实现的希望？
+**Guiding questions**:
+- What are readers anticipating?
+- When will it happen?
+- Does this chapter give hope of fulfillment?
 
-**常见误用**：
-- ❌ 期待一直不兑现（狼来了效应）
-- ❌ 期待太容易实现（没有张力）
-- ❌ 期待与读者不共鸣
+**Common misuse**:
+- ❌ Expectations never fulfilled (crying wolf).
+- ❌ Fulfillment is too easy (no tension).
+- ❌ Expectations do not resonate with readers.
 
-**示例**：
-- 爽文："明日宗门大比，所有嘲笑过他的人，都将见证他的崛起。"
-- 言情："他说，等这件事结束，有话要对她说。"
-- 悬疑："十年前那场火灾的真相，就藏在这份档案里。"
-
----
-
-### 1.3 钩子强度分级
-
-| 强度 | 适用场景 | 特征 |
-|------|---------|------|
-| **strong** | 卷末/关键转折/大冲突前 | 读者必须立刻知道后续 |
-| **medium** | 普通剧情章 | 读者想知道，但可以等 |
-| **weak** | 过渡章/铺垫章 | 维持阅读惯性即可 |
-
-### 1.4 章内 vs 章末
-
-| 位置 | 常用钩子 | 作用 |
-|------|---------|------|
-| **章内** | 悬念钩、情绪钩 | 保持章内沉浸 |
-| **章末** | 危机钩、选择钩、渴望钩 | 驱动点下一章 |
+**Examples**:
+- Wish fulfillment: "At tomorrow's sect tournament, everyone who mocked him would witness his rise."
+- Romance: "He said that once this was over, he had something to tell her."
+- Mystery: "The truth about the fire ten years ago was hidden in this file."
 
 ---
 
-## 二、爽点模式 (Cool-Point Patterns)
+### 1.3 Hook Intensity
 
-### 2.1 现有6种模式（保留）
+| Intensity | Scenario | Characteristic |
+|------|---------|------|
+| **strong** | Volume end / key turn / before major conflict | Readers need to know immediately |
+| **medium** | Ordinary plot chapter | Readers want to know but can wait |
+| **weak** | Transition/setup chapter | Maintaining reading momentum is enough |
 
-| 模式 | 标识 | 典型触发 |
+### 1.4 Within-Chapter vs Chapter-End
+
+| Position | Common hooks | Function |
+|------|---------|------|
+| **Within chapter** | Mystery, emotion | Sustain immersion |
+| **Chapter end** | Crisis, choice, desire | Drive the next-chapter click |
+
+---
+
+## II. Payoff Patterns
+
+### 2.1 Six Existing Patterns (Retained)
+
+| Pattern / runtime label | Identifier | Typical trigger |
 |------|------|---------|
-| 装逼打脸 | Flex & Counter | 嘲讽→反转→震惊 |
-| 扮猪吃虎 | Underdog Reveal | 示弱→暴露→碾压 |
-| 越级反杀 | Underdog Victory | 差距→策略→逆转 |
-| 打脸权威 | Authority Challenge | 权威→挑战→成功 |
-| 反派翻车 | Villain Downfall | 得意→反杀→落幕 |
-| 甜蜜超预期 | Sweet Surprise | 期待→超预期→升华 |
+| Vindication (`装逼打脸`) | Flex & Counter | Mockery → reversal → shock |
+| Hidden expert (`扮猪吃虎`) | Underdog Reveal | Apparent weakness → reveal → domination |
+| Defeat a stronger enemy (`越级反杀`) | Underdog Victory | Gap → strategy → reversal |
+| Prove authority wrong (`打脸权威`) | Authority Challenge | Authority → challenge → success |
+| Villain's downfall (`反派翻车`) | Villain Downfall | Gloating → counterattack → defeat |
+| Sweeter than expected (`甜蜜超预期`) | Sweet Surprise | Expectation → exceeded expectation → emotional elevation |
 
-### 2.2 扩展模式
+### 2.2 Extended Patterns
 
-#### 2.2.1 迪化误解 (Misunderstanding Elevation)
+#### 2.2.1 Misunderstanding Elevation (`迪化误解`)
 
-**定义**：主角做了一件普通/随意的事，配角通过脑补认为主角深不可测、高人隐世。
+**Definition**: The protagonist does something ordinary/casual; supporting characters imagine hidden depths or a reclusive master.
 
-**核心结构**：
-1. 主角随意行为（无心插柳）
-2. 配角信息差（不知道主角真实情况）
-3. 配角脑补升华（合理化主角行为）
-4. 读者优越感（我知道真相）
+**Core structure**:
+1. Casual protagonist behavior (unintentional effect).
+2. Supporting characters' information gap (they do not know the truth).
+3. Their imagination elevates the act (rationalizing it).
+4. Reader superiority (knowing the truth).
 
-**题材适配**：
-| 题材 | 适用度 | 注意事项 |
+**Genre fit**:
+| Genre | Suitability | Caution |
 |------|--------|---------|
-| 爽文/系统流 | 高 | 避免过于刻意 |
-| 日常/轻松 | 高 | 可作为喜剧元素 |
-| 严肃/悬疑 | 低 | 容易破坏氛围 |
+| Wish fulfillment / system stories | High | Avoid contrivance |
+| Slice of life / lighthearted | High | Can provide comedy |
+| Serious drama / mystery | Low | Easily breaks atmosphere |
 
-**替代建议**：
-- 如果迪化用多了 → 换"真实实力展示"
-- 如果配角太蠢 → 增加合理脑补的信息支撑
+**Alternatives**:
+- Overused misunderstanding elevation → show genuine ability.
+- Supporting characters seem foolish → supply reasonable evidence for their interpretation.
 
-**示例**：
-- "萧炎只是随口说了句'还行'，长老却浑身一震——这等天才，竟如此谦逊！"
-- "他只是因为没钱才住破庙，众人却以为他在闭关悟道。"
+**Examples**:
+- "Xiao Yan merely said, 'Not bad,' but the elder shuddered. Such a genius, yet so humble!"
+- "He lived in a ruined temple because he had no money; everyone thought he was secluded in pursuit of enlightenment."
 
 ---
 
-#### 2.2.2 身份掉马 (Identity Reveal)
+#### 2.2.2 Identity Reveal (`身份掉马`)
 
-**定义**：隐藏身份在关键时刻被揭露，造成巨大反差和震撼。
+**Definition**: A hidden identity emerges at a critical moment, creating major contrast and shock.
 
-**核心结构**：
-1. 身份伪装（长期铺垫）
-2. 关键时刻（危机/高光）
-3. 身份揭露（意外或主动）
-4. 周围反应（震惊/后悔/敬畏）
+**Core structure**:
+1. Concealed identity (long-term setup).
+2. Critical moment (crisis/highlight).
+3. Identity revealed (accidentally or deliberately).
+4. Reactions (shock/regret/awe).
 
-**题材适配**：
-| 题材 | 适用度 | 常见身份反差 |
+**Genre fit**:
+| Genre | Suitability | Typical contrast |
 |------|--------|-------------|
-| 豪门/言情 | 高 | 穷亲戚→真千金 |
-| 爽文/玄幻 | 高 | 废物→隐藏大佬 |
-| 悬疑 | 中 | 路人→关键人物 |
+| Wealthy-family / romance | High | Poor relative → true heiress |
+| Wish fulfillment / xuanhuan | High | Failure → hidden expert |
+| Mystery | Medium | Passerby → key figure |
 
-**替代建议**：
-- 如果掉马用多了 → 换"能力展示"或"背景揭示"
-- 如果没有铺垫 → 先补充身份暗示
+**Alternatives**:
+- Overused identity reveals → ability demonstration or background revelation.
+- No setup → add identity hints first.
 
-**示例**：
-- "当那枚玉佩从她怀中滚落，所有人的脸色都变了——那是皇室的信物。"
-- "你们口中的废物萧炎，便是我斗帝强者萧炎的转世。"
+**Examples**:
+- "When the jade pendant fell from her clothes, every face changed. It was the royal family's token."
+- "The Xiao Yan you call a failure is the reincarnation of me, the Dou Di expert Xiao Yan."
 
 ---
 
-### 2.3 结构提示（30/40/30 软化版）
+### 2.3 Structural Guidance (Flexible 30/40/30)
 
-> **注意**：以下结构仅供参考，不作为硬性要求。
+> **Note**: Reference only, not a hard requirement.
 
-| 阶段 | 占比建议 | 作用 |
+| Stage | Suggested share | Function |
 |------|---------|------|
-| 铺垫 (Setup) | ~30% | 建立信息差、压力、期待 |
-| 兑现 (Delivery) | ~40% | 核心爽点执行 |
-| 余波 (Aftermath) | ~30% | 反应、收获、新期待 |
+| Setup | ~30% | Establish information gaps, pressure, expectation |
+| Delivery | ~40% | Execute the core payoff |
+| Aftermath | ~30% | Reactions, gains, new expectations |
 
-**软提示问句**：
-- 爽点之前是否有足够的铺垫/压力？
-- 兑现时刻是否有足够的展开？
-- 爽点之后是否有反应和余味？
+**Guiding questions**:
+- Is there enough setup/pressure before the payoff?
+- Is the delivery sufficiently developed?
+- Are there reactions and aftertaste afterward?
 
 ---
 
-## 三、即时满足/微兑现 (Micro-Payoff)
+## III. Instant Gratification / Micro-Payoffs
 
-### 3.1 定义
+### 3.1 Definition
 
-**微兑现**：章节内给读者的"小收获"，让读者感觉"这章没白看"。
+**Micro-payoff**: A small within-chapter gain that makes readers feel the chapter was worth reading.
 
-> 与大爽点不同，微兑现更轻量、更频繁，用于维持章内沉浸。
+> Lighter and more frequent than major payoffs, micro-payoffs sustain immersion within a chapter.
 
-### 3.2 微兑现类型
+### 3.2 Micro-Payoff Types
 
-| 类型 | 描述 | 示例 |
+| Type | Description | Example |
 |------|------|------|
-| **信息兑现** | 揭示新信息/线索 | "原来那把钥匙的真正用途是..." |
-| **关系兑现** | 关系推进/确认 | "她第一次主动握住了他的手" |
-| **能力兑现** | 能力提升/新技能 | "他终于掌握了这门功法的精髓" |
-| **资源兑现** | 获得物品/资源 | "储物袋里竟然还藏着一颗聚气丹" |
-| **认可兑现** | 获得认可/面子 | "在场所有人看他的眼神都变了" |
-| **情绪兑现** | 情绪释放/共鸣 | "他终于说出了压在心底的那句话" |
-| **线索兑现** | 伏笔回收/推进 | "三年前的那件事，终于有了眉目" |
+| **Information** | Reveal information/clue | "So the key's real purpose was..." |
+| **Relationship** | Advance/confirm a relationship | "For the first time, she took his hand." |
+| **Ability** | Improve an ability / gain a skill | "He finally grasped the technique's essence." |
+| **Resource** | Obtain items/resources | "There was also a Qi Gathering Pill in the storage bag." |
+| **Recognition** | Gain recognition/prestige | "Everyone looked at him differently now." |
+| **Emotion** | Emotional release/resonance | "He finally said what had weighed on his heart." |
+| **Clue** | Advance/pay off foreshadowing | "The incident three years ago finally began to make sense." |
 
-### 3.3 题材偏好
+### 3.3 Genre Preferences
 
-| 题材 | 偏好微兑现 | 每章建议数量 |
+| Genre | Preferred micro-payoffs | Suggested count/chapter |
 |------|-----------|-------------|
-| 爽文 | 能力/资源/认可 | 2-3 |
-| 言情 | 关系/情绪/认可 | 1-2 |
-| 悬疑 | 信息/线索 | 1-2 |
-| 日常 | 关系/情绪 | 1 |
+| Wish fulfillment | Ability/resource/recognition | 2-3 |
+| Romance | Relationship/emotion/recognition | 1-2 |
+| Mystery | Information/clue | 1-2 |
+| Slice of life | Relationship/emotion | 1 |
 
-### 3.3.1 新增题材补充
+### 3.3.1 Additional Genres
 
-| 题材 | 关键追读触发 | 钩子偏好 | 微兑现重点 |
+| Genre | Key retention trigger | Preferred hooks | Micro-payoff focus |
 |------|-------------|---------|-----------|
-| 电竞 | 比赛胜负与临场决策 | 危机钩/选择钩 | 认可兑现/信息兑现 |
-| 直播文 | 实时反馈与舆论反转 | 危机钩/情绪钩 | 资源兑现/认可兑现 |
-| 克苏鲁 | 规则真相与代价升级 | 悬念钩/危机钩 | 线索兑现/情绪兑现 |
+| Esports | Match results and live decisions | Crisis/choice | Recognition/information |
+| Livestreaming | Real-time feedback and public-opinion reversals | Crisis/emotion | Resource/recognition |
+| Cosmic horror | Truth of rules and escalating costs | Mystery/crisis | Clue/emotion |
 
-**执行提示**：
-- 电竞：建议每章给出 1 个可验证决策点（BP/战术/执行）与后果。
-- 直播文：优先形成“反馈→反应→数据变化”闭环。
-- 克苏鲁：优先回收规则线索，避免仅靠惊悚形容词推动。
+**Execution guidance**:
+- Esports: Include one verifiable decision (ban/pick, tactics, execution) and its consequence per chapter.
+- Livestreaming: Prioritize a closed loop of "feedback → reaction → metric change."
+- Cosmic horror: Pay off rule-related clues; do not rely solely on frightening adjectives.
 
-### 3.4 过渡章微兑现
+### 3.4 Transitional Chapters
 
-过渡章可降低要求，优先保留至少 1 个微兑现：
+Reduce expectations, but preferably retain at least one micro-payoff:
 
-| 过渡章允许 | 过渡章不建议 |
+| Allowed in transitions | Not recommended in transitions |
 |-----------|-------------|
-| 信息兑现（新线索） | 大爽点 |
-| 关系兑现（小互动） | 强冲突 |
-| 情绪兑现（轻情绪） | 高密度节奏 |
+| Information (new clue) | Major payoff |
+| Relationship (small interaction) | Intense conflict |
+| Emotion (mild feeling) | High-density pacing |
 
-**软提示问句**：
-- 读者看完这章会获得什么？
-- 是否有"这章有收获"的感觉？
+**Guiding questions**:
+- What do readers gain from this chapter?
+- Does it feel rewarding to have read it?
 
 ---
 
-## 四、约束分层标准
+## IV. Constraint Layers
 
-### 4.1 Hard Invariants（硬约束）
+### 4.1 Hard Invariants
 
-> **违反 = MUST_FIX，不可申诉跳过**
+> **Violation = MUST_FIX; no appeal-based skipping**
 
-| ID | 约束名称 | 定义 | 触发条件 |
+| ID | Constraint | Definition | Trigger |
 |----|---------|------|---------|
-| HARD-001 | 可读性底线 | 关键信息缺失导致看不懂 | 读者无法理解"发生了什么/谁在做什么/为什么" |
-| HARD-002 | 承诺违背 | 上章钩子完全不兑现 | 明确的章末承诺在下章无任何回应 |
-| HARD-003 | 节奏灾难 | 连续N章无任何推进 | 无新信息/无关系变化/无能力变化/无局势变化（N由题材profile决定）|
-| HARD-004 | 冲突真空 | 整章无问题/目标/代价 | 读者无法回答"这章要解决什么" |
+| HARD-001 | Readability floor | Missing key information prevents understanding | Readers cannot understand what happened / who is doing what / why |
+| HARD-002 | Broken promise | No fulfillment of the previous hook | An explicit chapter-end promise receives no response in the next chapter |
+| HARD-003 | Pacing disaster | N consecutive chapters with no progress | No new information / relationship change / ability change / situational change (N depends on genre profile) |
+| HARD-004 | Conflict vacuum | Entire chapter lacks problem/goal/cost | Readers cannot answer what this chapter aims to resolve |
 
-### 4.2 Soft Guidance（软建议）
+### 4.2 Soft Guidance
 
-> **违反 = 可申诉，但需记录Override Contract并承担债务**
+> **Violation may be appealed, but requires an Override Contract and incurred debt**
 
-包括但不限于：
-- 章末钩子强度不足
-- 微兑现缺失
-- 情绪曲线平淡
-- 模式重复疲劳
-- 段落过长影响可读性
+Includes, but is not limited to:
+- Weak chapter-end hook.
+- Missing micro-payoff.
+- Flat emotional curve.
+- Repetitive-pattern fatigue.
+- Overlong paragraphs harming readability.
 
-### 4.3 rationale_type 枚举
+### 4.3 rationale_type Enumeration
 
-当违背 Soft Guidance 时，必须选择以下理由之一：
+When violating Soft Guidance, choose one of:
 
-| 类型 | 描述 | 债务影响 |
+| Type | Description | Debt effect |
 |------|------|---------|
-| `TRANSITIONAL_SETUP` | 铺垫/过渡需要 | 标准 |
-| `LOGIC_INTEGRITY` | 剧情逻辑/悬疑公平性优先 | 减少 |
-| `CHARACTER_CREDIBILITY` | 人物可信度/成长节奏优先 | 减少 |
-| `WORLD_RULE_CONSTRAINT` | 设定/规则约束导致无法兑现 | 减少 |
-| `ARC_TIMING` | 长线大回收的节奏安排 | 标准（需明确窗口）|
-| `GENRE_CONVENTION` | 题材惯例 | 标准（需引用profile）|
-| `EDITORIAL_INTENT` | 作者主观意图 | 增加（配额更严）|
+| `TRANSITIONAL_SETUP` | Setup/transition needs | Standard |
+| `LOGIC_INTEGRITY` | Prioritize plot logic / mystery fairness | Reduced |
+| `CHARACTER_CREDIBILITY` | Prioritize credibility / growth pace | Reduced |
+| `WORLD_RULE_CONSTRAINT` | Setting/rule constraints prevent fulfillment | Reduced |
+| `ARC_TIMING` | Timing of a long-arc payoff | Standard (explicit window required) |
+| `GENRE_CONVENTION` | Genre convention | Standard (cite profile) |
+| `EDITORIAL_INTENT` | Author's subjective intent | Increased (stricter quota) |
 
 ---
 
-## 五、兼容性说明
+## V. Compatibility
 
-### 5.1 与现有 checker 的对接
+### 5.1 Existing Checker Integration
 
-| 审查维度 (reviewer) | 使用的 Taxonomy |
+| Review dimension (reviewer) | Taxonomy used |
 |---------------------|----------------|
-| continuity | Hard-001 (可读性底线)、Hard-002 (结构完整) |
-| pacing | Hard-003 (节奏灾难)、爽点模式、微兑现 |
+| continuity | Hard-001 (readability floor), Hard-002 (structural integrity) |
+| pacing | Hard-003 (pacing disaster), payoff patterns, micro-payoffs |
 
-### 5.2 输出字段映射
+### 5.2 Output Field Mapping
 
-| 新字段 | 对应现有字段 | 说明 |
+| New field | Existing-field relationship | Description |
 |--------|-------------|------|
-| `hook_type` | 兼容扩展 | 新增情绪钩/选择钩/渴望钩 |
-| `hook_strength` | 保持不变 | strong/medium/weak |
-| `coolpoint_pattern` | 兼容扩展 | 新增迪化误解/身份掉马 |
-| `micro_payoffs` | 新增 | 微兑现列表 |
-| `hard_violations` | 新增 | 硬约束违规列表 |
-| `soft_suggestions` | 新增 | 软建议列表 |
+| `hook_type` | Compatible extension | Adds emotion/choice/desire hooks |
+| `hook_strength` | Unchanged | strong/medium/weak |
+| `coolpoint_pattern` | Compatible extension | Adds misunderstanding elevation / identity reveal |
+| `micro_payoffs` | New | Micro-payoff list |
+| `hard_violations` | New | Hard-constraint violations |
+| `soft_suggestions` | New | Soft suggestions |

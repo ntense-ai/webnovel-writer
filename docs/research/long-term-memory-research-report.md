@@ -1,474 +1,474 @@
-# 长期记忆论文与项目调研报告
+# Long-Term Memory Papers and Projects: Research Report
 
-## 文档目标
+## Purpose
 
-本文档汇总大语言模型长期记忆方向中较有代表性的论文、基准和开源项目，重点回答四个问题：
+This report surveys representative papers, benchmarks, and open-source projects in LLM long-term memory, addressing four questions:
 
-- 长期记忆问题到底在解决什么
-- 这个领域近两年的主流技术路线是什么
-- 哪些项目已经做到较强的工程落地
-- 对当前 `webnovel-writer` 最值得借鉴的能力是什么
+- What problem does long-term memory solve?
+- What have been the main technical approaches over the past two years?
+- Which projects have strong engineering implementations?
+- Which capabilities are most useful for `webnovel-writer`?
 
-说明：
+Notes:
 
-- 本报告优先使用论文原文、arXiv 页面和项目官方仓库
-- 报告不是穷举式综述，而是面向架构决策的工程调研
-- 截止本次检索时间，最新参考到 2026 年 3 月可见资料
+- Primary sources are original papers, arXiv pages, and official repositories.
+- This is an engineering survey for architecture decisions, not an exhaustive literature review.
+- The latest material included in the original search was available through March 2026.
 
-## 一句话结论
+## In One Sentence
 
-当前长期记忆方向已经很明确地形成了三条主线：
+Three clear approaches have emerged:
 
-1. `外部记忆 + 检索`：把历史信息存到外部存储，再按需召回
-2. `分层记忆 + 编排`：把近期上下文、历史证据、长期摘要分层管理
-3. `图结构 / 时态记忆`：用知识图谱或时态图来处理事实更新、关系变化和时间推理
+1. **External memory + retrieval**: Store historical information externally and retrieve it on demand.
+2. **Hierarchical memory + orchestration**: Manage recent context, historical evidence, and long-term summaries in separate layers.
+3. **Graph / temporal memory**: Use knowledge or temporal graphs for fact updates, changing relationships, and temporal reasoning.
 
-对我们项目最直接有用的不是“更大上下文”，而是：
+For this project, the most immediately useful capabilities are not larger context windows but:
 
-- 独立的长期摘要层
-- 统一的记忆编排层
-- 面向事实更新的状态管理
+- An independent long-term summary layer
+- A unified memory-orchestration layer
+- State management designed for fact updates
 
-## 为什么长期记忆仍然是独立问题
+## Why Long-Term Memory Remains a Separate Problem
 
-代表性基准都在说明同一件事：
+Representative benchmarks consistently show that:
 
-- 单纯增加上下文窗口，并不能稳定解决长期记忆
-- 模型在多会话、多时间点、事实更新、跨章节整合时仍然容易退化
-- 记忆系统的核心不只是“存”，还包括“写入、压缩、检索、更新、冲突裁决”
+- Larger context windows alone do not reliably solve long-term memory.
+- Models still degrade across sessions, time points, fact updates, and cross-chapter integration.
+- Memory involves not just storage but writing, compression, retrieval, updates, and conflict resolution.
 
-这一点在以下基准中都被反复验证：
+These findings recur in:
 
 - `LoCoMo`
 - `LongMemEval`
 - `BEAM`
 
-## 评测基准
+## Benchmarks
 
 ### 1. LoCoMo
 
-论文：
+Paper:
 
 - `Evaluating Very Long-Term Conversational Memory of LLM Agents`
 - arXiv:2402.17753
-- 链接：<https://arxiv.org/abs/2402.17753>
+- Link: <https://arxiv.org/abs/2402.17753>
 
-关键点：
+Key points:
 
-- 数据集聚焦“超长期对话记忆”
-- 每条对话平均约 `300 turns`
-- 平均约 `9K tokens`
-- 覆盖最多 `35 sessions`
-- 评测问答、事件总结、多模态对话生成
+- Focuses on very long-term conversational memory
+- Around `300 turns` per conversation on average
+- Around `9K tokens` on average
+- Up to `35 sessions`
+- Evaluates question answering, event summarization, and multimodal dialogue generation
 
-价值：
+Value:
 
-- 是很多后续 memory 系统对比的常用基准
-- 强调多轮会话与长期连续性，而不只是单文档检索
+- A common comparison benchmark for subsequent memory systems
+- Emphasizes multisession continuity rather than single-document retrieval
 
-来源：LoCoMo 论文摘要页 <https://arxiv.org/abs/2402.17753>
+Source: LoCoMo abstract page <https://arxiv.org/abs/2402.17753>
 
 ### 2. LongMemEval
 
-论文：
+Paper:
 
 - `LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory`
 - arXiv:2410.10813
-- 链接：<https://arxiv.org/abs/2410.10813>
+- Link: <https://arxiv.org/abs/2410.10813>
 
-关键点：
+Key points:
 
-- 明确拆出五种长期记忆能力：
-  - 信息抽取
-  - 多会话推理
-  - 时间推理
-  - 知识更新
-  - 拒答
-- 包含 `500` 个精心构造的问题
-- 论文指出，商业助手和长上下文模型在持续交互上的准确率会出现约 `30%` 下滑
+- Distinguishes five memory capabilities:
+  - Information extraction
+  - Multisession reasoning
+  - Temporal reasoning
+  - Knowledge updates
+  - Abstention
+- Contains `500` carefully constructed questions
+- Reports around a `30%` accuracy decline for commercial assistants and long-context models in sustained interaction
 
-价值：
+Value:
 
-- 比纯“召回率”更接近真实助手场景
-- 很适合衡量“事实更新”和“跨会话推理”
+- Closer to real assistant usage than recall alone
+- Particularly useful for measuring fact updates and cross-session reasoning
 
-来源：LongMemEval 论文摘要页 <https://arxiv.org/abs/2410.10813>
+Source: LongMemEval abstract page <https://arxiv.org/abs/2410.10813>
 
 ### 3. BEAM
 
-论文：
+Paper:
 
 - `Beyond a Million Tokens: Benchmarking and Enhancing Long-Term Memory in LLMs`
 - arXiv:2510.27246
-- 链接：<https://arxiv.org/abs/2510.27246>
+- Link: <https://arxiv.org/abs/2510.27246>
 
-关键点：
+Key points:
 
-- 生成最长可达 `10M tokens` 的连贯对话
-- 构建 `100` 段对话和 `2000` 个校验问题
-- 同时提出 `LIGHT` 记忆框架
-- 作者报告 LIGHT 相对强基线平均提升 `3.5% - 12.69%`
+- Generates coherent conversations up to `10M tokens`
+- Includes `100` conversations and `2000` validation questions
+- Also introduces the `LIGHT` memory framework
+- Reports average LIGHT improvements of `3.5% - 12.69%` over strong baselines
 
-价值：
+Value:
 
-- 把“超长上下文”与“长期记忆”区分得更清楚
-- 对我们这种长篇创作系统非常有参考价值
+- Makes the distinction between very long context and long-term memory clearer
+- Particularly relevant to long-form writing systems
 
-来源：BEAM/LIGHT 论文摘要页 <https://arxiv.org/abs/2510.27246>
+Source: BEAM/LIGHT abstract page <https://arxiv.org/abs/2510.27246>
 
-## 代表论文
+## Representative Papers
 
-### A. 早期外部记忆路线
+### A. Early External-Memory Approaches
 
 #### MemoryBank
 
-- 论文：`MemoryBank: Enhancing Large Language Models with Long-Term Memory`
+- Paper: `MemoryBank: Enhancing Large Language Models with Long-Term Memory`
 - arXiv:2305.10250
-- 链接：<https://arxiv.org/abs/2305.10250>
+- Link: <https://arxiv.org/abs/2305.10250>
 
-核心思想：
+Core ideas:
 
-- 把对话历史转成外部记忆
-- 检索相关记忆参与回答
-- 引入类似“遗忘曲线”的更新机制
-- 强调用户画像和长期陪伴式交互
+- Convert conversation history into external memory
+- Retrieve relevant memories when answering
+- Introduce an update mechanism resembling a forgetting curve
+- Emphasize user profiles and long-term companionship
 
-意义：
+Significance:
 
-- 很早就提出“记忆不是纯存档，而是要更新和遗忘”
-- 适合人格化、陪伴式、个性化场景
+- Early recognition that memory requires updating and forgetting, not mere archiving
+- Suitable for personalized, persona-driven, and companion applications
 
-局限：
+Limitations:
 
-- 更偏对话陪伴
-- 工程结构相对较早，抽象层级不够细
+- Oriented toward conversational companionship
+- Relatively early engineering structure with less refined abstractions
 
 #### LongMem
 
-- 论文：`Augmenting Language Models with Long-Term Memory`
+- Paper: `Augmenting Language Models with Long-Term Memory`
 - arXiv:2306.07174
-- 链接：<https://arxiv.org/abs/2306.07174>
+- Link: <https://arxiv.org/abs/2306.07174>
 
-核心思想：
+Core ideas:
 
-- 冻结 backbone LLM 作为 memory encoder
-- 旁路引入 retriever/reader side-network
-- 把长期上下文缓存为外部记忆
+- Freeze the backbone LLM as a memory encoder
+- Add a retriever/reader side-network
+- Cache long-term context as external memory
 
-意义：
+Significance:
 
-- 代表“模型架构级长期记忆”的路线
-- 不只是 prompt engineering，而是显式引入 memory 模块
+- Represents model-architecture-level long-term memory
+- Explicit memory modules, not merely prompt engineering
 
-局限：
+Limitations:
 
-- 对我们当前项目这种插件式工程系统，可复用性不如外部存储方案高
+- Less reusable than external-storage approaches for a plugin-based engineering system like this project
 
-### B. 分层记忆与虚拟上下文路线
+### B. Hierarchical Memory and Virtual Context
 
 #### MemGPT
 
-- 论文：`MemGPT: Towards LLMs as Operating Systems`
+- Paper: `MemGPT: Towards LLMs as Operating Systems`
 - arXiv:2310.08560
-- 链接：<https://arxiv.org/abs/2310.08560>
+- Link: <https://arxiv.org/abs/2310.08560>
 
-核心思想：
+Core ideas:
 
-- 把 LLM 看成“应用层”
-- 通过类似操作系统的虚拟内存管理，把不同记忆层在上下文和外部存储间切换
-- 用 memory tier 和 control flow 管理超出窗口的历史
+- Treat the LLM as the application layer
+- Use OS-like virtual-memory management to move memory tiers between context and external storage
+- Manage history beyond the context window with memory tiers and control flow
 
-意义：
+Significance:
 
-- 是“分层记忆编排”这条路线的关键代表作
-- 强调 memory paging、分层存储和自管理
+- A key example of hierarchical memory orchestration
+- Emphasizes paging, tiered storage, and self-management
 
-局限：
+Limitations:
 
-- 偏 agent runtime
-- 对小说写作系统来说，直接照搬成本较高
+- Oriented toward agent runtimes
+- Direct adoption would be costly for a novel-writing system
 
 #### LIGHT
 
-- 论文：`Beyond a Million Tokens: Benchmarking and Enhancing Long-Term Memory in LLMs`
+- Paper: `Beyond a Million Tokens: Benchmarking and Enhancing Long-Term Memory in LLMs`
 - arXiv:2510.27246
-- 链接：<https://arxiv.org/abs/2510.27246>
+- Link: <https://arxiv.org/abs/2510.27246>
 
-核心思想：
+Core ideas:
 
-- 明确拆成三层：
+- Three explicit layers:
   - `episodic memory`
   - `working memory`
   - `scratchpad`
-- 用统一编排器组合三者
+- A unified orchestrator combines them
 
-意义：
+Significance:
 
-- 和我们项目当前改造方向最接近
-- 对“长期写作上下文”非常适配
+- Closest to this project's current refactoring direction
+- Well suited to long-term writing context
 
-局限：
+Limitations:
 
-- 目前还是较新的研究工作
-- 更像工程原型，不是现成平台
+- Relatively recent research
+- More an engineering prototype than a ready-made platform
 
-### C. 生产化记忆层路线
+### C. Production-Oriented Memory Layers
 
 #### Mem0
 
-- 论文：`Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory`
+- Paper: `Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory`
 - arXiv:2504.19413
-- 链接：<https://arxiv.org/abs/2504.19413>
-- 官方仓库：<https://github.com/mem0ai/mem0>
+- Link: <https://arxiv.org/abs/2504.19413>
+- Official repository: <https://github.com/mem0ai/mem0>
 
-核心思想：
+Core ideas:
 
-- 动态提取对话中的显著信息
-- 做记忆 consolidation
-- 检索时优先使用精炼后的 memory，而不是整段历史
-- 还有 graph-based 变体
+- Dynamically extract salient conversational information
+- Consolidate memories
+- Retrieve refined memory rather than full history
+- Include a graph-based variant
 
-官方声称：
+Official claims:
 
-- 在 LoCoMo 上相对 OpenAI Memory 有 `+26%` 提升
-- 相对 full-context 有更低延迟与 token 成本
+- `+26%` improvement over OpenAI Memory on LoCoMo
+- Lower latency and token cost than full-context approaches
 
-工程价值：
+Engineering value:
 
-- 非常重视生产环境指标：延迟、token 成本、SDK 接入
-- 是“记忆层产品化”的代表项目
+- Strong focus on production metrics: latency, tokens, SDK integration
+- Representative of memory-layer productization
 
-局限：
+Limitations:
 
-- 更适合通用 agent/assistant
-- 对小说写作的结构化剧情状态，还需要定制
+- Better suited to general agents/assistants
+- Structured novel-plot state still requires customization
 
-来源：
+Sources:
 
-- 论文摘要页 <https://arxiv.org/abs/2504.19413>
-- 官方仓库 README <https://github.com/mem0ai/mem0>
+- Paper abstract: <https://arxiv.org/abs/2504.19413>
+- Official README: <https://github.com/mem0ai/mem0>
 
 #### Zep
 
-- 论文：`Zep: A Temporal Knowledge Graph Architecture for Agent Memory`
+- Paper: `Zep: A Temporal Knowledge Graph Architecture for Agent Memory`
 - arXiv:2501.13956
-- 链接：<https://arxiv.org/abs/2501.13956>
+- Link: <https://arxiv.org/abs/2501.13956>
 
-核心思想：
+Core ideas:
 
-- 用 `Graphiti` 作为时态知识图谱引擎
-- 将对话和业务数据融合到一个可追踪历史的时态图中
-- 强调动态知识集成、历史关系维护、低延迟检索
+- Use `Graphiti` as a temporal knowledge-graph engine
+- Combine conversations and business data in a graph that tracks history
+- Emphasize dynamic knowledge integration, historical relationships, and low-latency retrieval
 
-论文报告：
+Reported results:
 
-- 在 DMR 上优于 MemGPT
-- 在 LongMemEval 上最高可提升 `18.5%`
-- 相对基线延迟降低 `90%`
+- Outperforms MemGPT on DMR
+- Up to `18.5%` improvement on LongMemEval
+- `90%` lower latency than the baseline
 
-工程价值：
+Engineering value:
 
-- 很适合“事实会变、关系会变、时间有强语义”的场景
-- 对角色关系、势力变化、设定修订这类小说问题很有参考性
+- Well suited to changing facts, relationships, and semantically important time
+- Relevant to character relationships, faction changes, and setting revisions in fiction
 
-来源：Zep 论文摘要页 <https://arxiv.org/abs/2501.13956>
+Source: Zep abstract page <https://arxiv.org/abs/2501.13956>
 
 #### MIRIX
 
-- 论文：`MIRIX: Multi-Agent Memory System for LLM-Based Agents`
+- Paper: `MIRIX: Multi-Agent Memory System for LLM-Based Agents`
 - arXiv:2507.07957
-- 链接：<https://arxiv.org/abs/2507.07957>
+- Link: <https://arxiv.org/abs/2507.07957>
 
-核心思想：
+Core ideas:
 
-- 设计六类记忆：
+- Six memory types:
   - Core
   - Episodic
   - Semantic
   - Procedural
   - Resource Memory
   - Knowledge Vault
-- 用多 Agent 协同管理更新和检索
-- 扩展到多模态记忆
+- Multiple agents coordinate updates and retrieval
+- Extends to multimodal memory
 
-意义：
+Significance:
 
-- 展示了“记忆分工继续细化”的趋势
-- 证明未来 memory system 不一定只分三层
+- Shows increasingly specialized memory responsibilities
+- Demonstrates that future memory systems need not stop at three layers
 
-局限：
+Limitations:
 
-- 架构更复杂
-- 对当前项目来说有参考价值，但不适合第一阶段直接引入
+- More complex architecture
+- Useful as a reference, but unsuitable for direct first-stage adoption here
 
-来源：MIRIX 论文摘要页 <https://arxiv.org/abs/2507.07957>
+Source: MIRIX abstract page <https://arxiv.org/abs/2507.07957>
 
-## 代表开源项目
+## Representative Open-Source Projects
 
 ### 1. Letta
 
-- 仓库：<https://github.com/letta-ai/letta>
-- 说明：原 MemGPT 项目已经并入 Letta
+- Repository: <https://github.com/letta-ai/letta>
+- The original MemGPT project has become part of Letta
 
-官方定位：
+Official positioning:
 
 - `stateful agents`
-- 强调 agent 可跨会话持续存在、学习、自我改进
+- Persistent agents that learn and improve across sessions
 
-值得关注的点：
+Notable aspects:
 
-- 长寿命 agent
-- memory blocks
-- 持久化 agent runtime
+- Long-lived agents
+- Memory blocks
+- Persistent agent runtime
 
-对我们的启发：
+Lessons for this project:
 
-- 适合作为“长期存在的创作 Agent”参考
-- 但它更像完整 agent 平台，不适合直接嵌入当前插件架构
+- Useful reference for long-lived creative agents
+- A full agent platform, not a natural direct fit for the current plugin architecture
 
-来源：
+Sources:
 
-- Letta 仓库 README <https://github.com/letta-ai/letta>
-- 官方说明 <https://www.letta.com/blog/memgpt-and-letta>
+- Repository README: <https://github.com/letta-ai/letta>
+- Official explanation: <https://www.letta.com/blog/memgpt-and-letta>
 
 ### 2. Mem0
 
-- 仓库：<https://github.com/mem0ai/mem0>
+- Repository: <https://github.com/mem0ai/mem0>
 
-官方定位：
+Official positioning:
 
 - `Universal memory layer for AI Agents`
 
-值得关注的点：
+Notable aspects:
 
-- SDK 化程度高
-- 支持自托管和托管
-- 强调多层 memory、用户偏好、会话和 agent 状态
+- Mature SDK approach
+- Self-hosted and managed options
+- Emphasis on multiple memory layers, user preferences, sessions, and agent state
 
-对我们的启发：
+Lessons:
 
-- 非常适合作为“独立 memory layer”的工程参考
-- 尤其适合看它怎么做 API、接入层和 memory 抽取流程
+- Strong engineering reference for an independent memory layer
+- Especially useful for API design, integration, and memory extraction
 
-来源：Mem0 官方仓库 README <https://github.com/mem0ai/mem0>
+Source: Official README <https://github.com/mem0ai/mem0>
 
 ### 3. Graphiti
 
-- 仓库：<https://github.com/getzep/graphiti>
+- Repository: <https://github.com/getzep/graphiti>
 
-官方定位：
+Official positioning:
 
 - `Build Real-Time Knowledge Graphs for AI Agents`
 
-特点：
+Characteristics:
 
-- 时态知识图谱
-- 支持实体、事实关系、原始 episodes、ontology
-- 适合动态环境中的 agent memory
+- Temporal knowledge graph
+- Entities, factual relationships, raw episodes, and ontology
+- Agent memory in dynamic environments
 
-对我们的启发：
+Lessons:
 
-- 非常适合角色关系、势力结构、事件时间线
-- 如果后续想做“剧情知识图谱”，Graphiti/Zep 是最值得研究的一类
+- Well suited to character relationships, faction structures, and event timelines
+- Graphiti/Zep is a leading category to study for a future plot knowledge graph
 
-来源：Graphiti 官方仓库 README <https://github.com/getzep/graphiti>
+Source: Official README <https://github.com/getzep/graphiti>
 
-## 研究趋势总结
+## Research Trends
 
-### 趋势 1：从“长上下文”转向“记忆系统”
+### Trend 1: From Long Context to Memory Systems
 
-近两年最明确的结论是：
+The clearest conclusions over the past two years:
 
-- 长上下文不等于长期记忆
-- 真正有效的方案都在做外部 memory、结构化抽取、分层编排
+- Long context is not long-term memory
+- Effective approaches use external memory, structured extraction, and hierarchical orchestration
 
-### 趋势 2：从“检索片段”转向“记忆写入与更新”
+### Trend 2: From Retrieving Snippets to Writing and Updating Memory
 
-早期系统重点是：
+Early emphasis:
 
-- 怎么检索历史
+- How to retrieve history
 
-近年的重点已经变成：
+Recent emphasis:
 
-- 记忆写什么
-- 什么时候合并
-- 什么时候标记过期
-- 遇到冲突怎么裁决
+- What to write into memory
+- When to merge it
+- When to mark it outdated
+- How to resolve conflicts
 
-### 趋势 3：从“平面向量库”转向“图结构和时态结构”
+### Trend 3: From Flat Vector Stores to Graph and Temporal Structures
 
-在纯向量检索之外，越来越多系统开始强调：
+Beyond vector retrieval, more systems emphasize:
 
 - entity / relation
 - temporal validity
 - provenance
 - update / invalidation
 
-这对任何“事实会变化”的系统都非常关键。
+These are crucial whenever facts change.
 
-### 趋势 4：生产系统开始关注成本和延迟
+### Trend 4: Production Cost and Latency
 
-像 Mem0、Zep 这类项目，不再只讲准确率，而是同时强调：
+Projects such as Mem0 and Zep discuss not only accuracy but also:
 
-- p95 延迟
-- token 成本
-- 开发者接入成本
-- 托管与可观测性
+- p95 latency
+- Token cost
+- Developer integration cost
+- Hosting and observability
 
-## 对当前项目最有用的结论
+## Most Useful Conclusions for This Project
 
-### 最值得借鉴的不是某一个项目，而是三类能力
+### Adopt Capabilities, Not Just a Particular Project
 
-#### 1. LIGHT 的分层思想
+#### 1. LIGHT's Layering
 
-最适合我们当前项目的核心抽象仍然是：
+The best-fitting abstractions remain:
 
 - `working memory`
 - `episodic memory`
 - `scratchpad`
 
-原因：
+Reasons:
 
-- 我们已经有 working 和 episodic 的基础
-- 当前最缺的正是 scratchpad
+- The project already has working/episodic foundations
+- The main missing piece at the time of this research is the scratchpad
 
-#### 2. Zep/Graphiti 的时态事实处理
+#### 2. Zep/Graphiti's Temporal Facts
 
-对小说系统特别重要的是：
+A novel system must account for:
 
-- 同一角色状态会变
-- 同一关系会演化
-- 同一设定可能被修订
+- Changing character states
+- Evolving relationships
+- Revised settings
 
-所以光做向量检索不够，必须有事实状态和时间语义。
+Vector retrieval alone is insufficient; facts need state and temporal semantics.
 
-#### 3. Mem0 的工程落地方式
+#### 3. Mem0's Engineering Approach
 
-Mem0 很值得借鉴的是：
+Useful lessons:
 
-- memory layer 独立化
-- SDK/接口清晰
-- 生产环境关注延迟和 token 成本
+- Independent memory layer
+- Clear SDK/interfaces
+- Production attention to latency and token cost
 
-这对我们把长期记忆做成独立模块非常有帮助。
+These help turn long-term memory into an independent module.
 
-## 对 `webnovel-writer` 的映射建议
+## Mapping to `webnovel-writer`
 
-### 可以直接吸收的部分
+### Directly Applicable
 
-- LIGHT：三层记忆结构
-- Mem0：独立 memory layer 设计
-- Zep/Graphiti：关系和时间线建模方式
+- LIGHT: Three-layer memory structure
+- Mem0: Independent memory-layer design
+- Zep/Graphiti: Relationship and timeline modeling
 
-### 暂时不建议直接照搬的部分
+### Not Recommended for Direct Adoption Yet
 
-- Letta：完整 stateful agent 平台，体量过大
-- MIRIX：分类太细，第一阶段会过重
-- LongMem：更偏模型架构级改造，不适合当前插件工程
+- Letta: Full stateful-agent platform, too large
+- MIRIX: Too many categories for a lightweight first stage
+- LongMem: Model-architecture changes do not fit the current plugin engineering model
 
-## 我的建议排序
+## Recommended Priority
 
-如果以“对当前项目收益 / 改造成本”排序，我建议优先关注：
+Ranked by expected project benefit versus implementation cost:
 
 1. `LIGHT`
 2. `Mem0`
@@ -478,22 +478,22 @@ Mem0 很值得借鉴的是：
 6. `MemoryBank`
 7. `LongMem`
 
-## 结论
+## Conclusion
 
-长期记忆方向现在已经很清楚：
+The direction is clear:
 
-- 上下文窗口只是基础设施，不是最终答案
-- 真正有效的是“分层记忆 + 持续写入 + 智能检索 + 冲突管理”
+- Context windows are infrastructure, not the final answer
+- Effective memory combines layering, continuous writes, intelligent retrieval, and conflict management
 
-对当前项目来说，最现实的路线不是做一个通用 agent 平台，而是：
+The practical path is not to build a general agent platform, but to:
 
-- 保留现有 `state.json / index.db / vectors.db`
-- 新增 `scratchpad` 长期摘要层
-- 再加一个统一的 `memory orchestrator`
+- Retain `state.json / index.db / vectors.db`
+- Add a `scratchpad` long-term summary layer
+- Add a unified `memory orchestrator`
 
-这条路线与近期论文结论最一致，也最贴合当前系统基础。
+This aligns with recent research and the existing system foundation.
 
-## 参考链接
+## References
 
 - MemoryBank: <https://arxiv.org/abs/2305.10250>
 - LongMem: <https://arxiv.org/abs/2306.07174>
@@ -501,10 +501,10 @@ Mem0 很值得借鉴的是：
 - LoCoMo: <https://arxiv.org/abs/2402.17753>
 - LongMemEval: <https://arxiv.org/abs/2410.10813>
 - Zep: <https://arxiv.org/abs/2501.13956>
-- Mem0 论文: <https://arxiv.org/abs/2504.19413>
-- Mem0 仓库: <https://github.com/mem0ai/mem0>
+- Mem0 paper: <https://arxiv.org/abs/2504.19413>
+- Mem0 repository: <https://github.com/mem0ai/mem0>
 - MIRIX: <https://arxiv.org/abs/2507.07957>
-- Graphiti 仓库: <https://github.com/getzep/graphiti>
-- Letta 仓库: <https://github.com/letta-ai/letta>
-- Letta / MemGPT 迁移说明: <https://www.letta.com/blog/memgpt-and-letta>
+- Graphiti repository: <https://github.com/getzep/graphiti>
+- Letta repository: <https://github.com/letta-ai/letta>
+- Letta / MemGPT transition: <https://www.letta.com/blog/memgpt-and-letta>
 - LIGHT / BEAM: <https://arxiv.org/abs/2510.27246>

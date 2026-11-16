@@ -1,215 +1,215 @@
-# 设定自洽性检查指南 (Setting Consistency Check)
+# Setting Consistency Guide
 
-> **核心原则**: 设定可以天马行空,但逻辑必须自洽。读者可以接受"魔法存在",但无法接受"这个世界的魔法时灵时不灵"。
+> **Core principle**: Settings can be wildly imaginative, but their logic must hold together. Readers accept that magic exists; they do not accept magic working only when convenient.
 
 ---
 
-## 1. 自洽性的三大支柱
+## 1. Three Pillars of Consistency
 
-### 物理法则自洽 (Physics Consistency)
-世界的基本规则一旦确立，就不能随意打破。
+### Physical Rules
+Once established, the world's basic rules cannot be broken arbitrarily.
 
-#### 正面案例 ✅
+#### Positive Example ✅
 ```
-设定: 修仙者飞行需要消耗灵力
-→ 第100章: 主角灵力耗尽，从空中坠落
-→ 逻辑自洽，读者认可
-```
-
-#### 反面案例 ❌
-```
-设定: 凡人无法修炼，需要觉醒灵根
-→ 第50章: 主角是凡人，通过刻苦努力修炼成功
-→ 前后矛盾，读者质疑："那要灵根干嘛？"
-
-修复方案:
-方案A: 主角其实是隐性灵根（后期觉醒）
-方案B: 主角获得外挂道具（如：夺灵珠，可窃取他人灵根）
+Rule: Cultivators consume spiritual power to fly
+→ Chapter 100: The protagonist exhausts that power and falls
+→ Internally consistent; readers accept it
 ```
 
-### 力量体系自洽 (Power System Consistency)
-等级压制、战力对比必须前后一致。
+#### Negative Example ❌
+```
+Rule: Mortals cannot cultivate without awakened spiritual roots
+→ Chapter 50: The mortal protagonist succeeds through hard work alone
+→ Contradiction; readers ask, “Then why are spiritual roots necessary?”
 
-#### 常见问题
-| 问题类型 | 案例 | 修复方案 |
+Repairs:
+A: The protagonist has dormant roots that awaken later
+B: The protagonist obtains a special item, such as a pearl that steals others' spiritual roots
+```
+
+### Power System
+Level suppression and comparisons of strength must remain consistent.
+
+#### Common Problems
+| Problem | Example | Repair |
 |---------|------|---------|
-| **战力崩坏** | 第10章说"金丹强者一掌毁城"，<br/>第100章金丹只能打爆一座房子 | 引入新维度（城有护城大阵）或承认前期夸张了（回忆杀修正） |
-| **越级无限制** | 主角从练气越级打金丹，后来练气十层连筑基都打不过 | 设定越级条件（需要神兵/阵法/偷袭，不可常态化） |
-| **境界失效** | 设定境界越高寿命越长，但某大佬活了十万年却还是元婴 | 解释为特殊体质/夺舍/时间流速不同 |
+| **Power collapse** | Chapter 10 says a Golden Core expert can destroy a city with one palm strike;<br/>in chapter 100 they can barely destroy a house | Introduce a new factor, such as a city-protection formation, or acknowledge earlier exaggeration through a corrective flashback |
+| **Unlimited level jumping** | A Qi Refining protagonist defeats Golden Core, then at Qi Refining level 10 cannot defeat Foundation Establishment | Establish exceptional conditions: divine weapon, formation, ambush; not a routine feat |
+| **Meaningless realms** | Higher realms supposedly extend lifespan, yet a Nascent Soul elder has lived 100,000 years | Explain a special constitution, possession, or different time flow |
 
-### 社会生态自洽 (Social Ecology Consistency)
-世界的经济、政治、文化必须符合基本逻辑。
+### Social Ecology
+Economics, politics, and culture must follow basic logic.
 
-#### 自洽检查清单
-- [ ] **货币体系**: 灵石/金币的购买力是否稳定？（不要第10章一颗丹药1000灵石，第50章同样的丹药只要10灵石）
-- [ ] **势力平衡**: 为什么正邪两道能并存千年？（必须有制衡因素，如：绝世强者约定、共同敌人、资源互补）
-- [ ] **人口比例**: 修士与凡人的数量比是否合理？（如果人人都能修仙，谁来种地？）
-
----
-
-## 2. 常见逻辑漏洞与修复
-
-### 漏洞 1: "反派智商突然下降"
-**表现**: 前期深谋远虑的反派，到了主角要打脸时突然变蠢。
-
-**修复方案**:
-- **预设陷阱**: 反派看似愚蠢,实际在钓鱼（将计就计）。
-- **信息差**: 反派不知道主角已突破/获得神器，所以轻敌。
-- **内部分裂**: 反派势力内部有叛徒，故意泄露情报。
-
-### 漏洞 2: "设定为剧情服务而扭曲"
-**表现**:
-- 设定: 使用禁术会燃烧寿命
-- 剧情: 主角用了十次禁术，毫无副作用
-- 读者: "说好的燃烧寿命呢？"
-
-**修复方案**:
-- **提前埋伏笔**: 主角获得"不死之身"类的外挂，可以免疫副作用。
-- **后期还债**: 寿命在暗中燃烧，后期突然爆发危机（触发新剧情）。
-- **等价交换**: 每次使用禁术后，明确展示主角付出的代价（如：头发变白、境界跌落）。
-
-### 漏洞 3: "时间线混乱"
-**表现**:
-- 第30章: "这个秘境只在百年一次的血月之夜开启，上次开启是50年前"
-- 第80章: "50年前血月之夜，那位前辈进入秘境后失踪"
-- 读者: "那这次血月是第几次？时间对不上啊！"
-
-**修复方案**:
-- **建立时间轴文档**: 记录所有重大事件的时间点（见下方模板）。
-- **统一纪年法**: 使用"修真历XXX年"或"主角15岁那年"作为锚点。
+#### Checklist
+- [ ] **Currency**: Is purchasing power stable? Do not price the same pill at 1,000 spirit stones in chapter 10 and 10 in chapter 50.
+- [ ] **Balance of power**: Why have righteous and demonic factions coexisted for a millennium? Establish checks such as agreements between supreme experts, a common enemy, or complementary resources.
+- [ ] **Population**: Is the cultivator-to-mortal ratio plausible? If everyone cultivates, who farms?
 
 ---
 
-## 3. 设定自洽检查模板
+## 2. Common Plot Holes and Repairs
 
-### 世界法则自查表
+### Hole 1: The Antagonist Suddenly Becomes Stupid
+**Symptom**: A previously calculating enemy becomes foolish just when the protagonist needs a victory.
+
+**Repairs**:
+- **Prepared trap**: Apparent foolishness is bait, turning the opponent's plan against them.
+- **Information gap**: The enemy does not know about the protagonist's breakthrough or divine weapon and underestimates them.
+- **Internal division**: A traitor deliberately leaks information.
+
+### Hole 2: Rules Distorted for Plot Convenience
+**Symptom**:
+- Rule: Forbidden arts burn lifespan.
+- Plot: The protagonist uses them ten times without side effects.
+- Reader: “What happened to the cost?”
+
+**Repairs**:
+- **Advance setup**: Establish an immortality-type advantage that neutralizes the effect.
+- **Delayed payment**: Lifespan is being consumed invisibly, leading to a later crisis and new plot.
+- **Equivalent exchange**: Show the price each time: white hair, falling cultivation, or another tangible loss.
+
+### Hole 3: Timeline Confusion
+**Symptom**:
+- Chapter 30: “The realm opens only on the once-a-century blood moon. It last opened 50 years ago.”
+- Chapter 80: “That elder vanished inside during the blood moon 50 years ago.”
+- Reader: “Which blood moon is this? The timing does not add up!”
+
+**Repairs**:
+- **Maintain a timeline**: Record dates for all major events using the template below.
+- **Use one calendar**: Anchor events to a cultivation-calendar year or the protagonist's age.
+
+---
+
+## 3. Consistency Templates
+
+### World Rules Audit
 ```markdown
-## 核心法则 (铁律，不可违背)
-1. **死亡不可逆**: 死人无法复活（除非……特殊条件）
-2. **境界压制**: 低境界无法伤害高境界（除非……外挂/阵法）
-3. **能量守恒**: 使用力量必有消耗（灵力/体力/寿命）
+## Core Rules (Unbreakable)
+1. **Death is irreversible**: The dead cannot return, except under specified special conditions
+2. **Realm suppression**: Lower realms cannot harm higher realms, except through specified advantages/formations
+3. **Energy conservation**: Power always consumes spiritual energy, stamina, or lifespan
 
-## 可变法则 (有前置条件可打破)
-1. **飞行限制**: 筑基以下无法飞行
-   - 例外: 乘坐飞舟/被高手带飞
-2. **寿命上限**: 金丹寿命500年
-   - 例外: 服用延寿丹/特殊体质
+## Conditional Rules (Exceptions Require Prerequisites)
+1. **Flight**: Below Foundation Establishment, independent flight is impossible
+   - Exceptions: Flying boats or transport by an expert
+2. **Lifespan**: Golden Core lifespan is 500 years
+   - Exceptions: Life-extending pills or special constitutions
 
-## 当前版本号
-v1.2（每次修改设定时更新版本号，并记录变更理由）
+## Current Version
+v1.2 (increment whenever settings change and record the reason)
 ```
 
-### 力量体系自查表
+### Power System Audit
 ```markdown
-## 境界战力对照表
-| 境界 | 代表性战绩 | 寿命 | 灵力总量 |
+## Realm Comparison
+| Realm | Representative feat | Lifespan | Spiritual power |
 |------|-----------|------|---------|
-| 练气 | 徒手碎石 | 100年 | 100 |
-| 筑基 | 御剑飞行，一人灭百人军队 | 200年 | 1,000 |
-| 金丹 | 一掌毁小镇，可短时间改变地貌 | 500年 | 10,000 |
-| 元婴 | 毁灭一国，翻江倒海 | 1,000年 | 100,000 |
+| Qi Refining | Break stone barehanded | 100 years | 100 |
+| Foundation Establishment | Fly on a sword; defeat a 100-person army alone | 200 years | 1,000 |
+| Golden Core | Destroy a town with one strike; briefly reshape terrain | 500 years | 10,000 |
+| Nascent Soul | Destroy a nation; overturn rivers and seas | 1,000 years | 100,000 |
 
-## 越级规则
-- **最大跨度**: 主角可越1个大境界（练气杀筑基）
-- **必要条件**: 神兵+阵法+偷袭+敌方轻敌
-- **不可常态化**: 每次越级必须付出惨重代价（重伤/消耗底牌）
+## Fighting Above One's Level
+- **Maximum gap**: One major realm, such as Qi Refining defeating Foundation Establishment
+- **Required conditions**: Divine weapon + formation + ambush + overconfident enemy
+- **Exceptional only**: Every such victory must carry a severe cost, such as grave injury or an expended trump card
 ```
 
-### 时间轴自查表
+### Timeline Audit
 ```markdown
-## 主线时间轴
-| 事件 | 主角年龄 | 修真历年份 | 备注 |
+## Main Timeline
+| Event | Protagonist's age | Cultivation-calendar year | Notes |
 |------|---------|-----------|------|
-| 出生 | 0岁 | 10050年 | - |
-| 觉醒灵根 | 15岁 | 10065年 | 双灵根，资质平平 |
-| 进入宗门 | 16岁 | 10066年 | 天剑宗外门弟子 |
-| 获得系统 | 17岁 | 10067年 | 掉落悬崖，奇遇 |
-| 筑基成功 | 20岁 | 10070年 | 用时3年（同代最快） |
+| Birth | 0 | 10050 | - |
+| Spiritual roots awaken | 15 | 10065 | Dual roots, average aptitude |
+| Enters sect | 16 | 10066 | Heavenly Sword Sect outer disciple |
+| Obtains system | 17 | 10067 | Falls off a cliff; extraordinary encounter |
+| Foundation Establishment | 20 | 10070 | Three years, fastest of the generation |
 
-## 副线时间轴（反派）
-| 事件 | 时间 | 影响 |
+## Secondary Timeline (Antagonist)
+| Event | Time | Impact |
 |------|------|------|
-| 血神教建立 | 5000年前 | 正魔大战爆发 |
-| 上任血神教主陨落 | 100年前 | 当前教主上位（实力未恢复） |
-| 血神教密谋复活血神 | 当前 | 主线冲突起因 |
+| Blood God Cult founded | 5,000 years ago | War between righteous and demonic factions begins |
+| Previous cult leader dies | 100 years ago | Current leader takes power before fully recovering strength |
+| Cult plots to resurrect Blood God | Present | Cause of the main conflict |
 ```
 
 ---
 
-## 4. 动态维护：设定集文件结构
+## 4. Ongoing Maintenance: Setting Files
 
-在 `/webnovel-init` 生成的项目中，应包含以下文件：
+Projects generated by `/webnovel-init` should contain these files. Preserve the Chinese runtime paths:
 
 ```
 设定集/
-├── 世界观设定.md        # 物理法则、地理、历史
-├── 力量体系设定.md      # 境界、功法、战力对照表
-├── 势力设定.md          # 各大宗门/家族/势力关系
-├── 人物卡/             # 每个重要角色一个文件
+├── 世界观设定.md        # Physical rules, geography, history
+├── 力量体系设定.md      # Realms, techniques, power comparisons
+├── 势力设定.md          # Major sects, clans, faction relationships
+├── 人物卡/             # One file per important character
 │   ├── 主角-林天.md
 │   ├── 反派-叶良辰.md
 │   └── 师尊-云仙子.md
-├── 时间轴.md            # 主线+副线时间轴
-└── 设定变更日志.md      # 记录每次修改设定的原因
+├── 时间轴.md            # Main and secondary timelines
+└── 设定变更日志.md      # Reasons for each setting change
 ```
 
-### 设定变更日志模板
+### Setting Change Log
 ```markdown
-## v1.0 → v1.1 变更记录
-**日期**: 2025-01-01
-**变更内容**:
-- 修改：金丹寿命从300年改为500年
-- 原因：与第50章"那位金丹前辈活了400年"的描述冲突
-- 影响范围：需回查前30章所有涉及金丹寿命的描述
+## v1.0 → v1.1 Changes
+**Date**: 2025-01-01
+**Changes**:
+- Change: Golden Core lifespan from 300 to 500 years
+- Reason: Conflicts with chapter 50's statement that an elder lived 400 years
+- Scope: Recheck all Golden Core lifespan references in the first 30 chapters
 
-## v1.1 → v1.2 变更记录
-**日期**: 2025-01-10
-**变更内容**:
-- 新增：引入"法则感悟"维度
-- 原因：避免后期数值膨胀（不能一直靠灵力总量决胜负）
-- 影响范围：从元婴期开始，法则感悟成为新的战力维度
+## v1.1 → v1.2 Changes
+**Date**: 2025-01-10
+**Changes**:
+- Addition: Introduce understanding of cosmic laws
+- Reason: Prevent late-story numerical inflation; total spiritual power cannot decide every battle
+- Scope: From Nascent Soul onward, law comprehension becomes another dimension of combat strength
 ```
 
 ---
 
-## 5. 实时检查工作流（写作中使用）
+## 5. Live Checking Workflow
 
-### 每次写新章节前
-1. **回顾设定集**: 确认本章涉及的设定（境界/势力/时间）
-2. **搜索历史章节**: 用关键词搜索之前是否写过类似设定
-3. **标记矛盾点**: 如发现前后矛盾，立即记录到`设定变更日志.md`
+### Before Each New Chapter
+1. **Review the setting bible**: Confirm relevant realms, factions, and dates.
+2. **Search previous chapters**: Use keywords to find earlier references to similar settings.
+3. **Flag contradictions**: Immediately record inconsistencies in `设定变更日志.md`.
 
-### 每完成一个大剧情后
-1. **更新时间轴**: 记录剧情发生的时间点
-2. **更新战力表**: 如有新境界/新强者出现，补充到对照表
-3. **检查副作用**: 主角使用过的禁术/外挂是否有后续代价展示
-
----
-
-## 🛠️ 自洽性检查清单
-
-在 `/webnovel-write` 生成章节后，必须通过以下检查：
-- [ ] **境界战力**: 本章的战斗场景是否符合力量体系设定？
-- [ ] **时间逻辑**: 事件发生的时间是否与之前矛盾？
-- [ ] **人物设定**: 角色的行为是否符合其性格/立场？
-- [ ] **道具限制**: 神器/丹药/法宝的使用是否超出设定范围？
-- [ ] **势力关系**: 本章涉及的势力互动是否符合既定关系网？
+### After Each Major Arc
+1. **Update the timeline**: Record when events occurred.
+2. **Update power comparisons**: Add new realms or powerful characters.
+3. **Check side effects**: Show subsequent costs of forbidden arts or special advantages already used.
 
 ---
 
-## 附录：常见读者质疑案例库
+## 🛠️ Consistency Checklist
 
-### 案例 1: "为什么主角不用XXX方法？"
-- **问题**: 主角明明有更简单的解决方案，却偏要走复杂路线。
-- **原因**: 作者忘记了主角之前获得的能力/道具。
-- **预防**: 维护一份"主角当前能力清单"，每次写作前浏览。
+After `/webnovel-write` generates a chapter, check:
+- [ ] **Power levels**: Do battles obey the power system?
+- [ ] **Timeline**: Do event dates contradict prior events?
+- [ ] **Characterization**: Do actions fit personalities and allegiances?
+- [ ] **Item limits**: Are artifacts, pills, and weapons used within established limits?
+- [ ] **Faction relationships**: Do interactions match the existing relationship network?
 
-### 案例 2: "这个反派怎么又活了？"
-- **问题**: 明明写死的反派又出现了，没有合理解释。
-- **原因**: 想让反派继续推动剧情，但没提前埋伏笔。
-- **修复**: 补充说明（分身/假死/被人救走），并在设定集标注"待填坑"。
+---
 
-### 案例 3: "这个世界的经济崩了"
-- **问题**: 灵石的购买力前后相差百倍。
-- **原因**: 没有建立货币锚定物（如：1斤灵米=10灵石）。
-- **预防**: 设定"物价参考表"，固定核心商品价格。
+## Appendix: Common Reader Objections
+
+### Case 1: “Why Doesn't the Protagonist Just Use X?”
+- **Problem**: An easier solution exists, but the protagonist chooses a convoluted route.
+- **Cause**: The author forgot an earlier ability or item.
+- **Prevention**: Maintain and review a current abilities list before writing.
+
+### Case 2: “How Is This Villain Alive Again?”
+- **Problem**: An explicitly dead antagonist returns without a reasonable explanation.
+- **Cause**: The author wants further conflict but did not prepare the return.
+- **Repair**: Explain a clone, feigned death, or rescue, and mark the unresolved setup in the setting bible.
+
+### Case 3: “The Economy Makes No Sense”
+- **Problem**: Spirit-stone purchasing power changes a hundredfold.
+- **Cause**: No price anchor was established, such as 500 grams of spirit rice costing 10 spirit stones.
+- **Prevention**: Keep a reference price list with stable prices for core goods.

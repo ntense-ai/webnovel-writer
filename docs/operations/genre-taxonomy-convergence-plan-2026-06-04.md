@@ -1,63 +1,63 @@
 # Genre Taxonomy Convergence Plan
 
-日期：2026-06-04
-状态：二次修订版
+Date: 2026-06-04
+Status: Second revision
 
-## 目标
+## Goal
 
-把题材体系收敛到 CSV 已采用的 15 个 `canonical_genre`，同时保留 37 个中文题材模板作为初始化阶段的可叠加 preset。
+Converge on the 15 `canonical_genre` values already used by the CSV data, while retaining 37 Chinese-named genre templates as composable initialization presets.
 
-一句话原则：
+Guiding principle:
 
-> CSV canonical 是检索主干；taxonomy index 是用户输入层真源；模板文件是 preset；平台细分、套路、形式全部标签化。
+> CSV canonical values form the retrieval backbone; the taxonomy index is the source of truth for user input; template files are presets; platform subdivisions, tropes, and formats become tags.
 
-## 已核实事实
+## Verified Facts
 
-- `webnovel-writer/templates/genres/*.md` 当前实际数量是 37 个。
-- 37 个模板只在初始化链路中直接读取：
-  - `skills/webnovel-init/SKILL.md` 提示按用户题材读取 `templates/genres/`。
-  - `scripts/init_project.py` 通过 `_normalize_genre_key()` 后拼 `templates/genres/{key}.md`。
-- 当前至少有三处题材输入归一逻辑，且输出命名空间不同：
-  - `scripts/init_project.py::_normalize_genre_key()`：用户输入 -> 模板文件名。
-  - `scripts/reference_search.py::resolve_genre()`：用户输入/平台标签/legacy -> 15 canonical。
-  - `scripts/data_modules/genre_aliases.py::GENRE_INPUT_ALIASES`：用户输入 -> 模板/profile 旧画像 key 的前置标签。
-- 现有映射规模不能再粗略按几十条估算：
-  - `PLATFORM_TO_CANONICAL` 34 keys。
-  - `_LEGACY_GENRE_MAP` 27 keys。
-  - 两者去重后 54 keys，重叠 7 keys。
-  - 加上 15 canonical 和 `全部`，当前 `resolve_genre()` 可处理 67 个 distinct 输入。
-  - 再并入 `_normalize_genre_key()` / `GENRE_INPUT_ALIASES` 的 15 条输入 alias，taxonomy 输入覆盖集合是 78 个 distinct labels。
-  - 再并入 37 个模板文件 stem，完整覆盖集合当前是 92 个 distinct labels/stems。
-- `_normalize_genre_key()` 与 `GENRE_INPUT_ALIASES` 当前 15 条内容完全一致，是重复真源。
-- `state.json` 当前 schema 是 `project_info.genre`，不是顶层 `project.genre`。
-- legacy `project.genre` 消费者不止 plan/write：
+- `webnovel-writer/templates/genres/*.md` currently contains 37 files.
+- Only initialization directly reads these templates:
+  - `skills/webnovel-init/SKILL.md` directs loading from `templates/genres/` based on the requested genre.
+  - `scripts/init_project.py` builds `templates/genres/{key}.md` after `_normalize_genre_key()`.
+- At least three input-normalization implementations exist, with different output namespaces:
+  - `scripts/init_project.py::_normalize_genre_key()`: user input → template filename.
+  - `scripts/reference_search.py::resolve_genre()`: user input/platform label/legacy value → 15 canonical values.
+  - `scripts/data_modules/genre_aliases.py::GENRE_INPUT_ALIASES`: user input → preliminary label for the old template/profile key.
+- Mapping size must no longer be estimated vaguely as a few dozen:
+  - `PLATFORM_TO_CANONICAL`: 34 keys.
+  - `_LEGACY_GENRE_MAP`: 27 keys.
+  - Their union has 54 keys, with 7 overlaps.
+  - Including 15 canonical values and `全部`, `resolve_genre()` handles 67 distinct inputs.
+  - Adding the 15 input aliases from `_normalize_genre_key()` / `GENRE_INPUT_ALIASES` yields 78 distinct labels.
+  - Including the 37 template stems brings complete coverage to 92 distinct labels/stems.
+- `_normalize_genre_key()` and `GENRE_INPUT_ALIASES` contain the same 15 mappings: duplicated sources of truth.
+- The current `state.json` schema uses `project_info.genre`, not top-level `project.genre`.
+- Legacy `project.genre` consumers extend beyond plan/write:
   - `skills/webnovel-init/SKILL.md`
   - `skills/webnovel-plan/SKILL.md`
   - `skills/webnovel-write/SKILL.md`
   - `skills/webnovel-review/SKILL.md`
   - `scripts/data_modules/context_manager.py`
   - `scripts/data_modules/memory_contract_adapter.py`
-- `context_manager.py` 当前是 `project.genre` 优先，`project_info.genre` 兜底；目标状态应反转为 `project_info` 优先。
-- `memory_contract_adapter.py` 当前 fallback 链是 Story Contracts route -> protagonist genre -> legacy `state.project.genre`，不读取 `project_info.genre`；目标状态应增加 `project_info` 并把 legacy `project.genre` 放最后。
-- `story_system_engine.py::_route()` 包含 keyword/alias match、explicit genre fallback、inferred genre fallback；全部未命中时会抛 `StorySystemRoutingError`，不是静默 fallback。
-- `references/csv/题材与调性推理.csv` 当前实际 route rows 是 26 条；测试应覆盖真实 CSV 全量 rows，不写死 26 或 27。
-- `references/genre-profiles.md` 已定位为 fallback，高频题材主链已迁入 Story Contracts。
+- `context_manager.py` currently prioritizes `project.genre` and falls back to `project_info.genre`; reverse this to prefer `project_info`.
+- `memory_contract_adapter.py` currently falls back from Story Contracts route → protagonist genre → legacy `state.project.genre`, without reading `project_info.genre`. Add `project_info` and put legacy `project.genre` last.
+- `story_system_engine.py::_route()` includes keyword/alias matching, explicit-genre fallback, and inferred-genre fallback. If all fail, it raises `StorySystemRoutingError`; it does not silently fall back.
+- `references/csv/题材与调性推理.csv` currently has 26 route rows. Tests must cover the actual complete CSV dynamically rather than hard-code 26 or 27.
+- `references/genre-profiles.md` is already a fallback; frequently used genres have moved to Story Contracts as the mainline.
 
-## 核心设计边界
+## Design Boundaries
 
-### 1. 两个命名空间不能混淆
+### 1. Keep the Two Namespaces Distinct
 
-统一 resolver 不代表只有一个输出值。必须显式区分：
+A unified resolver does not imply a single output value. Explicitly distinguish:
 
-- `canonical_genre`：用于 CSV 检索、Story System、裁决规则、新项目 `project_info.genre`。
-- `template_files`：用于 init 加载 `templates/genres/*.md`。
+- `canonical_genre`: CSV retrieval, Story System, adjudication rules, and new projects' `project_info.genre`.
+- `template_files`: initialization loading of `templates/genres/*.md`.
 
-典型冲突：
+Typical conflict:
 
-- 旧 init 行为：`玄幻 -> 修仙.md`。
-- 旧 reference 行为：`resolve_genre("玄幻") -> 玄幻`。
+- Old initialization: `玄幻 -> 修仙.md`.
+- Old reference resolution: `resolve_genre("玄幻") -> 玄幻`.
 
-新 resolver 必须同时表达这两件事：
+The new resolver must express both simultaneously. Chinese labels in examples below are runtime identifiers, not untranslated prose.
 
 ```python
 GenreResolution(
@@ -73,9 +73,9 @@ GenreResolution(
 )
 ```
 
-### 2. 硬题材枚举
+### 2. Fixed Genre Enum
 
-唯一硬枚举继续使用 15 个 canonical：
+Keep the same 15 canonical values as the only hard enum:
 
 ```text
 都市 玄幻 仙侠 奇幻 科幻
@@ -83,19 +83,19 @@ GenreResolution(
 幻言 年代 种田 快穿 衍生
 ```
 
-这些值用于：
+Used by:
 
 - CSV `适用题材`
-- `裁决规则.csv` 的 `题材`
-- Story System 的 `canonical_genre`
+- `题材` in `裁决规则.csv`
+- Story System `canonical_genre`
 - `reference_search.py --genre`
-- 新项目 `state.json.project_info.genre`
+- New-project `state.json.project_info.genre`
 
 ### 3. Taxonomy Index
 
-新增 `webnovel-writer/references/taxonomy/genre-index.csv`。它不是单纯模板清单，而是用户输入层的唯一 taxonomy 数据真源。
+Add `webnovel-writer/references/taxonomy/genre-index.csv`. This is not merely a template inventory, but the single taxonomy data source for user input.
 
-建议字段：
+Suggested fields:
 
 ```csv
 label,canonical_genre,label_type,template_file,route_tags,trope_tags,format_tags,aliases,notes
@@ -114,20 +114,20 @@ label,canonical_genre,label_type,template_file,route_tags,trope_tags,format_tags
 武侠,历史,legacy,,,,,,legacy without template
 ```
 
-规则：
+Rules:
 
-- 每个 `templates/genres/*.md` 必须在 index 中有且只有一行 `template_file` 指向它。
-- `label` 与 `aliases` 使用同一查找空间，必须唯一，不能映射到多个 canonical。
-- `aliases` 使用 `;` 分隔；如字段含逗号，必须用 CSV 引号包裹。
-- 不带模板文件的 platform/legacy alias 也必须进入 index，不能留在 Python 硬编码字典里。
-- `canonical_genre` 必须属于 15 canonical 或 `全部`。
-- `label_type` 取值建议：`canonical`、`platform`、`route`、`trope`、`format`、`preset`、`legacy`。
-- 不再单独设 `template_type`，避免与 `label_type` 重叠；模板用途由 `label_type` 与 tag 列共同表达。
-- `GENRE_PROFILE_KEY_ALIASES` 暂不迁入 index。它输出的是英文 profile section key，与 canonical/template 命名空间不同；Phase 1-5 只迁移输入 alias，保留 profile key 映射并重命名/注释清楚。
+- Every `templates/genres/*.md` must have exactly one index row pointing to it through `template_file`.
+- `label` and `aliases` share one lookup namespace; each must be unique and cannot map to multiple canonical values.
+- Separate aliases with `;`; quote CSV fields containing commas.
+- Platform/legacy aliases without templates must also move into the index rather than remain hard-coded in Python.
+- `canonical_genre` must be one of the 15 canonical values or `全部`.
+- Suggested `label_type`: `canonical`, `platform`, `route`, `trope`, `format`, `preset`, `legacy`.
+- Do not add a separate `template_type` that duplicates `label_type`. Express template purpose through `label_type` and tag columns together.
+- Do not migrate `GENRE_PROFILE_KEY_ALIASES` yet. It outputs English profile-section keys, a different namespace from canonical/template values. Phases 1–5 migrate only input aliases; retain and clearly name/document the profile-key mapping.
 
 ### 4. Resolver Contract
 
-新增共享 loader/resolver，例如 `scripts/genre_taxonomy.py`：
+Add a shared loader/resolver, for example `scripts/genre_taxonomy.py`:
 
 ```python
 GenreResolution(
@@ -143,32 +143,32 @@ GenreResolution(
 )
 ```
 
-兼容原则：
+Compatibility:
 
-- `reference_search.resolve_genre()` 保留为 wrapper，只返回 canonical 或原值，用于现有调用点。
-- `_normalize_genre_key()` 不再拥有 alias 字典；如果暂时保留，只能委托 taxonomy resolver 返回首个 `template_file` 的 stem。
-- `data_modules/genre_aliases.py` 不再维护 `GENRE_INPUT_ALIASES`；只保留 profile key 映射，或通过 taxonomy 先得到 template/profile lookup label。
-- Story System 不改变 `_route()` 的 route table 匹配语义，只把输入 canonical 化能力接到同一 wrapper。
-- loader 使用缓存，例如 `functools.lru_cache`，避免高频路径重复读 CSV。
+- Keep `reference_search.resolve_genre()` as a wrapper returning only canonical or original values for existing callers.
+- `_normalize_genre_key()` must no longer own an alias dictionary. If retained temporarily, delegate to the taxonomy resolver and return the first `template_file` stem.
+- `data_modules/genre_aliases.py` must stop maintaining `GENRE_INPUT_ALIASES`. Keep only profile-key mappings, or obtain a template/profile lookup label through taxonomy first.
+- Do not alter Story System `_route()` table-matching semantics; connect input canonicalization to the same wrapper.
+- Cache the loader, for example with `functools.lru_cache`, to avoid repeatedly reading CSV on hot paths.
 
-### 5. Resolver 匹配算法
+### 5. Matching Algorithm
 
-Phase 1.5 必须先定义并测试算法，不靠隐式行为：
+Define and test this explicitly in Phase 1.5:
 
-1. 归一化输入：trim、全角/半角符号统一、大小写无关、去除多余空白。
-2. 分隔符拆 token：支持 `+`、`＋`、`/`、`、`、`,`、`，`、`|`、`与`。
-3. exact match 优先：token 命中 `label` 或任一 alias 时直接加入匹配结果。
-4. longest substring match 兜底：对完整原始输入按 label/alias 长度倒序扫描，支持 `知乎短篇风的规则怪谈` 这种复合自然语言输入。
-5. 去重与冲突处理：
-   - 同一 `template_file` 只保留一次。
-   - `route/platform/canonical/preset` 优先决定 `canonical_genre`。
-   - `format/trope` 可追加 tags 和模板，但不应压过 route/platform 的 canonical。
-   - 多个高优先级标签指向不同 canonical 时，返回 `warnings=["ambiguous_canonical"]`；init 交互层应展示推断结果并允许用户确认。
-6. 未匹配片段进入 `unresolved`，wrapper 保持旧行为：`resolve_genre()` 返回原值而不是直接报错。
+1. Normalize input: trim, unify full-width/half-width punctuation, ignore case, remove excess whitespace.
+2. Split tokens on `+`, `＋`, `/`, `、`, `,`, `，`, `|`, and `与`.
+3. Prefer exact matches: tokens matching a `label` or alias enter the results directly.
+4. Fall back to longest substring matching: scan the complete original input by descending label/alias length, supporting composite language such as `知乎短篇风的规则怪谈`.
+5. Deduplicate and resolve conflicts:
+   - Keep each `template_file` once.
+   - `route/platform/canonical/preset` take priority in selecting `canonical_genre`.
+   - `format/trope` may add tags/templates but must not override route/platform canonical choices.
+   - If high-priority labels imply different canonical values, return `warnings=["ambiguous_canonical"]`; initialization should show the inference and let the user confirm.
+6. Put unmatched fragments into `unresolved`. Preserve wrapper behavior: `resolve_genre()` returns the original value rather than failing immediately.
 
 ## State Schema
 
-新 init 项目写入：
+New initialization writes:
 
 ```json
 {
@@ -185,222 +185,222 @@ Phase 1.5 必须先定义并测试算法，不靠隐式行为：
 }
 ```
 
-兼容读取顺序：
+Read compatibility order:
 
 1. `project_info.genre`
 2. `project_info.genre_label`
-3. legacy `project.genre`
-4. 配置 fallback
+3. Legacy `project.genre`
+4. Configuration fallback
 
-写入新项目时不再新增顶层 `project.genre`。
+Do not add top-level `project.genre` to new projects.
 
-## 改动范围
+## Scope of Changes
 
-### 必改
+### Required
 
 - `templates/genres/*.md`
-  - H1 标题中文化。
-  - 不移动文件。
+  - The historical plan calls for Chinese H1 headings.
+  - Do not move files.
 - `references/taxonomy/genre-index.csv`
-  - 覆盖 37 个模板。
-  - 覆盖 `PLATFORM_TO_CANONICAL`、`_LEGACY_GENRE_MAP`、`_normalize_genre_key()`、`GENRE_INPUT_ALIASES` 的 label/alias 集合。
+  - Cover all 37 templates.
+  - Cover labels/aliases from `PLATFORM_TO_CANONICAL`, `_LEGACY_GENRE_MAP`, `_normalize_genre_key()`, and `GENRE_INPUT_ALIASES`.
 - `scripts/genre_taxonomy.py`
-  - 新增共享 CSV loader/resolver。
+  - Add shared CSV loader/resolver.
 - `scripts/reference_search.py`
-  - 删除硬编码 `PLATFORM_TO_CANONICAL` 与 `_LEGACY_GENRE_MAP`。
-  - `resolve_genre()` 改为调用 taxonomy wrapper。
+  - Remove hard-coded `PLATFORM_TO_CANONICAL` and `_LEGACY_GENRE_MAP`.
+  - Delegate `resolve_genre()` to the taxonomy wrapper.
 - `scripts/init_project.py`
-  - init 时用 taxonomy 解析用户原始题材。
-  - `project_info.genre` 写 canonical。
-  - 读取模板时按 `template_file` 加载 preset，不再按原始输入精确拼路径。
+  - Parse raw genre input through taxonomy.
+  - Write canonical values into `project_info.genre`.
+  - Load presets by `template_file`, not paths assembled directly from raw input.
 - `scripts/data_modules/genre_aliases.py`
-  - 移除 `GENRE_INPUT_ALIASES`。
-  - 保留并注释 `GENRE_PROFILE_KEY_ALIASES`，说明它属于 fallback profile key 命名空间。
+  - Remove `GENRE_INPUT_ALIASES`.
+  - Retain and document `GENRE_PROFILE_KEY_ALIASES` as belonging to the fallback profile-key namespace.
 - `scripts/data_modules/context_manager.py`
-  - 当前是 `project.genre` 优先；改为 `project_info.genre` / `genre_label` 优先，legacy `project.genre` 兜底。
+  - Replace current `project.genre` priority with `project_info.genre` / `genre_label`, then legacy fallback.
 - `scripts/data_modules/memory_contract_adapter.py`
-  - 当前不读 `project_info`；增加 `project_info.genre` / `genre_label` 到 fallback 链，并把 legacy `project.genre` 放最后。
+  - Add `project_info.genre` / `genre_label` to the fallback chain, with legacy `project.genre` last.
 - `skills/webnovel-init/SKILL.md`
-  - 主体题材只展示 15 canonical。
-  - 修正 legacy `project.genre` shell snippet。
-  - 说明可输入 preset/套路/形式，但运行时会映射到 canonical。
+  - Display only 15 canonical values as primary genres.
+  - Correct the legacy `project.genre` shell snippet.
+  - Explain that presets, tropes, and formats are accepted but mapped to canonical values at runtime.
 - `skills/webnovel-plan/SKILL.md`
-  - 修正所有 legacy `project.genre` shell snippet。
+  - Correct all legacy `project.genre` shell snippets.
 - `skills/webnovel-write/SKILL.md`
-  - 修正 legacy `project.genre` shell snippet。
+  - Correct the legacy `project.genre` snippet.
 - `skills/webnovel-review/SKILL.md`
-  - 修正 legacy `project.genre` shell snippet。
+  - Correct the legacy `project.genre` snippet.
 - `templates/output/state-schema.md`
-  - 加入 `project_info.genre_label` 与 `project_info.genre_tags` 示例。
+  - Add `project_info.genre_label` and `project_info.genre_tags` examples.
 - `scripts/validate_csv.py`
-  - 增加 taxonomy index 双向校验。
-  - 增加三份旧字典到 index 的 symmetric diff 校验。
-- 相关测试
-  - `reference_search` resolver 兼容测试。
-  - `init_project` state/schema/template 加载测试。
-  - Story System 真实 CSV route 端到端测试。
-  - 所有 SKILL.md 读取 `genre` 的 grep/fixture 校验。
+  - Add bidirectional taxonomy validation.
+  - Add symmetric-difference checks between the three old dictionaries and the index.
+- Tests
+  - Resolver compatibility for `reference_search`.
+  - State/schema/template loading for `init_project`.
+  - End-to-end Story System routes against real CSV data.
+  - Grep/fixture checks for genre reads in every SKILL.md.
 
-### 应改
+### Recommended
 
 - `references/csv/genre-canonical.md`
-  - 明确 `题材与调性推理.csv` 的 `题材/流派` 是 route tag，不是 canonical enum。
+  - Clarify that `题材/流派` in `题材与调性推理.csv` is a route tag, not a canonical enum.
 - `references/csv/README.md`
-  - 补充 taxonomy index、template preset、canonical 的关系。
+  - Explain taxonomy index, template preset, and canonical relationships.
 - `references/index/reference-loading-map.md`
-  - 更新 init 阶段题材模板加载规则。
+  - Update initialization genre-template loading.
 - `references/genre-profiles.md`
-  - 把 `project.genre` 文档表述修正为 `project_info.genre`，并标注 fallback 定位。
+  - Replace documented `project.genre` with `project_info.genre` and identify fallback status.
 
-### 暂不改
+### Deferred
 
-- 不大规模重写 9 张核心 CSV 内容。
-- 不删除 37 个模板。
-- 不把 `templates/genres/` 立即拆成 `canonical/` 和 `presets/` 子目录。
-- 不批量迁移用户已有项目的 `state.json`，只提供兼容读取。
-- 不把 `genre-profiles.md` 重新升级为主真源。
-- 不在 Phase 1-5 迁移 `GENRE_PROFILE_KEY_ALIASES` 到 index；它属于 profile fallback 命名空间，后续单独评估。
+- No large rewrite of the nine core CSVs.
+- Do not delete the 37 templates.
+- Do not immediately split `templates/genres/` into `canonical/` and `presets/`.
+- No bulk migration of existing users' `state.json`; provide compatible reads only.
+- Do not restore `genre-profiles.md` as primary truth.
+- Do not migrate `GENRE_PROFILE_KEY_ALIASES` during Phases 1–5; evaluate its separate fallback namespace later.
 
-## 分阶段计划
+## Phases
 
-### Phase 1: Taxonomy Index 与模板校验
+### Phase 1: Taxonomy Index and Template Validation
 
-范围：
+Scope:
 
-- 新增 `references/taxonomy/genre-index.csv`。
-- 覆盖现有 37 个模板文件。
-- 把以下集合全部纳入 index 的 `label` 或 `aliases`：
-  - `GENRE_CANONICAL` 15 项和 `全部`。
-  - `PLATFORM_TO_CANONICAL` 34 keys。
-  - `_LEGACY_GENRE_MAP` 27 keys。
-  - `_normalize_genre_key()` 15 keys。
-  - `GENRE_INPUT_ALIASES` 15 keys。
-  - 37 个模板文件 stem。
-- index 可用一行承载多个 alias，所以不要求 92 行，但要求 coverage 集合无遗漏。
-- 所有模板 H1 中文化，去掉英文括号。
-- 新增校验：
-  - 实际 `templates/genres/*.md` 数量与 index `template_file` 双向一致。
-  - 每个 `template_file` 存在且唯一。
-  - 每个 `canonical_genre` 属于 15 canonical 或 `全部`。
-  - 每个 `label`/`alias` 唯一，不能映射到多个 canonical。
-  - 旧字典 keys 与 index label/alias 做 symmetric diff，diff 必须为空或显式列入 allowlist。
+- Add `references/taxonomy/genre-index.csv`.
+- Cover all 37 template files.
+- Include these complete sets in `label` or `aliases`:
+  - 15 `GENRE_CANONICAL` values and `全部`.
+  - 34 `PLATFORM_TO_CANONICAL` keys.
+  - 27 `_LEGACY_GENRE_MAP` keys.
+  - 15 `_normalize_genre_key()` keys.
+  - 15 `GENRE_INPUT_ALIASES` keys.
+  - 37 template stems.
+- One row may contain several aliases; 92 rows are not required, but full coverage is.
+- The historical plan specifies Chinese-only H1 headings without English parentheses.
+- Validate:
+  - Actual template files and index `template_file` values match bidirectionally.
+  - Every template exists and is unique.
+  - Canonical values belong to the 15 values or `全部`.
+  - Labels/aliases are unique and do not map to several canonical values.
+  - Symmetric differences against old dictionary keys are empty or explicitly allowlisted.
 
-不改运行逻辑。
+No runtime changes in this phase.
 
-验证：
+Verification:
 
 ```powershell
 (Get-ChildItem -Path webnovel-writer\templates\genres -Filter *.md | Measure-Object).Count
 python -X utf8 webnovel-writer\scripts\validate_csv.py
 ```
 
-### Phase 1.5: Resolver Contract 先落地
+### Phase 1.5: Establish the Resolver Contract First
 
-范围：
+Scope:
 
-- 新增共享 taxonomy loader/resolver。
-- 定义结构化 `GenreResolution`。
-- 实现并测试第 5 节的 exact + longest substring 匹配算法。
-- 给 `reference_search.resolve_genre()`、`init_project` 模板解析、`genre_aliases` profile key lookup 写清楚委托关系。
-- 明确 `GENRE_PROFILE_KEY_ALIASES` 保留在 `genre_aliases.py`，但输入 alias 来源改为 taxonomy。
-- 在测试中先证明旧行为不丢：
-  - `PLATFORM_TO_CANONICAL` 原有用例全部通过 index resolver。
-  - `_LEGACY_GENRE_MAP` 原有用例全部通过 index resolver。
-  - `_normalize_genre_key()` 原 alias 用例全部能解析到相同模板文件。
-  - `GENRE_INPUT_ALIASES` 原 alias 用例全部能得到相同 profile lookup label。
+- Add the shared loader/resolver.
+- Define structured `GenreResolution`.
+- Implement and test the exact + longest-substring algorithm in section 5.
+- Document delegation for `reference_search.resolve_genre()`, initialization template resolution, and `genre_aliases` profile lookup.
+- Keep `GENRE_PROFILE_KEY_ALIASES` in `genre_aliases.py`, but source input aliases from taxonomy.
+- Prove old behavior is preserved:
+  - Existing `PLATFORM_TO_CANONICAL` cases pass through the index resolver.
+  - Existing `_LEGACY_GENRE_MAP` cases pass.
+  - Old `_normalize_genre_key()` aliases resolve to the same files.
+  - Old `GENRE_INPUT_ALIASES` yield the same profile lookup labels.
 
-这一阶段的目标是拆掉“多真源”的设计风险，再进入调用点迁移。
+Eliminate competing-source design risk before migrating callers.
 
-### Phase 2: 迁移运行时调用点
+### Phase 2: Migrate Runtime Callers
 
-范围：
+Scope:
 
-- `reference_search.py` 删除硬编码映射，改用 taxonomy。
-- `init_project.py` 删除本地 alias 字典，按 `GenreResolution.template_files` 加载模板。
-- `story_system_engine.py` 保持 `_route()` 的 keyword/alias/fallback/exception 顺序，内部 canonical resolve 改用同一 wrapper。
-- `genre_aliases.py` 输入 alias 迁移到 taxonomy，profile key 只处理 profile section/key 兼容。
-- 增加 lint/grep，禁止新增 `PLATFORM_TO_CANONICAL`、`_LEGACY_GENRE_MAP`、`GENRE_INPUT_ALIASES` 这类硬编码输入 dict。
+- Remove hard-coded mappings from `reference_search.py`.
+- Remove the local alias dictionary from `init_project.py`; load `GenreResolution.template_files`.
+- Preserve `_route()` keyword/alias/fallback/exception ordering in `story_system_engine.py`, changing only internal canonical resolution to the shared wrapper.
+- Move input aliases from `genre_aliases.py` into taxonomy; keep profile keys solely for section/key compatibility.
+- Add lint/grep checks preventing new hard-coded input dictionaries like `PLATFORM_TO_CANONICAL`, `_LEGACY_GENRE_MAP`, or `GENRE_INPUT_ALIASES`.
 
-验证：
+Verify:
 
 - `都市日常 -> 都市`
 - `宫斗宅斗 -> 古言`
 - `玄幻言情 -> 幻言`
 - `规则怪谈 -> 悬疑`
 - `网游 -> 游戏`
-- `玄幻 -> canonical 玄幻，同时 init 模板选中修仙.md`
-- `克系 -> canonical 悬疑或按 index 配置，同时 init 模板选中克苏鲁.md`
-- `知乎短篇风的规则怪谈 -> canonical 悬疑，同时模板包含规则怪谈.md 和 知乎短篇.md`
+- `玄幻`: canonical `玄幻`, initialization template `修仙.md`.
+- `克系`: canonical `悬疑` or the index-configured value, template `克苏鲁.md`.
+- `知乎短篇风的规则怪谈`: canonical `悬疑`, with both `规则怪谈.md` and `知乎短篇.md`.
 
-### Phase 3: Init 写入与 schema 消费者修正
+### Phase 3: Initialization Writes and Schema Consumers
 
-范围：
+Scope:
 
-- `init_project.py` 写入 `project_info.genre`、`project_info.genre_label`、`project_info.genre_tags`。
-- `skills/webnovel-init/SKILL.md`、`skills/webnovel-plan/SKILL.md`、`skills/webnovel-write/SKILL.md`、`skills/webnovel-review/SKILL.md` 的 genre 读取改为：
-  - `project_info.genre` 优先。
-  - `project_info.genre_label` 可作为展示/诊断。
-  - legacy `project.genre` 兜底。
-- `memory_contract_adapter.py` 与 `context_manager.py` 同样改为 `project_info` 优先。
-- 更新 `templates/output/state-schema.md`。
+- Write `project_info.genre`, `project_info.genre_label`, and `project_info.genre_tags` in `init_project.py`.
+- Update genre reads in init/plan/write/review SKILL.md:
+  - Prefer `project_info.genre`.
+  - Use `project_info.genre_label` for display/diagnostics.
+  - Fall back to legacy `project.genre`.
+- Prefer `project_info` in `memory_contract_adapter.py` and `context_manager.py` too.
+- Update `templates/output/state-schema.md`.
 
-兼容策略：
+Compatibility:
 
-- 老项目只含 `project.genre` 时继续可读。
-- 新项目不再写 `project.genre`。
-- 非 canonical 老值通过 taxonomy resolver 兼容，不直接崩溃。
+- Old projects containing only `project.genre` remain readable.
+- New projects no longer write it.
+- Resolve old noncanonical values through taxonomy rather than crashing.
 
-验证：
+Verify:
 
-- init 新项目 state schema 测试。
-- 四个 SKILL.md 中 shell snippet 的读取逻辑测试或 grep 校验。
-- memory/context fallback 测试。
+- New initialization state-schema tests.
+- Shell-snippet tests or grep checks in the four Skills.
+- Memory/context fallback tests.
 
-### Phase 4: Story System 真实 CSV 端到端验证
+### Phase 4: End-to-End Routes Against Real CSV Data
 
-范围：
+Scope:
 
-- 增加真实 CSV route 覆盖测试，使用 `webnovel-writer/references/csv/题材与调性推理.csv`。
-- 对每个 route row：
-  - 如果 `关键词` / `意图与同义词` / `题材别名` 有值，取第一个可用 alias 作为 query，断言 `_route()` 不抛异常，且通常为 `keyword_or_alias_match`。
-  - 如果 alias 字段为空，则用 `题材/流派` 或 `canonical_genre` 作为 explicit genre fallback 输入，断言不抛异常。
-- 断言：
-  - 不抛 `StorySystemRoutingError`。
-  - `route.canonical_genre` 属于 15 canonical。
-  - `route.genre_filter == route.canonical_genre`，除非 canonical 是空或 `全部`。
-  - 未知 query + 未知 genre 仍应抛 `StorySystemRoutingError`，保持现有失败语义。
-- 当前真实 CSV 是 26 rows，但测试应按实际行数动态覆盖，不写死 26 或 27。
+- Add route coverage using `webnovel-writer/references/csv/题材与调性推理.csv`.
+- For each row:
+  - If `关键词`, `意图与同义词`, or `题材别名` is populated, use the first available alias as query; `_route()` must not raise and should normally use `keyword_or_alias_match`.
+  - If aliases are empty, use `题材/流派` or `canonical_genre` as explicit-genre fallback; no exception.
+- Assert:
+  - No `StorySystemRoutingError` for valid rows.
+  - `route.canonical_genre` belongs to the 15 values.
+  - `route.genre_filter == route.canonical_genre`, unless canonical is empty or `全部`.
+  - Unknown query + unknown genre still raises `StorySystemRoutingError`, preserving failure semantics.
+- The CSV currently has 26 rows, but tests must derive coverage dynamically rather than hard-code 26 or 27.
 
-验证：
+Verification:
 
 ```powershell
 $env:PYTHONUTF8='1'; python -m pytest webnovel-writer\scripts\data_modules\tests\test_story_system_engine.py -q --no-cov
 $env:PYTHONUTF8='1'; python -m pytest webnovel-writer\scripts\data_modules\tests\test_story_system_cli.py -q --no-cov
 ```
 
-### Phase 5: Skill 与文档收口
+### Phase 5: Finalize Skills and Documentation
 
-范围：
+Scope:
 
 - `webnovel-init/SKILL.md`
-  - 主体题材展示 15 canonical。
-  - preset/套路/形式用示例说明，不混入硬枚举。
-- `webnovel-plan/SKILL.md`、`webnovel-write/SKILL.md`、`webnovel-review/SKILL.md`
-  - 确认 genre snippet 均为 `project_info` 优先。
+  - Display 15 canonical primary genres.
+  - Explain presets/tropes/formats through examples, outside the hard enum.
+- Plan/write/review SKILL.md
+  - Confirm every genre snippet prefers `project_info`.
 - `references/csv/genre-canonical.md`
-  - 明确 canonical、route tag、trope tag、format tag 的边界。
+  - Distinguish canonical, route, trope, and format tags.
 - `references/csv/README.md`
-  - 写明 CSV 只接受 canonical，taxonomy index 负责用户输入层。
+  - State that CSVs accept canonical values; taxonomy handles user input.
 - `references/index/reference-loading-map.md`
-  - 更新模板加载规则。
+  - Update template loading rules.
 - `references/genre-profiles.md`
-  - 明确 fallback 触发条件。
+  - Clarify fallback triggers.
 
-### Phase 6: 可选目录重构
+### Phase 6: Optional Directory Refactor
 
-只有前五阶段稳定后再做。
+Only after the first five phases stabilize.
 
-目标结构：
+Target structure:
 
 ```text
 templates/genres/
@@ -414,26 +414,26 @@ templates/genres/
     知乎短篇.md
 ```
 
-这一步路径影响大，必须单独提交。
+This significantly affects paths and requires a separate commit.
 
-## genre-profiles.md Fallback 规则
+## genre-profiles.md Fallback Rules
 
-`genre-profiles.md` 只在以下场景使用：
+Use it only when:
 
-1. 老项目没有 Story Contracts，无法从 `.story-system` 取得 route/profile。
-2. `story_contracts.master.route.primary_genre` 为空，且 protagonist/state fallback 有 genre。
-3. 用户显式启用了 legacy profile fallback。
+1. An old project lacks Story Contracts and cannot obtain route/profile from `.story-system`.
+2. `story_contracts.master.route.primary_genre` is empty but protagonist/state fallback has a genre.
+3. The user explicitly enables legacy profile fallback.
 
-目标优先级：
+Target priority:
 
-1. Story Contracts 的 route/profile。
-2. `project_info.genre_label` 或 `project_info.genre` 经 taxonomy resolve 后的结果。
-3. legacy `project.genre`。
-4. 配置项 fallback genre。
+1. Story Contracts route/profile.
+2. Taxonomy-resolved `project_info.genre_label` or `project_info.genre`.
+3. Legacy `project.genre`.
+4. Configured fallback genre.
 
-`genre_profile_excerpt` 只能作为补充 context，不能覆盖 Story System contract 的 route 决策。
+`genre_profile_excerpt` is supplemental context only; it must not override the Story System contract's routing decision.
 
-## 建议提交拆分
+## Suggested Commits
 
 1. `docs(genres): address taxonomy plan review`
 2. `chore(genres): add taxonomy index and normalize headings`
@@ -441,42 +441,42 @@ templates/genres/
 4. `refactor(genres): migrate genre resolution call sites`
 5. `feat(init): persist canonical genre and genre tags`
 6. `docs(genres): update skill and csv taxonomy guidance`
-7. 可选：`refactor(genres): split canonical and preset templates`
+7. Optional: `refactor(genres): split canonical and preset templates`
 
-## 风险与控制
+## Risks and Controls
 
-- 风险：CSV index 变成又一份真源。
-  控制：Phase 2 必须删除 Python 硬编码输入映射，并加 grep/lint 防回潮。
+- Risk: The CSV index becomes another competing source of truth.
+  Control: Phase 2 removes Python input mappings and adds regression-preventing grep/lint checks.
 
-- 风险：模板命名空间与 canonical 命名空间混淆。
-  控制：`GenreResolution` 同时返回 `canonical_genre` 与 `template_files`，调用点只取自己需要的字段。
+- Risk: Template and canonical namespaces become confused.
+  Control: `GenreResolution` returns both `canonical_genre` and `template_files`; callers use only the fields they need.
 
-- 风险：`玄幻 -> 修仙.md` 这类历史行为丢失。
-  控制：在 index 中显式建模，并加回归测试。
+- Risk: Historical behavior such as `玄幻 -> 修仙.md` is lost.
+  Control: Model it explicitly in the index and add regression tests.
 
-- 风险：`系统流`、`知乎短篇` 等默认 canonical 有争议。
-  控制：index 中标注 `label_type`；init 交互层展示推断结果，用户不同意时可显式指定 canonical。
+- Risk: Default canonical mappings for `系统流` or `知乎短篇` are debatable.
+  Control: Record `label_type`; show inferred mappings during initialization and allow explicit canonical selection.
 
-- 风险：Story System route 被 resolver 行为变化破坏。
-  控制：Phase 4 使用真实 `题材与调性推理.csv` 全量 route rows 做端到端测试，并保留未知输入抛错语义。
+- Risk: Resolver changes break Story System routes.
+  Control: Phase 4 tests every real route row and preserves unknown-input errors.
 
-- 风险：schema 读取点漏改，继续读 `project.genre`。
-  控制：Phase 3 增加四个 SKILL.md、memory/context 的 grep 校验和兼容读取测试。
+- Risk: Missed consumers keep reading `project.genre`.
+  Control: Phase 3 checks the four Skills plus memory/context through grep and compatibility tests.
 
-- 风险：`GENRE_PROFILE_KEY_ALIASES` 孤立。
-  控制：Phase 1-5 明确保留它，但移除输入 alias；文件注释清楚它只服务 fallback profile key。
+- Risk: `GENRE_PROFILE_KEY_ALIASES` becomes orphaned.
+  Control: Retain it explicitly through Phases 1–5 while removing input aliases; document its fallback-only purpose.
 
-## 完成标准
+## Completion Criteria
 
-- 37 个模板全部有 index 映射，且 index 与实际文件双向一致。
-- index 覆盖旧映射和模板 stem 的 label/alias 集合，symmetric diff 为空或仅有显式 allowlist。
-- 所有模板标题纯中文。
-- `PLATFORM_TO_CANONICAL`、`_LEGACY_GENRE_MAP`、`GENRE_INPUT_ALIASES` 不再以硬编码输入 dict 存在。
-- `_normalize_genre_key()` 不再维护本地 alias。
-- `GENRE_PROFILE_KEY_ALIASES` 的归属已明确，且不与 canonical/template resolver 混用。
-- `reference_search.py`、`init_project.py`、`genre_aliases.py` 使用同一 taxonomy resolver 作为输入归一真源。
-- 新 init 项目写入 canonical `project_info.genre`，并保存 `genre_label` 与 `genre_tags`。
-- 老项目 `project.genre` 仍可兼容读取，但不是新写入 schema。
-- 所有 SKILL.md 中 genre 读取均为 `project_info.genre` 优先。
-- 真实 Story System route CSV 全量端到端测试通过，未知输入仍抛 `StorySystemRoutingError`。
-- `validate_csv.py`、prompt integrity 与全量 pytest 通过。
+- All 37 templates map through the index, with bidirectional agreement.
+- Labels/aliases cover old mappings and template stems; symmetric differences are empty or allowlisted.
+- The historical plan's template-heading criterion is Chinese-only titles.
+- `PLATFORM_TO_CANONICAL`, `_LEGACY_GENRE_MAP`, and `GENRE_INPUT_ALIASES` no longer exist as hard-coded input dictionaries.
+- `_normalize_genre_key()` no longer maintains local aliases.
+- `GENRE_PROFILE_KEY_ALIASES` has clear ownership and is not mixed with canonical/template resolution.
+- `reference_search.py`, `init_project.py`, and `genre_aliases.py` share taxonomy as input-normalization truth.
+- New projects write canonical `project_info.genre` and retain `genre_label`/`genre_tags`.
+- Legacy `project.genre` remains readable but is not newly written.
+- All Skill genre reads prefer `project_info.genre`.
+- All real route rows pass end-to-end tests; unknown inputs still raise `StorySystemRoutingError`.
+- `validate_csv.py`, prompt integrity, and full pytest pass.

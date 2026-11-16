@@ -1,120 +1,120 @@
 ---
 name: foreshadowing
-purpose: 伏笔紧急度分析和管理时加载
+purpose: Load for foreshadowing urgency analysis and management
 ---
 
 <context>
-此文件用于伏笔管理参考。Claude 已知一般叙事伏笔技巧，这里只补充网文特定的伏笔层级、回收周期和紧急度计算。
+This is a foreshadowing-management reference. Claude already knows general narrative foreshadowing; this adds tiers, payoff cycles, and urgency calculations specific to web fiction.
 </context>
 
 <instructions>
 
-## 伏笔层级分类
+## Foreshadowing tiers
 
-| 层级 | 回收周期 | 权重 | 示例 |
+| Tier | Payoff cycle | Weight | Examples |
 |------|---------|------|------|
-| **核心** | 50-300章 | 3.0x | 主角身世、终极敌人、金手指来历 |
-| **支线** | 30-100章 | 2.0x | 配角动机、神秘物品、师门秘密 |
-| **装饰** | 10-30章 | 1.0x | 场景细节、小习惯、路人提及 |
+| **Core** | 50–300 chapters | 3.0x | Protagonist's origins, ultimate enemy, special ability's origin |
+| **Subplot** | 30–100 chapters | 2.0x | Supporting character's motives, mysterious item, sect secrets |
+| **Decorative** | 10–30 chapters | 1.0x | Scene details, small habits, a passerby's remark |
 
-## 紧急度计算
+## Urgency calculation
 
 ```
-紧急度 = (已过章节 / 目标章节) × 层级权重
+Urgency = (elapsed chapters / target chapters) × tier weight
 ```
 
-**状态判定**:
-- 🔴 Critical: 超过目标章节 OR 核心伏笔 >50 章未回收
-- 🟡 Warning: >80% 目标 OR 支线 >80 章未回收
-- 🟢 Normal: 在计划范围内
+**Status rules**:
+- 🔴 Critical: past target chapter OR core foreshadowing unresolved for >50 chapters
+- 🟡 Warning: >80% of target OR subplot foreshadowing unresolved for >80 chapters
+- 🟢 Normal: within the planned range
 
-## 伏笔埋设技巧
+## Planting techniques
 
-| 技巧 | 方法 | 示例 |
+| Technique | Method | Example |
 |------|------|------|
-| 顺手埋 | 正常剧情中顺带一提 | 藏书阁翻书时看到"吞天魔功"传说 |
-| 对话埋 | 通过角色对话透露 | "你的体质很特殊..." |
-| 细节埋 | 不起眼的细节 | 破庙神像缺了一只手臂 |
-| 梦境埋 | 通过梦境暗示未来 | 梦到血色世界和模糊身影 |
+| Incidental mention | Mention in passing during normal plot | Reading a legend about the “Heaven-Devouring Demonic Art” in the library |
+| Dialogue | Reveal through character conversation | “Your constitution is unusual...” |
+| Detail | An inconspicuous detail | A ruined temple's statue is missing an arm |
+| Dream | Hint at the future through dreams | Dreaming of a blood-red world and an indistinct figure |
 
-## 伏笔回收方式
+## Payoff methods
 
-| 方式 | 适用层级 | 效果 |
+| Method | Suitable depth | Effect |
 |------|---------|------|
-| 直接揭晓 | 浅层 | 快速交代 |
-| 层层揭开 | 中层 | 逐步揭示真相 |
-| 意外反转 | 深层 | 制造惊喜震撼 |
+| Direct revelation | Shallow | Quick explanation |
+| Layered revelation | Medium | Gradually reveal the truth |
+| Unexpected reversal | Deep | Surprise and shock |
 
-## 伏笔密度建议
+## Recommended density
 
-| 作品长度 | 浅层 | 中层 | 深层 |
+| Work length | Shallow | Medium | Deep |
 |---------|------|------|------|
-| 短篇(10万字) | 5-10条 | 2-3条 | 1条 |
-| 中篇(50万字) | 20-30条 | 5-10条 | 2-3条 |
-| 长篇(200万字+) | 50+条 | 20+条 | 5-10条 |
+| Short (100,000 Chinese characters) | 5–10 threads | 2–3 threads | 1 thread |
+| Medium (500,000 characters) | 20–30 threads | 5–10 threads | 2–3 threads |
+| Long (2 million+ characters) | 50+ threads | 20+ threads | 5–10 threads |
 
-**原则**: 同时进行的伏笔不超过 5 条
+**Principle**: no more than five active foreshadowing threads at once.
 
-## 禁忌
+## Avoid
 
-- 埋了不收（读者期待落空）
-- 强行圆回（明显是后补的）
-- 伏笔太明显（一眼看穿）
-- 伏笔过多（读者记不住）
+- Planting without payoff (unfulfilled reader expectations)
+- Forced explanations (obvious retroactive patches)
+- Overly obvious hints (readers see through them immediately)
+- Too many threads (readers cannot remember them)
 
 </instructions>
 
 <examples>
 
 <example>
-<input>设计主角身世伏笔（核心层级）</input>
+<input>Design foreshadowing for the protagonist's origins (core tier)</input>
 <output>
-**第 1 章埋**: 主角父亲神秘失踪
-**第 50 章线索**: 发现父亲留下的信，提到北域
-**第 100 章线索**: 在北域找到父亲踪迹
-**第 200 章回收**: 父亲现身，原来是为了封印魔神！
+**Plant in Chapter 1**: Protagonist's father mysteriously disappears
+**Clue in Chapter 50**: Find a letter left by the father mentioning the Northern Region
+**Clue in Chapter 100**: Find traces of the father in the Northern Region
+**Payoff in Chapter 200**: Father appears; he had been sealing a demon god!
 
-**回收方式**: 层层揭开
-**埋设技巧**: 对话埋（母亲临终遗言）+ 细节埋（父亲留下的玉佩）
+**Payoff method**: Layered revelation
+**Planting techniques**: Dialogue (mother's dying words) + detail (father's jade pendant)
 </output>
 </example>
 
 <example>
-<input>伏笔紧急度分析</input>
+<input>Analyze foreshadowing urgency</input>
 <output>
-**当前章节**: 80
-**伏笔 F-001**: 神秘玉佩（核心，target=50）
-  紧急度 = (80/50) × 3.0 = 4.8
-  状态: 🔴 Critical（已超过目标！）
+**Current chapter**: 80
+**Foreshadowing F-001**: Mysterious jade pendant (core, target=50)
+  Urgency = (80/50) × 3.0 = 4.8
+  Status: 🔴 Critical (past target!)
 
-**伏笔 F-002**: 师妹身份（支线，target=100）
-  紧急度 = (80/100) × 2.0 = 1.6
-  状态: 🟡 Warning（>80%）
+**Foreshadowing F-002**: Junior sister's identity (subplot, target=100)
+  Urgency = (80/100) × 2.0 = 1.6
+  Status: 🟡 Warning (>80%)
 
-**伏笔 F-003**: 破庙细节（装饰，target=120）
-  紧急度 = (80/120) × 1.0 = 0.67
-  状态: 🟢 Normal
+**Foreshadowing F-003**: Ruined-temple detail (decorative, target=120)
+  Urgency = (80/120) × 1.0 = 0.67
+  Status: 🟢 Normal
 </output>
 </example>
 
 <example>
-<input>草蛇灰线设计</input>
+<input>Design a subtle recurring thread</input>
 <output>
-**第 10 章**: 主角遇到乞丐老者，给了他一颗丹药
-**第 30 章**: 主角又遇到这个老者，老者笑而不语
-**第 50 章**: 关键时刻，老者出手相救
-**第 100 章**: 老者身份揭晓——上古大能！
+**Chapter 10**: Protagonist meets an elderly beggar and gives him a pill
+**Chapter 30**: Meets the old man again; he smiles without speaking
+**Chapter 50**: At a crucial moment, the old man intervenes to save him
+**Chapter 100**: Old man's identity revealed: an ancient powerhouse!
 
-**技巧**: 每次出现都留悬念，但不明说
+**Technique**: Leave a question at every appearance without explaining it directly.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 埋了不收（读者骂坑） → ✅ 建立伏笔清单，定期回收
-❌ 强行圆回（牵强附会） → ✅ 埋得越早，回收越要合理
-❌ 伏笔太明显（一眼看穿） → ✅ 若隐若现，不要太直白
-❌ 同时 10+ 条伏笔 → ✅ 同时进行不超过 5 条
-❌ 核心伏笔 >50 章不回收 → ✅ 检查紧急度，及时回收
+❌ Planting without payoff (readers complain of abandoned threads) → ✅ Keep a foreshadowing checklist and pay it off regularly
+❌ Forced explanations (strained connections) → ✅ The earlier the setup, the more convincing its payoff must be
+❌ Overly obvious hints → ✅ Suggest subtly rather than stating directly
+❌ 10+ simultaneous threads → ✅ No more than five active at once
+❌ Core foreshadowing unresolved for >50 chapters → ✅ Check urgency and deliver timely payoff
 </errors>

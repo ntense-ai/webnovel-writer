@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 在 Phase 1 合同种子层之上，落地 `VOLUME_BRIEF`、`REVIEW_CONTRACT`、写前禁区与消歧域、大纲履约 diff、`context_manager` contract-first pack，让规划/写作/审查默认先消费合同而不是临时拼资料。
+**Goal:** Build on the Phase 1 contract seed layer with `VOLUME_BRIEF`, `REVIEW_CONTRACT`, pre-writing prohibitions and disambiguation scopes, outline fulfillment diffs, and a contract-first `context_manager` pack, making planning/writing/review consume contracts first rather than assemble references ad hoc.
 
-**Architecture:** 以 `.story-system/*.json` 为唯一合同真源，在 Phase 1 的 `MASTER_SETTING / CHAPTER_BRIEF / anti_patterns` 基础上新增卷级与审查级合同，并把 Phase 1 的扁平聚合结果拆成 schema 化合同家族。运行时遵循 `chapter -> volume -> master -> old profile/reference fallback` 的固定优先级；Markdown 在本阶段退化为 JSON 的只读渲染产物。
+**Architecture:** Use `.story-system/*.json` as the sole contract source of truth. Add volume and review contracts to Phase 1 `MASTER_SETTING / CHAPTER_BRIEF / anti_patterns`, splitting the flat Phase 1 aggregation into a schema-based contract family. Runtime follows the fixed priority `chapter -> volume -> master -> old profile/reference fallback`. In this phase, Markdown becomes a read-only rendering of JSON.
 
 **Tech Stack:** Python 3.13, Pydantic, argparse, pytest, unified CLI `webnovel.py`, Markdown + JSON contract artifacts
 
@@ -16,39 +16,39 @@
 
 ## Scope Split
 
-本计划只覆盖 Phase 2：
+This plan covers only Phase 2:
 
 1. `VOLUME_BRIEF`
 2. `REVIEW_CONTRACT`
-3. 写前禁区与消歧域
-4. 大纲履约 diff
+3. Pre-writing prohibitions and disambiguation scopes
+4. Outline fulfillment diff
 5. `context_manager` contract-first pack
 
-明确不做：
+Explicit non-goals:
 
-- 不引入 `CHAPTER_COMMIT`
-- 不把写后回写改成 commit 驱动
-- 不建立 canonical event log
-- 不做 override ledger 扩展迁移
+- Do not introduce `CHAPTER_COMMIT`
+- Do not change post-writing persistence to commit-driven operation
+- Do not establish a canonical event log
+- Do not expand or migrate the override ledger
 
-本阶段的退出标准：
+Exit criteria for this phase:
 
-1. `MASTER / VOLUME / CHAPTER / REVIEW` 都有稳定 JSON schema
-2. `context_manager` 能按合同优先级输出 pack
-3. 写前能产出 `prewrite_validation` 与 `fulfillment_seed`
-4. `webnovel-plan` / `webnovel-write` / `webnovel-review` 的默认读取顺序已切到合同优先
-5. `genre-profiles.md` 与旧 reference 只作为 fallback，不再并列充当系统判断真源
+1. `MASTER / VOLUME / CHAPTER / REVIEW` all have stable JSON schemas
+2. `context_manager` outputs packs in contract-priority order
+3. Pre-writing can produce `prewrite_validation` and `fulfillment_seed`
+4. The default read order of `webnovel-plan` / `webnovel-write` / `webnovel-review` is contract-first
+5. `genre-profiles.md` and legacy references serve only as fallbacks, not peer sources of truth for system decisions
 
-文档更新沿用 Phase 1 已建好的 `Story System` 段落：
+Reuse the `Story System` documentation sections established in Phase 1:
 
-- Phase 2 只追加 `contract-first runtime`、`VOLUME_BRIEF`、`REVIEW_CONTRACT`
-- 不重写 `README.md / overview.md / commands.md` 的总体结构
+- Phase 2 adds only `contract-first runtime`, `VOLUME_BRIEF`, and `REVIEW_CONTRACT`
+- Do not restructure `README.md / overview.md / commands.md`
 
 ---
 
 ## File Structure
 
-### 要创建的文件
+### Files to Create
 
 - `webnovel-writer/scripts/data_modules/story_contract_schema.py`
 - `webnovel-writer/scripts/data_modules/runtime_contract_builder.py`
@@ -58,7 +58,7 @@
 - `webnovel-writer/scripts/data_modules/tests/test_prewrite_validator.py`
 - `docs/architecture/story-system-phase2.md`
 
-### 要修改的文件
+### Files to Modify
 
 - `webnovel-writer/scripts/data_modules/story_contracts.py`
 - `webnovel-writer/scripts/data_modules/story_system_engine.py`
@@ -79,25 +79,25 @@
 - `docs/guides/commands.md`
 - `docs/superpowers/README.md`
 
-### 文件职责
+### File Responsibilities
 
-- `story_contract_schema.py`：`MASTER_SETTING / VOLUME_BRIEF / CHAPTER_BRIEF / REVIEW_CONTRACT` 的 Pydantic schema 与版本元数据
-- `runtime_contract_builder.py`：从 Phase 1 seed、卷范围、大纲结构、plot structure 生成 `VOLUME_BRIEF` 与 `REVIEW_CONTRACT`
-- `prewrite_validator.py`：写前禁区检查、消歧域构建、履约 seed 与 must-check 列表生成
-- `story_contracts.py`：新增 `volumes/`、`reviews/` 路径、JSON 真源写入、只读 Markdown 重建
-- `context_manager.py`：把 contract-first pack 作为默认装配顺序
-- `skills/*/SKILL.md`：把运行时入口切换为先生成/读取合同，再写作或审查
+- `story_contract_schema.py`: Pydantic schemas and version metadata for `MASTER_SETTING / VOLUME_BRIEF / CHAPTER_BRIEF / REVIEW_CONTRACT`
+- `runtime_contract_builder.py`: generate `VOLUME_BRIEF` and `REVIEW_CONTRACT` from the Phase 1 seed, volume range, outline structure, and plot structure
+- `prewrite_validator.py`: pre-writing prohibition checks, disambiguation-scope construction, fulfillment seeds, and must-check lists
+- `story_contracts.py`: add `volumes/` and `reviews/` paths, write JSON sources of truth, and rebuild read-only Markdown
+- `context_manager.py`: use contract-first pack assembly by default
+- `skills/*/SKILL.md`: switch runtime entry points to generate/read contracts before writing or reviewing
 
 ---
 
-## Task 1: 建立 Phase 2 合同 schema 与目录扩展
+## Task 1: Establish Phase 2 Contract Schemas and Directory Extensions
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/story_contract_schema.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_story_contract_schema.py`
 - Modify: `webnovel-writer/scripts/data_modules/story_contracts.py`
 
-- [ ] **Step 1: 先写 schema 失败测试**
+- [ ] **Step 1: Write failing schema tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_story_contract_schema.py
@@ -163,13 +163,13 @@ def test_review_contract_requires_blocking_rules_list():
         )
 ```
 
-- [ ] **Step 2: 运行测试确认红灯**
+- [ ] **Step 2: Run tests and confirm failures**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_contract_schema.py -q --no-cov`
 
 Expected: `ModuleNotFoundError: No module named 'data_modules.story_contract_schema'`
 
-- [ ] **Step 3: 实现 Phase 2 schema 与目录路径**
+- [ ] **Step 3: Implement Phase 2 schemas and directory paths**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_contract_schema.py
@@ -231,9 +231,9 @@ class ReviewContract(BaseModel):
     overrides: OverrideBundle = Field(default_factory=OverrideBundle)
 ```
 
-`blocking_rules` 在 Phase 2 先保持 `List[str]`，避免过早引入复杂 schema；但在文档中明确标注它是 **Phase 5 可升级为 `List[BlockingRule]` 的预留位**，后续如果要附带严重级、来源和匹配模式，再做结构化收口。
+Keep `blocking_rules` as `List[str]` in Phase 2 to avoid premature schema complexity. Explicitly document it as **a placeholder that may become `List[BlockingRule]` in Phase 5**; add structure later if severity, source, and matching patterns are needed.
 
-- [ ] **Step 4: 扩展 `story_contracts.py` 的卷级/审查级路径**
+- [ ] **Step 4: Extend volume/review paths in `story_contracts.py`**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_contracts.py
@@ -252,13 +252,13 @@ def review_json(self, chapter: int) -> Path:
     return self.reviews_dir / f"chapter_{chapter:03d}.review.json"
 ```
 
-- [ ] **Step 5: 回跑测试**
+- [ ] **Step 5: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_contract_schema.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/story_contract_schema.py \
@@ -269,7 +269,7 @@ git commit -m "feat: add phase2 contract schemas and paths"
 
 ---
 
-## Task 2: 生成 `VOLUME_BRIEF` 与 `REVIEW_CONTRACT`
+## Task 2: Generate `VOLUME_BRIEF` and `REVIEW_CONTRACT`
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/runtime_contract_builder.py`
@@ -279,7 +279,7 @@ git commit -m "feat: add phase2 contract schemas and paths"
 - Modify: `webnovel-writer/scripts/story_system.py`
 - Modify: `webnovel-writer/scripts/chapter_outline_loader.py`
 
-- [ ] **Step 1: 先写生成器测试**
+- [ ] **Step 1: Write generator tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_runtime_contract_builder.py
@@ -340,13 +340,13 @@ def test_runtime_contract_builder_creates_volume_and_review_contracts(tmp_path):
     assert "不可提前摊牌" in review_contract["blocking_rules"]
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_runtime_contract_builder.py -q --no-cov`
 
 Expected: `ModuleNotFoundError: No module named 'data_modules.runtime_contract_builder'`
 
-- [ ] **Step 3: 实现生成器**
+- [ ] **Step 3: Implement the generator**
 
 ```python
 # webnovel-writer/scripts/data_modules/runtime_contract_builder.py
@@ -417,7 +417,7 @@ class RuntimeContractBuilder:
         return volume_num_for_chapter_from_state(self.project_root, chapter) or 1
 ```
 
-- [ ] **Step 4: 在 `story_system.py` 中新增 `build-runtime-contracts` 入口**
+- [ ] **Step 4: Add a `build-runtime-contracts` entry point to `story_system.py`**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_contracts.py
@@ -441,13 +441,13 @@ if args.emit_runtime_contracts:
     persist_runtime_contracts(project_root, args.chapter, volume_brief, review_contract)
 ```
 
-- [ ] **Step 5: 回跑测试**
+- [ ] **Step 5: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_runtime_contract_builder.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/runtime_contract_builder.py \
@@ -460,7 +460,7 @@ git commit -m "feat: generate volume brief and review contract"
 
 ---
 
-## Task 3: 写前禁区、消歧域与大纲履约 diff
+## Task 3: Pre-writing Prohibitions, Disambiguation Scopes, and Outline Fulfillment Diffs
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/prewrite_validator.py`
@@ -468,7 +468,7 @@ git commit -m "feat: generate volume brief and review contract"
 - Modify: `webnovel-writer/scripts/data_modules/context_manager.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_context_manager.py`
 
-- [ ] **Step 1: 先写 `prewrite_validator` 失败测试**
+- [ ] **Step 1: Write failing `prewrite_validator` tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_prewrite_validator.py
@@ -504,13 +504,13 @@ def test_prewrite_validator_builds_disambiguation_domain_and_fulfillment_seed(tm
     assert payload["disambiguation_domain"]["pending_count"] == 0
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_prewrite_validator.py -q --no-cov`
 
 Expected: `ModuleNotFoundError: No module named 'data_modules.prewrite_validator'`
 
-- [ ] **Step 3: 实现写前校验器**
+- [ ] **Step 3: Implement the pre-writing validator**
 
 ```python
 # webnovel-writer/scripts/data_modules/prewrite_validator.py
@@ -546,7 +546,7 @@ class PrewriteValidator:
         }
 ```
 
-- [ ] **Step 4: 在 `context_manager` 中新增 `prewrite_validation` section**
+- [ ] **Step 4: Add a `prewrite_validation` section to `context_manager`**
 
 ```python
 # webnovel-writer/scripts/data_modules/context_manager.py
@@ -575,13 +575,13 @@ pack["prewrite_validation"] = validator.build(
 )
 ```
 
-- [ ] **Step 5: 回跑测试**
+- [ ] **Step 5: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_prewrite_validator.py webnovel-writer/scripts/data_modules/tests/test_context_manager.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/prewrite_validator.py \
@@ -593,7 +593,7 @@ git commit -m "feat: add prewrite validation and fulfillment seed"
 
 ---
 
-## Task 4: 切换 runtime 为 contract-first，并接入 skills / CLI
+## Task 4: Switch Runtime to Contract-First and Integrate Skills / CLI
 
 **Files:**
 - Modify: `webnovel-writer/scripts/extract_chapter_context.py`
@@ -604,9 +604,9 @@ git commit -m "feat: add prewrite validation and fulfillment seed"
 - Modify: `webnovel-writer/skills/webnovel-write/SKILL.md`
 - Modify: `webnovel-writer/skills/webnovel-review/SKILL.md`
 
-- [ ] **Step 1: 先补 contract-first 读取顺序测试**
+- [ ] **Step 1: Add contract-first read-order tests first**
 
-在 `test_prompt_integrity.py` 增加更稳的“步骤块”断言，而不是裸字符串包含：
+Add more robust step-block assertions to `test_prompt_integrity.py` rather than bare substring checks:
 
 ```python
 def test_story_system_runtime_contract_commands_exist():
@@ -617,7 +617,7 @@ def test_story_system_runtime_contract_commands_exist():
     assert block, "webnovel-write skill 必须包含生成 runtime contracts 的完整步骤块"
 ```
 
-在 `test_webnovel_unified_cli.py` 增加：
+Add to `test_webnovel_unified_cli.py`:
 
 ```python
 def test_webnovel_story_system_runtime_forwards(monkeypatch, tmp_path):
@@ -640,22 +640,22 @@ def test_webnovel_story_system_runtime_forwards(monkeypatch, tmp_path):
     assert "--emit-runtime-contracts" in called["argv"]
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py -q --no-cov`
 
-Expected: 新断言失败
+Expected: The new assertions fail
 
-- [ ] **Step 3: 修改技能与文本提取脚本**
+- [ ] **Step 3: Update skills and the text-extraction script**
 
-在三个 skill 中统一插入 Phase 2 前置步骤：
+Insert the same Phase 2 prerequisite step into all three skills:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" \
   story-system "{chapter_goal}" --chapter {chapter_num} --persist --emit-runtime-contracts --format both
 ```
 
-并在 `extract_chapter_context.py` 输出：
+Also output the following from `extract_chapter_context.py`:
 
 ```python
 story_contract = contract_context.get("story_contract") or {}
@@ -667,13 +667,13 @@ lines.append(f"- Review blocking rules: {len(review_contract.get('blocking_rules
 lines.append(f"- Prewrite blocking: {prewrite_validation.get('blocking')}")
 ```
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/extract_chapter_context.py \
@@ -688,7 +688,7 @@ git commit -m "feat: switch runtime entrypoints to contract-first flow"
 
 ---
 
-## Task 5: 文档更新与 Phase 2 回归验证
+## Task 5: Documentation Updates and Phase 2 Regression Validation
 
 **Files:**
 - Create: `docs/architecture/story-system-phase2.md`
@@ -697,38 +697,38 @@ git commit -m "feat: switch runtime entrypoints to contract-first flow"
 - Modify: `docs/guides/commands.md`
 - Modify: `docs/superpowers/README.md`
 
-- [ ] **Step 1: 新建 Phase 2 架构文档**
+- [ ] **Step 1: Create Phase 2 architecture documentation**
 
-`docs/architecture/story-system-phase2.md` 必须至少包含：
+`docs/architecture/story-system-phase2.md` must include at least:
 
 ```markdown
 # Story System Phase 2
 
-## 合同真源
+## Contract Source of Truth
 - `MASTER_SETTING.json`
 - `volumes/volume_XXX.json`
 - `chapters/chapter_XXX.json`
 - `reviews/chapter_XXX.review.json`
 
-## 运行时顺序
+## Runtime Order
 1. chapter brief
 2. volume brief
 3. master setting
 4. fallback references
 
-## 写前校验
+## Pre-Writing Validation
 - forbidden zones
 - disambiguation domain
 - fulfillment seed
 
-## 非目标
-- 不引入 `CHAPTER_COMMIT`
-- 不引入 canonical event log
+## Non-Goals
+- Do not introduce `CHAPTER_COMMIT`
+- Do not introduce a canonical event log
 ```
 
-- [ ] **Step 2: 更新命令文档**
+- [ ] **Step 2: Update command documentation**
 
-在 `docs/guides/commands.md` 增加：
+Add to `docs/guides/commands.md`:
 
 ```bash
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" \
@@ -736,7 +736,7 @@ python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" \
   story-system "玄幻退婚流" --chapter 3 --persist --emit-runtime-contracts --format both
 ```
 
-- [ ] **Step 3: 跑 Phase 2 最小验证集**
+- [ ] **Step 3: Run the minimal Phase 2 validation suite**
 
 Run:
 
@@ -752,15 +752,15 @@ python -m pytest \
   -q --no-cov
 ```
 
-Expected: 全部通过
+Expected: All pass
 
-- [ ] **Step 4: 回归 `reference_search.py`**
+- [ ] **Step 4: Regression-test `reference_search.py`**
 
 Run: `python -m pytest webnovel-writer/scripts/tests/test_reference_search.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 最终提交**
+- [ ] **Step 5: Final commit**
 
 ```bash
 git add README.md \
@@ -775,35 +775,35 @@ git commit -m "docs: document story system phase2 contract-first runtime"
 
 ## Spec Coverage Check
 
-- `13.3 Phase 2：合同优先运行时`
+- `13.3 Phase 2: Contract-first runtime`
   - `VOLUME_BRIEF`：Task 1 / Task 2
   - `REVIEW_CONTRACT`：Task 1 / Task 2
-  - 写前禁区与消歧域：Task 3
-  - 大纲履约 diff seed：Task 3
+  - Pre-writing prohibitions and disambiguation scopes: Task 3
+  - Outline fulfillment diff seed: Task 3
   - `context_manager` contract-first pack：Task 3 / Task 4
 
-- `7.2 运行时优先级`
+- `7.2 Runtime priorities`
   - `chapter -> volume -> master -> old profile`：Task 3 / Task 4
 
-- `11.1 写前校验`
-  - 可见合同、禁区、消歧 pending、must cover：Task 3
+- `11.1 Pre-writing validation`
+  - Visible contracts, prohibitions, pending disambiguation, and must-cover items: Task 3
 
-- `17.1 文档更新要求`
-  - schema、目录、流程、命令：Task 5
+- `17.1 Documentation update requirements`
+  - Schemas, directories, workflows, and commands: Task 5
 
 ---
 
 ## Placeholder Scan
 
-- 没有使用 `TODO / TBD / implement later`
-- 没有把“接入 skill”写成空话，已给出具体 skill 文件
-- 没有把 Phase 3 的 `CHAPTER_COMMIT` 混入本阶段任务
+- No `TODO / TBD / implement later` placeholders
+- Skill integration is concrete, with specific skill files identified
+- Phase 3 `CHAPTER_COMMIT` is not mixed into this phase
 
 ---
 
 ## Next Plan
 
-Phase 2 完成后进入：
+After completing Phase 2, proceed to:
 
 1. `Phase 3 Chapter Commit Chain`
 2. `Phase 4 Event Log And Override Ledger`

@@ -1,128 +1,128 @@
 ---
 name: system-data-flow
-purpose: 项目初始化和状态查询时加载，理解数据结构
+purpose: Load during project initialization and status queries to understand data structures
 ---
 
 <context>
-此文件用于项目数据结构参考。Claude 已知一般文件组织，这里只补充网文工作流特定的目录约定和脚本职责。
+This is a project data-structure reference. Claude already knows general file organization; this adds only directory conventions and script responsibilities specific to the webnovel workflow.
 </context>
 
 <instructions>
 
-> ⚠️ 本文件描述 `.webnovel/` 投影层数据结构与早期写作流程，供查询时理解 read-model。v6.0.0 写后主链已改为 Story System（`.story-system/` 合同树 + accepted `CHAPTER_COMMIT`）；下文「双 Agent 架构 / 每章数据链 / Data Agent 直接写入」等描述为历史流程，事实以 Story System 为准。
+> ⚠️ This file describes `.webnovel/` projection-layer data structures and the early writing workflow to explain the read model during queries. Since v6.0.0, the post-writing main pipeline uses Story System (the `.story-system/` contract tree + accepted `CHAPTER_COMMIT`). Descriptions below of the dual-Agent architecture, per-chapter data pipeline, and direct Data Agent writes are historical; Story System is authoritative.
 
-## 目录约定
+## Directory conventions
 
 ```
-项目根目录/
-├── 正文/           # 章节文件（第0001章.md 或 第1卷/第001章-标题.md）
-├── 大纲/           # 卷纲/章纲/场景纲
-├── 设定集/         # 世界观/力量体系/角色卡/物品卡
+project-root/
+├── 正文/           # Chapter files (第0001章.md or 第1卷/第001章-标题.md)
+├── 大纲/           # Volume/chapter/scene outlines
+├── 设定集/         # Worldbuilding/power systems/character sheets/item sheets
 └── .webnovel/
-    ├── state.json          # 精简状态 (< 5KB)：进度/主角/strand_tracker/消歧
-    ├── index.db            # SQLite 主存储：实体/别名/关系/状态变化/章节/场景
-    ├── workflow_state.json # 工作流断点（legacy；v6 写章主链改用 Story System chapter-commit）
-    ├── vectors.db          # RAG 向量数据库
-    ├── summaries/          # 章节摘要（chNNNN.md）
-    └── archive/            # 归档数据（不活跃角色/已回收伏笔）
+    ├── state.json          # Slim state (< 5KB): progress/protagonist/strand_tracker/disambiguation
+    ├── index.db            # Main SQLite storage: entities/aliases/relationships/state changes/chapters/scenes
+    ├── workflow_state.json # Workflow checkpoints (legacy; v6 chapter-writing pipeline uses Story System chapter-commit)
+    ├── vectors.db          # RAG vector database
+    ├── summaries/          # Chapter summaries (chNNNN.md)
+    └── archive/            # Archived data (inactive characters/resolved foreshadowing)
 ```
 
-## 架构变更说明
+## Architecture changes
 
-**核心变化**: 解决 state.json 膨胀问题（20章后 token 爆炸）
+**Core change**: resolve state.json bloat (token explosion after 20 chapters)
 
-| 数据类型 | 旧版存储位置 | 当前存储位置 |
+| Data type | Previous storage | Current storage |
 |----------|--------------|--------------|
-| entities_v3 | state.json | **index.db** (entities 表) |
-| alias_index | state.json | **index.db** (aliases 表) |
-| state_changes | state.json | **index.db** (state_changes 表) |
-| structured_relationships | state.json | **index.db** (relationships 表) |
-| progress | state.json | state.json (保留) |
-| protagonist_state | state.json | state.json (保留) |
-| strand_tracker | state.json | state.json (保留) |
-| disambiguation_* | state.json | state.json (保留) |
+| entities_v3 | state.json | **index.db** (entities table) |
+| alias_index | state.json | **index.db** (aliases table) |
+| state_changes | state.json | **index.db** (state_changes table) |
+| structured_relationships | state.json | **index.db** (relationships table) |
+| progress | state.json | state.json (retained) |
+| protagonist_state | state.json | state.json (retained) |
+| strand_tracker | state.json | state.json (retained) |
+| disambiguation_* | state.json | state.json (retained) |
 
-## 双 Agent 架构
+## Dual-Agent architecture
 
 ```
-写作前: Context Agent 读取数据 → 组装上下文包
-        ├── 从 state.json 读取精简数据（进度/配置）
-        └── 从 index.db SQL 按需查询（实体/关系）
+Before writing: Context Agent reads data → assembles context package
+        ├── Read slim data from state.json (progress/configuration)
+        └── Query index.db via SQL on demand (entities/relationships)
 
-写作中: Writer 使用上下文包生成纯正文（无 XML 标签）
+During writing: Writer uses the context package to generate plain prose (no XML tags)
 
-写作后: Data Agent 处理正文 → AI 提取实体 → 写入数据链
-        ├── 写入 index.db（实体/别名/状态变化/关系）
-        ├── 更新 state.json（进度/主角快照 + chapter_meta）
-        └── 写入 summaries/chNNNN.md（章节摘要）
+After writing: Data Agent processes prose → AI extracts entities → writes data pipeline
+        ├── Write index.db (entities/aliases/state changes/relationships)
+        ├── Update state.json (progress/protagonist snapshot + chapter_meta)
+        └── Write summaries/chNNNN.md (chapter summary)
 
-Context Agent (读) ←→ index.db + state.json ←→ Data Agent (写)
+Context Agent (reads) ←→ index.db + state.json ←→ Data Agent (writes)
 ```
 
-## 脚本/模块职责速查
+## Script/module responsibility reference
 
-### 核心脚本
+### Core scripts
 
-| 脚本 | 输入 | 输出 |
+| Script | Input | Output |
 |------|------|------|
-| `init_project.py` | 项目信息 | 生成 `.webnovel/state.json` + 初始化 `index.db` |
-| `update_state.py` | 参数 | 原子更新 `state.json` 字段（进度/主角/strand_tracker） |
-| `backup_manager.py` | 章节号 | 自动 Git 备份 |
-| `status_reporter.py` | 无 | 生成健康报告/伏笔紧急度 |
-| `archive_manager.py` | 无 | 归档不活跃数据 |
-| `data_modules/migrate_state_to_sqlite.py` | 项目路径 | 迁移旧 state.json 到 SQLite |
+| `init_project.py` | Project information | Generate `.webnovel/state.json` + initialize `index.db` |
+| `update_state.py` | Arguments | Atomically update `state.json` fields (progress/protagonist/strand_tracker) |
+| `backup_manager.py` | Chapter number | Automatic Git backup |
+| `status_reporter.py` | None | Generate health report/foreshadowing urgency |
+| `archive_manager.py` | None | Archive inactive data |
+| `data_modules/migrate_state_to_sqlite.py` | Project path | Migrate old state.json to SQLite |
 
-### data_modules 模块
+### data_modules modules
 
-| 模块 | 职责 |
+| Module | Responsibility |
 |------|------|
-| `state_manager.py` | 实体状态管理（精简 state.json + SQLite 同步） |
-| `sql_state_manager.py` | SQLite 状态管理（替代 JSON 写入） |
-| `index_manager.py` | SQLite 索引管理（实体/别名/关系/状态变化/章节/场景） |
-| `entity_linker.py` | 别名注册与消歧 |
-| `rag_adapter.py` | 向量嵌入与语义检索 |
-| `style_sampler.py` | 风格样本提取与管理 |
-| `api_client.py` | LLM API 调用封装 |
-| `config.py` | 配置管理 |
+| `state_manager.py` | Entity state management (slim state.json + SQLite synchronization) |
+| `sql_state_manager.py` | SQLite state management (replaces JSON writes) |
+| `index_manager.py` | SQLite index management (entities/aliases/relationships/state changes/chapters/scenes) |
+| `entity_linker.py` | Alias registration and disambiguation |
+| `rag_adapter.py` | Vector embedding and semantic retrieval |
+| `style_sampler.py` | Style-sample extraction and management |
+| `api_client.py` | LLM API call wrapper |
+| `config.py` | Configuration management |
 
-## 每章数据链
+## Per-chapter data pipeline
 
 ```
-1. Context Agent 组装创作任务书
-   → 读取 state.json（精简版：进度/配置）
-   → SQL 查询 index.db（核心实体/按需实体）
-   → RAG 检索（相关场景）
+1. Context Agent assembles the writing brief
+   → Read state.json (slim: progress/configuration)
+   → Query index.db with SQL (core/on-demand entities)
+   → RAG retrieval (related scenes)
 
-2. Step 1.5 章节设计
-   → 选开头/钩子/爽点模式（避开最近3章）
+2. Step 1.5 Chapter design
+   → Choose opening/hook/gratification patterns (avoid those in the last three chapters)
 
-3. Writer 生成章节内容
-   → 2A 粗稿（纯正文）
-   → 2B 风格适配（可选）
+3. Writer generates chapter content
+   → 2A Rough draft (plain prose)
+   → 2B Style adaptation (optional)
 
-4. 审查（统一 reviewer agent）
-   → 设定一致性/时间线/叙事连贯/角色一致性/逻辑 五维度检查
-   → 输出审查报告
+4. Review (unified reviewer agent)
+   → Five-dimensional checks: setting consistency/timeline/narrative continuity/character consistency/logic
+   → Output review report
 
-5. 网文化润色
-   → 基于审查报告修复问题
-   → 强化口感规则
+5. Polish for web-fiction style
+   → Fix issues based on the review report
+   → Strengthen readability and prose texture rules
 
-6. Data Agent 处理数据链
-   → AI 实体提取（替代 XML 标签解析）
-   → 实体消歧（置信度策略）
-   → 写入 index.db（实体/别名/状态变化/关系）
-   → 更新 state.json（进度/主角快照 + chapter_meta）
-   → 写入 summaries/chNNNN.md（章节摘要）
-   → 向量嵌入 (RAG)
-   → 风格样本评估
+6. Data Agent handles the data pipeline
+   → AI entity extraction (replaces XML tag parsing)
+   → Entity disambiguation (confidence policy)
+   → Write index.db (entities/aliases/state changes/relationships)
+   → Update state.json (progress/protagonist snapshot + chapter_meta)
+   → Write summaries/chNNNN.md (chapter summary)
+   → Vector embeddings (RAG)
+   → Style-sample assessment
 
-7. Git 备份（强制）
+7. Git backup (mandatory)
 ```
 
-> `update_state.py` 用于手动/脚本化更新 `progress`/`protagonist_state`/`strand_tracker` 等字段；主流程通常由 Data Agent 在处理数据链时同步推进进度。
+> `update_state.py` manually/programmatically updates fields such as `progress`/`protagonist_state`/`strand_tracker`; normally Data Agent advances progress while processing the data pipeline.
 
-## state.json 精简结构
+## Slim state.json structure
 
 ```json
 {
@@ -153,17 +153,17 @@ Context Agent (读) ←→ index.db + state.json ←→ Data Agent (写)
 }
 ```
 
-> **当前结构说明**: entities_v3、alias_index、state_changes、structured_relationships 已迁移到 index.db，不再存储在 state.json 中。
+> **Current structure**: entities_v3, alias_index, state_changes, and structured_relationships have moved to index.db and are no longer stored in state.json.
 
-## index.db 表结构
+## index.db table schemas
 
 ```sql
--- 实体表
+-- Entities table
 CREATE TABLE entities (
     id TEXT PRIMARY KEY,
-    type TEXT NOT NULL,           -- 角色/地点/物品/势力/招式
+    type TEXT NOT NULL,           -- Character/location/item/faction/move
     canonical_name TEXT NOT NULL,
-    tier TEXT DEFAULT '装饰',     -- 核心/重要/次要/装饰
+    tier TEXT DEFAULT '装饰',     -- Core/important/secondary/decorative
     desc TEXT,
     current_json TEXT,            -- JSON: {realm, location, ...}
     first_appearance INTEGER,
@@ -172,7 +172,7 @@ CREATE TABLE entities (
     is_archived INTEGER DEFAULT 0
 );
 
--- 别名表（一对多）
+-- Aliases table (one-to-many)
 CREATE TABLE aliases (
     alias TEXT NOT NULL,
     entity_id TEXT NOT NULL,
@@ -180,7 +180,7 @@ CREATE TABLE aliases (
     PRIMARY KEY (alias, entity_id, entity_type)
 );
 
--- 状态变化表
+-- State changes table
 CREATE TABLE state_changes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     entity_id TEXT NOT NULL,
@@ -191,7 +191,7 @@ CREATE TABLE state_changes (
     chapter INTEGER NOT NULL
 );
 
--- 关系表
+-- Relationships table
 CREATE TABLE relationships (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     from_entity TEXT NOT NULL,
@@ -202,34 +202,34 @@ CREATE TABLE relationships (
     UNIQUE(from_entity, to_entity, type)
 );
 
--- 原有表（保留）
+-- Existing tables (retained)
 CREATE TABLE chapters (...);
 CREATE TABLE scenes (...);
 CREATE TABLE appearances (...);
 ```
 
-## Data Agent AI 提取流程
+## Data Agent AI extraction procedure
 
-当前主流程不再要求 XML 标签，由 Data Agent 智能提取：
+The current main workflow no longer requires XML tags; Data Agent extracts intelligently:
 
-1. **实体识别**: 从正文语义识别角色/地点/物品/势力
-2. **实体匹配**: 优先匹配已有实体（通过 alias_index）
-3. **消歧处理**:
-   - 置信度 > 0.8: 自动采用
-   - 置信度 0.5-0.8: 采用但记录 warning
-   - 置信度 < 0.5: 标记待人工确认
-4. **状态变化识别**: 境界突破/位置移动/关系变化
-5. **写入存储**: 直接写入 index.db（实体/别名/关系/状态变化）
+1. **Entity recognition**: identify characters/locations/items/factions from prose semantics
+2. **Entity matching**: prioritize existing entities (through alias_index)
+3. **Disambiguation**:
+   - Confidence > 0.8: accept automatically
+   - Confidence 0.5–0.8: accept but record a warning
+   - Confidence < 0.5: flag for human confirmation
+4. **State-change recognition**: realm breakthroughs/location changes/relationship changes
+5. **Persistence**: write directly to index.db (entities/aliases/relationships/state changes)
 
-## 伏笔字段规范
+## Foreshadowing field specification
 
-| 字段 | 规范值 | 兼容值（历史） |
+| Field | Canonical values | Compatibility values (historical) |
 |------|--------|---------------|
 | status | `未回收` / `已回收` | 待回收/进行中/active/pending |
 
-**推荐字段**: content, status, planted_chapter, target_chapter, tier
+**Recommended fields**: content, status, planted_chapter, target_chapter, tier
 
-## alias_index 格式（一对多）
+## alias_index format (one-to-many)
 
 ```json
 {
@@ -241,67 +241,67 @@ CREATE TABLE appearances (...);
 }
 ```
 
-同一别名可映射到多个实体，消歧时根据 type 或上下文判断。
+One alias may map to multiple entities; disambiguate using type or context.
 
 </instructions>
 
 <examples>
 
 <example>
-<input>查询当前进度</input>
+<input>Query current progress</input>
 <output>
 ```bash
 cat "$PROJECT_ROOT/.webnovel/state.json" | jq '.progress'
-# 输出: { "current_chapter": 45, "total_words": 135000 }
+# Output: { "current_chapter": 45, "total_words": 135000 }
 ```
 </output>
 </example>
 
 <example>
-<input>查询实体（SQL）</input>
+<input>Query entities (SQL)</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-entity --id "xiaoyan"
-# 输出: {"id": "xiaoyan", "type": "角色", "canonical_name": "萧炎", ...}
+# Output: {"id": "xiaoyan", "type": "角色", "canonical_name": "萧炎", ...}
 
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-core-entities
-# 输出: 所有核心实体（主角 + tier=核心/重要）
+# Output: all core entities (protagonist + tier=核心/重要)
 ```
 </output>
 </example>
 
 <example>
-<input>按别名查找实体（一对多）</input>
+<input>Find entities by alias (one-to-many)</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-by-alias --alias "天云宗"
-# 输出: [{"id": "loc_tianyunzong", "type": "地点"}, {"id": "faction_tianyunzong", "type": "势力"}]
+# Output: [{"id": "loc_tianyunzong", "type": "地点"}, {"id": "faction_tianyunzong", "type": "势力"}]
 ```
 </output>
 </example>
 
 <example>
-<input>查询状态变化</input>
+<input>Query state changes</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-state-changes --entity "xiaoyan" --limit 10
-# 输出: [{entity_id, field, old_value, new_value, reason, chapter}, ...]
+# Output: [{entity_id, field, old_value, new_value, reason, chapter}, ...]
 ```
 </output>
 </example>
 
 <example>
-<input>查询关系</input>
+<input>Query relationships</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index get-relationships --entity "xiaoyan"
-# 输出: [{from_entity, to_entity, type, description, chapter}, ...]
+# Output: [{from_entity, to_entity, type, description, chapter}, ...]
 ```
 </output>
 </example>
 
 <example>
-<input>检查伏笔紧急度</input>
+<input>Check foreshadowing urgency</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" status -- --focus urgency
@@ -310,7 +310,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" status -- --f
 </example>
 
 <example>
-<input>查询实体出场记录</input>
+<input>Query entity appearances</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index entity-appearances --entity "lintian"
@@ -319,11 +319,11 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" index entity-
 </example>
 
 <example>
-<input>迁移旧 state.json 到 SQLite</input>
+<input>Migrate old state.json to SQLite</input>
 <output>
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" migrate -- --backup
-# 自动备份 state.json，迁移数据到 index.db，精简 state.json
+# Automatically back up state.json, migrate data to index.db, and slim state.json
 ```
 </output>
 </example>
@@ -331,13 +331,13 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" migrate -- --
 </examples>
 
 <errors>
-❌ 伏笔状态写成"待回收" → ✅ 使用规范值"未回收"
-❌ 手工更新忘记加 planted_chapter → ✅ 脚本已自动补全
-❌ 归档路径混淆 → ✅ 固定为 `.webnovel/archive/*.json`
-❌ alias_index 期望单对象 → ✅ 当前结构使用数组格式（一对多）
-❌ 期望 XML 标签提取 → ✅ 当前主流程由 Data Agent AI 自动提取
-❌ 使用旧版 data_modules.state_manager schema → ✅ 统一使用 entities_v3 结构
-❌ 仍从 state.json 读取 entities_v3 → ✅ 改用 SQL 查询 index.db
-❌ 仍写入 state.json 大数据 → ✅ 改用 SQLite 增量写入
-❌ 让 state.json 持续膨胀 → ✅ 运行迁移脚本: `python "${SCRIPTS_DIR}/webnovel.py" migrate`
+❌ Foreshadowing status set to "待回收" → ✅ Use canonical "未回收"
+❌ Manual update omits planted_chapter → ✅ Script fills it automatically
+❌ Confusing archive paths → ✅ Fixed at `.webnovel/archive/*.json`
+❌ Expecting a single alias_index object → ✅ Current structure uses arrays (one-to-many)
+❌ Expecting XML tag extraction → ✅ Current main workflow uses automatic Data Agent AI extraction
+❌ Using old data_modules.state_manager schema → ✅ Consistently use entities_v3 structure
+❌ Still reading entities_v3 from state.json → ✅ Query index.db with SQL instead
+❌ Still writing large data to state.json → ✅ Use incremental SQLite writes instead
+❌ Letting state.json keep growing → ✅ Run the migration script: `python "${SCRIPTS_DIR}/webnovel.py" migrate`
 </errors>

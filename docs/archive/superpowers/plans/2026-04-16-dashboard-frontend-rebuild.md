@@ -1,79 +1,79 @@
-# Dashboard 前端重做计划
+# Dashboard Frontend Rebuild Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 重做 dashboard 前端：砍掉废数据、加数据可视化、拆分文件、新增伏笔追踪和系统状态页。
+**Goal:** Rebuild the dashboard frontend: remove unused data, add visualizations, split files, and add foreshadowing tracking and system-status pages.
 
-**Architecture:** React 19 + Vite，新增图表库和路由。后端补聚合 API。
+**Architecture:** React 19 + Vite, with a chart library and routing. Add aggregation APIs to the backend.
 
 **Tech Stack:** React 19, Vite, react-router-dom v7, Apache ECharts (echarts + echarts-for-react), Pixelarticons (pixelarticons)
 
-**Design:** 视觉风格和具体图表形式待确认，见 `dashboard/frontend/design.md`（待更新）
+**Design:** Visual style and specific chart forms await confirmation; see `dashboard/frontend/design.md` (to be updated).
 
 ---
 
-## 文件结构
+## File Structure
 
-### 前端（dashboard/frontend/src/）
+### Frontend (dashboard/frontend/src/)
 
-```
+```text
 src/
-├── main.jsx                    # 入口，挂载 Router
-├── App.jsx                     # Layout shell（侧边栏 + Router Outlet + SSE）
-├── api.js                      # API 请求（保留，补新端点）
-├── index.css                   # 全局样式
+├── main.jsx                    # Entry point; mount Router
+├── App.jsx                     # Layout shell (sidebar + Router Outlet + SSE)
+├── api.js                      # API requests (retain; add endpoints)
+├── index.css                   # Global styles
 ├── components/
-│   ├── ChartWrapper.jsx        # 图表组件封装（统一风格）
-│   ├── Badge.jsx               # Badge 组件
-│   ├── Pager.jsx               # 翻页控制组件（大数据量分窗口浏览）
-│   └── DataTable.jsx           # 带分页的表格组件（从 MiniTable 提取）
+│   ├── ChartWrapper.jsx        # Chart wrapper with consistent styling
+│   ├── Badge.jsx               # Badge component
+│   ├── Pager.jsx               # Pagination controls for windowed large datasets
+│   └── DataTable.jsx           # Paginated table extracted from MiniTable
 └── pages/
-    ├── OverviewPage.jsx        # 总览
-    ├── CharactersPage.jsx      # 角色图鉴（实体 + 关系图合并）
-    ├── PacingPage.jsx          # 节奏雷达
-    ├── ForeshadowingPage.jsx   # 伏笔追踪
-    ├── FilesPage.jsx           # 文档浏览（迁移）
-    └── SystemPage.jsx          # 系统状态
+    ├── OverviewPage.jsx        # Overview
+    ├── CharactersPage.jsx      # Character directory (entities + relationship graph)
+    ├── PacingPage.jsx          # Pacing radar
+    ├── ForeshadowingPage.jsx   # Foreshadowing tracking
+    ├── FilesPage.jsx           # Document browser (migrated)
+    └── SystemPage.jsx          # System status
 ```
 
-### 后端（dashboard/app.py 补充 API）
+### Backend (Add APIs to dashboard/app.py)
 
-```
-/api/stats/chapter-trend       # 聚合：每章字数 + 审查得分 + 钩子强度
-/api/commits                   # 最近 N 个 commit 的 meta + projection_status
-/api/contracts/summary         # MASTER_SETTING 摘要 + 当前卷/章合同存在性
-/api/env-status                # RAG/Rerank 环境配置状态（PR #50）
-/api/env-status/probe          # RAG/Rerank 主动探测（PR #50）
+```text
+/api/stats/chapter-trend       # Aggregate chapter length + review score + hook strength
+/api/commits                   # Latest N commits: meta + projection_status
+/api/contracts/summary         # MASTER_SETTING summary + current volume/chapter contract existence
+/api/env-status                # RAG/Rerank environment configuration status (PR #50)
+/api/env-status/probe          # Active RAG/Rerank probes (PR #50)
 ```
 
 ---
 
-## Task 1: 后端补聚合 API
+## Task 1: Add Backend Aggregation APIs
 
 **Files:**
 - Modify: `webnovel-writer/dashboard/app.py`
 
-- [ ] **Step 1: 加 `/api/stats/chapter-trend`**
+- [ ] **Step 1: Add `/api/stats/chapter-trend`**
 
-从 index.db 聚合查询，一次返回每章的字数、审查得分、钩子类型和强度。支持 `limit` 和 `offset` 参数，默认返回最近 50 章。
+Aggregate index.db queries into a single response containing each chapter's character count, review score, hook type, and strength. Support `limit` and `offset`; return the latest 50 chapters by default.
 
-- [ ] **Step 2: 加 `/api/commits`**
+- [ ] **Step 2: Add `/api/commits`**
 
-读取 `.story-system/commits/` 目录下的 commit JSON 文件，返回 chapter、status、projection_status。支持 `limit` 参数。
+Read commit JSON files from `.story-system/commits/` and return chapter, status, and projection_status. Support `limit`.
 
-- [ ] **Step 3: 加 `/api/contracts/summary`**
+- [ ] **Step 3: Add `/api/contracts/summary`**
 
-读取合同树文件存在性和关键字段（MASTER_SETTING 的 primary_genre/core_tone、volume/chapter/review 合同数量）。
+Read contract-tree file existence and key fields: MASTER_SETTING primary_genre/core_tone and counts of volume/chapter/review contracts.
 
-- [ ] **Step 4: 合并 PR #50 的 env-status API**
+- [ ] **Step 4: Merge the env-status APIs From PR #50**
 
-从 PR #50 提取 `/api/env-status` 和 `/api/env-status/probe` 代码。
+Extract `/api/env-status` and `/api/env-status/probe` code from PR #50.
 
-- [ ] **Step 5: 测试 + Commit**
+- [ ] **Step 5: Test + Commit**
 
 ---
 
-## Task 2: 前端基础设施（路由 + 文件拆分 + 公共组件）
+## Task 2: Frontend Infrastructure (Routing + File Splitting + Shared Components)
 
 **Files:**
 - Modify: `dashboard/frontend/package.json`
@@ -82,166 +82,166 @@ src/
 - Modify: `dashboard/frontend/src/api.js`
 - Create: `dashboard/frontend/src/components/*.jsx`
 
-- [ ] **Step 1: 安装依赖**
+- [ ] **Step 1: Install Dependencies**
 
 ```bash
 npm install echarts echarts-for-react react-router-dom pixelarticons
 ```
 
-- [ ] **Step 2: 提取公共组件**
+- [ ] **Step 2: Extract Shared Components**
 
-从现有 App.jsx 提取 Badge、DataTable（原 MiniTable）、Pager（翻页控制）。
+Extract Badge, DataTable (formerly MiniTable), and Pager (pagination controls) from the existing App.jsx.
 
-Pager 组件要点：
-- 支持窗口大小（每页 N 条）+ 翻页 + "跳到最新"
-- 适配 500+ 章数据量
+Pager requirements:
+- Support window size (N items per page), pagination, and “jump to latest.”
+- Handle data for 500+ chapters.
 
-- [ ] **Step 3: 改造 main.jsx 加路由**
+- [ ] **Step 3: Add Routing to main.jsx**
 
-每个 page 组件 lazy import + React Router。
+Use lazy imports for each page component with React Router.
 
-- [ ] **Step 4: 瘦身 App.jsx 为纯 Layout Shell**
+- [ ] **Step 4: Reduce App.jsx to a Pure Layout Shell**
 
-只保留：侧边栏导航 + SSE 连接 + Router Outlet。所有页面逻辑移到 pages/。
+Keep only sidebar navigation, the SSE connection, and Router Outlet. Move all page logic into pages/.
 
-- [ ] **Step 5: 更新 api.js**
+- [ ] **Step 5: Update api.js**
 
-补新端点的 fetch 函数（chapter-trend, commits, contracts-summary, env-status, env-probe）。
+Add fetch functions for chapter-trend, commits, contracts-summary, env-status, and env-probe.
 
-- [ ] **Step 6: 构建验证 + Commit**
+- [ ] **Step 6: Verify Build + Commit**
 
 ---
 
-## Task 3: 总览页
+## Task 3: Overview Page
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/OverviewPage.jsx`
 
-**功能：**
-- 统计卡：总字数/进度、当前章节/卷、Story Runtime 状态、审查均分、紧急伏笔数
-- 审查得分可视化：ECharts 折线图，支持翻页浏览（默认最近 N 章）
-- 字数分布可视化：ECharts 柱状图，按卷分组
-- Strand Weave 整体分布
-- 紧急伏笔 Top 5 表格
-- 最近 3 章概要卡片
+**Features:**
+- Statistics cards: total character count/progress, current chapter/volume, Story Runtime status, average review score, urgent foreshadowing count
+- Review-score visualization: ECharts line chart with pagination, showing the latest N chapters by default
+- Character-count visualization: ECharts bar chart grouped by volume
+- Overall Strand Weave distribution
+- Top-five urgent foreshadowing table
+- Summary cards for the latest three chapters
 
-**删除：**
-- MergedDataView（全量数据视图）
-- FULL_DATA_GROUPS / FULL_DATA_DOMAINS 常量
+**Remove:**
+- MergedDataView (full-data view)
+- FULL_DATA_GROUPS / FULL_DATA_DOMAINS constants
 
-**大数据量适配：**
-- 可视化组件默认显示最近窗口，支持翻页
-- 字数按卷分组，不一次性铺开所有章节
+**Large-Dataset Support:**
+- Visualizations default to the latest window and support pagination.
+- Group character counts by volume rather than displaying every chapter at once.
 
-- [ ] **Step 1: 实现 + 构建验证 + Commit**
+- [ ] **Step 1: Implement + Verify Build + Commit**
 
 ---
 
-## Task 4: 角色图鉴页
+## Task 4: Character Directory Page
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/CharactersPage.jsx`
 
-**功能：**
-- Tab 1 列表视图：实体列表 + 筛选 + 详情面板 + 状态变化历史（保留现有逻辑）
-- Tab 2 关系图谱：ECharts graph series（力导向布局）+ 章节时间轴滑块
+**Features:**
+- Tab 1, list view: entity list, filters, detail panel, and state-change history (retain existing logic)
+- Tab 2, relationship graph: ECharts graph series with force-directed layout and a chapter timeline slider
 
-关系图谱时间轴要点：
-- 滑块控制当前章节，节点/边按 `first_appearance` / `chapter` 过滤
-- 关系标签支持随章节变化（如"初识"→"宿敌"）
-- 播放/暂停按钮，自动推进章节
-- 显示当前章节号 + 当前可见节点数
+Relationship-graph timeline requirements:
+- The slider controls the current chapter; filter nodes/edges by `first_appearance` / `chapter`.
+- Relationship labels may change by chapter, such as “new acquaintances” → “archenemies.”
+- Play/pause button for automatic chapter advancement
+- Show the current chapter number and visible node count.
 
-- [ ] **Step 1: 实现 + Commit**
+- [ ] **Step 1: Implement + Commit**
 
 ---
 
-## Task 5: 节奏雷达页
+## Task 5: Pacing Radar Page
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/PacingPage.jsx`
 
-**功能：**
-- 钩子强度走势：ECharts 面积折线图，支持翻页，每页 N 章
-- Strand 分布：ECharts 堆叠柱状图，逐章 Strand 分布
-- 字数分布：ECharts 柱状图，按卷分组
+**Features:**
+- Hook-strength trend: ECharts area line chart with pagination, N chapters per page
+- Strand distribution: ECharts stacked bar chart showing per-chapter Strand distribution
+- Character-count distribution: ECharts bar chart grouped by volume
 
-**大数据量适配：**
-- 所有组件支持翻页 + "跳到最新"
+**Large-Dataset Support:**
+- Every component supports pagination and “jump to latest.”
 
-- [ ] **Step 1: 实现 + Commit**
+- [ ] **Step 1: Implement + Commit**
 
 ---
 
-## Task 6: 伏笔追踪页
+## Task 6: Foreshadowing Tracking Page
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/ForeshadowingPage.jsx`
 
-**功能：**
-- 统计卡：总伏笔、活跃、已回收、紧急/超期
-- 状态筛选按钮：全部 / 紧急 / 活跃 / 已回收
-- 伏笔时间线：ECharts 自定义 bar series（横向甘特），埋设章→目标章，颜色按状态，蓝线标当前章
-- 完整伏笔表格：内容、状态、埋设章、目标章、紧急度
+**Features:**
+- Statistics cards: total, active, resolved, urgent/overdue foreshadowing
+- Status filters: all / urgent / active / resolved
+- Foreshadowing timeline: ECharts custom bar series (horizontal Gantt), from setup chapter to target chapter; status-based colors and a blue line for the current chapter
+- Complete foreshadowing table: content, status, setup chapter, target chapter, urgency
 
-**大数据量适配：**
-- 甘特图默认只显示活跃+紧急，已回收折叠
-- 横轴范围自动适配（不铺满 1-500）
+**Large-Dataset Support:**
+- Gantt defaults to active + urgent items; resolved items are collapsed.
+- The horizontal axis adapts automatically rather than always spanning chapters 1–500.
 
-- [ ] **Step 1: 实现 + Commit**
+- [ ] **Step 1: Implement + Commit**
 
 ---
 
-## Task 7: 系统状态页
+## Task 7: System Status Page
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/SystemPage.jsx`
 
-**功能：**
-- Story Runtime 健康状态（mainline/fallback、latest commit）
-- 合同树概览（MASTER_SETTING 题材/调性、volume/chapter/review 数量）
-- 最近 Commit 历史表格（章节、accepted/rejected、5 路 projection_status）
-- RAG 环境状态（embed/rerank key、vector_db 大小、rag_mode）+ 诊断按钮
+**Features:**
+- Story Runtime health (mainline/fallback, latest commit)
+- Contract-tree overview (MASTER_SETTING genre/tone and volume/chapter/review counts)
+- Recent commit history table (chapter, accepted/rejected, five projection_status channels)
+- RAG environment status (embed/rerank key, vector_db size, rag_mode) and diagnostic button
 
-- [ ] **Step 1: 实现 + Commit**
+- [ ] **Step 1: Implement + Commit**
 
 ---
 
-## Task 8: 文档浏览迁移 + 最终清理
+## Task 8: Migrate Document Browser + Final Cleanup
 
 **Files:**
 - Create: `dashboard/frontend/src/pages/FilesPage.jsx`
 - Modify: `dashboard/frontend/src/App.jsx`
 
-- [ ] **Step 1: 迁移 FilesPage（逻辑不变）**
-- [ ] **Step 2: 最终清理 App.jsx（删除所有已迁移的组件和常量）**
-- [ ] **Step 3: 前端构建 + 启动验证所有 6 页 + Commit**
+- [ ] **Step 1: Migrate FilesPage Without Changing Its Logic**
+- [ ] **Step 2: Final App.jsx Cleanup: Remove All Migrated Components and Constants**
+- [ ] **Step 3: Build Frontend + Launch and Verify All Six Pages + Commit**
 
 ---
 
-## 导航变更
+## Navigation Changes
 
-| 旧导航 | 新导航 | 图标 (Pixelarticons) | 变化 |
-|--------|--------|---------------------|------|
-| 📊 数据总览 | 总览 | `chart-bar` | 删全量视图，加可视化 |
-| 👤 设定词典 | 角色图鉴 | `users` | 合并关系图谱，2D 替 3D，加时间轴 |
-| 🕸️ 关系图谱 | _(合并到角色)_ | — | 删除独立页面 |
-| 📝 章节一览 | 节奏雷达 | `trending-up` | 新页面 |
-| 📁 文档浏览 | 文档浏览 | `folder` | 不变 |
-| 🔥 追读力 | 伏笔追踪 | `bookmark` | 新页面 |
-| _(无)_ | 系统状态 | `sliders` | 新页面 |
+| Old Navigation | New Navigation | Icon (Pixelarticons) | Change |
+|----------------|----------------|---------------------|--------|
+| 📊 Data Overview | Overview | `chart-bar` | Remove full-data view; add visualizations |
+| 👤 Setting Dictionary | Character Directory | `users` | Merge relationship graph, replace 3D with 2D, add timeline |
+| 🕸️ Relationship Graph | _(merged into Characters)_ | — | Remove standalone page |
+| 📝 Chapter List | Pacing Radar | `trending-up` | New page |
+| 📁 Document Browser | Document Browser | `folder` | Unchanged |
+| 🔥 Reader Retention | Foreshadowing Tracking | `bookmark` | New page |
+| _(none)_ | System Status | `sliders` | New page |
 
-## 删除的数据
+## Removed Data
 
-- RAG 查询日志、工具调用统计、Override 合约明细、债务事件明细
-- 无效事实列表、写作清单评分原始数据、全量数据视图（MergedDataView）
+- RAG query logs, tool-call statistics, Override contract details, debt-event details
+- Invalid-fact lists, raw writing-checklist scores, full-data view (MergedDataView)
 
-## 待确认项（设计讨论后更新）
+## Items Awaiting Confirmation (Updated After Design Discussion)
 
-- [x] ~~视觉风格确认~~ → 保留像素风
-- [x] ~~图表库选型~~ → Apache ECharts（echarts + echarts-for-react）
-- [x] ~~关系图库选型~~ → ECharts graph series（力导向布局）
-- [x] ~~审查得分可视化形式~~ → 折线图
-- [x] ~~字数分布可视化形式~~ → 柱状图（按卷分组）
-- [x] ~~钩子强度可视化形式~~ → 面积折线图
-- [x] ~~Strand 分布可视化形式~~ → 堆叠柱状图
+- [x] ~~Confirm visual style~~ → Retain pixel art
+- [x] ~~Choose chart library~~ → Apache ECharts (echarts + echarts-for-react)
+- [x] ~~Choose relationship graph library~~ → ECharts graph series (force-directed layout)
+- [x] ~~Review-score chart form~~ → Line chart
+- [x] ~~Character-count chart form~~ → Bar chart grouped by volume
+- [x] ~~Hook-strength chart form~~ → Area line chart
+- [x] ~~Strand distribution chart form~~ → Stacked bar chart

@@ -1,473 +1,472 @@
-# 金手指设计模板库
+# Special-Advantage Design Template Library
 
-> **目的**: 提供系统化的金手指设计框架，确保金手指设定的合理性、可视化和爽点输出能力。
-
----
-
-## 📋 金手指设计核心原则
-
-### 1. 功能性原则
-- **明确定位**: 金手指必须有清晰的核心功能（升级辅助/战斗增幅/资源获取）
-- **成长性**: 金手指应随主角成长而升级，避免"一成不变"
-- **限制性**: 必须有合理限制（冷却时间/消耗资源/使用条件），避免"无敌外挂"
-
-### 2. 可视化原则
-- **面板化**: 使用面板/属性显示，给读者直观的数据反馈
-- **进度条**: 技能熟练度、经验值等使用进度条展示
-- **即时反馈**: 使用后立即显示效果（+10 力量/境界突破提示）
-
-### 3. 爽点嵌入原则
-- **获得爽**: 金手指首次获得时的仪式感
-- **成长爽**: 金手指升级/解锁新功能
-- **使用爽**: 金手指在关键时刻发挥作用（打脸/逆袭）
+> **Purpose**: Provide a systematic framework for designing a protagonist's special advantage (the webnovel “golden finger”), ensuring coherent rules, visible effects, and satisfying payoffs.
 
 ---
 
-## ✅ 金手指模板字段（必填）
+## 📋 Core Design Principles
 
-| 字段 | 说明 | 示例 |
+### 1. Functionality
+- **Clear role**: Give the advantage a clear core function: progression support, combat enhancement, or resource acquisition.
+- **Growth**: It should improve alongside the protagonist rather than remain unchanged.
+- **Limits**: Include meaningful cooldowns, resource costs, or activation conditions. Avoid an unrestricted invincibility cheat.
+
+### 2. Visibility
+- **Status panels**: Use panels or attributes for direct numerical feedback.
+- **Progress bars**: Show skill proficiency and experience visually.
+- **Immediate feedback**: Display effects promptly, such as +10 strength or a breakthrough notification.
+
+### 3. Embedded Payoffs
+- **Acquisition payoff**: Make first obtaining the advantage feel significant.
+- **Growth payoff**: Upgrades and newly unlocked functions provide satisfaction.
+- **Usage payoff**: Let it matter at crucial moments, enabling vindication or a comeback.
+
+---
+
+## ✅ Required Template Fields
+
+| Field | Description | Example |
 |------|------|------|
-| 核心功能 | 金手指解决的核心问题 | 资源获取 / 信息差 / 战斗补足 |
-| 触发条件 | 何时生效 | 特定场景 / 冷却完成 / 代价支付 |
-| 代价/限制 | 必须付出的成本 | 寿命/记忆/资源/信誉 |
-| 反制方式 | 敌人如何克制 | 规则屏蔽 / 断供 / 反向利用 |
-| 可见度 | 读者与角色认知 | 明牌 / 半明牌 / 暗牌 |
-| 反馈节奏 | 读者感知频率 | 每N章一次小回报 |
-| 升级路径 | 能力成长曲线 | 三段式/版本迭代 |
-| 爽点节点 | 关键高潮 | 获得/首次使用/反转 |
+| Core function | Main problem the advantage solves | Resources / information asymmetry / combat weakness |
+| Activation conditions | When it takes effect | Specific situation / cooldown complete / cost paid |
+| Cost/limits | Mandatory price | Lifespan / memory / resources / reputation |
+| Countermeasures | How enemies counter it | Rule suppression / supply cutoff / exploitation |
+| Visibility | What readers and characters know | Open / partially revealed / hidden |
+| Feedback cadence | How often readers perceive results | Small payoff every N chapters |
+| Upgrade path | Ability growth curve | Three stages / version iterations |
+| Payoff milestones | Major climaxes | Acquisition / first use / reversal |
 
 ---
 
-## 🧩 代价/限制库（常见）
+## 🧩 Common Costs and Limits
 
-- **寿命/健康**：每次使用折寿或伤身  
-- **记忆/情感**：重要记忆丢失、情感冷却  
-- **资源消耗**：灵石/金币/贡献点/信用点  
-- **关系代价**：信任透支、人际崩塌  
-- **规则反噬**：越级必反噬、强制冷却  
-- **信息代价**：获得信息必丢失等量信息  
+- **Lifespan/health**: Each use shortens life or damages the body.
+- **Memory/emotion**: Lose important memories or become emotionally detached.
+- **Resource consumption**: Spirit stones, gold, contribution points, or credits.
+- **Relationship costs**: Exhaust trust or destroy relationships.
+- **Rule backlash**: Forced backlash for exceeding one's level; mandatory cooldowns.
+- **Information costs**: Gaining information requires losing an equal amount.
 
-## 🛡️ 反制方式库（常见）
+## 🛡️ Common Countermeasures
 
-- **规则屏蔽**：敌对规则让金手指失效  
-- **断供**：资源/系统点数被切断  
-- **镜像对抗**：反派拥有同类能力  
-- **误导利用**：系统提示被反向利用  
-- **代价转移**：反派让主角承担更多代价  
-
----
-
-## ⏱️ 爽点/反馈节奏模板
-
-- **小回报**：每 2-3 章至少 1 次可感知反馈  
-- **中回报**：每 8-10 章一次明显升级  
-- **大回报**：每 20-30 章一次版本更迭  
-- **代价兑现**：每次大回报前后必须兑现代价  
+- **Rule suppression**: Hostile rules disable the advantage.
+- **Supply cutoff**: Resources or system points are cut off.
+- **Mirrored opposition**: The antagonist has a similar ability.
+- **Misleading exploitation**: System guidance is turned against the user.
+- **Cost transfer**: The antagonist forces the protagonist to bear greater costs.
 
 ---
 
-## 📌 类型速查表（可直接拣选）
+## ⏱️ Payoff and Feedback Cadence
 
-| 类型 | 核心爽点 | 典型代价 | 常见反制 |
+- **Small payoff**: At least one perceptible result every 2–3 chapters.
+- **Medium payoff**: A clear upgrade every 8–10 chapters.
+- **Major payoff**: A new version every 20–30 chapters.
+- **Payment of costs**: Costs must be paid around every major payoff.
+
+---
+
+## 📌 Type Reference
+
+| Type | Core appeal | Typical cost | Common counter |
 |------|----------|----------|----------|
-| 系统面板 | 数值成长/可视化 | 任务失败惩罚 | 规则屏蔽/同类系统 |
-| 随身空间 | 囤货/资源跃迁 | 资源消耗 | 断供/空间封印 |
-| 重生穿越 | 信息差 | 记忆偏差 | 历史变动/对手重生 |
-| 签到打卡 | 持续奖励 | 冷却/次数 | 限定场景/封印 |
-| 器灵导师 | 指点/传承 | 恢复资源 | 器灵沉睡/封印 |
-| 血脉觉醒 | 强化跃迁 | 反噬/失控 | 克制血脉/封印 |
-| 异能觉醒 | 单点爆发 | 精神/体力反噬 | 反制异能 |
+| System panel | Visible numerical growth | Failed-task penalties | Rule suppression / rival system |
+| Portable space | Stockpiling / resource leap | Resource consumption | Supply cutoff / space sealing |
+| Rebirth/transmigration | Information advantage | Unreliable memory | Changed history / reincarnated rival |
+| Check-in rewards | Continuous rewards | Cooldowns / usage counts | Location restrictions / sealing |
+| Artifact-spirit mentor | Guidance / inheritance | Recovery resources | Dormancy / sealing |
+| Bloodline awakening | Sudden power improvement | Backlash / loss of control | Countering bloodline / sealing |
+| Superpower awakening | Focused bursts of power | Mental / physical backlash | Counter-ability |
 
 ---
 
-## 🧬 复合金手指组合规则
+## 🧬 Combining Advantages
 
-- **一主一辅**（避免“外挂叠外挂”）  
-- **代价叠加不可失衡**（至少保留一种硬代价）  
-- **组合示例**：系统 + 空间（系统负责任务/升级，空间负责资源）  
+- **One primary, one supporting**: Avoid piling cheats on top of cheats.
+- **Keep combined costs balanced**: Retain at least one unavoidable cost.
+- **Example**: System + portable space, with the system handling tasks/upgrades and the space handling resources.
 
 ---
 
-## 🧭 题材-金手指匹配说明
+## 🧭 Matching Advantages to Genres
 
-| 题材 | 推荐金手指 |
+| Genre | Recommended advantages |
 |------|-----------|
-| 玄幻修仙 | 系统面板、签到打卡、老爷爷/传承、血脉觉醒 |
-| 都市异能 | 系统面板、重生记忆、异能觉醒、随身空间 |
-| 言情 | 重生记忆、随身空间、无金手指 |
-| 知乎短篇 | 单一特殊能力、无金手指 |
-| 规则怪谈 | 系统提示、规则解读能力 |
+| Fantasy/cultivation | System panels, check-ins, elder mentors/inheritances, bloodline awakening |
+| Urban superpowers | System panels, rebirth memories, awakened powers, portable space |
+| Romance | Rebirth memories, portable space, or no special advantage |
+| Zhihu short fiction | One unusual ability or no special advantage |
+| Rule-based horror | System hints or rule-interpretation abilities |
 
-**扩展建议（可选）**：
-- 末世：随身空间 / 资源兑换系统
-- 无限流：任务系统 / 关卡规则提示
-- 现实题材：无金手指 / 轻量资源援助
-  
+**Optional extensions**:
+- Apocalypse: portable space / resource-exchange system
+- Infinite-flow: mission system / stage-rule hints
+- Realism: no special advantage / limited resource assistance
 
-> 说明：匹配表用于“优先推荐”，非强制。
+> These matches are recommendations, not requirements.
 
 ---
 
-## 🎮 金手指类型模板
+## 🎮 Templates by Type
 
-### 类型 1: 系统面板流
+### Type 1: System Panels
 
-**核心机制**: 数据化修炼，可视化成长
+**Core mechanism**: Quantified cultivation and visible growth.
 
-**标准面板结构**:
+**Standard panel structure**:
 
 ```markdown
-【修炼系统 v1.0】
+[Cultivation System v1.0]
 
-╔═══════════════════════════════════════╗
-║ 宿主信息                               ║
-╠═══════════════════════════════════════╣
-║ 姓名: 林天                             ║
-║ 境界: 筑基 3 层                        ║
-║ 寿元: 18/150                           ║
-║ 气运: 78 (大吉)                        ║
-╚═══════════════════════════════════════╝
+╔══════════════════════════════════════════════════════╗
+║ Host Information                                     ║
+╠══════════════════════════════════════════════════════╣
+║ Name: Lin Tian                                       ║
+║ Realm: Foundation Establishment, level 3              ║
+║ Lifespan: 18/150                                     ║
+║ Fortune: 78 (Highly auspicious)                       ║
+╚══════════════════════════════════════════════════════╝
 
-╔═══════════════════════════════════════╗
-║ 基础属性                               ║
-╠═══════════════════════════════════════╣
-║ 力量: 25 (常人 1)                      ║
-║ 敏捷: 18 (常人 1)                      ║
-║ 精神: 32 (常人 1)                      ║
-║ 灵力: 1580/1580                        ║
-╚═══════════════════════════════════════╝
+╔══════════════════════════════════════════════════════╗
+║ Basic Attributes                                     ║
+╠══════════════════════════════════════════════════════╣
+║ Strength: 25 (ordinary person: 1)                     ║
+║ Agility: 18 (ordinary person: 1)                      ║
+║ Spirit: 32 (ordinary person: 1)                       ║
+║ Spiritual power: 1580/1580                            ║
+╚══════════════════════════════════════════════════════╝
 
-╔═══════════════════════════════════════╗
-║ 功法技能                               ║
-╠═══════════════════════════════════════╣
-║ [吞噬神功] 第 5 层 (4523/5000) [可突破]║
-║ [雷霆剑法] 第 3 层 (890/1000)          ║
-║ [金刚体]   第 2 层 (350/500)           ║
-╚═══════════════════════════════════════╝
+╔══════════════════════════════════════════════════════╗
+║ Techniques and Skills                                ║
+╠══════════════════════════════════════════════════════╣
+║ [Divine Devouring Art] Lv 5 (4523/5000) [Breakthrough]║
+║ [Thunder Sword Art] Lv 3 (890/1000)                   ║
+║ [Diamond Body] Lv 2 (350/500)                        ║
+╚══════════════════════════════════════════════════════╝
 
-╔═══════════════════════════════════════╗
-║ 天赋词条                               ║
-╠═══════════════════════════════════════╣
-║ [天道酬勤·金] 修炼速度 +1000%          ║
-║ [战斗直觉·紫] 战斗中可感知危机         ║
-╚═══════════════════════════════════════╝
+╔══════════════════════════════════════════════════════╗
+║ Talent Traits                                        ║
+╠══════════════════════════════════════════════════════╣
+║ [Heaven Rewards Diligence · Gold] Training +1000%     ║
+║ [Combat Instinct · Purple] Sense danger in battle    ║
+╚══════════════════════════════════════════════════════╝
 
-╔═══════════════════════════════════════╗
-║ 资源池                                 ║
-╠═══════════════════════════════════════╣
-║ 灵石: 10,580 块                        ║
-║ 潜能点: 250 点 [可加点]                ║
-║ 任务点: 18 点                          ║
-╚═══════════════════════════════════════╝
+╔══════════════════════════════════════════════════════╗
+║ Resource Pool                                        ║
+╠══════════════════════════════════════════════════════╣
+║ Spirit stones: 10,580                                ║
+║ Potential points: 250 [Available to allocate]        ║
+║ Mission points: 18                                   ║
+╚══════════════════════════════════════════════════════╝
 ```
 
-**实体标签格式**:
+**Entity tag format** (Chinese type/tier values are retained as compatibility literals):
 ```xml
-<entity type="系统模块" name="模块名称" desc="功能描述" tier="层级" unlock="解锁条件"/>
+<entity type="系统模块" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
 
-示例:
-<entity type="系统模块" name="商城系统" desc="可使用灵石兑换丹药/功法/法宝" tier="核心" unlock="筑基期"/>
-<entity type="系统模块" name="抽奖系统" desc="消耗任务点进行随机抽奖" tier="支线" unlock="金丹期"/>
-<entity type="系统模块" name="时空穿梭" desc="可穿越至其他位面历练" tier="核心" unlock="元婴期"/>
+<!-- Examples -->
+<entity type="系统模块" name="Shop system" desc="Exchange spirit stones for pills, techniques, or artifacts" tier="核心" unlock="Foundation Establishment"/>
+<entity type="系统模块" name="Lottery system" desc="Spend mission points on random draws" tier="支线" unlock="Golden Core"/>
+<entity type="系统模块" name="Space-time travel" desc="Travel to other planes for training" tier="核心" unlock="Nascent Soul"/>
 ```
 
-**系统功能版本迭代示例**:
+**Example system versions**:
 
-| 版本 | 解锁条件 | 新增功能 | 爽点设计 |
+| Version | Unlock condition | New functions | Payoff design |
 |------|---------|---------|---------|
-| **v1.0** | 初始获得 | 属性面板、技能栏、储物空间 | 获得系统时的震撼感 |
-| **v2.0** | 筑基期 | 商城、任务、抽奖 | 商城开启，购买第一件宝物 |
-| **v3.0** | 金丹期 | 副职业（炼丹/炼器）、宠物系统 | 炼出第一炉丹药/收服神兽 |
-| **v4.0** | 元婴期 | 时空穿梭、位面商人 | 前往其他世界冒险 |
+| **v1.0** | Initial acquisition | Attribute panel, skills, storage space | Awe at receiving the system |
+| **v2.0** | Foundation Establishment | Shop, missions, lottery | Shop opens; purchase first treasure |
+| **v3.0** | Golden Core | Secondary professions (alchemy/artifact crafting), pets | First batch of pills / tame a divine beast |
+| **v4.0** | Nascent Soul | Space-time travel, planar merchants | Adventure in other worlds |
 
 ---
 
-### 类型 2: 随身空间流
+### Type 2: Portable Space
 
-**核心机制**: 私密储物空间 + 特殊功能
+**Core mechanism**: Private storage space plus special functions.
 
-**标准空间属性**:
+**Standard attributes**:
 
 ```markdown
-【随身空间】
+[Portable Space]
 
-基础参数:
-- 空间大小: 100 平方米 (可升级)
-- 时间流速: 外界 1 天 = 空间 10 天
-- 种植加速: 灵药成长速度 +500%
-- 储物功能: 无限叠加同类物品
+Basic parameters:
+- Size: 100 square meters (upgradeable)
+- Time flow: 1 day outside = 10 days inside
+- Growing speed: medicinal herbs +500%
+- Storage: unlimited stacking of identical items
 
-特殊功能:
-1. [时间静止] - 食物/药品放入后保持新鲜
-2. [灵气浓郁] - 空间内修炼速度 +300%
-3. [意念收取] - 接触物品即可收入空间
-4. [活物收纳] - 可收纳灵兽/战俘(需消耗灵力)
+Special functions:
+1. [Time Freeze] - Food/medicine stays fresh after storage
+2. [Dense Spiritual Energy] - Cultivation speed inside +300%
+3. [Mental Collection] - Store items by touching them
+4. [Living Storage] - Store spirit beasts/prisoners (costs spiritual power)
 ```
 
-**升级路径**:
+**Upgrade path**:
 ```markdown
-等级 1 → 100 m² (初始)
-等级 2 → 500 m² (需筑基期 + 1000 灵石)
-等级 3 → 1000 m² (需金丹期 + 10000 灵石)
-等级 4 → 小世界 (需元婴期 + 特殊机缘)
+Level 1 → 100 m² (initial)
+Level 2 → 500 m² (Foundation Establishment + 1,000 spirit stones)
+Level 3 → 1,000 m² (Golden Core + 10,000 spirit stones)
+Level 4 → Small world (Nascent Soul + special opportunity)
 ```
 
-**爽点设计**:
-- **囤货爽**: 末世/战乱前疯狂囤积物资
-- **种植爽**: 空间种植灵药，快速获取资源
-- **隐藏爽**: 关键时刻从空间掏出大杀器
+**Payoff design**:
+- **Stockpiling**: Amass supplies before apocalypse or war.
+- **Cultivation of resources**: Grow medicinal herbs quickly inside the space.
+- **Hidden weapon**: Produce a devastating weapon at a critical moment.
 
 ---
 
-### 类型 3: 重生/穿越流
+### Type 3: Rebirth/Transmigration
 
-**核心机制**: 信息差优势
+**Core mechanism**: An information advantage.
 
-**先知先觉类型**:
+**Types of foreknowledge**:
 
 ```markdown
-【重生优势清单】
+[Rebirth Advantages]
 
-1. 时间节点记忆:
-   - 3 个月后: 天云宗秘境开启
-   - 6 个月后: 血煞门入侵
-   - 1 年后: 灵脉大爆发
-   - 3 年后: 上古遗迹出世
+1. Remembered events:
+   - In 3 months: Tianyun Sect's secret realm opens
+   - In 6 months: Blood Fiend Sect invades
+   - In 1 year: Spiritual veins erupt
+   - In 3 years: Ancient ruins emerge
 
-2. 关键人物情报:
-   - 李雪: 未来成为丹圣，现在还是外门弟子
-   - 王少: 看似天才，实则魔修，3 年后叛变
-   - 云长老: 隐藏身份为元婴大能
+2. Key people:
+   - Li Xue: Future Alchemy Sage, currently an outer disciple
+   - Young Master Wang: Apparently gifted, actually a demonic cultivator; betrays everyone in 3 years
+   - Elder Yun: Secretly a Nascent Soul expert
 
-3. 宝物/机缘位置:
-   - 黑风山脉深处: 天雷果树(筑基神果)
-   - 青云峰后山: 上古剑冢入口
-   - 天云城拍卖会: 每月 15 日有隐藏拍品
+3. Treasures/opportunities:
+   - Deep in Blackwind Mountains: Heavenly Thunder Fruit tree (Foundation Establishment treasure)
+   - Behind Qingyun Peak: Entrance to an ancient sword tomb
+   - Tianyun City auction: Hidden lot on the 15th of every month
 ```
 
-**实体标签格式**:
+**Entity tag format**:
 ```xml
-<entity type="未来事件" name="事件名称" desc="事件描述" tier="层级" time="发生时间" strategy="应对策略"/>
+<entity type="未来事件" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
 
-示例:
-<entity type="未来事件" name="秘境开启" desc="天云宗后山秘境开启，内有筑基丹" tier="核心" time="3个月后" strategy="提前准备通行令牌"/>
-<entity type="未来事件" name="血煞门入侵" desc="邪道袭击，家族遭劫" tier="核心" time="6个月后" strategy="提前转移族人和财产"/>
+<!-- Examples -->
+<entity type="未来事件" name="Secret realm opening" desc="A realm behind Tianyun Sect opens, containing Foundation Establishment pills" tier="核心" time="In 3 months" strategy="Prepare an entry token beforehand"/>
+<entity type="未来事件" name="Blood Fiend Sect invasion" desc="Demonic attackers devastate the clan" tier="核心" time="In 6 months" strategy="Move clan members and assets in advance"/>
 ```
 
 ---
 
-### 类型 4: 签到打卡流
+### Type 4: Check-in Rewards
 
-**核心机制**: 持续签到获取奖励
+**Core mechanism**: Earn rewards through repeated check-ins.
 
-**签到系统设计**:
+**System design**:
 
 ```markdown
-【每日签到系统】
+[Daily Check-in System]
 
-签到规则:
-- 普通签到: 每日可签到 1 次，获得基础奖励
-- 连续签到: 连续签到天数越多，奖励越丰厚
-- 特殊地点签到: 在特殊地点签到可获得额外奖励
+Rules:
+- Regular check-in: Once daily for a basic reward
+- Consecutive check-ins: Longer streaks earn better rewards
+- Special locations: Checking in at special places grants extra rewards
 
-奖励示例:
-┌─────────────────────────────────┐
-│ 第 1 天: 聚气丹 x3                │
-│ 第 7 天: 筑基丹 x1                │
-│ 第 30 天: 玄品功法一本             │
-│ 第 100 天: 天品法宝一件            │
-│ 第 365 天: 神级血脉觉醒            │
-└─────────────────────────────────┘
+Example rewards:
+┌────────────────────────────────────────────────┐
+│ Day 1: Qi-Gathering Pills x3                    │
+│ Day 7: Foundation Establishment Pill x1         │
+│ Day 30: One mystic-grade technique              │
+│ Day 100: One heaven-grade artifact              │
+│ Day 365: Divine bloodline awakening             │
+└────────────────────────────────────────────────┘
 
-特殊签到点:
-- [天云宗主殿签到]: 获得 10 倍宗门贡献
-- [秘境入口签到]: 随机获得秘境钥匙
-- [敌对宗门签到]: 获得"大胆狂徒"成就 + 稀有道具
+Special check-in locations:
+- [Tianyun Sect main hall]: 10x sect contribution
+- [Secret realm entrance]: Random secret-realm key
+- [Enemy sect]: “Audacious Rogue” achievement + rare item
 ```
 
-**爽点节奏**:
-- 每日小爽: 普通签到奖励
-- 每周中爽: 7 日签到奖励
-- 每月大爽: 30 日签到奖励
-- 年度超爽: 365 日签到奖励
+**Payoff cadence**:
+- Daily small payoff: regular rewards
+- Weekly medium payoff: 7-day reward
+- Monthly major payoff: 30-day reward
+- Annual exceptional payoff: 365-day reward
 
 ---
 
-### 类型 5: 老爷爷/器灵流
+### Type 5: Elder/Artifact-Spirit Mentor
 
-**核心机制**: 导师辅助 + 知识传授
+**Core mechanism**: Mentor assistance and knowledge transfer.
 
-**器灵设定模板**:
+**Artifact-spirit template**:
 
 ```markdown
-【器灵：剑灵·古尘】
+[Artifact Spirit: Sword Spirit Gu Chen]
 
-基本信息:
-- 真实身份: 上古剑仙残魂
-- 巅峰境界: 渡劫期
-- 擅长领域: 剑道、炼器、阵法
-- 性格特点: 傲娇毒舌、口是心非
+Basic information:
+- True identity: Remnant soul of an ancient sword immortal
+- Peak realm: Tribulation Transcendence
+- Expertise: Swordsmanship, artifact crafting, formations
+- Personality: Proud, sharp-tongued, says the opposite of what he feels
 
-辅助功能:
-1. [传功]: 可传授主角剑法/功法
-2. [鉴定]: 可鉴定宝物品级和用途
-3. [指点]: 战斗中提供策略建议
-4. [藏书]: 拥有上古功法库
+Support functions:
+1. [Teaching]: Pass on sword arts and cultivation techniques
+2. [Appraisal]: Identify treasure grades and uses
+3. [Guidance]: Offer combat strategy
+4. [Library]: Hold an archive of ancient techniques
 
-限制条件:
-- 传授功法需主角境界达到要求
-- 每次指点需消耗主角灵力
-- 器灵恢复需要特定资源(灵石/血精)
+Limits:
+- The protagonist must reach the required realm before learning a technique
+- Each piece of guidance consumes the protagonist's spiritual power
+- Recovery requires specific resources (spirit stones/blood essence)
 ```
 
-**对话风格示例**:
+**Dialogue examples**:
 ```markdown
-❌ 错误（机械）:
-"检测到敌人实力为金丹期，建议撤退。"
+❌ Wrong (mechanical):
+“Enemy strength detected at Golden Core. Retreat recommended.”
 
-✅ 正确（拟人化）:
-"小子，对面那老家伙气息浑厚，至少金丹后期！你现在才筑基期，上去就是送菜！赶紧跑，别给老夫丢脸！"
+✅ Right (personified):
+“Boy, that old fellow's aura is thick enough to choke on. Late Golden Core at least! You're barely at Foundation Establishment. Charge in and you'll be feeding him! Run, and don't embarrass this old man!”
 ```
 
 ---
 
-### 类型 6: 血脉/天赋型
+### Type 6: Bloodline/Talent
 
-**核心机制**: 血脉觉醒带来能力跃迁，配合成长限制与代价。
+**Core mechanism**: Awakening causes a leap in ability, balanced by growth limits and costs.
 
-**模板要点**:
-- 血脉来源: 远古遗族 / 神兽后裔 / 祖传隐脉
-- 觉醒条件: 生死危机 / 特定灵药 / 情绪爆发
-- 能力限制: 觉醒次数 / 副作用 / 冷却
+**Template essentials**:
+- Origin: Ancient descendants / divine-beast lineage / hidden ancestral bloodline
+- Awakening condition: Mortal danger / special herb / emotional eruption
+- Limits: Number of awakenings / side effects / cooldown
 
-**示例**:
+**Example**:
 ```markdown
-【血脉：苍龙之血】
-- 觉醒条件：濒死时触发
-- 核心能力：肉身强度 +200%，速度 +50%
-- 副作用：觉醒后需静养 3 天
+[Bloodline: Azure Dragon Blood]
+- Awakening condition: Triggered near death
+- Core ability: Physical toughness +200%, speed +50%
+- Side effect: Three days of rest required afterward
 ```
 
 ---
 
-### 类型 7: 异能觉醒型（都市异能专用）
+### Type 7: Superpower Awakening (Urban Superpower Fiction)
 
-**核心机制**: 觉醒单一或复合异能，强调代价与成长上限。
+**Core mechanism**: Awaken one or several powers, emphasizing costs and growth ceilings.
 
-**模板要点**:
-- 异能来源: 实验事故 / 天赋遗传 / 外来物质刺激
-- 上限与代价: 体力消耗 / 精神反噬 / 使用次数
-- 进化方向: 单线强化 / 多分支成长
+**Template essentials**:
+- Origin: Laboratory accident / inherited talent / exposure to alien matter
+- Limits and costs: Stamina drain / mental backlash / limited uses
+- Evolution: Single-track enhancement / branching growth
 
-**示例**:
+**Example**:
 ```markdown
-【异能：时间凝滞（短暂）】
-- 初始上限：3 秒 / 次
-- 代价：每次使用眩晕 30 秒
-- 进化方向：延长持续时间 or 缩短冷却
+[Power: Brief Time Stasis]
+- Initial limit: 3 seconds per use
+- Cost: 30 seconds of dizziness after every use
+- Evolution: Longer duration or shorter cooldown
 ```
 
 ---
 
-### 无金手指（纯成长路线）
+### No Special Advantage (Pure Growth)
 
-**适用场景**: 言情、现实向、知乎短篇或反套路题材。
+**Suitable for**: Romance, realism, Zhihu short fiction, or anti-cliche stories.
 
-**替代增强点**:
-- 主角天赋：专长/天赋/极强意志
-- 特殊机遇：师承/资源/人脉
-- 成长路线：技能树/职业路径/心理成长
+**Alternative strengths**:
+- Protagonist talent: Expertise, aptitude, or extraordinary resolve
+- Special opportunities: Mentorship, resources, or connections
+- Growth path: Skill trees, careers, or psychological development
 
-**注意**: 无金手指不等于“无爽点”，需把爽点转移到人设、选择、代价与逆袭上。
+**Note**: No special advantage does not mean no payoff. Shift satisfaction toward characterization, choices, costs, and comebacks.
 
 ---
 
-## 🛠️ 金手指设计工作流
+## 🛠️ Design Workflow
 
-### Step 1: 确定核心定位
+### Step 1: Define the Core Role
 
-**问题清单**:
-1. 主角最大的短板是什么？（修炼速度慢/资源缺乏/信息不足）
-2. 金手指要解决什么问题？
-3. 金手指的独特卖点是什么？
+**Questions**:
+1. What is the protagonist's greatest weakness: slow cultivation, few resources, or insufficient information?
+2. What problem should the advantage solve?
+3. What makes it distinctive?
 
-### Step 2: 设定获得方式
+### Step 2: Establish Acquisition
 
-**常见方式**:
-- ✅ 意外融合（捡到古戒/被雷劈）
-- ✅ 传承激活（血脉觉醒/祖传宝物）
-- ✅ 系统降临（神秘声音/光幕弹出）
-- ❌ 避免：凭空出现，无任何理由
+**Common approaches**:
+- ✅ Accidental fusion: finding an ancient ring or being struck by lightning
+- ✅ Activated inheritance: bloodline awakening or ancestral treasure
+- ✅ System arrival: mysterious voice or an appearing light panel
+- ❌ Avoid: appearing from nowhere without explanation
 
-### Step 3: 设计面板/界面
+### Step 3: Design the Interface
 
-使用 Markdown 表格或 ASCII 艺术设计可视化面板
+Use Markdown tables or ASCII art for a visual panel.
 
-### Step 4: 规划升级路线
+### Step 4: Plan Upgrades
 
 ```markdown
-等级 1 → 等级 2 → 等级 3 → ... → 最终形态
-(对应主角境界: 练气 → 筑基 → 金丹 → ...)
+Level 1 → Level 2 → Level 3 → ... → Final form
+(Corresponding realms: Qi Refining → Foundation Establishment → Golden Core → ...)
 ```
 
-### Step 5: 嵌入爽点节点
+### Step 5: Embed Payoff Milestones
 
-- 首次获得: 震撼感
-- 首次使用: 立竿见影的效果
-- 版本升级: 解锁新功能
-- 关键时刻: 金手指救命/逆袭
-
----
-
-## ✅ 金手指设计检查清单
-
-**必需元素**:
-- [ ] 清晰的核心功能
-- [ ] 可视化面板/界面
-- [ ] 合理的限制条件
-- [ ] 明确的升级路线
-- [ ] 嵌入的爽点节点
-
-**避免的雷区**:
-- ❌ 功能过于复杂，读者记不住
-- ❌ 毫无限制的无敌外挂
-- ❌ 获得方式过于随意
-- ❌ 长期不升级，失去新鲜感
+- First acquisition: Awe
+- First use: Immediate, tangible results
+- Version upgrade: New functions unlocked
+- Critical moment: Survival or reversal enabled by the advantage
 
 ---
 
-## 📝 实体标签扩展说明
+## ✅ Design Checklist
 
-针对金手指系统，可使用以下 XML 标签类型：
+**Required elements**:
+- [ ] Clear core function
+- [ ] Visible panel/interface
+- [ ] Meaningful limits
+- [ ] Defined upgrade path
+- [ ] Embedded payoff milestones
+
+**Pitfalls to avoid**:
+- ❌ Functions too complex for readers to remember
+- ❌ Unlimited invincibility
+- ❌ Arbitrary acquisition
+- ❌ No upgrades for too long, losing novelty
+
+---
+
+## 📝 Extended Entity Tags
+
+The following XML entity types can describe special-advantage systems. Keep the original type literals for compatibility:
 
 ```xml
-<entity type="系统模块" name="模块名称" desc="功能描述" tier="层级" unlock="解锁条件"/>
-<entity type="系统货币" name="货币名称" desc="获得方式" tier="层级" initial="初始数量"/>
-<entity type="系统物品" name="物品名称" desc="效果" tier="层级" grade="品级" source="获取途径"/>
-<entity type="未来事件" name="事件名称" desc="事件描述" tier="层级" time="发生时间" strategy="应对策略"/>
+<entity type="系统模块" name="Module name" desc="Function description" tier="Tier" unlock="Unlock condition"/>
+<entity type="系统货币" name="Currency name" desc="Acquisition method" tier="Tier" initial="Initial quantity"/>
+<entity type="系统物品" name="Item name" desc="Effect" tier="Tier" grade="Grade" source="Source"/>
+<entity type="未来事件" name="Event name" desc="Event description" tier="Tier" time="Occurrence time" strategy="Response strategy"/>
 ```
 
-> **v5.0 引入（v5.4 沿用）**: 这些标签为**可选**。Data Agent 可从纯正文自动提取实体，标签仅用于手动标注场景。
+> **Introduced in v5.0 (retained in v5.4)**: These tags are **optional**. Data Agent can extract entities from plain chapter text; tags are for manual annotation only.
 
 ---
 
-## 📚 参考案例
+## 📚 Reference Cases
 
-### 案例 1: 《全球高武》- 财富转换系统
-- 核心功能: 现实金钱 → 修炼资源
-- 爽点: 富二代身份 + 氪金变强
-- 限制: 需要合法赚钱，不能抢劫
+### Case 1: *World's Best Martial Artist* — Wealth Conversion System
+- Core function: Real-world money → cultivation resources
+- Appeal: Wealthy-heir identity plus spending to become stronger
+- Limit: Must earn money legally, not through robbery
 
-### 案例 2: 《我有一座冒险屋》- 手机 APP 系统
-- 核心功能: 手机发布任务，完成获得奖励
-- 爽点: 任务千奇百怪，奖励丰厚
-- 限制: 任务失败有惩罚
+### Case 2: *My House of Horrors* — Mobile App System
+- Core function: Phone issues missions; completing them earns rewards
+- Appeal: Unusual missions and generous rewards
+- Limit: Failed missions carry penalties
 
-### 案例 3: 《修真聊天群》- 聊天群系统
-- 核心功能: 加入仙人聊天群，获取修炼资源和情报
-- 爽点: 与大佬交流，抢红包
-- 限制: 群规严格，违规会被踢
+### Case 3: *Cultivation Chat Group* — Chat Group System
+- Core function: Join immortals' chat group to obtain resources and intelligence
+- Appeal: Interact with powerful figures and claim red packets
+- Limit: Strict group rules; violations lead to expulsion
 
 ---
 
-**最后提醒**: 金手指不是越强越好，而是越"巧妙"越好。最好的金手指能让主角"努力+外挂"双管齐下，既不显得不劳而获，又能爽快碾压对手。
+**Final reminder**: A special advantage is not better simply because it is stronger. Ingenuity matters more. The best designs combine effort and extraordinary help, allowing satisfying victories without making success feel unearned.

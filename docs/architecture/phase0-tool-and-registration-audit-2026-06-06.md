@@ -1,38 +1,38 @@
-# Phase 0 审计：工具能力与插件注册名（2026-06-06）
+# Phase 0 Audit: Tool Capabilities and Plugin Registration Names (2026-06-06)
 
-> 只读审计。本文件只「记录证据」，不修改任何 skill / agent / plugin.json / 测试文件。
-> 目的：为 `context-minimal-writing-flow-plan` 提供可信的运行基线，复核计划中假设的
-> `webnovel-writer:<agent>` 注册名、agent/skill frontmatter、以及计划依赖的官方工具行为结论。
+> Read-only audit. This document records evidence only; it changes no skill / agent / plugin.json / test files.
+> Purpose: Establish a trustworthy runtime baseline for `context-minimal-writing-flow-plan`, verifying the assumed
+> `webnovel-writer:<agent>` registration names, agent/skill frontmatter, and official tool behavior on which the plan depends.
 >
-> 工作目录（git 仓库根 = worktree）：`D:/wk/novel skill/webnovel-writer/.worktrees/context-minimal-flow`
-> 插件目录（嵌套）：仓库根下的 `webnovel-writer/` 子目录。
+> Working directory (Git repository root = worktree): `D:/wk/novel skill/webnovel-writer/.worktrees/context-minimal-flow`
+> Plugin directory (nested): the `webnovel-writer/` subdirectory beneath the repository root.
 
 ---
 
-## 1. Claude Code 版本与环境
+## 1. Claude Code Version and Environment
 
-| 项 | 值 | 证据 |
+| Item | Value | Evidence |
 |----|----|------|
-| 宿主 | Claude Code（固定，本插件唯一目标宿主） | — |
-| `claude --version` | `2.1.161 (Claude Code)` | Bash 直接执行成功（非「subagent 不可用」） |
-| 平台 | Windows（win32），PowerShell + Bash 双可用 | 环境说明 |
-| 本审计执行体 | subagent（Task 1）；本机 `claude --version` 可正常返回 | — |
+| Host | Claude Code (fixed; this plugin's only target host) | — |
+| `claude --version` | `2.1.161 (Claude Code)` | Executed successfully in Bash (not unavailable because of subagent context) |
+| Platform | Windows (win32), with both PowerShell and Bash | Environment description |
+| Audit executor | subagent (Task 1); local `claude --version` returns normally | — |
 
-结论：版本/环境均可确认，无降级记录。
+Conclusion: Version and environment are confirmed; no degradation recorded.
 
 ---
 
-## 2. 插件注册（真实名）
+## 2. Plugin Registration (Actual Names)
 
 ### 2.1 plugin.json
 
-文件：`webnovel-writer/.claude-plugin/plugin.json`（全文 18 行）。
+File: `webnovel-writer/.claude-plugin/plugin.json` (18 lines in full).
 
 ```json
 {
   "name": "webnovel-writer",
   "version": "6.1.0",
-  "description": "长篇网文创作系统（skills + agents + data chain + RAG）",
+  "description": "Long-form web-novel writing system (skills + agents + data chain + RAG)",
   "author": { "name": "lingfengQAQ" },
   "homepage": "https://github.com/lingfengQAQ/webnovel-writer",
   "repository": "https://github.com/lingfengQAQ/webnovel-writer",
@@ -41,31 +41,33 @@
 }
 ```
 
-- 插件名（namespace 前缀来源）：**`webnovel-writer`**。
-- manifest **没有**显式 `agents` / `skills` / `commands` 路径数组。
-  → 因此 agents 与 skills **全部走约定式 auto-discovery**：
-  - 官方 `plugin-structure/SKILL.md:11` —「automatic component discovery」；
-  - 同文件第 28-32 行：`agents/`（`.md` 文件）与 `skills/`（子目录，每个含 `SKILL.md`）。
-  - 官方 `skill-development/SKILL.md:271-273` —「Claude Code automatically discovers skills: Scans `skills/` directory; Finds subdirectories containing `SKILL.md`」。
+The descriptive value above is translated; the identifiers match the audited manifest.
 
-### 2.2 真实 on-disk agent 名（4 个）
+- Plugin name (source of the namespace prefix): **`webnovel-writer`**.
+- The manifest has **no** explicit `agents` / `skills` / `commands` path arrays.
+  → All agents and skills therefore use **convention-based auto-discovery**:
+  - Official `plugin-structure/SKILL.md:11`: automatic component discovery.
+  - Lines 28–32 of the same file: `agents/` (`.md` files) and `skills/` (subdirectories, each containing `SKILL.md`).
+  - Official `skill-development/SKILL.md:271-273`: Claude Code discovers skills by scanning `skills/` for subdirectories containing `SKILL.md`.
 
-每个 agent 是单一 `.md` 文件，frontmatter `name:` 与文件名（去 `.md`）一致：
+### 2.2 Actual On-Disk Agent Names (4)
 
-| 文件 | frontmatter `name:` (行 2) | 一致？ |
+Each agent is a single `.md` file. Its frontmatter `name:` matches the filename without `.md`:
+
+| File | Frontmatter `name:` (line 2) | Matches? |
 |------|---------------------------|--------|
 | `webnovel-writer/agents/context-agent.md` | `context-agent` | ✅ |
 | `webnovel-writer/agents/data-agent.md` | `data-agent` | ✅ |
 | `webnovel-writer/agents/deconstruction-agent.md` | `deconstruction-agent` | ✅ |
 | `webnovel-writer/agents/reviewer.md` | `reviewer` | ✅ |
 
-另有 `webnovel-writer/agents/evals/`（含 `evals.json` + `files/`）——非 agent 定义，是评测夹具，auto-discovery 不会把它当 agent（不是顶层 `.md`）。无 `agents/references/` 目录。
+There is also `webnovel-writer/agents/evals/` (containing `evals.json` + `files/`). These are evaluation fixtures, not agent definitions; auto-discovery does not treat them as agents because they are not top-level `.md` files. No `agents/references/` directory exists.
 
-### 2.3 真实 on-disk skill 名（8 个）
+### 2.3 Actual On-Disk Skill Names (8)
 
-每个 skill 是含 `SKILL.md` 的子目录，frontmatter `name:`（均在行 2）与目录名一致：
+Each skill is a subdirectory containing `SKILL.md`; its frontmatter `name:` (always on line 2) matches the directory name:
 
-| 目录 | frontmatter `name:` | 一致？ |
+| Directory | Frontmatter `name:` | Matches? |
 |------|--------------------|--------|
 | `skills/webnovel-write/` | `webnovel-write` | ✅ |
 | `skills/webnovel-init/` | `webnovel-init` | ✅ |
@@ -76,153 +78,155 @@
 | `skills/webnovel-dashboard/` | `webnovel-dashboard` | ✅ |
 | `skills/webnovel-doctor/` | `webnovel-doctor` | ✅ |
 
-（路径前缀省略 `webnovel-writer/`。）
+(The `webnovel-writer/` prefix is omitted.)
 
-### 2.4 注册名 ↔ 计划引用名 复核（关键）
+### 2.4 Registration Names vs. Names Referenced in the Plan (Critical)
 
-计划 `docs/architecture/context-minimal-writing-flow-plan-2026-06-05.md` 在多处用
-`webnovel-writer:<agent>` 形式引用 4 个 agent，例如：
+The plan, `docs/architecture/context-minimal-writing-flow-plan-2026-06-05.md`, repeatedly references
+all 4 agents as `webnovel-writer:<agent>`, for example:
 
-- L181 `必须调用 webnovel-writer:context-agent`
-- L195 `... webnovel-writer:reviewer`
-- L228 `... webnovel-writer:data-agent`
-- L97 `... webnovel-writer:deconstruction-agent`
-- L463/L698/L713/L728 `Use the Agent tool to run webnovel-writer:context-agent` 等
-- L430 计划自带告警：「plugin scoped agent 的真实注册名必须在 Phase 0 复核」（即本节）。
+- L181: must invoke `webnovel-writer:context-agent`
+- L195: `... webnovel-writer:reviewer`
+- L228: `... webnovel-writer:data-agent`
+- L97: `... webnovel-writer:deconstruction-agent`
+- L463/L698/L713/L728: `Use the Agent tool to run webnovel-writer:context-agent`, etc.
+- L430: the plan itself warns that actual plugin-scoped agent registration names must be checked in Phase 0 (this section).
 
-复核结论：
+Findings:
 
-- **on-disk agent 名 = `context-agent` / `data-agent` / `deconstruction-agent` / `reviewer`**，
-  与计划里冒号后半段完全一致，**无错名**。
-- 关于前缀：官方 `agent-development/SKILL.md:281-285`「Namespacing」原文：
-  - 「Agents are namespaced automatically: Single plugin: `agent-name`; With subdirectories: `plugin:subdir:agent-name`」。
-  - 即官方文档把「单插件、无子目录」的 agent 标识写作**裸名 `agent-name`**，把带前缀的形态留给「子目录」场景（`plugin:subdir:agent`）。
-  - 命令侧旁证：`command-development` 与 `plugin-features-reference.md:30` 显示插件组件在 `/help` 里带 `(plugin:plugin-name)` 标签，说明「插件名:组件名」是 marketplace 场景下的实际可见限定形态。
-  - ⚠️ **轻微风险（命名形态，非错名）**：官方 agent-development 文档对「单插件无子目录」给出的范式是裸 `agent-name`，并未把 `plugin:agent`（无 subdir）列为 canonical 形态。计划统一用 `webnovel-writer:context-agent` 这类**带插件前缀、无 subdir** 的写法，是合理且更显式的（在多插件并存时消歧），但官方文档**没有把这一形态写成单插件的标准范式**。
-  - 建议：Phase 1 真正接线时，以**运行时实测**（`Agent`/Task 工具能否用 `webnovel-writer:context-agent` 解析到该 agent）为准；若实测裸名 `context-agent` 才解析得到、带前缀失败，则按裸名修正计划。本审计无法在 subagent 内实跑 Agent 工具来终判，故标注为「待运行时验证」。
+- **On-disk names = `context-agent` / `data-agent` / `deconstruction-agent` / `reviewer`**,
+  exactly matching the portion after the colon in the plan. **No incorrect names**.
+- Prefix: the official Namespacing section in `agent-development/SKILL.md:281-285` says:
+  - Agents are automatically namespaced: single plugin `agent-name`; with subdirectories `plugin:subdir:agent-name`.
+  - In other words, the documentation uses the **bare `agent-name`** for a single plugin without subdirectories, reserving the prefixed form for subdirectories (`plugin:subdir:agent`).
+  - Supporting command-side evidence: `command-development` and `plugin-features-reference.md:30` show plugin components labeled `(plugin:plugin-name)` in `/help`, indicating that plugin-name/component qualification is visible in Marketplace usage.
+  - ⚠️ **Minor risk (name format, not a wrong name)**: official agent-development documentation gives bare `agent-name` as the single-plugin/no-subdirectory pattern; it does not list `plugin:agent` without a subdirectory as canonical. The plan's consistent **plugin-prefixed, no-subdirectory** form, such as `webnovel-writer:context-agent`, is reasonable and more explicit when multiple plugins coexist, but **the official documentation does not designate it the single-plugin standard**.
+  - Recommendation: when wiring Phase 1, rely on **runtime testing** of whether the `Agent`/Task tool resolves `webnovel-writer:context-agent`. If only bare `context-agent` resolves and the prefixed form fails, revise the plan to use bare names. This audit cannot run the Agent tool inside a subagent to settle this, so it remains **pending runtime verification**.
 
 ---
 
-## 3. Agent frontmatter 审计（4 个）
+## 3. Agent Frontmatter Audit (4)
 
-逐项抄录 frontmatter（行号以各文件为准；所有 4 个 agent 的 frontmatter 块均为第 1-7 行）：
+Frontmatter transcribed field by field (line numbers are file-specific; all 4 frontmatter blocks occupy lines 1–7). Descriptions are translated here:
 
-| agent | name | description（摘） | model | color | tools |
+| Agent | name | description (excerpt) | model | color | tools |
 |-------|------|------------------|-------|-------|-------|
-| context-agent | `context-agent` | 写前 research，输出写作任务书。 | `inherit` | `blue` | `Read, Grep, Bash` |
-| data-agent | `data-agent` | 从正文提取事实，生成 commit artifacts。 | `inherit` | `green` | `Read, Write, Bash` |
-| deconstruction-agent | `deconstruction-agent` | /webnovel-init 的参考书拆解子代理…… | `inherit` | `purple` | `Read, Grep, Bash` |
-| reviewer | `reviewer` | 统一审查 agent。逐维度检查…… | `inherit` | `yellow` | `Read, Grep, Bash` |
+| context-agent | `context-agent` | Prewrite research; produce a writing brief. | `inherit` | `blue` | `Read, Grep, Bash` |
+| data-agent | `data-agent` | Extract facts from prose and generate commit artifacts. | `inherit` | `green` | `Read, Write, Bash` |
+| deconstruction-agent | `deconstruction-agent` | Reference-book deconstruction subagent for /webnovel-init… | `inherit` | `purple` | `Read, Grep, Bash` |
+| reviewer | `reviewer` | Unified review agent. Check each dimension… | `inherit` | `yellow` | `Read, Grep, Bash` |
 
-对照 agent-development 规则：
+Against agent-development rules:
 
-- **单一 `.md` 文件**：✅ 全部满足。
-- **必备字段 name/description/model/color**：✅ 4 个全齐。
-  - `model: inherit` 符合官方推荐（`agent-development/SKILL.md:100,105`）。
-  - `color` 取值：`blue/green/purple/yellow`。⚠️ 官方 `agent-development/SKILL.md:111` 列出的合法色为
-    `blue, cyan, green, yellow, magenta, red`，**未列 `purple`**。`deconstruction-agent` 的
-    `color: purple` 不在官方枚举内（应为 `magenta`）。属**轻微规范偏差**，不影响功能/注册（color 仅 UI 着色）。
-- **`tools` 最小集**：✅ 都是 3 个工具的小集合（least privilege，符合 `SKILL.md:134`）。
-- **FLAG：`tools` 含 `Agent` 或 `AskUserQuestion`？** → ❌ **均不含**。
-  4 个 agent 的 tools 仅为 `{Read, Grep/Write, Bash}` 组合，**没有任何一个**带 `Agent`/`AskUserQuestion`/`Task`。
-  → 与计划「subagent 不得用 `Agent`/`AskUserQuestion`」一致，**无违例**。
-- **FLAG：缺必备 frontmatter 字段？** → 无。4 个 agent 字段齐全。
-- **FLAG：依赖外部 `agents/references/*` 当隐藏手册？** → 无。`agents/references/` 目录不存在；
-  4 个 agent 正文未引用 `agents/references/...`。（注：正文大量引用 `${SCRIPTS_DIR}/webnovel.py` 子命令，
-  那是运行时脚本调用，不是「隐藏 manual 文件」。）
-- **`skills:` frontmatter 字段？** → 4 个 agent **均无** `skills:` 字段（Grep `^(name|skills):` 仅命中
-  `name:`）。即当前没有任何 agent 预载 Skill 内容。
+- **Single `.md` file**: ✅ All comply.
+- **Required name/description/model/color fields**: ✅ Present for all 4.
+  - `model: inherit` follows the official recommendation (`agent-development/SKILL.md:100,105`).
+  - Colors: `blue/green/purple/yellow`. ⚠️ Official `agent-development/SKILL.md:111` lists
+    `blue, cyan, green, yellow, magenta, red`, **not `purple`**. The deconstruction agent's
+    `color: purple` is outside that enumeration (it should be `magenta`). This is a **minor specification deviation**,
+    with no functional/registration impact because color is only for the UI.
+- **Minimal `tools` set**: ✅ All use small sets of 3 tools (least privilege, consistent with `SKILL.md:134`).
+- **FLAG: Do `tools` include `Agent` or `AskUserQuestion`?** → ❌ **None do**.
+  All 4 use combinations of `{Read, Grep/Write, Bash}`; **none** have `Agent`/`AskUserQuestion`/`Task`.
+  → Consistent with the plan's rule that subagents must not use `Agent`/`AskUserQuestion`; **no violations**.
+- **FLAG: Missing required frontmatter fields?** → None. All 4 have every required field.
+- **FLAG: Depend on external `agents/references/*` hidden manuals?** → No. `agents/references/` does not exist,
+  and none of the agent bodies reference it. (Frequent `${SCRIPTS_DIR}/webnovel.py` references are runtime script calls,
+  not hidden manual files.)
+- **`skills:` frontmatter?** → **None** of the 4 agents have it (Grep `^(name|skills):` finds only `name:`).
+  No agent currently preloads Skill content.
 
 ---
 
-## 4. Skill frontmatter 审计（8 个）
+## 4. Skill Frontmatter Audit (8)
 
-逐项抄录（`name`/`allowed-tools` 行号见下；所有 skill `name:` 均在行 2）：
+Field-by-field inventory (`name`/`allowed-tools` below; every skill's `name:` is on line 2). Descriptions are translated:
 
-| skill | name | description 触发型 | allowed-tools |
+| Skill | name | Trigger description | allowed-tools |
 |-------|------|-------------------|---------------|
-| webnovel-write | `webnovel-write` | 产出可发布章节，完整执行上下文→起草→审查→润色→提交→备份。 | `Read Write Edit Grep Bash Agent AskUserQuestion` |
-| webnovel-init | `webnovel-init` | 深度初始化网文项目。分阶段交互收集…… | `Read Write Edit Grep Bash Agent AskUserQuestion WebSearch WebFetch` |
-| webnovel-plan | `webnovel-plan` | 基于总纲生成卷纲、时间线和章纲…… | `Read Write Edit Bash AskUserQuestion` |
-| webnovel-review | `webnovel-review` | 使用审查 Agent 评估章节质量…… | `Read Grep Write Edit Bash Agent AskUserQuestion` |
-| webnovel-query | `webnovel-query` | 查询项目设定、角色、力量体系、势力、伏笔…… | `Read Grep Bash` |
-| webnovel-learn | `webnovel-learn` | 从当前会话提取成功模式并写入 project_memory.json | `Read Bash` |
-| webnovel-dashboard | `webnovel-dashboard` | 启动只读小说管理面板…… | `Bash Read` |
-| webnovel-doctor | `webnovel-doctor` | This skill should be used when the user asks to "/webnovel-doctor", "检查项目环境"…… | `Read Bash` |
+| webnovel-write | `webnovel-write` | Produce a publishable chapter through context → drafting → review → polishing → commit → backup. | `Read Write Edit Grep Bash Agent AskUserQuestion` |
+| webnovel-init | `webnovel-init` | Deep initialization of a web-novel project. Collect information interactively in stages… | `Read Write Edit Grep Bash Agent AskUserQuestion WebSearch WebFetch` |
+| webnovel-plan | `webnovel-plan` | Generate volume outlines, timelines, and chapter outlines from the master outline… | `Read Write Edit Bash AskUserQuestion` |
+| webnovel-review | `webnovel-review` | Use the review Agent to assess chapter quality… | `Read Grep Write Edit Bash Agent AskUserQuestion` |
+| webnovel-query | `webnovel-query` | Query settings, characters, power systems, factions, foreshadowing… | `Read Grep Bash` |
+| webnovel-learn | `webnovel-learn` | Extract successful patterns from the current conversation into project_memory.json | `Read Bash` |
+| webnovel-dashboard | `webnovel-dashboard` | Launch the read-only novel-management dashboard… | `Bash Read` |
+| webnovel-doctor | `webnovel-doctor` | This skill should be used when the user asks to "/webnovel-doctor", "check the project environment"… | `Read Bash` |
 
-对照 skill-development 规则：
+Against skill-development rules:
 
-- **目录 + SKILL.md 结构**：✅ 8 个目录均含 `SKILL.md`（逐一 `test -f` 通过）。
-- **frontmatter 含 `name` + 触发型 `description`**：✅ 全部有 `name` + `description`。
-  - 官方只强制 `name` + `description`（`skill-development/SKILL.md:33-34`）。
-  - 触发表述：7 个用中文动作/场景式触发短语（计划偏好），`webnovel-doctor` 用英文官方范式
-    「This skill should be used when…」并把中文触发词内嵌其中——两类都满足「具体触发」要求。
-  - `webnovel-doctor` 还带 `version: 0.1.0`（额外字段，无害）。
-- **`allowed-tools` 是否存在及其值**：✅ **8 个 skill 全部声明了 `allowed-tools`**（值见上表）。
-  - 4 个编排型 skill（write/init/plan/review）的 `allowed-tools` 含 **`Agent`**（write/init/review）
-    与 **`AskUserQuestion`**（write/init/plan/review）——这是**顶层 skill / 命令层**用来「预批准」调度子代理
-    与向用户提问的工具集，**不是 subagent 的 tools**。与计划角色分工（编排在 skill 层、执行在 agent 层）一致。
-  - 只读型 skill（query/learn/dashboard/doctor）的 `allowed-tools` 收敛为 `Read/Bash(/Grep)`，无 `Agent`/`AskUserQuestion`。
+- **Directory + SKILL.md structure**: ✅ All 8 contain `SKILL.md` (each passed `test -f`).
+- **Frontmatter includes `name` + trigger `description`**: ✅ All have both.
+  - Officially, only `name` + `description` are required (`skill-development/SKILL.md:33-34`).
+  - Trigger wording: 7 use Chinese action/scenario phrases, as preferred by the plan; `webnovel-doctor` uses the official English
+    "This skill should be used when…" pattern with embedded Chinese trigger phrases. Both forms satisfy the specific-trigger requirement.
+  - `webnovel-doctor` also has `version: 0.1.0` (an extra, harmless field).
+- **Presence and values of `allowed-tools`**: ✅ **All 8 skills declare it** (see table).
+  - The 4 orchestration skills (write/init/plan/review) include **`Agent`** (write/init/review)
+    and **`AskUserQuestion`** (write/init/plan/review). This is the **top-level skill / command layer's** pre-approved tool set
+    for delegating to subagents and asking users questions, **not subagent `tools`**. It matches the plan's role division:
+    orchestration in skills, execution in agents.
+  - Read-only skills (query/learn/dashboard/doctor) limit `allowed-tools` to `Read/Bash(/Grep)`, with no `Agent`/`AskUserQuestion`.
 
-> 说明：官方 `skill-development/SKILL.md` 通篇**未出现** `allowed-tools` 字段名（仅强制 `name`+`description`）。
-> 因此「`allowed-tools` 是预批准而非限制」这一语义**无法从本地官方 skill 文档直接证实**，见 §5。
+> Note: official `skill-development/SKILL.md` **never mentions** `allowed-tools` (it requires only `name` + `description`).
+> Therefore, **local official skill documentation cannot directly establish** that `allowed-tools` means pre-approval rather than restriction. See §5.
 
 ---
 
-## 5. 计划依赖的官方工具行为结论（运行基线）
+## 5. Official Tool-Behavior Assumptions Used by the Plan (Runtime Baseline)
 
-交叉核对源（实际使用路径）：
+Cross-check source (actual path used):
 **`C:/Users/lcy/.claude/plugins/marketplaces/claude-plugins-official/plugins/plugin-dev/skills/`**
-（primary 路径存在；fallback `.tmp/plugin-dev-official/...` **不存在**，未使用）。
-核对的三个 skill：`agent-development/`、`skill-development/`、`plugin-structure/`（含其 `references/`、`examples/`）。
+(The primary path exists; fallback `.tmp/plugin-dev-official/...` **does not exist** and was not used.)
+Three skills were checked: `agent-development/`, `skill-development/`, and `plugin-structure/`, including their `references/` and `examples/`.
 
-逐条结论与本地可证实性：
+Conclusions and local verifiability:
 
-| # | 计划依赖的结论 | 本地官方文档可证实？ | 证据 / 标注 |
+| # | Assumption used by the plan | Verified by local official docs? | Evidence / annotation |
 |---|----------------|---------------------|-------------|
-| (a) | **subagent 不能再生成另一个 subagent** | ❌ 未找到 | 在 plugin-dev 全树 Grep `spawn / another (sub)?agent / nested / recursi` 仅命中 MCP 进程「spawn」，**无 subagent 嵌套禁令**条文。→ **「计划断言，本地未证实」**。（与之相容的旁证：`command-development/SKILL.md:720`「Claude uses **Task tool** to launch agent」——launch agent 是上层/命令侧动作；官方未给出 subagent 自身可再调 Task 的任何示例，但「未给出」≠「明文禁止」。） |
-| (b) | **`Agent` / `AskUserQuestion` 不作为 subagent 的 tools** | ⚠️ 部分（间接） | 官方 agent `tools` 文档（`agent-development/SKILL.md:122-140`）给的「常用 tool set」全是 `Read/Write/Grep/Glob/Bash`，**从不**把 `Agent`/`AskUserQuestion` 列进 agent 的 `tools`。`AskUserQuestion` 出现处均在**命令/skill 层**的 `allowed-tools`（`plugin-dev/commands/create-plugin.md:12`、`plugin-settings/examples/create-settings-command.md:3`），不在任何 agent frontmatter。→ 官方**惯例支持**该结论，但**无一句明文「禁止」**。标注为「官方惯例支持，无明文禁令」。本仓 4 个 agent 实测也无人含 `Agent`/`AskUserQuestion`（§3）。 |
-| (c) | **`tools` / `disallowedTools` 控制 subagent 工具边界** | ⚠️ 一半 | `tools` 控制边界：✅ 明文——`agent-development/SKILL.md:124`「Restrict agent to specific tools」、`:132`「If omitted, agent has access to all tools」、`:134` least-privilege。`disallowedTools`：❌ 在 plugin-dev 全树 **Grep 无任何命中**。→ `tools` 部分「本地已证实」；`disallowedTools` 部分「计划断言，本地未证实」。 |
-| (d) | **agent `skills:` frontmatter 会把整份 Skill 内容预载进 subagent** | ❌ 未找到 | 官方 agent frontmatter 文档只列 `name/description/model/color/tools`（`SKILL.md:122` 区段 + `:340-342` 表），**无 `skills:` 字段**说明；全树 Grep `skills:`（agent 语境）无命中。→ **「计划断言，本地未证实」**。当前本仓也无 agent 使用该字段（§3），故即便成立也属「未来才会用到」的能力。 |
-| (e) | **Skill 的 `allowed-tools` 是预批准、不是限制** | ❌ 未找到 | `skill-development/SKILL.md` 全篇**无** `allowed-tools` 字样；官方只把 `allowed-tools` 用在**命令** frontmatter（`command-development` / `plugin-settings` 示例）。其「预批准/非限制」语义在本地官方文档中**无直接定义**。→ **「计划断言，本地未证实」**。（注：经验上 skill/command 的 `allowed-tools` 行为确为预批准，但本审计按要求不凭记忆造引用，仅据本地文档判定为「未证实」。） |
+| (a) | **A subagent cannot spawn another subagent** | ❌ Not found | Grep across plugin-dev for `spawn / another (sub)?agent / nested / recursi` found only MCP process spawning, **no prohibition on nested subagents**. → **Plan assertion, not locally verified**. Supporting but not conclusive evidence: `command-development/SKILL.md:720` says Claude launches agents with the **Task tool**, a higher-level/command-side action. No example shows a subagent invoking Task, but absence of examples is not an explicit prohibition. |
+| (b) | **`Agent` / `AskUserQuestion` are not subagent tools** | ⚠️ Partial, indirect | Official common agent tool sets (`agent-development/SKILL.md:122-140`) contain only `Read/Write/Grep/Glob/Bash`, **never** `Agent`/`AskUserQuestion`. `AskUserQuestion` appears only in **command/skill-level** `allowed-tools` (`plugin-dev/commands/create-plugin.md:12`, `plugin-settings/examples/create-settings-command.md:3`), not agent frontmatter. → Supported by **official convention**, but **not explicitly prohibited**. All 4 local agents also omit these tools (§3). |
+| (c) | **`tools` / `disallowedTools` control subagent tool boundaries** | ⚠️ Half verified | `tools`: ✅ Explicit in `agent-development/SKILL.md:124` (restrict to specific tools), `:132` (omitting it gives access to all tools), and `:134` (least privilege). `disallowedTools`: ❌ **No Grep matches** anywhere in plugin-dev. → `tools` locally verified; `disallowedTools` a plan assertion, not locally verified. |
+| (d) | **Agent `skills:` frontmatter preloads the entire Skill into the subagent** | ❌ Not found | Official frontmatter docs list only `name/description/model/color/tools` (`SKILL.md:122` section and `:340-342` table), **not `skills:`**. Tree-wide Grep for `skills:` in agent context found nothing. → **Plan assertion, not locally verified**. No local agent uses it (§3), so even if valid it is a future capability. |
+| (e) | **Skill `allowed-tools` means pre-approval, not restriction** | ❌ Not found | `skill-development/SKILL.md` **never mentions** `allowed-tools`; official examples use it only in **command** frontmatter (`command-development` / `plugin-settings`). Local official docs **do not define** its pre-approval/non-restriction semantics. → **Plan assertion, not locally verified**. Experience suggests this behavior, but the audit does not invent citations from memory and therefore marks it unverified. |
 
-补充已证实的注册/调度事实（支撑计划接线）：
+Additional verified registration/dispatch facts supporting the plan's wiring:
 
-- 自动发现：agents 扫 `agents/*.md`、skills 扫 `skills/*/SKILL.md`（`plugin-structure/SKILL.md:11,28-32`；`skill-development/SKILL.md:271-273`）。✅
-- agent 命名空间：单插件裸名 `agent-name`，带子目录 `plugin:subdir:agent-name`（`agent-development/SKILL.md:283-285`）。✅
-- 上层用 **Task 工具** 启动 agent（`command-development/SKILL.md:720`）。✅
+- Auto-discovery scans `agents/*.md` and `skills/*/SKILL.md` (`plugin-structure/SKILL.md:11,28-32`; `skill-development/SKILL.md:271-273`). ✅
+- Agent namespaces: bare `agent-name` for one plugin; `plugin:subdir:agent-name` with subdirectories (`agent-development/SKILL.md:283-285`). ✅
+- Higher-level orchestration launches agents with the **Task tool** (`command-development/SKILL.md:720`). ✅
 
 ---
 
-## 6. 结论 / 风险清单
+## 6. Conclusions / Risk Inventory
 
-### 与计划假设一致的部分（无阻断）
+### Consistent with the Plan (No Blockers)
 
-1. 4 个 agent 的 on-disk 名（`context-agent` / `data-agent` / `deconstruction-agent` / `reviewer`）与计划
-   `webnovel-writer:<agent>` 引用的冒号后半段**完全一致**，无错名、无缺失。
-2. 8 个 skill 目录名与各自 `name:` 一致，结构合规（目录 + SKILL.md，name + 触发型 description）。
-3. **没有任何 agent 的 `tools` 含 `Agent` / `AskUserQuestion` / `Task`** → 计划「subagent 不持调度工具」的红线
-   在现状下**已天然满足**，无需先修。
-4. 没有 agent 缺必备 frontmatter 字段；没有 agent 依赖 `agents/references/*` 隐藏手册（该目录不存在）。
-5. 没有 agent 使用 `skills:` 预载字段（即 (d) 即便成立，也不会与现状冲突）。
-6. 8 个 skill 均显式声明 `allowed-tools`，且编排型/只读型分工与计划角色划分吻合。
+1. All 4 on-disk agent names (`context-agent` / `data-agent` / `deconstruction-agent` / `reviewer`) **exactly match**
+   the portion after the colon in the plan's `webnovel-writer:<agent>` references. No wrong or missing names.
+2. All 8 skill directory names match their `name:` values and comply with the structure (directory + SKILL.md, name + trigger description).
+3. **No agent's `tools` include `Agent` / `AskUserQuestion` / `Task`**. The plan's no-dispatch-tools-in-subagents boundary
+   is **already satisfied**, with no prerequisite fix.
+4. No required agent frontmatter fields are missing, and no agent depends on a hidden `agents/references/*` manual (the directory does not exist).
+5. No agent uses `skills:` preloading, so even if assumption (d) holds it does not conflict with the current state.
+6. All 8 skills explicitly declare `allowed-tools`; orchestration/read-only roles match the plan.
 
-### 会动摇计划假设的风险点（需后续处理 / 实测）
+### Risks to Plan Assumptions (Follow-Up / Runtime Tests Required)
 
-- **R1（命名形态，待运行时验证）**：官方 agent-development 文档把「单插件无子目录」agent 的 canonical 标识写成
-  **裸 `agent-name`**，未把 `plugin:agent`（无 subdir）列为标准范式。计划统一用 `webnovel-writer:context-agent`
-  这类带前缀写法。**名字本身没错**，但前缀形态能否被 Agent/Task 工具解析到，需 Phase 1 **运行时实测**确认；
-  若实测仅裸名可解析，应回改计划为裸名。本审计（subagent 内）无法实跑 Agent 工具终判。
-- **R2（工具行为，本地未证实——见 §5）**：计划依赖的 (a) subagent 不能再开 subagent、(d) agent `skills:` 预载整份
-  Skill、(e) skill `allowed-tools` 为预批准——这三条在本地官方 plugin-dev 文档中**找不到出处**；(c) 的
-  `disallowedTools`、(b) 的「明文禁止」也**无出处**。这些应作为**「计划断言、本地未证实」**对待：
-  计划据此设计无妨，但任何「以 `skills:` 预载替代 reference 大块文本」「靠 subagent 链式分发」的关键改动，
-  应在实现期以小样例**实测**，不能仅以官方文档为据。
-- **R3（轻微规范偏差，不阻断）**：`deconstruction-agent` 的 `color: purple` 不在官方合法色枚举
-  （`blue/cyan/green/yellow/magenta/red`）内。仅 UI 着色，无功能影响；如要严格合规，应改 `magenta`。
-  本审计为只读，不修改。
+- **R1 (name format, pending runtime verification)**: official agent-development documentation uses **bare `agent-name`** as the canonical
+  single-plugin/no-subdirectory identifier, not `plugin:agent`. The plan consistently uses prefixed names such as `webnovel-writer:context-agent`.
+  **The names themselves are correct**, but Phase 1 must **test at runtime** whether Agent/Task resolves the prefixed form.
+  If only bare names resolve, update the plan. This audit cannot run the Agent tool from its subagent context to settle the question.
+- **R2 (tool behavior, not locally verified; see §5)**: assumptions (a), no nested subagents; (d), agent `skills:` preloads an entire Skill;
+  and (e), skill `allowed-tools` is pre-approval, have **no source in local official plugin-dev documentation**. Neither does
+  `disallowedTools` in (c), nor an explicit prohibition for (b). Treat them as **plan assertions, not locally verified**.
+  Designing around them is permissible, but key changes such as replacing large references with `skills:` preloading or chained subagent
+  delegation require **small runtime tests** during implementation, not documentation alone.
+- **R3 (minor specification deviation, non-blocking)**: `deconstruction-agent`'s `color: purple` is outside the official enumeration
+  (`blue/cyan/green/yellow/magenta/red`). This affects only UI coloring, not functionality. Strict compliance would use `magenta`.
+  This read-only audit makes no change.
 
-### 一句话总览
+### One-Sentence Summary
 
-注册名与 frontmatter 现状**与计划高度一致、无错名、无 `Agent`/`AskUserQuestion` 违例**；唯一需在实现期落实的是
-**R1 的 `webnovel-writer:<agent>` 前缀形态运行时实测** 与 **R2 中那几条「本地未证实」的工具行为以实测兜底**。
+Registration names and frontmatter are **highly consistent with the plan, with no incorrect names or `Agent`/`AskUserQuestion` violations**;
+implementation must still **runtime-test R1's `webnovel-writer:<agent>` prefix format** and **verify R2's locally undocumented tool behavior with tests**.

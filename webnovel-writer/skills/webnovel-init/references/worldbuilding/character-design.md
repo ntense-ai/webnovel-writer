@@ -1,111 +1,111 @@
-# 人物设计指南 (Character Design)
+# Character Design Guide
 
-> **核心原则**: 人物是剧情的载体。主角负责“爽”，反派负责“阻”，配角负责“捧”和“补”。
-
----
-
-## 1. 主角设计 (Protagonist)
-
-### D-F-W-N-C 五维模型
-
-1. **Desire (欲望)**: 他最想要什么？（长生？复仇？守护妹妹？回家？）
-   - 外在目标（例：成为首富）
-   - *必须足够强烈，贯穿全书。*
-2. **Flaw (缺陷)**: 他的性格缺陷是什么？（贪财？好色？傲慢？太重感情？）
-   - 性格弱点（例：过度自负、贪生怕死）
-   - *没有弱点的主角不可爱，完美的圣人令人厌烦。*
-3. **Wound (伤口)**: 过去的创伤是什么？
-   - 过去的创伤，决定了角色的底层行为逻辑
-   - 影响主角的核心决策模式
-4. **Need (需要)**: 内在成长需求是什么？
-   - 内在成长需求（例：学会信任他人）
-   - 主角真正缺少的东西
-5. **Change (变化)**: 故事结束时的心理层级跃迁
-   - 主角从开篇到结局的成长轨迹
-   - 性格/价值观的转变
-
-### 人设模板：网文经典款
-- **废柴流**: 起点低，被嘲讽，后期打脸。（适合小白文，爽感强）
-- **天才流**: 起点高，遭陷害，陨落再崛起。（适合老白文，虐主开局）
-- **苟道流**: 实力强，但极度谨慎，不出头。（适合轻松向，反套路）
-- **魔头流**: 利益至上，杀伐果断，不圣母。（适合现在的市场风向）
-
-### 代入感设计
-让读者觉得“这就是我”。
-- **身世**: 平凡（方便代入）或 极惨（引发同情）。
-- **三观**: 必须正向（至少底线要正，比如爱国、护短、孝顺），反派主角也要有原则。
+> **Core principle**: Characters carry the plot. The protagonist delivers satisfaction, antagonists create resistance, and supporting characters amplify strengths and fill gaps.
 
 ---
 
-## 2. 反派设计 (Antagonist)
+## 1. Protagonist Design
 
-### 反派的等级
-- **C 级 (脸谱怪)**: 纯粹为了送经验和嘲讽而存在。无脑，嚣张。"你敢惹我？你知道我是谁吗？"
-- **B 级 (利益冲突)**: 为了争夺资源/地位而与主角对立。智商在线，输在实力或运气。
-- **A 级 (理念之争)**: 有自己的信仰和正义，只是立场不同。令人敬佩的对手。
-- **S 级 (宿命之敌)**: 与主角互为镜像，深层羁绊。如：杀死主角父母的凶手，或者是主角失散多年的黑化兄弟。
+### The Five-Dimensional D-F-W-N-C Model
 
-### 镜像设计原则
+1. **Desire**: What do they want most: immortality, revenge, protecting a sister, or returning home?
+   - An external goal, such as becoming the richest person.
+   - *It must be strong enough to sustain the whole book.*
+2. **Flaw**: What is their character weakness: greed, lust, arrogance, or excessive attachment?
+   - A personal weakness, such as overconfidence or cowardice.
+   - *A flawless protagonist is hard to love; a perfect saint becomes tiresome.*
+3. **Wound**: What past trauma shaped them?
+   - Past trauma determines the character's underlying behavioral logic.
+   - It influences their core decision-making patterns.
+4. **Need**: What inner growth do they require?
+   - An internal need, such as learning to trust others.
+   - What the protagonist truly lacks.
+5. **Change**: The psychological shift reached by the ending.
+   - Their growth trajectory from opening to conclusion.
+   - Changes in personality or values.
 
-**The Mirror (镜像关系)**：
-- 反派不应是脸谱化的坏人，而应该是**"走入歧途的主角"**
-- 他们拥有相似的目标，但选择了完全不同的价值观或手段
-- 通过反派，映射主角可能走向的另一种命运
+### Classic Webnovel Archetypes
+- **Underdog**: Starts low, is mocked, and later proves everyone wrong. Accessible and strongly satisfying.
+- **Fallen genius**: Starts high, is framed, falls, then rises again. Suits experienced genre readers and a painful opening.
+- **Cautious survivor**: Strong but extremely careful and unwilling to stand out. Suits lighthearted, trope-subverting fiction.
+- **Ruthless antihero**: Prioritizes self-interest, acts decisively, and avoids indiscriminate mercy. Fits the market trend described by this guide.
 
-### 反派塑造技巧
-- **不要为了坏而坏**: 给他一个理由（为了复活爱人而毁灭世界）
-- **自我正义逻辑**: 反派必须有自己的正义观，在他的视角下，他的行为是合理的
-- **保持压迫感**: 反派必须比主角强（至少在前期），让主角感到恐惧和无力，这样反杀时才爽
-  - **实力威胁**：绝对的力量碾压
-  - **智力威胁**：阴谋与算计
-  - **影响力威胁**：掌握主角在意的人、名誉、社会资源
-- **智商在线**: 不要让反派犯低级错误，主角赢要赢得漂亮
-
----
-
-## 3. 女主设计 (Heroine)
-
-### 类型库
-- **青梅竹马**: 温柔、陪伴、白月光。
-- **冰山师尊/仙子**: 高冷、强大、反差萌。
-- **魔教妖女**: 古灵精怪、撩人、危险。
-- **傲娇大小姐**: 口嫌体正直、欢喜冤家。
-
-### 避免“花瓶”
-- 女主必须有自己的**高光时刻**和**剧情作用**（如：她是唯一能开启秘境的人，或者她替主角挡了一刀）。
-- 感情线要**服务于主线**，不要为了谈恋爱而拖慢升级节奏（除非是言情文）。
+### Reader Identification
+Make readers feel, “That could be me.”
+- **Background**: Ordinary for relatability, or deeply tragic for sympathy.
+- **Values**: Keep a positive moral baseline, such as loyalty to one's country, protecting loved ones, or filial devotion. Even villain protagonists need principles.
 
 ---
 
-## 4. 配角设计 (Supporting Cast)
+## 2. Antagonist Design
 
-### 黄金配角组合
-1. **死党/跟班**: 负责捧哏、收集情报、替主角吹牛。
-   - *功能*: 嘴替，借他的口说出主角有多牛。
-2. **导师/引路人**: 负责解说设定、提供庇护、最后献祭（刀子）。
-   - *功能*: 新手引导员。
-3. **搞笑担当**: 负责调节气氛，缓解紧张感。
+### Antagonist Tiers
+- **C (Caricature)**: Exists to taunt and provide easy victories. Mindless and arrogant: “Do you know who I am?”
+- **B (Conflicting interests)**: Opposes the protagonist over resources or status. Intelligent, but loses through strength or luck.
+- **A (Ideological rival)**: Has personal convictions and a sense of justice, but a different position. A worthy opponent.
+- **S (Destined enemy)**: Mirrors the protagonist and shares a deep bond, such as the murderer of their parents or a long-lost brother turned evil.
 
-### “工具人”觉醒
-即使是只有几句台词的龙套，也要给他一个**记忆点**（如：口头禅、特殊的武器、奇怪的走路姿势）。
+### The Mirror Principle
+
+**The Mirror**:
+- The antagonist should not be a flat villain but **a protagonist who took the wrong path**.
+- They share similar goals but choose radically different values or methods.
+- Through them, show another possible fate for the protagonist.
+
+### Characterization Techniques
+- **Do not make evil arbitrary**: Give it a reason, such as destroying the world to resurrect a lover.
+- **Internal justice**: The antagonist must consider their behavior justified from their own perspective.
+- **Maintain pressure**: They must be stronger than the protagonist, at least early on, inspiring fear and helplessness so the eventual reversal is satisfying.
+  - **Physical threat**: Overwhelming power.
+  - **Intellectual threat**: Schemes and manipulation.
+  - **Influence threat**: Control over loved ones, reputation, or social resources.
+- **Keep them intelligent**: Avoid elementary mistakes; the protagonist should earn an impressive victory.
 
 ---
 
-## 🛠️ 人物卡模板 (Character Sheet)
+## 3. Heroine Design
 
-在 `/webnovel-init` 生成的 `设定集/主角卡.md` 中，应包含：
+### Archetypes
+- **Childhood friend**: Gentle, enduring companionship, an idealized first love.
+- **Aloof mentor/immortal**: Cold, powerful, with appealing unexpected contrasts.
+- **Demonic-sect enchantress**: Mischievous, seductive, dangerous.
+- **Proud heiress**: Words deny what actions reveal; a bickering romantic rival.
+
+### Avoid Decorative Characters
+- Give the heroine her own **standout moments** and **plot function**, such as being the only person able to open a secret realm or taking a blow for the protagonist.
+- Romance should **serve the main plot** rather than stall progression solely for romantic scenes, except in romance-led fiction.
+
+---
+
+## 4. Supporting Cast
+
+### A Reliable Supporting Trio
+1. **Best friend/sidekick**: Banter, information gathering, and praising the protagonist.
+   - *Function*: A spokesperson whose reactions communicate the protagonist's strengths.
+2. **Mentor/guide**: Explain the setting, provide protection, and eventually make a painful sacrifice.
+   - *Function*: An onboarding guide.
+3. **Comic relief**: Adjust the mood and release tension.
+
+### Give Plot Devices Life
+Even an extra with only a few lines needs a **memorable detail**: a catchphrase, unusual weapon, or peculiar walk.
+
+---
+
+## 🛠️ Character Sheet
+
+The `设定集/主角卡.md` generated by `/webnovel-init` should include:
 
 ```markdown
-**姓名**: 林天
-**称号**: 噬神者 / 天南第一狂人
-**外貌**: 清秀少年，眼神坚毅，嘴角常带一丝冷笑
-**性格**: 
-  - 显性: 随和、幽默、有点小贪财
-  - 隐性: 极度记仇、护短、疯狂
-**核心动机**: 复活死去的妹妹
-**金手指**: 吞噬系统
-**人际关系**:
-  - 妹妹（林雨）：逆鳞，触之必死
-  - 死党（王胖子）：钱袋子
-  - 宿敌（叶良辰）：夺妻之恨（误）
+**Name**: Lin Tian
+**Titles**: God-Devourer / Southern Heaven's Foremost Madman
+**Appearance**: A handsome youth with determined eyes and a habitual faint sneer
+**Personality**:
+  - Visible: Easygoing, humorous, slightly greedy
+  - Hidden: Holds grudges fiercely, protects his own, reckless to the point of madness
+**Core motivation**: Resurrect his dead sister
+**Special advantage**: Devouring System
+**Relationships**:
+  - Sister (Lin Yu): His absolute red line; harm her and die
+  - Best friend (Fatty Wang): The financier
+  - Archrival (Ye Liangchen): Stole his wife (not really)
 ```

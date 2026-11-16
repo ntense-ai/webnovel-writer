@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 建立 `CHAPTER_COMMIT` 主链、accepted / rejected 语义与四类 projection writers，让章节事实写后回写统一经过提交对象，而不再散写到 `state / index / summary / memory`。
+**Goal:** Establish the `CHAPTER_COMMIT` mainline, accepted / rejected semantics, and four projection writers so all post-writing chapter facts pass through a commit object instead of scattered writes to `state / index / summary / memory`.
 
-**Architecture:** 在 Phase 2 的合同优先运行时之上，引入 `CHAPTER_COMMIT.json` 作为写后唯一事实入口。提交阶段先汇总 `review_result / fulfillment_result / disambiguation_result / accepted_events / deltas`，只有 `commit accepted` 才允许投影器分发到下游存储。`state_manager / memory writer / index_manager` 在本阶段重定位为投影写入器底座，而不是章节事实真源。
+**Architecture:** Build on Phase 2 contract-first runtime by introducing `CHAPTER_COMMIT.json` as the sole post-writing factual entry point. Submission first aggregates `review_result / fulfillment_result / disambiguation_result / accepted_events / deltas`; projection writers may distribute to downstream storage only when the commit is accepted. This phase repositions `state_manager / memory writer / index_manager` as projection-writing foundations rather than chapter sources of truth.
 
 **Tech Stack:** Python 3.13, Pydantic, argparse, pytest, SQLite (`index.db`), JSON commit artifacts under `.story-system/commits`
 
@@ -16,33 +16,33 @@
 
 ## Scope Split
 
-本计划只覆盖 Phase 3：
+This plan covers only Phase 3:
 
 1. `CHAPTER_COMMIT`
-2. 四类 projection writers
-3. accepted / rejected commit 语义
-4. 写后回写改为 commit 驱动
+2. Four projection writers
+3. Accepted / rejected commit semantics
+4. Commit-driven post-writing persistence
 
-明确不做：
+Explicit non-goals:
 
-- 不引入 canonical event log 全局主链
-- 不把 override ledger 扩展成完整审计账本
-- 不做旧链路降级收尾
+- Do not introduce the global canonical event-log mainline
+- Do not expand the override ledger into a complete audit ledger
+- Do not complete legacy-pipeline downgrades
 
-退出标准：
+Exit criteria:
 
-1. `PROJECT_ROOT/.story-system/commits/chapter_XXX.commit.json` 成为写后事实入口
-2. rejected commit 不写下游存储
-3. accepted commit 才触发 `state / index / summary / memory` 投影，其中 `StateProjectionWriter` 必须真实更新 `state.json`
-4. `projection_status` 可追踪每个 writer 的完成情况；写入失败只记录到对应 writer 状态，不回滚 `commit accepted/rejected` 判定
+1. `PROJECT_ROOT/.story-system/commits/chapter_XXX.commit.json` becomes the post-writing factual entry point
+2. Rejected commits do not write to downstream storage
+3. Only accepted commits trigger `state / index / summary / memory` projections; `StateProjectionWriter` must actually update `state.json`
+4. `projection_status` tracks each writer’s completion. Write failures are recorded only in that writer’s status and do not reverse the accepted/rejected commit decision
 
-文档更新继续追加到已有 `Story System` 段落，不重写 README 总体结构。
+Append documentation updates to existing `Story System` sections without restructuring the README.
 
 ---
 
 ## File Structure
 
-### 要创建的文件
+### Files to Create
 
 - `webnovel-writer/scripts/chapter_commit.py`
 - `webnovel-writer/scripts/data_modules/story_commit_schema.py`
@@ -56,7 +56,7 @@
 - `webnovel-writer/scripts/data_modules/tests/test_projection_writers.py`
 - `docs/architecture/story-system-phase3.md`
 
-### 要修改的文件
+### Files to Modify
 
 - `webnovel-writer/scripts/data_modules/story_contracts.py`
 - `webnovel-writer/scripts/data_modules/webnovel.py`
@@ -73,14 +73,14 @@
 
 ---
 
-## Task 1: 定义 `CHAPTER_COMMIT` schema 与落盘路径
+## Task 1: Define the `CHAPTER_COMMIT` Schema and Persistence Path
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/story_commit_schema.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_story_commit_schema.py`
 - Modify: `webnovel-writer/scripts/data_modules/story_contracts.py`
 
-- [ ] **Step 1: 先写 schema 测试**
+- [ ] **Step 1: Write schema tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_story_commit_schema.py
@@ -107,13 +107,13 @@ def test_chapter_commit_accepts_required_sections():
     assert model.meta["status"] == "accepted"
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_commit_schema.py -q --no-cov`
 
 Expected: `ModuleNotFoundError: No module named 'data_modules.story_commit_schema'`
 
-- [ ] **Step 3: 实现 schema 与 commit 路径**
+- [ ] **Step 3: Implement the schema and commit paths**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_commit_schema.py
@@ -147,13 +147,13 @@ def commit_json(self, chapter: int) -> Path:
     return self.commits_dir / f"chapter_{chapter:03d}.commit.json"
 ```
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_commit_schema.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/story_commit_schema.py \
@@ -164,14 +164,14 @@ git commit -m "feat: add chapter commit schema and paths"
 
 ---
 
-## Task 2: 实现 `chapter_commit_service` 与提交校验
+## Task 2: Implement `chapter_commit_service` and Commit Validation
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py`
 - Modify: `webnovel-writer/scripts/review_pipeline.py`
 
-- [ ] **Step 1: 先写提交通过/阻断测试**
+- [ ] **Step 1: Write accepted/blocked commit tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py
@@ -208,13 +208,13 @@ def test_commit_service_accepts_when_all_checks_pass(tmp_path):
     assert payload["outline_snapshot"]["covered_nodes"] == ["发现陷阱"]
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py -q --no-cov`
 
 Expected: `ModuleNotFoundError: No module named 'data_modules.chapter_commit_service'`
 
-- [ ] **Step 3: 实现提交服务**
+- [ ] **Step 3: Implement the commit service**
 
 ```python
 # webnovel-writer/scripts/data_modules/chapter_commit_service.py
@@ -293,27 +293,27 @@ class ChapterCommitService:
         return payload
 ```
 
-这里补一条 Phase 3 / Phase 4 的职责协议，后续实现必须遵守：
+Add the following Phase 3 / Phase 4 responsibility agreement, which subsequent implementation must follow:
 
-- `ChapterCommitService.apply_projections()` 始终是唯一调度入口
-- Phase 4 引入的 `EventProjectionRouter` 只负责判定“哪些 writer 应被激活”
-- `EventProjectionRouter` **不单独再跑一轮投影**，避免 `state_deltas` 与 `accepted_events` 双重落库
+- `ChapterCommitService.apply_projections()` remains the sole orchestration entry point
+- The Phase 4 `EventProjectionRouter` only decides which writers should be activated
+- `EventProjectionRouter` **does not run another independent projection pass**, avoiding duplicate persistence of `state_deltas` and `accepted_events`
 
-`review_pipeline.py` 在本 Task 必须补一条明确接线：
+This task must explicitly wire `review_pipeline.py` as follows:
 
-- 汇总 `review_result / fulfillment_result / disambiguation_result / extraction_result`
-- 调 `ChapterCommitService.build_commit()`
-- 先 `persist_commit()`，再依据 `payload["meta"]["status"]` 决定是否进入投影阶段
+- Aggregate `review_result / fulfillment_result / disambiguation_result / extraction_result`
+- Call `ChapterCommitService.build_commit()`
+- Call `persist_commit()` first, then use `payload["meta"]["status"]` to decide whether to enter projection
 
-也就是说，`review_pipeline.py` 不再只是“被列进修改文件”，而是 Phase 3 写后主链真正的调用入口。
+Thus `review_pipeline.py` is not merely listed among modified files; it is the actual invocation entry point for the Phase 3 post-writing mainline.
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/chapter_commit_service.py \
@@ -324,7 +324,7 @@ git commit -m "feat: add chapter commit service and status semantics"
 
 ---
 
-## Task 3: 落地四类 projection writers
+## Task 3: Implement Four Projection Writers
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/state_projection_writer.py`
@@ -336,7 +336,7 @@ git commit -m "feat: add chapter commit service and status semantics"
 - Modify: `webnovel-writer/scripts/data_modules/state_manager.py`
 - Modify: `webnovel-writer/scripts/data_modules/memory/writer.py`
 
-- [ ] **Step 1: 先写 accepted / rejected 投影测试**
+- [ ] **Step 1: Write accepted / rejected projection tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_projection_writers.py
@@ -383,13 +383,13 @@ def test_accepted_commit_updates_state_json_end_to_end(tmp_path):
     assert payload["entity_state"]["x"]["realm"] == "斗者"
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_projection_writers.py -q --no-cov`
 
 Expected: `ModuleNotFoundError` for projection writer modules
 
-- [ ] **Step 3: 实现四类 writer**
+- [ ] **Step 3: Implement the four writers**
 
 ```python
 # webnovel-writer/scripts/data_modules/state_projection_writer.py
@@ -420,7 +420,7 @@ class StateProjectionWriter:
         return {"applied": applied_count > 0, "writer": "state", "applied_count": applied_count}
 ```
 
-其他三个 writer 在 Phase 3 可以先保持“最小投影”，但**不能是 no-op stub**，至少要薄适配到现有底座：
+The other three writers may initially provide minimal projections in Phase 3, but **must not be no-op stubs**. At minimum, adapt them thinly to the existing foundations:
 
 ```python
 class IndexProjectionWriter:
@@ -447,20 +447,20 @@ class MemoryProjectionWriter:
         return MemoryWriter(self.project_root).apply_commit_projection(commit_payload)
 ```
 
-这里的交付要求写死：
+The delivery requirements are fixed:
 
-- `StateProjectionWriter` 必须真实落地
-- `Index / Summary / Memory` 允许是薄适配，但必须调用真实底座或真实文件写入
-- 如果仓库当前不存在 `IndexManager.apply_entity_delta()`、`append_summary_projection()`、`MemoryWriter.apply_commit_projection()`，就在本 Task 一并补最小适配器骨架；函数名可调整，但 writer 层对外协议不变
-- `projection_status` 记录 `"done"` / `"skipped"` / `"failed:..."`，不能一律回 `"pending"`
+- `StateProjectionWriter` must perform actual persistence
+- `Index / Summary / Memory` may be thin adapters, but must call real foundations or perform actual file writes
+- If `IndexManager.apply_entity_delta()`, `append_summary_projection()`, or `MemoryWriter.apply_commit_projection()` do not yet exist, add minimal adapter scaffolding in this task. Function names may change, but the public writer-layer protocol must remain unchanged
+- `projection_status` records `"done"` / `"skipped"` / `"failed:..."`; it must not always return `"pending"`
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_projection_writers.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/state_projection_writer.py \
@@ -475,7 +475,7 @@ git commit -m "feat: add commit-driven projection writers"
 
 ---
 
-## Task 4: CLI / Skill 接入、文档与验证
+## Task 4: CLI / Skill Integration, Documentation, and Validation
 
 **Files:**
 - Create: `webnovel-writer/scripts/chapter_commit.py`
@@ -490,7 +490,7 @@ git commit -m "feat: add commit-driven projection writers"
 - Modify: `docs/guides/commands.md`
 - Modify: `docs/superpowers/README.md`
 
-- [ ] **Step 1: 增加统一 CLI 转发测试**
+- [ ] **Step 1: Add unified CLI forwarding tests**
 
 ```python
 def test_webnovel_commit_forwards(monkeypatch, tmp_path):
@@ -548,9 +548,9 @@ def test_chapter_commit_cli_builds_and_persists_commit(tmp_path, monkeypatch):
     assert (tmp_path / ".story-system" / "commits" / "chapter_003.commit.json").is_file()
 ```
 
-- [ ] **Step 2: 接入 CLI 与技能**
+- [ ] **Step 2: Integrate CLI and skills**
 
-在 `webnovel.py` 增加：
+Add to `webnovel.py`:
 
 ```python
 # webnovel-writer/scripts/chapter_commit.py
@@ -586,7 +586,7 @@ p_commit = sub.add_parser("chapter-commit", help="转发到 chapter_commit.py")
 p_commit.add_argument("args", nargs=argparse.REMAINDER)
 ```
 
-在 `skills/webnovel-write/SKILL.md` 将原先“写完直接 state / index / summaries / memory 回写”替换为：
+In `skills/webnovel-write/SKILL.md`, replace direct post-writing state / index / summaries / memory persistence with:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
@@ -597,13 +597,13 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
   --extraction-result "{extraction_json}"
 ```
 
-同时在文档里明确一个运行约束：
+Also state this operational constraint explicitly in the documentation:
 
-- `chapter_commit.py` 是独立人工/CLI 入口
-- `review_pipeline.py` 是 skill 主流程中的集成入口
-- 同一次写后流程只能走其中一个入口，禁止 `review_pipeline.py` 已提交后再补跑 `chapter_commit.py`
+- `chapter_commit.py` is the standalone manual/CLI entry point
+- `review_pipeline.py` is the integrated entry point in the main skill workflow
+- Each post-writing workflow may use only one entry point. Do not run `chapter_commit.py` after `review_pipeline.py` has already committed
 
-- [ ] **Step 3: 新建 Phase 3 文档并跑回归**
+- [ ] **Step 3: Create Phase 3 documentation and run regression tests**
 
 Run:
 
@@ -617,9 +617,9 @@ python -m pytest \
   -q --no-cov
 ```
 
-Expected: 全部通过
+Expected: All pass
 
-- [ ] **Step 4: 最终提交**
+- [ ] **Step 4: Final commit**
 
 ```bash
 git add webnovel-writer/scripts/chapter_commit.py \
@@ -640,30 +640,30 @@ git commit -m "docs: document story system phase3 chapter commit chain"
 
 ## Spec Coverage Check
 
-- `13.4 Phase 3：章节提交主链`
+- `13.4 Phase 3: Chapter commit mainline`
   - `CHAPTER_COMMIT`：Task 1 / Task 2
-  - 四类 projection writers：Task 3
-  - accepted / rejected 语义：Task 2 / Task 3
-  - 写后回写改为 commit 驱动：Task 3 / Task 4
+  - Four projection writers: Task 3
+  - Accepted / rejected semantics: Task 2 / Task 3
+  - Commit-driven post-writing persistence: Task 3 / Task 4
 
 - `9.2 / 9.3 / 9.5`
-  - 最小结构、提交流程、失败语义：Task 1 / Task 2
+  - Minimal structure, commit workflow, and failure semantics: Task 1 / Task 2
 
 - `11.2 / 11.3`
-  - 履约 / missed nodes 阻断：Task 2
+  - Fulfillment / missed-node blocking: Task 2
 
 ---
 
 ## Placeholder Scan
 
-- 没有使用 `TODO / TBD`
-- 没有把 projection writer 写成“后续补齐”
-- 没有提前把 Phase 4 的 canonical event log 混进本阶段
+- No `TODO / TBD` placeholders
+- Projection writers are not deferred for later completion
+- No premature introduction of the Phase 4 canonical event log
 
 ---
 
 ## Next Plan
 
-Phase 3 完成后进入：
+After completing Phase 3, proceed to:
 
 1. `Phase 4 Event Log And Override Ledger`

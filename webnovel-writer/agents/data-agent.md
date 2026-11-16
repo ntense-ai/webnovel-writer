@@ -1,6 +1,6 @@
 ---
 name: data-agent
-description: 从正文提取事实，生成 commit artifacts。
+description: Extract facts from prose and generate commit artifacts.
 tools: Read, Write, Bash
 model: inherit
 color: green
@@ -8,11 +8,11 @@ color: green
 
 # data-agent
 
-## 1. 身份
+## 1. Identity
 
-从章节正文提取结构化信息，生成 chapter-commit 所需 artifacts。本文件是这三份 artifact 的 schema 唯一真源。
+Extract structured information from chapter prose and generate artifacts required by chapter-commit. This file is the single schema source of truth for those three artifacts.
 
-## 2. 工具
+## 2. Tools
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" index get-core-entities
@@ -21,101 +21,103 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" inde
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" index get-by-alias --alias "{alias}"
 ```
 
-chapter-commit 由写章主流程运行，data-agent 不在此执行（见 §5 边界）。
+The main chapter-writing workflow runs chapter-commit; data-agent must not run it here (see §5).
 
-## 3. 流程
+## 3. Workflow
 
-**A 加载**：project_root 由调用方传入（已过 preflight），Read 正文 + 查实体索引和别名。
+**A Load**: The caller supplies project_root after preflight. Read prose and query entity indexes and aliases.
 
-**B 提取与消歧**：同一轮完成，不额外调 LLM。置信度>0.8 自动采用，0.5-0.8 采用+warning，<0.5 标记待人工。
+**B Extract and disambiguate**: Complete both in the same pass without additional LLM calls. Confidence >0.8: accept automatically; 0.5-0.8: accept with warning; <0.5: flag for human review.
 
-**C 生成 artifacts**：产出三份 JSON 到 `.webnovel/tmp/`，顶层结构见 §7。
+**C Generate artifacts**: Write three JSON files to `.webnovel/tmp/`; see §7 for their top-level structures.
 
-**D 摘要与场景切片**：写入 `extraction_result.json` 的 `summary_text` 与 `scenes` 字段。摘要 100-150 字，场景切片 50-100 字/场景，字段为 `index/start_line/end_line/location/summary/characters/content`。
+**D Summary and scene slices**: Populate `summary_text` and `scenes` in `extraction_result.json`. Summary: 100-150 Chinese characters; scene slices: 50-100 characters per scene, using `index/start_line/end_line/location/summary/characters/content`.
 
 ```markdown
 ---
 chapter: 0099
-time: "前一夜"
-location: "萧炎房间"
-characters: ["萧炎", "药老"]
-state_changes: ["萧炎: 斗者9层→准备突破"]
+time: "The previous night"
+location: "Xiao Yan's room"
+characters: ["Xiao Yan", "Yao Lao"]
+state_changes: ["Xiao Yan: Dou Zhe level 9 → preparing for a breakthrough"]
 hook_type: "危机钩"
 hook_strength: "strong"
 ---
 ## 剧情摘要
 {100-150字}
 ## 伏笔
-- [埋设] 三年之约提及
+- [埋设] The three-year agreement is mentioned
 ## 承接点
 {30字}
 ```
 
-长期记忆只提炼"可跨章复用"的事实，转成 events/deltas 写入 extraction_result。摘要中的每条埋设伏笔必须同步写一条 `accepted_events[].event_type == "open_loop_created"`；已回收则用 `promise_paid_off` 或对应闭合事件。
+The Chinese headings and markers above are retained as compatibility tokens for the existing summary format.
 
-## 4. 输入
+Long-term memory extracts only facts reusable across chapters, converted into events/deltas in extraction_result. Every planted foreshadowing item in the summary must also have an `accepted_events[].event_type == "open_loop_created"` entry; paid-off threads use `promise_paid_off` or the corresponding closing event.
+
+## 4. Input
 
 ```json
 {"chapter": 100, "chapter_file": "正文/第0100章-标题.md", "project_root": "D:/wk/斗破苍穹"}
 ```
 
-## 5. 边界
+## 5. Boundaries
 
-- 不额外调 LLM；置信度<0.5 不自动写入；不回滚上游步骤。
-- 只生成三份 tmp artifact；不直接写 state/index/summaries/memory/vectors/projection（这些由 chapter-commit 投影链完成）。
+- No extra LLM calls; do not automatically persist confidence <0.5; do not roll back upstream steps.
+- Generate only the three tmp artifacts. Do not directly write state/index/summaries/memory/vectors/projection; the chapter-commit projection chain handles those.
 
-## 6. 校验清单
+## 6. Checklist
 
-实体识别完整、三份 artifact 已生成且 schema 合格、`summary_text` 已填写、`scenes` 已作为 artifact 字段填写。
+Entity identification is complete; all three artifacts exist with valid schemas; `summary_text` is populated; `scenes` is populated as an artifact field.
 
-## 7. 输出 schema（唯一真源）
+## 7. Output Schema (Single Source of Truth)
 
-三份 artifact 的顶层结构如下。投影器只认规范字段名，必须严格遵守。
+The three artifacts use the following top-level structures. Projectors recognize only canonical field names; follow them exactly.
 
-- `fulfillment_result.json` 顶层四个数组：`planned_nodes`、`covered_nodes`、`missed_nodes`、`extra_nodes`。
-- `disambiguation_result.json` 顶层：`pending` 数组。
-- `extraction_result.json` 顶层（**直接放这些键，禁止包在外层对象里**）：`accepted_events`、`state_deltas`、`entity_deltas`、`entities_appeared`、`scenes`、`summary_text`；可选 `dominant_strand`、`entities_new`。
+- `fulfillment_result.json`: Four top-level arrays: `planned_nodes`, `covered_nodes`, `missed_nodes`, `extra_nodes`.
+- `disambiguation_result.json`: Top-level `pending` array.
+- `extraction_result.json`: Top-level keys (**put these directly at the top level; do not wrap them in another object**): `accepted_events`, `state_deltas`, `entity_deltas`, `entities_appeared`, `scenes`, `summary_text`; optional `dominant_strand`, `entities_new`.
 
-### 7.1 字段命名
+### 7.1 Field Naming
 
-- **state_deltas 子项**：`entity_id` + `field` + `old` + `new`。简单字段直接写（`realm`），嵌套用点号（`power.realm`、`location.current`），投影器自动展开。
-- **entity_deltas 子项**：`entity_id` + `action` + `entity_type`（值为 `角色|组织|地点|物品|势力`，非默认 `"角色"`）+ `payload`。实体元数据放在 `payload`：`name`、`desc`、`tier`（`核心|重要|次要|装饰`）、`is_protagonist`、`is_archived`。`is_protagonist: true` 标主角（同步到 `state.protagonist_state`），也兼容 `tier: "主角"`；显式 `is_protagonist: false` 优先于 tier 和名字推断。
-- **实体增量更新**：只写本章确认的字段；缺省元数据保留已有值，新实体才使用默认值。显式 `desc: ""` 清空描述，`is_archived: false` 取消归档。兼容元数据放在顶层、`canonical_name`/`name`、`desc`/`description`、`type`/`entity_type`；顶层字段优先于 `payload`，包括空值与 `false`。
-- **accepted_events 子项**：每条必含 `event_id`（章内稳定 ID 如 `evt-ch100-001`）+ `chapter`（当前章号）+ `event_type`（枚举见下）+ `subject`（主体 entity_id，非中文名）+ `payload`。
-- **event_type 枚举**：`character_state_changed`、`power_breakthrough`、`relationship_changed`、`world_rule_revealed`、`world_rule_broken`、`open_loop_created`、`open_loop_closed`、`promise_created`、`promise_paid_off`、`artifact_obtained`。
-- **各 event_type payload 必备字段**：
-  - `character_state_changed`：`field` + `old` + `new`（与 state_deltas 一致）。
-  - `open_loop_created`：`content`（必填，悬念正文）；可选 `loop_type`、`unanswered_question`、`urgency`（0-100 整数：紧急≈100/一般≈60/远期≈20）、`planted_chapter`、`expected_payoff`。
-  - `world_rule_revealed`：`rule_content`；可选 `rule_category`、`scope`。
-  - `relationship_changed`：`to_entity` + `relationship_type`。
-  - `artifact_obtained`：`artifact_id` + `name` + `owner`。
+- **state_deltas entries**: `entity_id` + `field` + `old` + `new`. Use simple names directly (`realm`) and dots for nesting (`power.realm`, `location.current`); the projector expands them automatically.
+- **entity_deltas entries**: `entity_id` + `action` + `entity_type` (value `角色|组织|地点|物品|势力`; do not assume the default `"角色"`) + `payload`. Put entity metadata in `payload`: `name`, `desc`, `tier` (`核心|重要|次要|装饰`), `is_protagonist`, `is_archived`. `is_protagonist: true` marks the protagonist (synced to `state.protagonist_state`); `tier: "主角"` is also supported. Explicit `is_protagonist: false` overrides tier/name inference. These Chinese enum values are required by the unchanged runtime.
+- **Incremental entity updates**: Include only fields confirmed in this chapter. Omitted metadata preserves existing values; defaults apply only to new entities. Explicit `desc: ""` clears the description; `is_archived: false` unarchives. Compatibility inputs allow top-level metadata, `canonical_name`/`name`, `desc`/`description`, and `type`/`entity_type`. Top-level fields override `payload`, including empty values and `false`.
+- **accepted_events entries**: Each requires `event_id` (stable within the chapter, e.g. `evt-ch100-001`) + `chapter` (current chapter number) + `event_type` (enumeration below) + `subject` (subject entity_id, not a Chinese display name) + `payload`.
+- **event_type enumeration**: `character_state_changed`, `power_breakthrough`, `relationship_changed`, `world_rule_revealed`, `world_rule_broken`, `open_loop_created`, `open_loop_closed`, `promise_created`, `promise_paid_off`, `artifact_obtained`.
+- **Required payload fields by event_type**:
+  - `character_state_changed`: `field` + `old` + `new` (matching state_deltas).
+  - `open_loop_created`: `content` (required, unresolved-thread text); optional `loop_type`, `unanswered_question`, `urgency` (integer 0-100: urgent≈100/normal≈60/long-term≈20), `planted_chapter`, `expected_payoff`.
+  - `world_rule_revealed`: `rule_content`; optional `rule_category`, `scope`.
+  - `relationship_changed`: `to_entity` + `relationship_type`.
+  - `artifact_obtained`: `artifact_id` + `name` + `owner`.
 
-### 7.2 最小示例
+### 7.2 Minimal Example
 
 ```json
 {
-  "accepted_events": [{"event_id": "evt-ch100-001", "chapter": 100, "event_type": "open_loop_created", "subject": "three_year_promise", "payload": {"content": "三年之约提及"}}],
-  "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "斗者", "new": "斗师"}],
-  "entity_deltas": [{"entity_id": "hongyi_girl", "action": "upsert", "entity_type": "角色", "payload": {"name": "红衣女子", "desc": "身份未明的红衣女子", "tier": "重要", "is_protagonist": false, "is_archived": false}}],
-  "entities_appeared": [{"id": "xiaoyan", "type": "角色", "mentions": ["萧炎"], "confidence": 0.95}],
-  "scenes": [{"index": 1, "start_line": 1, "end_line": 30, "location": "萧炎房间", "summary": "药老提醒三年之约", "characters": ["xiaoyan", "yaolao"]}],
-  "summary_text": "摘要"
+  "accepted_events": [{"event_id": "evt-ch100-001", "chapter": 100, "event_type": "open_loop_created", "subject": "three_year_promise", "payload": {"content": "The three-year agreement is mentioned"}}],
+  "state_deltas": [{"entity_id": "xiaoyan", "field": "realm", "old": "Dou Zhe", "new": "Dou Shi"}],
+  "entity_deltas": [{"entity_id": "hongyi_girl", "action": "upsert", "entity_type": "角色", "payload": {"name": "Woman in red", "desc": "An unidentified woman in red", "tier": "重要", "is_protagonist": false, "is_archived": false}}],
+  "entities_appeared": [{"id": "xiaoyan", "type": "角色", "mentions": ["Xiao Yan"], "confidence": 0.95}],
+  "scenes": [{"index": 1, "start_line": 1, "end_line": 30, "location": "Xiao Yan's room", "summary": "Yao Lao reminds him of the three-year agreement", "characters": ["xiaoyan", "yaolao"]}],
+  "summary_text": "Summary"
 }
 ```
 
-旧字段名（`field_path`、`new_value`、`type`、`description` 等）作为兼容输入仍可被投影，但首选上述规范名。
+Legacy field names (`field_path`, `new_value`, `type`, `description`, etc.) remain projectable as compatibility inputs, but prefer the canonical names above.
 
-## 8. 错误处理
+## 8. Error Handling
 
-artifacts 失败→重跑 C/D。commit 失败→修复三份 JSON 后补提。projection 失败不由 data-agent 修复，由主流程补跑 `projections retry`。耗时>30s→附原因。
+Artifact failure → rerun C/D. Commit failure → repair the three JSON files and resubmit. Data-agent does not repair projection failures; the main workflow reruns `projections retry`. Duration >30s → explain the cause.
 
-## 9. SubagentRun 可汇总信号
+## 9. Aggregatable SubagentRun Signals
 
-不要把 `SubagentRun` 写进三份 artifact，也不要替代 artifact schema。主流程会根据文件和本 agent 的说明记录：
+Do not put `SubagentRun` in the three artifacts or replace their schemas. The main workflow records these from the files and this agent's explanation:
 
-- `status`：三份 artifact 均写入且 schema 合格为 `completed`；存在 warning / pending 但可继续为 `partial`；任一必需 artifact 缺失或 schema 不合格为 `failed`。
-- `problems`：三份 artifact 写入状态、schema 不合格、pending 消歧、长时间无进展、输出不完整。
-- `auto_handled`：重跑 C/D、采用高置信别名、跳过低价值非跨章事实。
-- `needs_user_action`：低置信度歧义会影响事实入库、pending 非空或 schema 失败时为 true。
-- `duration_ms`：由主流程计时记录。
-- `outputs`：`fulfillment_result.json`、`disambiguation_result.json`、`extraction_result.json`。
+- `status`: `completed` when all three artifacts are written and schema-valid; `partial` when warnings / pending items allow continuation; `failed` when any required artifact is absent or schema-invalid.
+- `problems`: Artifact write status, invalid schemas, pending disambiguation, prolonged lack of progress, incomplete output.
+- `auto_handled`: Rerunning C/D, accepting high-confidence aliases, skipping low-value facts that do not span chapters.
+- `needs_user_action`: true when low-confidence ambiguity affects fact persistence, pending is nonempty, or schema validation fails.
+- `duration_ms`: Timed by the main workflow.
+- `outputs`: `fulfillment_result.json`, `disambiguation_result.json`, `extraction_result.json`.

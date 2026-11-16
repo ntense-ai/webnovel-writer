@@ -1,25 +1,25 @@
-## 产品线与目标分支
+## Product Line and Target Branch
 
 - [ ] v6 → master
 - [ ] v8 / DSH Scriptor → v8
 
-精确版本或提交：
+Exact version or commit:
 
-## 问题与最终行为
+## Problem and Resulting Behavior
 
-<!-- 说明触发条件、修改前后行为。关联 Issue（如有）： -->
+<!-- Describe trigger conditions and behavior before/after the change. Link related issues, if any. -->
 
-## 验证
+## Verification
 
-<!-- 列出实际执行的检查和结果；UI 变化提供合成数据截图。未运行的检查说明原因。 -->
+<!-- List checks actually run and their results. For UI changes, provide screenshots using synthetic data. Explain any checks not run. -->
 
-## 兼容性与数据影响
+## Compatibility and Data Impact
 
-<!-- 书仓格式、定稿、权限、依赖/许可证、模型费用或迁移变化；无影响请写明。 -->
+<!-- Changes to book repository formats, finalized drafts, permissions, dependencies/licenses, model costs, or migration. Explicitly state if there is no impact. -->
 
-## 提交检查
+## Submission Checklist
 
-- [ ] 已更新必要文档与面向用户的变更说明。
-- [ ] 已保留贡献来源及第三方声明。
-- [ ] 不含 API key、启动 token、私人作品和完整会话。
-- [ ] 行为改动有有效回归验证，目标分支正确。
+- [ ] Required documentation and user-facing change notes are updated.
+- [ ] Contribution attribution and third-party notices are preserved.
+- [ ] No API keys, startup tokens, private writing, or complete conversations are included.
+- [ ] Behavior changes have effective regression verification, and the target branch is correct.

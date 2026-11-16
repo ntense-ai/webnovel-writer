@@ -1,148 +1,148 @@
-# AI 写作癖好全景图（网文场景）
+# A Comprehensive Map of AI Writing Habits (Webnovels)
 
-> 调研日期：2026-04-03
-> 来源：现有 polish-guide.md 词库 + 网络调研 + 学术检测研究
-> 用途：Phase 7 anti-AI 加强的输入材料
-
----
-
-## 一、词汇层（已有 200+ 词库，需补充的新增项）
-
-### 现有覆盖（polish-guide.md 9 类 200+ 词）
-A. 总结归纳词 / B. 枚举模板词 / C. 书面学术腔 / D. 逻辑连接滥用词 / E. 情绪直述词 / F. 动作套话 / G. 环境套话 / H. 叙事填充词 / I. 抽象空泛词 / J. 机械开场/收尾词
-
-### 需补充的新类别
-
-#### K. 神态模板词（网文特有高频）
-眸中闪过、眼底掠过、瞳孔微缩、嘴角微微上扬、嘴角勾起一抹弧度、眉头微蹙、眉心微皱、面色微变、神色一凝、目光微闪、眼神微动、唇角微翘、脸色微沉、面色如常、不露声色。
-
-#### L. 万能副词（AI 的标志性修饰）
-缓缓、淡淡、微微、轻轻、静静、默默、悄悄、慢慢、渐渐、暗暗。
-
-> 特征：AI 几乎在所有动作前都加这些副词，形成"副词+动词"的固定模式。如"缓缓开口""淡淡说道""微微点头""轻轻叹息"。
-
-#### M. 内心活动套话
-心中暗道、心中一凛、心中暗自思量、心下了然、心中不由得、心底涌起一股、心中升起一丝、暗自盘算、暗自揣测、心中有了计较。
-
-#### N. 转折/递进模板（中文网文版）
-话虽如此、不过、只是、然而就在这时、正当……之际、就在此刻、然而下一刻、可惜的是、殊不知。
+> Research date: 2026-04-03
+> Sources: existing polish-guide.md vocabulary + web research + academic detection research
+> Purpose: input material for Phase 7 anti-AI improvements
 
 ---
 
-## 二、句式层（超越单词，到句群结构）
+## I. Vocabulary (Additions to the Existing 200+ Term List)
 
-### 已有覆盖
-- 三段式枚举（首先/其次/最后）
-- 连续同构句（≥3 句主谓宾一致）
-- 清单化叙事
+### Existing Coverage (polish-guide.md: 9 Categories, 200+ Terms)
+A. Summary/conclusion terms / B. Enumeration templates / C. Formal academic diction / D. Overused logical connectors / E. Direct emotion labels / F. Stock action phrases / G. Stock environmental descriptions / H. Narrative filler / I. Vague abstractions / J. Mechanical openings/endings
 
-### 需补充
+### Categories to Add
 
-| 编号 | 癖好名 | 表现 | 频率 |
-|------|--------|------|------|
-| S1 | **起因→经过→结果→感悟 四段式** | 每段/每节都走完整叙事闭环，无留白 | 极高 |
-| S2 | **情绪三连** | "他感到X，同时又有些Y，内心深处还有一丝Z" | 高 |
-| S3 | **对仗排比** | "XX是XX的XX，YY是YY的YY"连续 2-3 句 | 高 |
-| S4 | **总结式收尾** | 每段结尾都有一句"由此可见/这意味着/他终于明白了" | 高 |
-| S5 | **双重否定强调** | "并非不知道""不是没有想过""不能不承认" | 中 |
-| S6 | **先抑后扬标准弧** | 每个冲突都在同一段内解决：困难→灵机一动→轻松化解 | 高 |
-| S7 | **同义反复** | 同一信息用不同句式说 2-3 遍，填充字数 | 高 |
-| S8 | **万能过渡句** | "时间飞逝，转眼间……" "不知不觉，XX已经过去了" | 高 |
-| S9 | **机械递进** | "更重要的是""更令人惊讶的是""最让他在意的是" | 中 |
-| S10 | **解释性插入** | 叙事中途突然插入百科式解释（如力量体系说明） | 中 |
+#### K. Stock Facial Expressions (Especially Frequent in Webnovels)
+A flash in the eyes; something flickering across the gaze; pupils contracting slightly; lips rising slightly; the corners of the mouth curving; brows knitting slightly; a faint furrow between the brows; a slight change in complexion; an expression freezing; a flickering gaze; eyes shifting slightly; lips curling slightly; a darkening face; an unchanged expression; revealing nothing.
 
----
+#### L. All-Purpose Adverbs (Signature AI Modifiers)
+Slowly, faintly, slightly, gently, quietly, silently, stealthily, gradually, little by little, secretly.
 
-## 三、叙事结构层（章节级 AI 味）
+> Pattern: AI adds these before almost every action, forming a fixed “adverb + verb” structure: “slowly began to speak,” “said faintly,” “nodded slightly,” “sighed gently.”
 
-| 编号 | 癖好名 | 表现 |
-|------|--------|------|
-| N1 | **匀速叙事** | 缺乏节奏变化，每段信息密度相近，无快慢之分 |
-| N2 | **全知全能视角滑移** | 明明是限制视角，却突然展示其他角色的内心想法 |
-| N3 | **戏剧性反讽提示** | "他不知道的是……""殊不知……""如果他知道未来会发生什么……" |
-| N4 | **每章完整闭环** | 每章都有独立的"提出问题→解决问题"弧线，缺乏跨章悬念 |
-| N5 | **均匀分配戏份** | 每个出场角色都得到差不多的描写篇幅，无主次之分 |
-| N6 | **安全着陆** | 冲突总在章末被完美解决，没有遗留问题和不安感 |
-| N7 | **顺序事件流** | 严格按时间线叙事，不用闪回、倒叙、并行叙事 |
-| N8 | **展示-解释二连** | 先用动作展示，紧接着用一句话解释刚才的动作含义 |
-| N9 | **正面结果偏好** | 角色决策几乎总是正确的，缺乏真正的失败和代价 |
-| N10 | **对称冲突** | 每个挑战都与角色当前能力刚好匹配，无碾压也无绝望 |
+#### M. Stock Inner-Thought Phrases
+Thought to himself; a chill ran through his heart; silently considered; understood inwardly; could not help feeling; a surge rose within; a trace of feeling arose; secretly calculated; privately speculated; formed a plan in his mind.
+
+#### N. Transition/Escalation Templates (Chinese Webnovel Style)
+That said; however; only; yet at that very moment; just as…; at this instant; but in the next moment; unfortunately; little did they know.
 
 ---
 
-## 四、情感表达层（AI 最薄弱的领域）
+## II. Sentence Patterns (Beyond Words to Sentence Groups)
 
-| 编号 | 癖好名 | 表现 | 替代方向 |
-|------|--------|------|----------|
-| E1 | **情绪标签化** | "他感到愤怒""她非常紧张" | 用生理反应+行为暗示 |
-| E2 | **情绪即时切换** | 上一句愤怒，下一句就平静了 | 情绪需要过渡和残留 |
-| E3 | **全员理性人** | 角色在极端情境下仍然冷静分析 | 允许非理性反应 |
-| E4 | **情绪通胀** | 每个小事件都"震惊""难以置信" | 区分情绪等级 |
-| E5 | **观察者视角** | 写"他看到她哭了"而非沉浸式写哭的感受 | 减少距离感 |
-| E6 | **情绪结论前置** | 先说"他很伤心"再写行为 | 行为在前，读者自己判断 |
-| E7 | **千人一面的反应** | 所有角色面对惊讶都是"瞳孔微缩" | 个性化反应模式 |
-| E8 | **感悟式内心独白** | 角色动不动就"他终于明白了一个道理" | 减少顿悟，增加迷惑 |
-| E9 | **情感说明书** | 对白像在解释自己的情感"我之所以生气是因为……" | 潜台词和言行不一 |
-| E10 | **治愈式结尾** | 章末角色总能想通、释然、找到希望 | 允许不安和未解决 |
+### Existing Coverage
+- Three-part enumeration (first / second / finally)
+- Consecutive identical structures (at least three sentences with the same subject–verb–object pattern)
+- Checklist-style narration
 
----
+### Additions Needed
 
-## 五、对话层
-
-| 编号 | 癖好名 | 表现 |
-|------|--------|------|
-| D1 | **信息宣讲式对白** | 对话用来解释背景，而非推进冲突 |
-| D2 | **全员书面语** | 所有角色说话都是标准书面中文，无口语特征 |
-| D3 | **轮流发言** | A说→B说→A说→B说，严格交替，无打断 |
-| D4 | **回应过于完整** | 每句对话都完整回应上一句，无顾左右而言他 |
-| D5 | **说话带总结** | 角色动不动就"总之""也就是说" |
-| D6 | **万能 said tag** | "XX说道""XX淡淡道""XX沉声道"，缺乏动作替代 |
-| D7 | **对白后解释** | 说完一句话后，叙述者解释这句话的含义 |
-| D8 | **情绪对白标注** | "他愤怒地说""她伤心地回应" |
-| D9 | **无效客套** | 角色之间过多"你还好吗""小心点"等无信息量对话 |
-| D10 | **独白替代对话** | 需要两人互动的场景，变成一人长篇独白 |
+| ID | Habit | Manifestation | Frequency |
+|----|-------|---------------|-----------|
+| S1 | **Cause → process → result → realization** | Every paragraph/section completes the full narrative loop, leaving nothing implicit | Extremely high |
+| S2 | **Triple emotion** | “He felt X, while also somewhat Y, with a trace of Z deep inside” | High |
+| S3 | **Parallel symmetry** | Two or three consecutive “X is Y's Z” constructions | High |
+| S4 | **Concluding summaries** | Every paragraph ends with “This shows / This means / He finally understood” | High |
+| S5 | **Double-negative emphasis** | “It was not that he did not know”; “not that he had never considered it”; “could not deny” | Medium |
+| S6 | **Standard setback-to-triumph arc** | Every conflict resolves within the same paragraph: difficulty → inspiration → easy solution | High |
+| S7 | **Synonymous repetition** | The same information is restated two or three times to pad length | High |
+| S8 | **Universal transitions** | “Time flew, and before long…”; “Without noticing, X had already passed” | High |
+| S9 | **Mechanical escalation** | “More importantly”; “Even more surprisingly”; “What concerned him most” | Medium |
+| S10 | **Explanatory insertions** | Encyclopedic explanations interrupt narration, such as a power-system description | Medium |
 
 ---
 
-## 六、统计/节奏层（可量化检测）
+## III. Narrative Structure (Chapter-Level AI Feel)
 
-| 指标 | AI 典型值 | 人类写作典型值 | 检测意义 |
-|------|-----------|---------------|----------|
-| 句长标准差 | 低（句子长度均匀） | 高（长短交替） | burstiness |
-| 段落长度标准差 | 低 | 高 | 节奏变化 |
-| 逗号/句号比 | 高（长句多） | 适中 | 句式简洁度 |
-| 对话占比 | 低（30% 以下） | 40-60%（网文） | 展示 vs 叙述 |
-| 形容词密度 | 高 | 中 | 词藻堆砌度 |
-| 副词+动词结构 | 极高 | 低 | "缓缓/淡淡"检测 |
-| 四字词密度 | 高（连续堆叠） | 中（分散使用） | 成语/套语 |
-| 章末悬念强度 | 低（安全着陆） | 高（cliffhanger） | 网文核心竞争力 |
-
----
-
-## 七、与现有系统的差距分析
-
-| 层级 | 现有覆盖 | 缺口 |
-|------|---------|------|
-| 词汇 | 200+ 词库（A-J 类） | 缺 K/L/M/N 类（神态模板、万能副词、内心套话、网文转折） |
-| 句式 | 4 条规则 | 缺 S1-S10（四段式、情绪三连、对仗排比等） |
-| 叙事结构 | 无 | 完全空白（N1-N10 全部需要新增） |
-| 情感表达 | 仅"情绪直述词"列表 | 缺 E1-E10 的系统化识别和改写规则 |
-| 对话 | 1 条规则（说明书式对话） | 缺 D1-D10 的细分 |
-| 统计/节奏 | 自然化程度表（4 指标） | 缺 burstiness、对话占比、副词密度等可量化指标 |
+| ID | Habit | Manifestation |
+|----|-------|---------------|
+| N1 | **Uniform pacing** | Similar information density in every paragraph, with no acceleration or slowing |
+| N2 | **Omniscient viewpoint drift** | A limited viewpoint suddenly reveals another character's thoughts |
+| N3 | **Signposted dramatic irony** | “What he did not know…”; “Little did he know…”; “If he knew what the future held…” |
+| N4 | **A complete loop every chapter** | Each chapter independently poses and resolves a problem, without cross-chapter suspense |
+| N5 | **Equal screen time** | Every appearing character receives similar descriptive space, without priorities |
+| N6 | **Safe landing** | Conflict resolves perfectly at chapter end, leaving no problems or unease |
+| N7 | **Sequential event flow** | Strict chronology without flashbacks, reverse chronology, or parallel narration |
+| N8 | **Show, then explain** | An action demonstrates something, immediately followed by a sentence explaining its meaning |
+| N9 | **Preference for positive outcomes** | Character decisions are almost always right, with little genuine failure or cost |
+| N10 | **Symmetrical conflict** | Every challenge exactly matches current ability, with neither domination nor despair |
 
 ---
 
-## 参考来源
+## IV. Emotional Expression (AI's Weakest Area)
 
-- 现有 `polish-guide.md` 7 层规则 + 200 词库
-- [AI创作网文的AI味总结 - CSDN](https://blog.csdn.net/qq_52080901/article/details/148605845)
-- [拆解"AI味"：我们为何反感AI写作 - 腾讯新闻](https://news.qq.com/rain/a/20250924A01QWG00)
-- [维基百科编辑总结识别 AI 写作的关键特征 - OSCHINA](https://www.oschina.net/news/368298)
+| ID | Habit | Manifestation | Alternative |
+|----|-------|---------------|-------------|
+| E1 | **Emotion labels** | “He felt angry”; “She was very nervous” | Physical reactions and behavioral implications |
+| E2 | **Instant emotional switches** | Angry in one sentence, calm in the next | Emotions need transitions and residue |
+| E3 | **Everyone is rational** | Characters calmly analyze even extreme situations | Allow irrational reactions |
+| E4 | **Emotional inflation** | Every minor event is “shocking” or “unbelievable” | Distinguish emotional intensity |
+| E5 | **Observer viewpoint** | “He saw her crying” instead of an immersive experience of crying | Reduce distance |
+| E6 | **Emotional conclusions first** | State “he was sad” before showing behavior | Behavior first; let readers infer |
+| E7 | **Identical reactions** | Everyone expresses surprise through slightly contracting pupils | Individualized reaction patterns |
+| E8 | **Epiphany-driven inner monologue** | Characters repeatedly “finally understand a truth” | Fewer revelations, more uncertainty |
+| E9 | **Emotional instruction manuals** | Dialogue explains feelings: “The reason I am angry is…” | Subtext and contradictions between words and actions |
+| E10 | **Healing endings** | Characters always find understanding, acceptance, or hope by chapter end | Allow unease and unresolved feelings |
+
+---
+
+## V. Dialogue
+
+| ID | Habit | Manifestation |
+|----|-------|---------------|
+| D1 | **Expository lectures** | Dialogue explains background rather than advancing conflict |
+| D2 | **Everyone speaks formally** | All characters use standard written Chinese without conversational traits |
+| D3 | **Strict turn-taking** | A → B → A → B without interruptions |
+| D4 | **Overly complete responses** | Every line fully answers the previous one; nobody evades |
+| D5 | **Summary-filled speech** | Characters repeatedly say “In short” or “In other words” |
+| D6 | **Universal said tags** | “X said”; “X said faintly”; “X said in a low voice,” without action beats |
+| D7 | **Explanation after dialogue** | The narrator explains what a line means immediately afterward |
+| D8 | **Emotional dialogue tags** | “He said angrily”; “She replied sadly” |
+| D9 | **Empty courtesies** | Excessive “Are you okay?” or “Be careful” exchanges without information |
+| D10 | **Monologue instead of dialogue** | A scene requiring interaction becomes one person's long speech |
+
+---
+
+## VI. Statistics and Rhythm (Quantifiable Detection)
+
+| Metric | Typical AI Value | Typical Human Writing Value | Detection Significance |
+|--------|------------------|-----------------------------|------------------------|
+| Sentence-length standard deviation | Low (uniform length) | High (alternating lengths) | Burstiness |
+| Paragraph-length standard deviation | Low | High | Rhythmic variation |
+| Comma/period ratio | High (many long sentences) | Moderate | Sentence concision |
+| Dialogue proportion | Low (below 30%) | 40–60% (webnovels) | Showing vs. telling |
+| Adjective density | High | Medium | Ornamental overload |
+| Adverb + verb structures | Extremely high | Low | Detection of “slowly/faintly” patterns |
+| Four-character expression density | High (stacked consecutively) | Medium (distributed) | Chinese idioms/stock phrases |
+| Chapter-ending suspense | Low (safe landing) | High (cliffhanger) | Core webnovel competitiveness |
+
+---
+
+## VII. Gap Analysis Against the Existing System
+
+| Layer | Existing Coverage | Gap |
+|-------|-------------------|-----|
+| Vocabulary | 200+ terms (categories A–J) | Missing K/L/M/N: facial-expression templates, universal adverbs, stock inner thoughts, webnovel transitions |
+| Sentence patterns | Four rules | Missing S1–S10: four-stage loops, triple emotions, parallel symmetry, etc. |
+| Narrative structure | None | Entirely missing; add all N1–N10 |
+| Emotional expression | Only a direct-emotion vocabulary list | Missing systematic identification and rewriting rules for E1–E10 |
+| Dialogue | One rule (instruction-manual dialogue) | Missing D1–D10 subdivisions |
+| Statistics/rhythm | Naturalness table with four metrics | Missing quantifiable burstiness, dialogue proportion, adverb density, etc. |
+
+---
+
+## References
+
+- Existing `polish-guide.md`: seven rule layers + 200-term vocabulary
+- [AI characteristics in AI-generated webnovels - CSDN](https://blog.csdn.net/qq_52080901/article/details/148605845)
+- [Dissecting the “AI feel”: why AI writing bothers us - Tencent News](https://news.qq.com/rain/a/20250924A01QWG00)
+- [Wikipedia editors summarize key signs of AI writing - OSCHINA](https://www.oschina.net/news/368298)
 - [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
-- [AI写作:25个去"AI味"的通用润色指令 - 知乎](https://zhuanlan.zhihu.com/p/1904977486221117285)
-- [教授一眼识破AI论文的12个特征 - CSDN](https://blog.csdn.net/2509_91422757/article/details/147333254)
+- [AI writing: 25 general polishing prompts to remove the “AI feel” - Zhihu](https://zhuanlan.zhihu.com/p/1904977486221117285)
+- [12 traits that let professors spot AI papers immediately - CSDN](https://blog.csdn.net/2509_91422757/article/details/147333254)
 - [Interpretable Text Classification for LLM-generated Creative Writing - arXiv](https://arxiv.org/html/2601.07368)
 - [Art or Artifice? LLMs and the False Promise of Creativity - arXiv](https://arxiv.org/html/2309.14556v3)
-- [用AI写网文时，有哪些「爆改文风」的提示词 - 运营派](https://www.yunyingpai.com/personal/1029559.html)
-- [去「AI味儿」大作战，AI到底能不能写出风格稳定的「网文」 - 人人都是产品经理](https://www.woshipm.com/share/6054640.html)
-- [Claude写小说功能实测 - Claude中文网](https://www.liehuxinghuo.com/claude_category-1/804.html)
+- [Prompts that radically change prose style when writing webnovels with AI - Yunyingpai](https://www.yunyingpai.com/personal/1029559.html)
+- [Removing the “AI feel”: can AI write webnovels with a consistent style? - Woshipm](https://www.woshipm.com/share/6054640.html)
+- [Testing Claude's novel-writing features - Claude Chinese Site](https://www.liehuxinghuo.com/claude_category-1/804.html)

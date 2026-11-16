@@ -1,10 +1,10 @@
-# Phase 1: 清理废弃模块 + 审查合并 + 流程精简
+# Phase 1: Remove Obsolete Modules + Consolidate Review + Streamline the Workflow
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 砍掉不产生价值的模块（workflow、resume），将 6 个 checker 合并为 1 个审查 agent，Step 2B 合并到 Step 4，预计单章 Token 降低 60-70%。
+**Goal:** Remove modules that provide no value (workflow, resume), consolidate six checkers into one review agent, and merge Step 2B into Step 4, targeting a 60–70% reduction in tokens per chapter.
 
-**Architecture:** 纯减法重构。删除 workflow_manager.py 及其测试、resume skill 及其引用。将 6 个独立 checker agent 合并为 1 个 `reviewer.md`，输出新的结构化问题清单 schema。更新 webnovel-write SKILL.md 流程从 8 步变 7 步。更新 review_pipeline.py 适配新 schema。更新 webnovel.py CLI 移除 workflow 命令。
+**Architecture:** A purely subtractive refactor. Delete workflow_manager.py and its tests, the resume skill, and their references. Merge six independent checker agents into one `reviewer.md` producing a new structured issue-list schema. Reduce webnovel-write SKILL.md from eight steps to seven. Adapt review_pipeline.py to the new schema and remove the workflow command from webnovel.py CLI.
 
 **Tech Stack:** Python 3.13, pytest, Claude Code plugin (markdown agents/skills)
 
@@ -14,68 +14,68 @@
 
 ## File Structure
 
-### 要删除的文件
+### Files to Delete
 
-| 文件 | 原因 |
+| File | Reason |
 |------|------|
-| `scripts/workflow_manager.py` | Claude Code 原生 /resume 替代 |
-| `scripts/data_modules/tests/test_workflow_manager.py` | 对应模块删除 |
-| `skills/webnovel-resume/SKILL.md` | 同上 |
-| `skills/webnovel-resume/references/workflow-resume.md` | 同上 |
-| `agents/consistency-checker.md` | 合并到 reviewer.md |
-| `agents/continuity-checker.md` | 合并到 reviewer.md |
-| `agents/ooc-checker.md` | 合并到 reviewer.md |
-| `agents/high-point-checker.md` | 合并到 reviewer.md |
-| `agents/pacing-checker.md` | 合并到 reviewer.md |
-| `agents/reader-pull-checker.md` | 合并到 reviewer.md |
-| `references/checker-output-schema.md` | 被新 schema 替代 |
-| `skills/webnovel-write/references/step-3-review-gate.md` | 逻辑内联到 SKILL.md |
-| `skills/webnovel-write/references/step-5-debt-switch.md` | 0.6KB，内联到 SKILL.md |
-| `skills/webnovel-write/references/workflow-details.md` | 已标记 deprecated |
-| `skills/webnovel-write/references/step-1.5-contract.md` | context-agent 将重构 |
+| `scripts/workflow_manager.py` | Replaced by native Claude Code /resume |
+| `scripts/data_modules/tests/test_workflow_manager.py` | Corresponding module removed |
+| `skills/webnovel-resume/SKILL.md` | Same as above |
+| `skills/webnovel-resume/references/workflow-resume.md` | Same as above |
+| `agents/consistency-checker.md` | Merged into reviewer.md |
+| `agents/continuity-checker.md` | Merged into reviewer.md |
+| `agents/ooc-checker.md` | Merged into reviewer.md |
+| `agents/high-point-checker.md` | Merged into reviewer.md |
+| `agents/pacing-checker.md` | Merged into reviewer.md |
+| `agents/reader-pull-checker.md` | Merged into reviewer.md |
+| `references/checker-output-schema.md` | Replaced by the new schema |
+| `skills/webnovel-write/references/step-3-review-gate.md` | Logic inlined into SKILL.md |
+| `skills/webnovel-write/references/step-5-debt-switch.md` | 0.6KB; inline into SKILL.md |
+| `skills/webnovel-write/references/workflow-details.md` | Already marked deprecated |
+| `skills/webnovel-write/references/step-1.5-contract.md` | context-agent will be refactored |
 
-### 要创建的文件
+### Files to Create
 
-| 文件 | 职责 |
+| File | Responsibility |
 |------|------|
-| `agents/reviewer.md` | 统一审查 agent，输出结构化问题清单 |
-| `references/review-schema.md` | 新审查输出 schema 定义 |
-| `scripts/data_modules/review_schema.py` | 新 schema 的 Python 数据类 + 校验 |
-| `scripts/data_modules/tests/test_review_schema.py` | 新 schema 测试 |
+| `agents/reviewer.md` | Unified review agent producing structured issue lists |
+| `references/review-schema.md` | New review-output schema definition |
+| `scripts/data_modules/review_schema.py` | Python dataclasses and validation for the new schema |
+| `scripts/data_modules/tests/test_review_schema.py` | New schema tests |
 
-### 要修改的文件
+### Files to Modify
 
-| 文件 | 改什么 |
+| File | Change |
 |------|--------|
-| `skills/webnovel-write/SKILL.md` | 7 步新流程，去 workflow 记录，去 Step 2B，合并审查 |
-| `scripts/review_pipeline.py` | 适配新 schema（无 overall_score，有 blocking_count） |
-| `scripts/data_modules/webnovel.py` | 移除 workflow 命令路由 |
-| `scripts/data_modules/index_manager.py` | review_metrics 表结构适配（去 overall_score，加 issues_count/blocking_count） |
-| `scripts/data_modules/tests/test_webnovel_unified_cli.py` | 移除 workflow 相关测试 |
-| `scripts/data_modules/tests/test_coverage_boost.py` | 移除 workflow 相关引用 |
+| `skills/webnovel-write/SKILL.md` | New seven-step workflow; remove workflow logging and Step 2B; consolidate review |
+| `scripts/review_pipeline.py` | Adapt to new schema: no overall_score, with blocking_count |
+| `scripts/data_modules/webnovel.py` | Remove workflow command routing |
+| `scripts/data_modules/index_manager.py` | Adapt review_metrics schema: remove overall_score, add issues_count/blocking_count |
+| `scripts/data_modules/tests/test_webnovel_unified_cli.py` | Remove workflow-related tests |
+| `scripts/data_modules/tests/test_coverage_boost.py` | Remove workflow-related references |
 
 ---
 
-## Task 1: 定义新审查 schema
+## Task 1: Define the New Review Schema
 
 **Files:**
 - Create: `scripts/data_modules/review_schema.py`
 - Create: `scripts/data_modules/tests/test_review_schema.py`
 - Create: `references/review-schema.md`
 
-- [ ] **Step 1: 写 schema 测试**
+- [ ] **Step 1: Write Schema Tests**
 
 ```python
 # scripts/data_modules/tests/test_review_schema.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""审查 schema 测试"""
+"""Review schema tests"""
 import pytest
 from data_modules.review_schema import ReviewIssue, ReviewResult, parse_review_output
 
 
 def test_review_issue_blocking_defaults():
-    """critical severity 默认 blocking=True"""
+    """Critical severity defaults to blocking=True"""
     issue = ReviewIssue(
         severity="critical",
         category="continuity",
@@ -86,7 +86,7 @@ def test_review_issue_blocking_defaults():
 
 
 def test_review_issue_non_critical_not_blocking():
-    """非 critical 默认 blocking=False"""
+    """Noncritical severity defaults to blocking=False"""
     issue = ReviewIssue(
         severity="high",
         category="setting",
@@ -97,7 +97,7 @@ def test_review_issue_non_critical_not_blocking():
 
 
 def test_review_result_counts():
-    """blocking_count 自动计算"""
+    """blocking_count is computed automatically"""
     result = ReviewResult(
         chapter=10,
         issues=[
@@ -177,21 +177,21 @@ def test_review_result_to_metrics_dict():
     assert "ai_flavor" in metrics["categories"]
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer/scripts && python -m pytest data_modules/tests/test_review_schema.py -v --no-cov`
 Expected: FAIL — `ModuleNotFoundError: No module named 'data_modules.review_schema'`
 
-- [ ] **Step 3: 实现 review_schema.py**
+- [ ] **Step 3: Implement review_schema.py**
 
 ```python
 # scripts/data_modules/review_schema.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-审查结果 schema（v6）。
+Review result schema (v6).
 
-替代原 checker-output-schema.md 的评分制，改为结构化问题清单。
+Replace the scoring system from checker-output-schema.md with structured issue lists.
 """
 from __future__ import annotations
 
@@ -288,163 +288,163 @@ def parse_review_output(chapter: int, raw: Dict[str, Any]) -> ReviewResult:
     )
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run Tests and Confirm Success**
 
 Run: `cd webnovel-writer/scripts && python -m pytest data_modules/tests/test_review_schema.py -v --no-cov`
 Expected: 8 passed
 
-- [ ] **Step 5: 写 review-schema.md 参考文档**
+- [ ] **Step 5: Write the review-schema.md Reference**
 
 ```markdown
-# 审查输出 Schema（v6）
+# Review Output Schema (v6)
 
-统一审查 Agent 输出格式。替代原 checker-output-schema.md 的评分制。
+Unified review-agent output format, replacing the scoring system in checker-output-schema.md.
 
-## 核心变化
+## Core Changes
 
-- **无总分**：不再输出 overall_score，改为结构化问题清单
-- **blocking 语义**：替代原 timeline_gate，severity=critical 默认阻断
-- **单 agent**：不再区分 6 个 checker，统一由 reviewer agent 输出
+- **No overall score**: output structured issue lists instead of overall_score
+- **Blocking semantics**: replace timeline_gate; severity=critical blocks by default
+- **Single agent**: reviewer produces all output instead of six separate checkers
 
 ## Issue Schema
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |------|------|------|------|
-| severity | critical/high/medium/low | ✅ | 严重度 |
-| category | continuity/setting/character/timeline/ai_flavor/logic/pacing/other | ✅ | 问题分类 |
-| location | string | ✅ | 位置（如"第3段"） |
-| description | string | ✅ | 问题描述 |
-| evidence | string | ❌ | 原文引用或记忆对比 |
-| fix_hint | string | ❌ | 修复建议 |
-| blocking | bool | ❌ | 是否阻断（critical 默认 true） |
+| severity | critical/high/medium/low | ✅ | Severity |
+| category | continuity/setting/character/timeline/ai_flavor/logic/pacing/other | ✅ | Issue category |
+| location | string | ✅ | Location, e.g. paragraph 3 |
+| description | string | ✅ | Issue description |
+| evidence | string | ❌ | Source quotation or memory comparison |
+| fix_hint | string | ❌ | Repair guidance |
+| blocking | bool | ❌ | Whether blocking; critical defaults to true |
 
-## 阻断规则
+## Blocking Rules
 
-- 存在任何 `blocking=true` 的 issue → Step 4 不得开始
-- `severity=critical` 自动 `blocking=true`
-- 其余 severity 由审查 agent 根据上下文判断
+- Any issue with `blocking=true` → Step 4 must not begin
+- `severity=critical` automatically sets `blocking=true`
+- For other severity levels, the review agent decides based on context
 
-## 指标沉淀
+## Metrics Persistence
 
-每次审查写入 `index.db.review_metrics`：
+Each review writes to `index.db.review_metrics`:
 - `chapter, issues_count, blocking_count, categories, timestamp`
-- 用于趋势观测，不用于 gate 决策
+- For trend monitoring, not gate decisions
 ```
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add scripts/data_modules/review_schema.py scripts/data_modules/tests/test_review_schema.py references/review-schema.md
-git commit -m "feat: 新审查 schema（v6）——结构化问题清单替代评分制"
+git commit -m "feat: new review schema (v6): structured issue lists replace scoring"
 ```
 
 ---
 
-## Task 2: 创建统一审查 agent
+## Task 2: Create the Unified Review Agent
 
 **Files:**
 - Create: `agents/reviewer.md`
 
-- [ ] **Step 1: 写 reviewer.md**
+- [ ] **Step 1: Write reviewer.md**
 
 ```markdown
 ---
 name: reviewer
-description: 统一审查 agent。检查正文的设定一致性、叙事连贯性、角色一致性、时间线、AI味，输出结构化问题清单。
+description: Unified review agent. Checks setting consistency, narrative continuity, character consistency, timeline, and AI-like writing, then outputs structured issue lists.
 tools: Read, Grep, Bash
 model: inherit
 ---
 
-# reviewer（统一审查 agent）
+# reviewer (Unified Review Agent)
 
-## 身份与目标
+## Identity and Goal
 
-你是章节审查员。你的职责是读完正文后，找出所有可验证的问题，输出结构化问题清单。
+You are a chapter reviewer. Read the prose, identify all verifiable problems, and output a structured issue list.
 
-你不评分、不给建议、不写摘要性评价。你只找问题、给证据、给修复方向。
+Do not score, offer general advice, or write summary evaluations. Identify problems, supply evidence, and indicate repair directions only.
 
-## 可用工具
+## Available Tools
 
-- `Read`：读取正文、设定集、记忆数据
-- `Grep`：在正文中搜索关键词
-- `Bash`：调用记忆模块查询
+- `Read`: read prose, setting documents, and memory data
+- `Grep`: search prose for keywords
+- `Bash`: query memory modules
 
 ```bash
-# 查询角色当前状态
+# Query current character state
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" state get-entity --id "{entity_id}"
 
-# 查询最近状态变更
+# Query recent state changes
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" index get-recent-state-changes --limit 20
 ```
 
-## 思维链（ReAct）
+## Reasoning Workflow (ReAct)
 
-对每个检查维度：
-1. **读取**相关数据（角色状态、世界规则、上章摘要）
-2. **对比**正文内容与数据
-3. **判断**是否存在矛盾/问题
-4. **记录**问题到清单（含 evidence 和 fix_hint）
+For each review dimension:
+1. **Read** relevant data: character state, world rules, previous-chapter summary
+2. **Compare** the prose against the data
+3. **Determine** whether contradictions or problems exist
+4. **Record** issues in the list, including evidence and fix_hint
 
-## 输入
+## Inputs
 
-- `chapter`：章节号
-- `chapter_file`：正文文件路径
-- `project_root`：项目根目录
-- `scripts_dir`：脚本目录
+- `chapter`: chapter number
+- `chapter_file`: prose file path
+- `project_root`: project root
+- `scripts_dir`: scripts directory
 
-## 检查维度（按顺序执行）
+## Review Dimensions (Run in Order)
 
-### 1. 设定一致性（category: setting）
-- 角色能力是否与当前境界匹配
-- 地点描述是否与世界观一致
-- 物品/货币使用是否符合已建立规则
+### 1. Setting Consistency (category: setting)
+- Do character abilities match their current realm?
+- Do location descriptions match the world setting?
+- Does item/currency use follow established rules?
 
-### 2. 时间线（category: timeline）
-- 本章时间是否与上章衔接（无回跳或有合理解释）
-- 倒计时/截止日期是否正确推进
-- 角色同时出现在两个地点
+### 2. Timeline (category: timeline)
+- Does this chapter follow the previous chapter in time, with no unexplained regression?
+- Do countdowns/deadlines advance correctly?
+- Does a character appear in two places at once?
 
-### 3. 叙事连贯（category: continuity）
-- 上章钩子是否有回应
-- 场景转换是否有过渡
-- 情绪弧是否连续（上章愤怒本章突然平静无过渡）
+### 3. Narrative Continuity (category: continuity)
+- Is the previous chapter’s hook addressed?
+- Are scene changes bridged?
+- Is the emotional arc continuous, rather than suddenly shifting from anger to calm without transition?
 
-### 4. 角色一致性（category: character）
-- 对话风格是否符合角色特征
-- 行为是否与已建立的性格/动机一致
-- 角色知识边界——角色是否使用了不应知道的信息
+### 4. Character Consistency (category: character)
+- Does dialogue match character traits?
+- Does behavior match established personality/motivation?
+- Character knowledge boundaries: does anyone use information they should not know?
 
-### 5. 逻辑（category: logic）
-- 因果关系是否成立
-- 角色决策是否有合理动机
-- 战斗/冲突结果是否符合已建立的力量对比
+### 5. Logic (category: logic)
+- Are causal relationships valid?
+- Are character decisions reasonably motivated?
+- Do combat/conflict outcomes match established relative power?
 
-### 6. AI味（category: ai_flavor）
-- 是否存在禁用词/禁用句式（稳住心神、不禁XXX、嘴角微微上扬等）
-- 是否存在每段"起因→经过→结果→感悟"的四段式结构
-- 是否存在过度解释（展示而非讲述的缺失）
-- 情绪描写是否模板化（"眼中闪过一丝XXX"）
+### 6. AI-Like Writing (category: ai_flavor)
+- Are there banned words/patterns such as “steadied his mind,” “could not help…,” or “the corners of his mouth rose slightly”?
+- Does every paragraph follow cause → process → result → realization?
+- Is there overexplaining instead of showing?
+- Are emotions templated, such as “a trace of X flashed in their eyes”?
 
-## 边界与禁区
+## Boundaries and Prohibitions
 
-- **不评分**——不输出 overall_score、不输出 pass/fail
-- **不评价文笔质量**——"写得不够好"不是 issue，"与角色性格矛盾"才是
-- **不建议情节改动**——"这里应该加个反转"不是 issue
-- **不重复大纲内容**——不在 issue 中暴露未发生的剧情
-- **只报可验证的问题**——必须有 evidence（原文引用 or 数据对比）
+- **Do not score**: no overall_score or pass/fail output
+- **Do not judge prose quality**: “not well written” is not an issue; “contradicts the character’s personality” is
+- **Do not suggest plot changes**: “add a reversal here” is not an issue
+- **Do not repeat the outline**: issues must not reveal plot that has not happened
+- **Report verifiable problems only**: evidence must quote the text or compare data
 
-## 检查清单
+## Checklist
 
-完成审查前自检：
-- [ ] 每个 issue 都有 evidence
-- [ ] 没有"感觉"类的主观评价
-- [ ] severity 分级合理（critical 仅用于确定的事实矛盾）
-- [ ] category 归类正确
-- [ ] blocking 字段只在 critical 或确认阻断时为 true
+Before finishing, verify:
+- [ ] Every issue includes evidence
+- [ ] No subjective impressions
+- [ ] Severity is reasonable; critical is reserved for definite factual contradictions
+- [ ] Categories are correct
+- [ ] blocking is true only for critical issues or confirmed blockers
 
-## 输出格式
+## Output Format
 
-严格按以下 JSON 格式输出（无其他文本）：
+Output exactly the following JSON format, with no other text:
 
 ```json
 {
@@ -452,34 +452,34 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" ind
     {
       "severity": "critical | high | medium | low",
       "category": "continuity | setting | character | timeline | ai_flavor | logic | pacing | other",
-      "location": "第N段 或 具体引用",
-      "description": "问题描述",
-      "evidence": "原文引用 vs 数据记录",
-      "fix_hint": "修复方向",
+      "location": "Paragraph N or specific quotation",
+      "description": "Issue description",
+      "evidence": "Quoted prose vs. recorded data",
+      "fix_hint": "Suggested fix",
       "blocking": true
     }
   ],
-  "summary": "N个问题：X个阻断，Y个高优"
+  "summary": "N issues: X blocking, Y high-priority"
 }
 ```
 
-## 错误处理
+## Error Handling
 
-- 无法读取角色状态 → 跳过设定一致性检查，在 summary 中标注"无法校验设定一致性：数据读取失败"
-- 无法读取上章摘要 → 跳过连贯性检查中的"上章钩子回应"项
-- 正文为空 → 输出单条 critical issue："正文为空"
+- Cannot read character state → skip setting-consistency checks and note in summary: “Cannot validate setting consistency: data read failed”
+- Cannot read the previous summary → skip the continuity item checking the previous chapter’s hook
+- Empty prose → output one critical issue: “Prose is empty”
 ```
 
-- [ ] **Step 2: 提交**
+- [ ] **Step 2: Commit**
 
 ```bash
 git add agents/reviewer.md
-git commit -m "feat: 统一审查 agent reviewer.md——合并6个checker为1个"
+git commit -m "feat: unified reviewer.md agent replaces six checkers"
 ```
 
 ---
 
-## Task 3: 删除 workflow 模块和 resume skill
+## Task 3: Delete the Workflow Module and Resume Skill
 
 **Files:**
 - Delete: `scripts/workflow_manager.py`
@@ -489,36 +489,36 @@ git commit -m "feat: 统一审查 agent reviewer.md——合并6个checker为1�
 - Modify: `scripts/data_modules/webnovel.py`
 - Modify: `scripts/data_modules/tests/test_coverage_boost.py`
 
-- [ ] **Step 1: 从 webnovel.py 移除 workflow 命令路由**
+- [ ] **Step 1: Remove Workflow Command Routing From webnovel.py**
 
-在 `scripts/data_modules/webnovel.py` 中删除 workflow 相关的 parser 和路由：
+Remove workflow parsers and routing from `scripts/data_modules/webnovel.py`:
 
-删除 parser 定义：
+Delete parser definitions:
 ```python
-# 删除这两行
+# Delete these two lines
 p_workflow = sub.add_parser("workflow", help="转发到 workflow_manager.py")
 p_workflow.add_argument("args", nargs=argparse.REMAINDER)
 ```
 
-删除路由分支：
+Delete the routing branch:
 ```python
-# 删除这两行
+# Delete these two lines
 if tool == "workflow":
     raise SystemExit(_run_script("workflow_manager.py", [*forward_args, *rest]))
 ```
 
-- [ ] **Step 2: 从 test_coverage_boost.py 移除 workflow 相关测试**
+- [ ] **Step 2: Remove Workflow Tests From test_coverage_boost.py**
 
-删除 `test_webnovel_passthrough_workflow_script` 测试函数。
+Delete `test_webnovel_passthrough_workflow_script`.
 
-- [ ] **Step 3: 删除 workflow_manager.py 和测试**
+- [ ] **Step 3: Delete workflow_manager.py and Its Tests**
 
 ```bash
 git rm scripts/workflow_manager.py
 git rm scripts/data_modules/tests/test_workflow_manager.py
 ```
 
-- [ ] **Step 4: 删除 resume skill**
+- [ ] **Step 4: Delete the Resume Skill**
 
 ```bash
 git rm skills/webnovel-resume/SKILL.md
@@ -527,21 +527,21 @@ rmdir skills/webnovel-resume/references 2>/dev/null || true
 rmdir skills/webnovel-resume 2>/dev/null || true
 ```
 
-- [ ] **Step 5: 运行测试确认无破损**
+- [ ] **Step 5: Run Tests to Confirm Nothing Broke**
 
 Run: `cd "D:\wk\novel skill\webnovel-writer" && python -m pytest --no-cov --tb=short`
-Expected: 全部通过（数量会减少，因为删了 test_workflow_manager.py 的 10 个测试）
+Expected: All pass; the total drops because ten test_workflow_manager.py tests were deleted
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add -A
-git commit -m "refactor: 移除 workflow_manager + resume skill，由 Claude Code /resume 替代"
+git commit -m "refactor: remove workflow_manager and resume skill in favor of Claude Code /resume"
 ```
 
 ---
 
-## Task 4: 删除 6 个旧 checker agent 和旧 schema
+## Task 4: Delete Six Legacy Checker Agents and the Old Schema
 
 **Files:**
 - Delete: `agents/consistency-checker.md`
@@ -553,7 +553,7 @@ git commit -m "refactor: 移除 workflow_manager + resume skill，由 Claude Cod
 - Delete: `references/checker-output-schema.md`
 - Delete: `skills/webnovel-write/references/step-3-review-gate.md`
 
-- [ ] **Step 1: 删除旧 checker agents**
+- [ ] **Step 1: Delete Legacy Checker Agents**
 
 ```bash
 git rm agents/consistency-checker.md
@@ -564,31 +564,31 @@ git rm agents/pacing-checker.md
 git rm agents/reader-pull-checker.md
 ```
 
-- [ ] **Step 2: 删除旧 schema 和 review gate**
+- [ ] **Step 2: Delete the Old Schema and Review Gate**
 
 ```bash
 git rm references/checker-output-schema.md
 git rm skills/webnovel-write/references/step-3-review-gate.md
 ```
 
-- [ ] **Step 3: 提交**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add -A
-git commit -m "refactor: 移除6个旧checker agent和旧schema，由reviewer.md替代"
+git commit -m "refactor: remove six legacy checker agents and old schema, replaced by reviewer.md"
 ```
 
 ---
 
-## Task 5: 更新 review_pipeline.py 适配新 schema
+## Task 5: Adapt review_pipeline.py to the New Schema
 
 **Files:**
 - Modify: `scripts/review_pipeline.py`
 - Modify: `scripts/data_modules/tests/test_webnovel_unified_cli.py`
 
-- [ ] **Step 1: 写测试——review_pipeline 适配新 schema**
+- [ ] **Step 1: Write Tests for the New review_pipeline Schema**
 
-在 `test_webnovel_unified_cli.py` 中修改 `test_review_pipeline_builds_artifacts`，将旧的 checker 多结果格式改为新的单 reviewer 输出：
+Update `test_review_pipeline_builds_artifacts` in `test_webnovel_unified_cli.py`, replacing multiple checker results with the new single-reviewer output:
 
 ```python
 def test_review_pipeline_builds_artifacts_v6(tmp_path):
@@ -642,21 +642,21 @@ def test_review_pipeline_builds_artifacts_v6(tmp_path):
     assert payload["metrics"]["blocking_count"] == 1
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer/scripts && python -m pytest data_modules/tests/test_webnovel_unified_cli.py::test_review_pipeline_builds_artifacts_v6 -v --no-cov`
-Expected: FAIL（review_pipeline 还是旧逻辑）
+Expected: FAIL; review_pipeline still uses the old logic
 
-- [ ] **Step 3: 重写 review_pipeline.py**
+- [ ] **Step 3: Rewrite review_pipeline.py**
 
 ```python
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Step 3 审查结果处理。
+Step 3 review-result processing.
 
-读取 reviewer agent 的原始输出 JSON，解析为 ReviewResult，
-生成 metrics 用于 index.db 沉淀。
+Read raw reviewer JSON, parse it as ReviewResult,
+and generate metrics for persistence in index.db.
 """
 from __future__ import annotations
 
@@ -732,21 +732,21 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 4: 运行测试确认通过**
+- [ ] **Step 4: Run Tests and Confirm Success**
 
 Run: `cd webnovel-writer/scripts && python -m pytest data_modules/tests/test_webnovel_unified_cli.py -v --no-cov`
-Expected: 全部通过
+Expected: All pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add scripts/review_pipeline.py scripts/data_modules/tests/test_webnovel_unified_cli.py
-git commit -m "refactor: review_pipeline 适配 v6 schema——无评分，结构化问题清单"
+git commit -m "refactor: adapt review_pipeline to v6: structured issues without scores"
 ```
 
 ---
 
-## Task 6: 更新 webnovel-write SKILL.md（新 7 步流程）
+## Task 6: Update webnovel-write SKILL.md (New Seven-Step Workflow)
 
 **Files:**
 - Modify: `skills/webnovel-write/SKILL.md`
@@ -754,7 +754,7 @@ git commit -m "refactor: review_pipeline 适配 v6 schema——无评分，结�
 - Delete: `skills/webnovel-write/references/workflow-details.md`
 - Delete: `skills/webnovel-write/references/step-1.5-contract.md`
 
-- [ ] **Step 1: 删除废弃引用文件**
+- [ ] **Step 1: Delete Obsolete Reference Files**
 
 ```bash
 git rm skills/webnovel-write/references/step-5-debt-switch.md
@@ -762,83 +762,83 @@ git rm skills/webnovel-write/references/workflow-details.md
 git rm skills/webnovel-write/references/step-1.5-contract.md
 ```
 
-- [ ] **Step 2: 重写 SKILL.md**
+- [ ] **Step 2: Rewrite SKILL.md**
 
-完整重写 `skills/webnovel-write/SKILL.md`，核心变化：
+Fully rewrite `skills/webnovel-write/SKILL.md` with these core changes:
 
-1. **流程从 8 步变 7 步**：
+1. **Reduce eight steps to seven:**
 ```
-Step 0.5 预检 → Step 1 上下文搜集 → Step 2 起草 → Step 3 审查 → Step 4 润色+风格+anti-AI → Step 5 数据回写 → Step 6 Git
-```
-
-2. **去掉所有 workflow 记录命令**（删除每步前后的 `workflow start-step` / `complete-step`）
-
-3. **Step 2B 合并到 Step 4**：Step 4 职责变为"润色 + 风格适配 + anti-AI 修复"
-
-4. **Step 3 改为单 reviewer agent**：
-```
-使用 Task 调用 reviewer agent（不再调用 6 个独立 checker）
-输出：review_results.json（新 schema）
-通过 review_pipeline 生成 metrics
-blocking issue 存在时阻断
+Step 0.5 preflight → Step 1 context collection → Step 2 drafting → Step 3 review → Step 4 polish + style + anti-AI → Step 5 data write-back → Step 6 Git
 ```
 
-5. **Step 4 增加 anti-AI 职责**：
+2. **Remove all workflow logging commands**, including `workflow start-step` / `complete-step` around each step
+
+3. **Merge Step 2B into Step 4**: Step 4 handles polishing + style adaptation + anti-AI repair
+
+4. **Use a single reviewer agent in Step 3:**
 ```
-- 消费 Step 3 的问题清单，逐条修复
-- 执行风格适配（原 Step 2B 的工作）
-- anti-AI 最终 gate：修复后复检，确认无 blocking 残留
+Use Task to call reviewer, not six independent checkers
+Output: review_results.json (new schema)
+Generate metrics through review_pipeline
+Block when blocking issues exist
 ```
 
-6. **模式定义更新**：
+5. **Add anti-AI responsibilities to Step 4:**
 ```
-标准：Step 0.5 → 1 → 2 → 3 → 4 → 5 → 6
---fast：Step 0.5 → 1 → 2 → 3(轻量) → 4 → 5 → 6
---minimal：Step 0.5 → 1 → 2 → 4(仅排版) → 5 → 6
+- Consume Step 3 issues and repair each one
+- Perform style adaptation, formerly Step 2B
+- Final anti-AI gate: recheck after repairs and confirm no blockers remain
 ```
 
-7. **References 更新**：移除对已删文件的引用，添加 `review-schema.md` 引用
+6. **Update mode definitions:**
+```
+Standard:Step 0.5 → 1 → 2 → 3 → 4 → 5 → 6
+--fast：Step 0.5 → 1 → 2 → 3(lightweight) → 4 → 5 → 6
+--minimal：Step 0.5 → 1 → 2 → 4(typesetting only) → 5 → 6
+```
 
-- [ ] **Step 3: 提交**
+7. **Update references**: remove references to deleted files and add `review-schema.md`
+
+- [ ] **Step 3: Commit**
 
 ```bash
 git add -A
-git commit -m "refactor: webnovel-write SKILL.md v6——7步流程，单reviewer，合并风格适配"
+git commit -m "refactor: webnovel-write v6: seven steps, one reviewer, integrated style adaptation"
 ```
 
 ---
 
-## Task 7: 清理旧 review_pipeline 测试并跑全量回归
+## Task 7: Clean Up Legacy review_pipeline Tests and Run Full Regression
 
 **Files:**
 - Modify: `scripts/data_modules/tests/test_webnovel_unified_cli.py`
 
-- [ ] **Step 1: 移除旧 review_pipeline 测试中不兼容的断言**
+- [ ] **Step 1: Remove Incompatible Assertions From Legacy review_pipeline Tests**
 
-更新 `test_review_pipeline_builds_artifacts` 和 `test_review_pipeline_main_creates_output_directories` 以适配新 schema。旧测试依赖 `overall_score`、`timeline_gate` 等已移除的字段。
+Update `test_review_pipeline_builds_artifacts` and `test_review_pipeline_main_creates_output_directories` for the new schema. Old tests rely on removed fields such as `overall_score` and `timeline_gate`.
 
-如果 Task 5 的新测试已覆盖，直接删除旧版测试。
+If Task 5 tests already cover this behavior, delete the old tests.
 
-- [ ] **Step 2: 全量回归测试**
+- [ ] **Step 2: Run Full Regression Tests**
 
 Run: `cd "D:\wk\novel skill\webnovel-writer" && python -m pytest --tb=short`
-Expected: 全部通过，覆盖率 ≥ 90%
+Expected: All pass, coverage ≥ 90%
 
-- [ ] **Step 3: 如有失败修复后提交**
+- [ ] **Step 3: Fix Any Failures and Commit**
 
 ```bash
 git add -A
-git commit -m "test: 清理旧 review 测试，全量回归通过"
+git commit -m "test: clean up legacy review tests; full regression passes"
 ```
 
 ---
 
-## Task 8: 最终验证
+## Task 8: Final Validation
 
-- [ ] **Step 1: 确认删除完整性**
+- [ ] **Step 1: Verify Deletion Completeness**
 
 ```bash
-# 这些文件应该不存在
+# These files must not exist
 test ! -f webnovel-writer/scripts/workflow_manager.py
 test ! -f webnovel-writer/skills/webnovel-resume/SKILL.md
 test ! -f webnovel-writer/agents/consistency-checker.md
@@ -849,27 +849,27 @@ test ! -f webnovel-writer/agents/pacing-checker.md
 test ! -f webnovel-writer/agents/reader-pull-checker.md
 test ! -f webnovel-writer/references/checker-output-schema.md
 
-# 这些文件应该存在
+# These files must exist
 test -f webnovel-writer/agents/reviewer.md
 test -f webnovel-writer/references/review-schema.md
 test -f webnovel-writer/scripts/data_modules/review_schema.py
 ```
 
-- [ ] **Step 2: 全量测试 + 覆盖率**
+- [ ] **Step 2: Run All Tests + Coverage**
 
 Run: `cd "D:\wk\novel skill\webnovel-writer" && python -m pytest`
-Expected: 全部通过，覆盖率 ≥ 90%
+Expected: All pass, coverage ≥ 90%
 
-- [ ] **Step 3: 确认 agents/ 目录只剩 3 个 agent**
+- [ ] **Step 3: Confirm Only Three Agents Remain in agents/**
 
 ```bash
 ls webnovel-writer/agents/
-# 期望：context-agent.md  data-agent.md  reviewer.md
+# Expected:context-agent.md  data-agent.md  reviewer.md
 ```
 
-- [ ] **Step 4: 最终提交（如有遗漏修复）**
+- [ ] **Step 4: Final Commit (If Any Missing Fixes Remain)**
 
 ```bash
 git add -A
-git commit -m "chore: Phase 1 完成——清理验证通过"
+git commit -m "chore: complete Phase 1; cleanup verification passes"
 ```

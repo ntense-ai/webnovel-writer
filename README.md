@@ -1,8 +1,8 @@
 # Webnovel Writer
 
-**使用 DeepSeek Harness 写作工作台（v8）？[🌐 产品主页](https://lingfengqaq.github.io/webnovel-writer/) · [📖 新手教程](https://lingfengqaq.github.io/webnovel-writer/docs/beginner.html) · [安装指南](https://lingfengqaq.github.io/webnovel-writer/docs/install.html)**
+**Using the DeepSeek Harness writing workspace (v8)? [🌐 Product website](https://lingfengqaq.github.io/webnovel-writer/) · [📖 Beginner tutorial](https://lingfengqaq.github.io/webnovel-writer/docs/beginner.html) · [Installation guide](https://lingfengqaq.github.io/webnovel-writer/docs/install.html)**
 
-本分支保留 Claude Code 版（v6），安装方式与 v8 不同。
+This branch retains the Claude Code edition (v6). Its installation process differs from v8.
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-6.2.1-brightgreen.svg)](.claude-plugin/marketplace.json)
@@ -12,180 +12,123 @@
 
 <a href="https://trendshift.io/repositories/22487" target="_blank"><img src="https://trendshift.io/api/badge/repositories/22487" alt="lingfengQAQ%2Fwebnovel-writer | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-一个跑在 Claude Code 上的长篇网文创作插件。从初始化设定、规划卷纲，到写章、审查、沉淀记忆、查询状态，再到一个只读的可视化面板——整条创作流程都给你串好了。
+A long-form webnovel writing plugin for Claude Code. It connects the entire creative workflow: initialize settings, plan volume outlines, write and review chapters, retain memories, query state, and browse a read-only visual dashboard.
 
-它想解决的其实就一件事：**让 AI 写到几百章，依然记得住设定、接得住伏笔、守得住大纲。**
+It addresses one central problem: **help AI remember the setting, resolve foreshadowing, and follow the outline even after hundreds of chapters.**
 
-一句话定位：这是一套面向长篇连载的一致性系统，不是写完就忘的一次性生成器。
+In short, this is a consistency system for long-running serial fiction, not a one-off generator that forgets what it wrote.
 
-> **版本导览（2026-10-06 更新）**
+> **Version guide (updated 2026-10-06)**
 >
-> | 分支 | 版本 | 状态 |
+> | Branch | Version | Status |
 > |---|---|---|
-> | `master`（本分支） | v6 · Claude Code 插件 | 维护中（只修致命 bug），Claude Code 用户请用此版本 |
-> | `v7` | v7 · CLI 多宿主重写 | 已冻结，未发布，仅作开发档案 |
-> | [v8](https://github.com/lingfengQAQ/webnovel-writer/tree/v8) | v8 · 基于 [DeepSeek Harness](https://www.deepseek.com/harness/) 的写作工作台 | 正式版；[产品主页与教程](https://lingfengqaq.github.io/webnovel-writer/) |
+> | `master` (this branch) | v6 · Claude Code plugin | Maintenance mode (critical bugs only); Claude Code users should use this edition |
+> | `v7` | v7 · Multi-host CLI rewrite | Frozen and unreleased; retained as a development archive |
+> | [v8](https://github.com/lingfengQAQ/webnovel-writer/tree/v8) | v8 · Writing workspace based on [DeepSeek Harness](https://www.deepseek.com/harness/) | Stable release; [product website and tutorials](https://lingfengqaq.github.io/webnovel-writer/) |
 >
-> 原 v7 设计公示（[Discussions #118](https://github.com/lingfengQAQ/webnovel-writer/discussions/118)）所征集的反馈仍是 v8 设计的重要输入；v7 的 CLI 形态经评估后不再发布，下一代改以 dsh 插件形态开发，v8 公开产品源码、运行技能和使用教程；内部开发讨论与私人创作资料不属于公开内容。v6/v8 安装方式不同，尚无经过验证的旧书仓直接迁移方案。
+> Feedback collected for the original v7 design proposal ([Discussions #118](https://github.com/lingfengQAQ/webnovel-writer/discussions/118)) remains important input for v8. Following evaluation, the v7 CLI will not be released; the next generation instead uses a dsh plugin. v8 publishes its product source, runtime skills, and tutorials; internal development discussions and private writing materials are not public. v6 and v8 have different installation methods, and no direct migration path for existing book repositories has been verified.
 
-## 赞助与支持
+## Why You Need It
 
-<table style="border-collapse: collapse; margin-bottom: 12px;">
-<tr>
-<td style="border: 1px solid #000; padding: 10px 14px; line-height: 1.45;">
-<a href="https://x6.ai" target="_blank"><img src="docs/assets/sponsors/x6-banner.jpg" alt="x6.ai · 一个 Key 调用所有模型 · 低至 1 折" width="728"/></a><br>
-<a href="https://x6.ai">x6.ai</a>：一个 Key 调用所有主流模型，官 Key 直连(可蒸馏)和反代双通道，最低 1 折，注册送免费额度。支持支付宝、Google Pay、Apple Pay、Visa、Mastercard。<br>
-<a href="https://x6.ai">x6.ai</a>: One API key for every major model. Official-key and proxy channels, up to 90% off, free credits on sign-up. Pay with Alipay, Google Pay, Apple Pay, Visa or Mastercard.
-</td>
-</tr>
-</table>
+The hardest part of long-form writing is not the first chapter. It is maintaining the following beyond chapter 80 or 200:
 
-<table style="border-collapse: collapse; margin-bottom: 12px;">
-<tr>
-<td style="border: 1px solid #000; padding: 10px 14px; line-height: 1.45;">
-<a href="https://www.aiyoyoo.com/register?aff=3BGQET3SVUJS" target="_blank"><img src="docs/assets/sponsors/crazytoken-banner.png" alt="CrazyToken · 全模型服务，直省 99%" width="728"/></a><br>
-<strong>Webnovel Writer × CrazyToken | 接入全球顶级大模型，为你的长篇连载创意保驾护航</strong><br>
-❤️ 感谢 <strong><a href="https://www.aiyoyoo.com/register?aff=3BGQET3SVUJS">CrazyToken</a></strong> 对 Webnovel Writer 的赞助支持！<br>
-全模型 0.5 折起 | 满血稳定 | 极速出稿
-<ul style="margin: 6px 0 0 0; padding-left: 20px; line-height: 1.45;">
-<li>💰 <strong>【击穿底价】最低 0.05x 倍率，直省 99% 创作成本</strong><br>全模型低至 0.05x 倍率，仅为官方定价的 5%；token 级账单透明可查，无隐形消费，百万字长篇成本可忽略，日更万字无压力。</li>
-<li>🧠 <strong>【全模型支持】支持全球主流模型</strong><br>支持 Claude、GPT、Gemini、Kimi、GLM、DeepSeek、Qwen、Grok 等全系主流模型，大纲构思、正文续写、爽点打磨、润色改稿，针对不同环节选择最合适的模型。</li>
-<li>✨ <strong>【满血输出】官方原生通道，拒绝掺水降智</strong><br>官方原生接入，不掺水、不混模、不压缩长上下文。</li>
-<li>⚡ <strong>【极速出稿】秒级首字响应，高并发不限流</strong><br>企业级高并发专线，极速体验，支持多书同时创作、章节批量生成，高峰期不排队、不限流，写作节奏不中断。</li>
-<li>🎁 <strong>【作者专属福利】注册即送 $20 额度，零门槛接入， 1对1远程配置服务</strong><br>通过 <a href="https://www.aiyoyoo.com/register?aff=3BGQET3SVUJS"><strong>专属链接</strong> </a>注册即送 $20 体验额度，充值额外加赠，长期连载更划算；提供独家1对1远程配置服务，全程真人协助，开箱即用。</li>
-</ul>
-</td>
-</tr>
-</table>
+- Consistent character motivations
+- Compatible power levels, timelines, locations, and world rules
+- Recorded, developed, and resolved foreshadowing
+- Well-paced payoffs, relationships, and worldbuilding
+- Searchable facts recorded after each chapter
 
-<table style="border-collapse: collapse; margin-bottom: 12px;">
-<tr>
-<td style="border: 1px solid #000; padding: 10px 14px; line-height: 1.45;">
-<a href="https://www.packyapi.ai/register?aff=pJpV" target="_blank"><img src="docs/assets/sponsors/packycode-banner.png" alt="PackyCode · 稳定高效的 API 中转服务，一句话接入主流大模型" width="728"/></a><br>
-感谢 <a href="https://www.packyapi.ai/register?aff=pJpV">PackyCode</a> 赞助支持 Webnovel Writer！PackyCode 是一家稳定、高效的 API 中转服务商，一句话接入主流大模型。统一域名、统一密钥、智能容灾切换，97% 可用性。人民币 1:1 充值，无汇率无手续费坑，新用户首充立享折扣 + $1 免费体验额度，多分组折扣低至 2 折起，提供专属 Codex/Claude Code 高速通道。<a href="https://www.packyapi.ai/register?aff=pJpV">点此链接注册</a>，立即开始使用！
-</td>
-</tr>
-</table>
+This system turns those constraints into steps Claude Code executes automatically: consult reference material before writing, record new facts afterward, check consistency, and synchronize the latest state into retrieval indexes, chapter summaries, long-term memory, and the Dashboard. It does not merely write; it builds a durable record as it goes.
 
-<table style="border-collapse: collapse; margin-bottom: 12px;">
-<tr>
-<td style="border: 1px solid #000; padding: 10px 14px; line-height: 1.45;">
-<a href="https://www.infistar.cc/register?aff=YBE8GGRE&ref_source=link" target="_blank"><img src="docs/assets/sponsors/infistar-banner.png" alt="Infistar.cc 无限星河 · 一站式全球大模型 API 服务平台" width="728"/></a><br>
-<strong>Webnovel Writer × Infistar.cc 无限星河｜全模型 API · 助力长篇网文持续创作</strong><br>
-感谢 <a href="https://www.infistar.cc/register?aff=YBE8GGRE&ref_source=link">Infistar.cc 无限星河</a> 赞助并为 Webnovel Writer 提供模型服务支持！
-<ul style="margin: 6px 0 0 0; padding-left: 20px; line-height: 1.45;">
-<li>⚡ <strong>稳定支持长篇连续写作</strong>：提供高可用模型通道与稳定响应，满足大纲规划、章节创作、内容审查、润色改写及长上下文写作等场景。</li>
-<li>🧠 <strong>兼容 Claude Code 与主流模型</strong>：支持 Claude、ChatGPT、Gemini、Kimi、GLM、DeepSeek 等模型，可灵活配置长篇写作、审查和辅助模型。</li>
-<li>📚 <strong>助力记忆与知识库检索</strong>：支持 Embedding、Rerank 等兼容 OpenAI 格式的接口，帮助角色设定、时间线、伏笔和章节内容持续沉淀，减少长篇创作中的遗忘与前后矛盾。</li>
-<li>🎁 <strong>Webnovel Writer 用户专属福利</strong>：通过 <a href="https://www.infistar.cc/register?aff=YBE8GGRE&ref_source=link">专属推广链接</a> 注册并完成首次调用，即可领取 [5美元等值测试额度 / 首充专属优惠]，快速体验更稳定、更连贯的 AI 长篇创作流程！</li>
-</ul>
-</td>
-</tr>
-</table>
+## Core Capabilities
 
-Webnovel Writer 用业余时间维护。如果它帮你省下了梳理设定、对齐伏笔的功夫，欢迎来信交流想法、反馈使用体验，或表达对项目的支持：
-
-📮 **ksdflisjdf@gmail.com**
-
-## 为什么需要它
-
-长篇创作最难的不是写出第一章，而是写到第 80 章、第 200 章以后仍然保持：
-
-- 角色动机不漂移
-- 战力、时间线、地点和世界规则不互相打架
-- 伏笔有登记、有推进、有回收
-- 爽点、感情线、世界观扩展保持节奏
-- 每章写完后事实会沉淀到可检索的状态系统
-
-这套系统做的事，就是把上面这些“必须记住、不能写崩”的约束，变成 Claude Code 会自动执行的步骤：动笔前先查资料，写完后把新发生的事实记下来、做一致性审查，再把最新状态同步进检索索引、章节摘要、长期记忆和 Dashboard。它不只是“会写”，而是边写边攒。
-
-## 核心能力
-
-| 能力 | 命令 | 说明 |
+| Capability | Command | Description |
 |------|------|------|
-| 深度初始化 | `/webnovel-init` | 分阶段问答，帮你把书的骨架、设定集、总纲和初始状态搭起来 |
-| 卷纲规划 | `/webnovel-plan` | 基于总纲拆卷、拆章、补时间线，并写回新增设定 |
-| 章节创作 | `/webnovel-write` | 一条龙写完一章：备上下文、起草、审查、润色、记录事实、自动备份 |
-| 质量审查 | `/webnovel-review` | 从爽点、一致性、节奏、OOC、连贯性、追读力等维度审查章节 |
-| 状态查询 | `/webnovel-query` | 查询角色、伏笔、节奏、实体关系和运行时信息 |
-| 项目学习 | `/webnovel-learn` | 把这本书里好用的写法记下来，存进项目长期记忆 |
-| 可视化面板 | `/webnovel-dashboard` | 只读浏览项目状态、实体图谱、章节内容和追读力数据 |
-| 项目体检 | `/webnovel-doctor` | 阶段感知检查目录、文件、数据库、RAG、依赖和 Dashboard 产物 |
+| Deep initialization | `/webnovel-init` | Staged questions establish the book's structure, setting bible, master outline, and initial state |
+| Volume planning | `/webnovel-plan` | Break the master outline into volumes and chapters, fill in timelines, and persist new settings |
+| Chapter writing | `/webnovel-write` | Complete a chapter end to end: context, draft, review, polish, fact recording, and automatic backup |
+| Quality review | `/webnovel-review` | Review payoffs, consistency, pacing, out-of-character behavior, continuity, and reader retention |
+| State queries | `/webnovel-query` | Query characters, foreshadowing, pacing, entity relationships, and runtime information |
+| Project learning | `/webnovel-learn` | Save effective techniques from this book in project long-term memory |
+| Visual dashboard | `/webnovel-dashboard` | Browse project state, entity graphs, chapters, and reader-retention data read-only |
+| Project health check | `/webnovel-doctor` | Phase-aware checks of directories, files, databases, RAG, dependencies, and Dashboard artifacts |
 
-## 系统长什么样
+## System Overview
 
 ```mermaid
 flowchart LR
-    User[作者 / Claude Code] --> Skills[8 个 Skill 命令]
+    User[Author / Claude Code] --> Skills[8 Skill commands]
     Skills --> Agents[Context / Reviewer / Data / Deconstruction Agent]
-    Agents --> Story[.story-system 合同与提交链]
+    Agents --> Story[.story-system contracts and commit chain]
     Story --> Commit[accepted CHAPTER_COMMIT]
     Commit --> State[.webnovel/state.json]
     Commit --> Index[index.db / vectors.db]
     Commit --> Summary[summaries / memory_scratchpad]
-    State --> Dashboard[只读 Dashboard]
+    State --> Dashboard[Read-only Dashboard]
     Index --> Dashboard
     Summary --> Dashboard
 ```
 
-v6.0.0 的默认主链叫 **Story System**，几个关键角色：
+The default mainline in v6.0.0 is **Story System**. Its key components are:
 
-- `.story-system/`：唯一的事实源头，动笔前的“合同”和写完后的“提交”都存在这里
-- accepted 的 `CHAPTER_COMMIT`：一章写完，新事实从这里入账
-- `.webnovel/state.json`、`index.db`、`summaries/`、`memory_scratchpad.json`：都是从主链派生出来的只读视图，供查询和展示用
-- `.webnovel/projection_log.jsonl`：投影执行日志，用来定位 state/index/summary/memory/vector 哪一路没同步
-- `project-status`、`doctor`、`preflight` 和 Dashboard 会把主链与运行状态直接摆出来，哪里不对一眼就能看到
+- `.story-system/`: the single source of truth, storing pre-writing contracts and post-writing commits
+- An accepted `CHAPTER_COMMIT`: records new facts after a chapter is complete
+- `.webnovel/state.json`, `index.db`, `summaries/`, and `memory_scratchpad.json`: derived read-only views for queries and display
+- `.webnovel/projection_log.jsonl`: projection execution logs for diagnosing synchronization failures in state, index, summary, memory, or vector data
+- `project-status`, `doctor`, `preflight`, and the Dashboard: expose mainline and runtime status so problems are visible immediately
 
-## 快速开始
+## Quick Start
 
-### 1. 安装插件
+### 1. Install the Plugin
 
-通过 Claude Code Marketplace 安装：
+Install through the Claude Code Marketplace:
 
 ```bash
 claude plugin marketplace add lingfengQAQ/webnovel-writer --scope user
 claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
 ```
 
-只想在当前项目生效时，把 `--scope user` 改成 `--scope project`。
+Replace `--scope user` with `--scope project` to install only for the current project.
 
-> 插件的安装、启用与日常管理等更多用法，见 Claude Code 官方文档：[插件](https://docs.claude.com/en/docs/claude-code/plugins) · [插件市场](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)。
+> For installation, enabling, and everyday management, see the official Claude Code documentation: [plugins](https://docs.claude.com/en/docs/claude-code/plugins) · [plugin marketplaces](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces).
 
-### 2. 安装 Python 依赖
+### 2. Install Python Dependencies
 
 ```bash
 python -m pip install -r https://raw.githubusercontent.com/lingfengQAQ/webnovel-writer/HEAD/requirements.txt
 ```
 
-### 3. 初始化一本书
+### 3. Initialize a Book
 
-在 Claude Code 中输入：
+Enter this in Claude Code:
 
 ```bash
 /webnovel-init
 ```
 
-初始化完成后会创建书项目目录，包含：
+Initialization creates a book project directory containing:
 
 ```text
 project-root/
-├── .story-system/        # 合同、章节提交和事件审计
-├── .webnovel/            # 状态、索引、摘要、备份和长期记忆
-├── 正文/                  # 章节正文
-├── 大纲/                  # 总纲、卷纲、时间线和章纲
-├── 设定集/                # 世界观、角色、力量体系等设定
-└── 审查报告/              # 章节审查报告
+├── .story-system/        # Contracts, chapter commits, and event audits
+├── .webnovel/            # State, indexes, summaries, backups, and long-term memory
+├── 正文/                  # Chapter text
+├── 大纲/                  # Master, volume, timeline, and chapter outlines
+├── 设定集/                # Worldbuilding, characters, power systems, and other settings
+└── 审查报告/              # Chapter review reports
 ```
 
-### 4. 配置 RAG
+The Chinese directory names above are runtime path conventions and remain unchanged.
 
-进入书项目根目录，把 `.env.example` 复制为 `.env` 并填写 API Key：
+### 4. Configure RAG
+
+In the book project's root directory, copy `.env.example` to `.env` and fill in your API keys:
 
 ```bash
 cp .env.example .env
 ```
 
-最小配置：
+Minimal configuration:
 
 ```bash
 EMBED_BASE_URL=https://api-inference.modelscope.cn/v1
@@ -197,167 +140,167 @@ RERANK_MODEL=jina-reranker-v3
 RERANK_API_KEY=your_rerank_api_key
 ```
 
-没填 Embedding Key 也能用——系统会自动退回 BM25 关键词检索，只是语义召回会弱一些。Embedding 和 Rerank 都可以换成任何兼容 OpenAI 格式的接口。
+The system also works without an embedding key: it automatically falls back to BM25 keyword retrieval, with weaker semantic recall. Both embedding and reranking can use any compatible OpenAI-format endpoint.
 
-### 5. 开始规划和写作
+### 5. Start Planning and Writing
 
 ```bash
-/webnovel-plan 1      # 规划第 1 卷
-/webnovel-write 1     # 写第 1 章
-/webnovel-review 1-5  # 审查第 1-5 章
-/webnovel-query 伏笔  # 查询项目状态
+/webnovel-plan 1      # Plan volume 1
+/webnovel-write 1     # Write chapter 1
+/webnovel-review 1-5  # Review chapters 1–5
+/webnovel-query 伏笔  # Query project foreshadowing state
 ```
 
-### 6. 打开可视化面板
+### 6. Open the Dashboard
 
 ```bash
 /webnovel-dashboard
 ```
 
-Dashboard 是个只读面板，能看项目状态、实体关系图、章节内容、伏笔和追读力数据。前端是预先打包好的，跟着插件一起发，本地不用跑 `npm build`。
+The Dashboard is read-only and displays project status, entity relationships, chapters, foreshadowing, and reader-retention data. Its frontend is prebuilt and shipped with the plugin; no local `npm build` is needed.
 
-## 写章工作流
+## Chapter Writing Workflow
 
-`/webnovel-write` 不是把活儿丢给模型生成一次就完事，而是一条带关卡的完整流水线：
+`/webnovel-write` is not a single generation request. It is a complete gated pipeline:
 
-1. 预检项目根、占位符和 Story System 健康状态
-2. 刷新本章 runtime contract
-3. 调用 `context-agent` 生成写作任务书
-4. 根据任务书起草正文
-5. 调用 `reviewer` 做多维审查，blocking issue 不通过则阻断
-6. 润色、排版、Anti-AI 终检
-7. 调用 `data-agent` 提取事实
-8. 生成 `CHAPTER_COMMIT`，驱动 state、index、summary、memory、vector 投影
-9. 执行章节级备份
+1. Preflight the project root, placeholders, and Story System health
+2. Refresh the chapter's runtime contract
+3. Call `context-agent` to produce the writing brief
+4. Draft the chapter from the brief
+5. Call `reviewer` for multidimensional review; unresolved blocking issues stop progress
+6. Polish, format, and run the final Anti-AI check
+7. Call `data-agent` to extract facts
+8. Generate `CHAPTER_COMMIT` and project state, index, summary, memory, and vector updates
+9. Create a chapter-level backup
 
-这么设计，是为了把“怎么写”和“写了什么”分开：文笔和节奏可以放开发挥，但发生过的事实必须登记、过审、存档，不能含糊。
+This separates how a chapter is written from what happened in it. Prose and pacing have creative freedom, but established facts must be recorded, reviewed, and archived unambiguously.
 
-### 最终报告怎么看
+### Reading the Final Report
 
-`/webnovel-init`、`/webnovel-plan`、`/webnovel-write` 和 `/webnovel-review` 结束时都会给一份面向作者的最终报告，不直接把内部 JSON、traceback 或长命令日志甩出来。报告先给一句总状态：
+`/webnovel-init`, `/webnovel-plan`, `/webnovel-write`, and `/webnovel-review` finish with an author-facing report rather than raw internal JSON, tracebacks, or lengthy command logs. It starts with an overall status:
 
-- **已完成**：目标产物和关键校验都通过，可以进入下一步。
-- **部分完成**：主要产物已保留，但有跳过项、自动处理项或待确认的小尾巴。
-- **需要你处理**：系统已经停在安全位置，需要你决定创作方向、事实取舍、是否覆盖文件或如何处理 blocking 问题。
-- **未完成**：关键产物没有可信生成，按报告里的恢复建议重跑或排查。
+- **Completed**: required artifacts and key checks passed; proceed to the next step.
+- **Partially completed**: main artifacts were retained, but some steps were skipped, automatically handled, or need minor confirmation.
+- **Action required**: the system stopped safely and needs a decision about creative direction, conflicting facts, file overwrites, or blocking issues.
+- **Not completed**: essential artifacts were not reliably generated; rerun or investigate using the report's recovery advice.
 
-下面固定三段：一是产生的文件与完成情况，二是过程中遇到的问题与异常耗时，三是下一步建议。系统自动处理过的事也会写出来，比如投影失败后已补跑成功；只有不可恢复故障才会提示查看 `.webnovel/logs/run_last.log`。
+Three sections follow: generated files and completion status; issues and unusually long steps; and recommended next steps. Automatically resolved issues are also disclosed, such as a projection that succeeded on retry. Only unrecoverable failures direct you to `.webnovel/logs/run_last.log`.
 
-执行过程中只会看到少量进度提示，告诉你当前在做什么、会产生什么；只有创作方向、事实一致性、文件覆盖风险或 blocking issue 需要裁决时才会问你。重复执行同一条 `/webnovel-write 章号` 时，系统会先检查可信断点，尽量从失败点继续，不重写已经可信完成的正文、审查、提交或备份。
+During execution, a few progress messages explain the current step and expected output. Questions are limited to creative direction, factual consistency, overwrite risks, and blocking issues. Repeating `/webnovel-write <chapter-number>` first checks trustworthy checkpoints and resumes from the failure where possible, without repeating reliably completed drafting, review, commits, or backups.
 
-## 内置题材
+## Built-in Genres
 
-内置 37 个中文网文题材模板，也支持把几个题材揉在一起写。下面只列一部分：
+Includes 37 Chinese webnovel genre templates and supports combining genres. A selection:
 
-| 类型 | 题材示例 |
+| Category | Examples |
 |------|----------|
-| 玄幻修仙类 | 修仙、系统流、高武、西幻、无限流、末世、科幻 |
-| 都市现代类 | 都市异能、都市日常、都市脑洞、现实题材、电竞、直播文 |
-| 言情类 | 古言、宫斗宅斗、青春甜宠、豪门总裁、狗血言情、替身文、种田 |
-| 特殊题材 | 规则怪谈、悬疑脑洞、悬疑灵异、历史古代、抗战谍战、知乎短篇、克苏鲁 |
+| Fantasy and cultivation | Cultivation, system fiction, martial progression, Western fantasy, infinite-flow, apocalypse, science fiction |
+| Modern and urban | Urban superpowers, everyday urban life, high-concept urban fiction, realism, esports, livestreaming |
+| Romance | Historical romance, palace and household intrigue, sweet young romance, billionaire romance, melodrama, substitute romance, farming |
+| Specialty genres | Rule-based horror, mystery concepts, supernatural mystery, historical fiction, wartime espionage, Zhihu short fiction, cosmic horror |
 
-完整列表见 [题材模板文档](docs/guides/genres.md)。
+See the [genre template guide](docs/guides/genres.md) for the complete list.
 
-## 命令速查
+## Command Reference
 
-### Claude Code Skill 命令
+### Claude Code Skill Commands
 
-| 命令 | 示例 | 用途 |
+| Command | Example | Purpose |
 |------|------|------|
-| `/webnovel-init` | `/webnovel-init` | 初始化新书项目 |
-| `/webnovel-plan` | `/webnovel-plan 1` | 生成卷纲、时间线和章纲 |
-| `/webnovel-write` | `/webnovel-write 45` | 写作并提交指定章节 |
-| `/webnovel-review` | `/webnovel-review 1-5` | 审查章节范围 |
-| `/webnovel-query` | `/webnovel-query 萧炎` | 查询角色、伏笔、状态等信息 |
-| `/webnovel-learn` | `/webnovel-learn "这个钩子设计有效"` | 写入项目经验记忆 |
-| `/webnovel-dashboard` | `/webnovel-dashboard` | 启动只读可视化面板 |
-| `/webnovel-doctor` | `/webnovel-doctor --chapter 12` | 只读体检项目文件、DB、RAG 和依赖 |
+| `/webnovel-init` | `/webnovel-init` | Initialize a new book project |
+| `/webnovel-plan` | `/webnovel-plan 1` | Generate volume outlines, timelines, and chapter outlines |
+| `/webnovel-write` | `/webnovel-write 45` | Write and commit a specified chapter |
+| `/webnovel-review` | `/webnovel-review 1-5` | Review a range of chapters |
+| `/webnovel-query` | `/webnovel-query 萧炎` | Query characters, foreshadowing, state, and other information |
+| `/webnovel-learn` | `/webnovel-learn "This hook design works well"` | Record project experience in memory |
+| `/webnovel-dashboard` | `/webnovel-dashboard` | Launch the read-only visual dashboard |
+| `/webnovel-doctor` | `/webnovel-doctor --chapter 12` | Read-only health checks for project files, databases, RAG, and dependencies |
 
-### CLI 入口
+### CLI Entry Point
 
-所有命令行工具统一从 `scripts/webnovel.py` 进入：
+All command-line tools use `scripts/webnovel.py`:
 
 ```bash
-python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" <子命令> [参数]
+python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" <subcommand> [arguments]
 ```
 
-常用子命令：
+Common subcommands:
 
-| 子命令 | 说明 |
+| Subcommand | Description |
 |--------|------|
-| `where` | 打印当前解析出的书项目根目录 |
-| `preflight` | 校验插件路径、项目根、Story System 健康状态 |
-| `project-status` | 输出机器可读短状态、phase 和下一步 |
-| `doctor` | 阶段感知项目体检，给出影响和修复建议 |
-| `write-gate` | 写前、提交前、提交后三个自然边界校验 |
-| `projections` | 基于已有 commit 补跑或重放投影 |
-| `story-system` | 生成合同种子和 runtime contracts |
-| `chapter-commit` | 提交章节事实并驱动投影 |
-| `story-events` | 查询章节事件或检查事件链健康 |
-| `memory` | 查看、查询、导出和回填长期记忆 |
-| `rag` | 管理向量索引和检索状态 |
-| `status` | 输出项目健康报告 |
+| `where` | Print the resolved book project root |
+| `preflight` | Validate plugin paths, project root, and Story System health |
+| `project-status` | Output concise machine-readable status, phase, and next step |
+| `doctor` | Phase-aware health checks with impact and repair advice |
+| `write-gate` | Validate before writing, before committing, and after committing |
+| `projections` | Retry or replay projections from existing commits |
+| `story-system` | Generate contract seeds and runtime contracts |
+| `chapter-commit` | Commit chapter facts and drive projections |
+| `story-events` | Query chapter events or check event-chain health |
+| `memory` | View, query, export, and backfill long-term memory |
+| `rag` | Manage vector indexes and retrieval status |
+| `status` | Output a project health report |
 
-更多命令见 [命令详解](docs/guides/commands.md)。
+See the [detailed command guide](docs/guides/commands.md) for more.
 
-## 文档导航
+## Documentation
 
-| 文档 | 内容 |
+| Document | Contents |
 |------|------|
-| [文档中心](docs/README.md) | 所有文档索引和推荐阅读顺序 |
-| [系统架构与模块](docs/architecture/overview.md) | 核心理念、Agent 分工、Story System 设计 |
-| [命令详解](docs/guides/commands.md) | Skill 命令和 CLI 子命令速查 |
-| [RAG 与配置](docs/guides/rag-and-config.md) | 检索流程、环境变量、默认模型 |
-| [题材模板](docs/guides/genres.md) | 37 个题材模板和复合题材规则 |
-| [项目结构与运维](docs/operations/operations.md) | 目录层级、健康检查、备份恢复 |
-| [插件发版](docs/operations/plugin-release.md) | Marketplace 发版和版本同步流程 |
+| [Documentation center](docs/README.md) | Complete index and recommended reading order |
+| [Architecture and modules](docs/architecture/overview.md) | Core concepts, agent responsibilities, and Story System design |
+| [Command guide](docs/guides/commands.md) | Skill commands and CLI subcommands |
+| [RAG and configuration](docs/guides/rag-and-config.md) | Retrieval flow, environment variables, and default models |
+| [Genre templates](docs/guides/genres.md) | 37 templates and composite-genre rules |
+| [Project structure and operations](docs/operations/operations.md) | Directory layout, health checks, backup, and recovery |
+| [Plugin releases](docs/operations/plugin-release.md) | Marketplace release and version synchronization |
 
-## 开发与测试
+## Development and Testing
 
-克隆仓库后安装依赖：
+Clone the repository and install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
 python -m pip install -r webnovel-writer/scripts/requirements.txt
 ```
 
-运行测试：
+Run tests:
 
 ```bash
 python -m pytest
 ```
 
-Dashboard 前端位于 `webnovel-writer/dashboard/frontend/`，发布版已经包含 `dist/` 构建产物。开发前端时可单独进入该目录执行：
+The Dashboard frontend lives in `webnovel-writer/dashboard/frontend/`. Releases include prebuilt `dist/` artifacts. For frontend development, enter that directory and run:
 
 ```bash
 npm install
 npm run dev
 ```
 
-## 排查问题
+## Troubleshooting
 
-优先执行预检：
+Start with preflight checks:
 
 ```bash
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" preflight
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" doctor --format text
 ```
 
-重点查看：
+Check that:
 
-- `story_runtime.mainline_ready` 是否为 true
-- `.story-system/commits/chapter_XXX.commit.json` 是否存在且 accepted
-- `projection_status` 是否全部为 `done` 或 `skipped`
-- `index.db`、`summaries/`、`memory_scratchpad.json` 是否正常生成
-- RAG API Key 是否已写入书项目根目录的 `.env`
+- `story_runtime.mainline_ready` is true
+- `.story-system/commits/chapter_XXX.commit.json` exists and is accepted
+- Every `projection_status` is `done` or `skipped`
+- `index.db`, `summaries/`, and `memory_scratchpad.json` were generated correctly
+- RAG API keys are configured in `.env` at the book project root
 
-更多运维说明见 [项目结构与运维](docs/operations/operations.md)。
+See [project structure and operations](docs/operations/operations.md) for more.
 
-## 贡献
+## Contributing
 
-欢迎提 Issue 和 PR。最好用仓库里自带的模板，把复现步骤、环境信息、影响范围和验证方式填一下，也记得先给隐私信息脱敏。
+Issues and PRs are welcome. Use the repository templates to provide reproduction steps, environment details, impact, and verification methods. Remove private information first.
 
-建议流程：
+Suggested workflow:
 
 ```bash
 git checkout -b feature/your-feature
@@ -365,45 +308,47 @@ git commit -m "feat: add your feature"
 git push origin feature/your-feature
 ```
 
-适合贡献的方向：
+Useful areas for contributions:
 
-- 新题材模板和题材规则
-- 更强的章节审查维度
-- Dashboard 信息架构和可视化
-- RAG 检索、实体消歧、长期记忆
-- Windows/macOS/Linux 兼容性问题
-- 文档、示例项目和新手教程
+- New genre templates and rules
+- Stronger chapter review dimensions
+- Dashboard information architecture and visualization
+- RAG retrieval, entity disambiguation, and long-term memory
+- Windows/macOS/Linux compatibility
+- Documentation, example projects, and beginner tutorials
 
-## 更新简介
+## Release Highlights
 
-| 版本 | 主要变化 |
+The current-release marker `(当前)` is retained for compatibility with the version synchronization tool.
+
+| Version | Main changes |
 |------|----------|
-| **v6.2.1 (当前)** | 修复 Windows 写章提交偶发的拒绝访问（WinError 5）：资料文件被短暂占用时自动重试 |
-| **v6.2.0** | 写章结果更清楚，失败后更好恢复 |
-| **v6.1.0** | 插件运行时加固：新增 doctor/project-status/write-gate/projection 重放、hooks、行为 eval 与发布校验 |
-| **v6.0.0** | Story System 全链路上线（合同种子 + 运行时合同 + 章节提交 + 事件审计），补齐集成测试 |
-| **v5.5.5** | 长期记忆闭环：写前注入 + 写后沉淀，新增 `memory` 运维命令 |
-| **v5.5.4** | 写作链提示词强约束，统一中文化审查和报告文案 |
-| **v5.5.3** | 统一 `preflight` 预检命令，修复 Windows 终端编码问题 |
-| **v5.5.2** | 大纲章节名同步到正文文件名 |
-| **v5.5.1** | 修复卷级大纲上下文提取，补齐 Dashboard 和 Learn 命令文档 |
-| **v5.5.0** | 新增只读可视化 Dashboard，支持实时刷新 |
-| **v5.4.4** | 接入 Plugin Marketplace 安装机制 |
-| **v5.4.3** | 增强 RAG 智能上下文（`auto/graph_hybrid` 回退 BM25） |
-| **v5.3** | 引入追读力系统（Hook / Cool-point / 微兑现 / 债务追踪） |
+| **v6.2.1 (当前)** | Fix intermittent Windows chapter-commit access denial (WinError 5): automatically retry briefly locked data files |
+| **v6.2.0** | Clearer writing results and better recovery after failure |
+| **v6.1.0** | Runtime hardening: doctor/project-status/write-gate/projection replay, hooks, behavioral evals, and release checks |
+| **v6.0.0** | Full Story System pipeline: contract seeds, runtime contracts, chapter commits, event audits, and integration tests |
+| **v5.5.5** | Closed-loop long-term memory: pre-writing injection, post-writing retention, and the `memory` operations command |
+| **v5.5.4** | Stronger writing-chain prompt constraints and standardized Chinese review/report wording |
+| **v5.5.3** | Unified `preflight` command and Windows terminal encoding fixes |
+| **v5.5.2** | Synchronize outline chapter titles with chapter filenames |
+| **v5.5.1** | Fix volume-level outline context extraction; complete Dashboard and Learn documentation |
+| **v5.5.0** | New read-only visual Dashboard with live refresh |
+| **v5.4.4** | Plugin Marketplace installation support |
+| **v5.4.3** | Smarter RAG context with `auto/graph_hybrid` fallback to BM25 |
+| **v5.3** | Reader-retention system: hooks, payoffs, micro-payoffs, and narrative-debt tracking |
 
-## 开源协议
+## License
 
-本项目使用 [GPL v3](LICENSE) 协议。
+This project is licensed under [GPL v3](LICENSE).
 
-## Star 历史
+## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=lingfengQAQ/webnovel-writer&type=Date)](https://star-history.com/#lingfengQAQ/webnovel-writer&Date)
 
-## 致谢
+## Acknowledgments
 
-本项目使用 Claude Code、Gemini CLI 与 Codex 配合 Vibe Coding 方式开发。
+Developed through Vibe Coding with Claude Code, Gemini CLI, and Codex.
 
-灵感来源：[Linux.do 帖子](https://linux.do/t/topic/1397944/49)
+Inspiration: [Linux.do discussion](https://linux.do/t/topic/1397944/49)
 
-感谢 `oh-story-claudecode` 提供拆文流程参考。
+Thanks to `oh-story-claudecode` for its story-deconstruction workflow reference.

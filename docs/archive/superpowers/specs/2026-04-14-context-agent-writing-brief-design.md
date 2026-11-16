@@ -1,398 +1,398 @@
-# Context Agent 写作任务书收束设计
+# Context Agent Writing Brief Consolidation Design
 
-> **日期**: 2026-04-14
-> **状态**: 草案 v1
-> **定位**: 收束写前入口，改造 `context-agent` 与 `writer` 的输入边界
+> **Date**: 2026-04-14
+> **Status**: Draft v1
+> **Purpose**: Consolidate the pre-writing entry point and redefine the input boundaries of `context-agent` and `writer`
 
 ---
 
-## 1. 文档定位
+## 1. Document Purpose
 
-### 1.1 这份设计要解决什么问题
+### 1.1 Problems This Design Addresses
 
-当前写前链路有三个问题：
+The current pre-writing pipeline has three problems:
 
-1. `Step 0.5` 与 `context-agent` 职责重叠
-2. 现有创作包像审计表，不像作者愿意接的任务书
-3. `writer` 还能间接接触过多原始材料，导致输入面没有真正收束
+1. `Step 0.5` and `context-agent` have overlapping responsibilities.
+2. The existing creative package resembles an audit form rather than a commission an author would welcome.
+3. `writer` still indirectly accesses too much raw material, so its input boundary has not truly narrowed.
 
-这份设计要做的事不是再造一套新底稿，而是：
+This design does not introduce another working document. Instead, it will:
 
-- 让 `context-agent` 成为唯一写前组装入口
-- 让当前 research 拼出来的任务包继续作为**内部底稿**
-- 在其上生成一份只给 `writer` 读的**写作任务书**
+- Make `context-agent` the sole pre-writing assembly entry point.
+- Keep the package assembled by current research as the **internal working document**.
+- Generate a **writing brief** on top of it, exclusively for `writer`.
 
-### 1.2 一句话结论
+### 1.2 One-Sentence Conclusion
 
-后续主链应改为：
+The mainline should become:
 
 ```text
 context-agent
   -> research
-  -> 当前任务包（内部底稿）
-  -> 写作任务书
+  -> current task package (internal working document)
+  -> writing brief
   -> writer
 ```
 
-其中：
+Here:
 
-- 内部底稿继续服务 agent 自己
-- `writer` 只接收 `写作任务书`
-- 这件事作为**调用层事实**实现，不写进 `writer` 的明面约束
-
----
-
-## 2. 设计目标与非目标
-
-### 2.1 目标
-
-这次改造只达成 6 个目标：
-
-1. 收回 `Step 0.5`，并入 `context-agent`
-2. 保留现有任务包作为内部底稿，不发明新底稿格式
-3. 新增最终产物 `写作任务书`
-4. 让 `writer` 的输入面事实上收束到一份任务书
-5. 把生硬规则翻译成自然的约稿口吻
-6. 保留 `anti-ai-guide.md` 与 `core-constraints.md` 作为写前事实源
-
-### 2.2 非目标
-
-这次设计明确不做：
-
-1. 不重做 `story_contract` schema
-2. 不要求给 `writer` 展示合同、检查清单、规则来源
-3. 不要求为任务书建立字段映射表
-4. 不把 `anti-ai-guide.md` 拆进 CSV
-5. 不把所有 `core-constraints.md` 内容都翻给 `writer`
+- The internal working document continues to serve the agent itself.
+- `writer` receives only the writing brief.
+- This is enforced **at the invocation layer**, not stated as an explicit constraint in the `writer` prompt.
 
 ---
 
-## 3. 核心原则
+## 2. Goals and Non-Goals
 
-### 3.1 事实隔离，不写成口头约束
+### 2.1 Goals
 
-`writer` 只读任务书，这必须通过调用层实现。
+This change has exactly six goals:
 
-但不要在 `writer` 提示词里写：
+1. Absorb `Step 0.5` into `context-agent`.
+2. Keep the existing task package as the internal working document without inventing a new format.
+3. Add the final writing brief artifact.
+4. Narrow `writer` input to a single brief in practice.
+5. Translate rigid rules into a natural commissioning voice.
+6. Retain `anti-ai-guide.md` and `core-constraints.md` as pre-writing sources of truth.
 
-- “你只能看任务书”
-- “不要读取其他材料”
-- “合同在某处”
+### 2.2 Non-Goals
 
-原因很简单：
+This design explicitly does not:
 
-- 一旦要靠提示词强调边界，说明边界没有在编排层真正成立
-- 如果 `writer` 还觉得信息不够，问题应回溯到任务书质量，而不是放权给 `writer`
+1. Redesign the `story_contract` schema.
+2. Require showing contracts, checklists, or rule sources to `writer`.
+3. Require a field-mapping table for the brief.
+4. Split `anti-ai-guide.md` into CSV.
+5. Pass every part of `core-constraints.md` to `writer`.
 
-### 3.2 写作任务书要像约稿，不像说明书
+---
 
-`writer` 看到的文案不应再是：
+## 3. Core Principles
 
-- 合同条目
-- 检查清单
-- 禁止事项平铺
-- 审计式字段展开
+### 3.1 Enforce Isolation, Rather Than Stating It
 
-而应像一个懂创作的搭档在交代这一章：
+The invocation layer must ensure `writer` reads only the brief.
 
-- 这章写什么
-- 谁在场
-- 会发生什么
-- 该抓什么感觉
-- 收在哪里
+Do not put statements like these in the `writer` prompt:
 
-### 3.3 语义生成优先，不做硬映射表
+- “You may only read the brief.”
+- “Do not read other material.”
+- “The contract is located elsewhere.”
 
-`context-agent` 应基于内部底稿语义生成任务书。
+The reason is simple:
 
-这意味着：
+- If the boundary needs emphasis in the prompt, it has not actually been established in orchestration.
+- If `writer` still lacks information, investigate the quality of the brief rather than expanding its access.
 
-- 不做“字段 A 必须去段落 B”的映射表
-- 只规定任务书要说清什么
-- 不规定必须按什么字段顺序硬拼
+### 3.2 A Writing Brief Should Read Like a Commission, Not a Manual
 
-### 3.4 通用守则保留全文，最终文案自然化
+The text shown to `writer` should no longer consist of:
 
-`anti-ai-guide.md` 与 `core-constraints.md` 继续作为写前事实源存在。
+- Contract clauses
+- Checklists
+- Flat lists of prohibitions
+- Audit-style field expansions
 
-但它们进入最终任务书时，必须被翻译成自然口吻。
+Instead, it should sound like a creative partner explaining the chapter:
 
-正文中不要出现：
+- What to write
+- Who is present
+- What will happen
+- What feeling to capture
+- Where to end
+
+### 3.3 Prefer Semantic Generation Over Rigid Mapping Tables
+
+`context-agent` should generate the brief semantically from the internal working document.
+
+This means:
+
+- No mapping table saying “field A must go in paragraph B.”
+- Specify only what the brief must make clear.
+- Do not mandate a fixed field order for mechanical assembly.
+
+### 3.4 Retain General Guidelines in Full; Naturalize the Final Wording
+
+`anti-ai-guide.md` and `core-constraints.md` remain pre-writing sources of truth.
+
+When incorporated into the final brief, they must be rewritten in a natural voice.
+
+The body must not contain:
 
 - `Anti-AI`
-- `检查`
-- `约束`
-- `合同`
+- “check”
+- “constraint”
+- “contract”
 - `blocking_rules`
-- 文件名或路径
+- File names or paths
 
 ---
 
-## 4. 两层结构
+## 4. Two-Layer Structure
 
-### 4.1 内部底稿
+### 4.1 Internal Working Document
 
-内部底稿不新增新结构体，直接沿用当前 `context-agent` research 拼出来的任务包。
+Do not introduce a new data structure. Reuse the task package currently assembled through `context-agent` research.
 
-它继续包含：
+It continues to include:
 
-- 章纲
-- 前文摘要
+- Chapter outline
+- Previous-story summaries
 - `story_contract`
-- latest accepted `CHAPTER_COMMIT`
+- Latest accepted `CHAPTER_COMMIT`
 - `plot_structure`
 - `prewrite_validation`
 - `reader_signal`
 - `genre_profile`
 - `writing_guidance`
 - `long_term_memory`
-- 其他按需 research 结果
+- Other research results as needed
 
-同时，在生成任务书前，`context-agent` 还必须全文读取：
+Before generating the brief, `context-agent` must also read these in full:
 
 - `references/shared/core-constraints.md`
 - `skills/webnovel-write/references/anti-ai-guide.md`
 
-这两份材料进入内部底稿，但不原样进入最终任务书。
+Both feed the internal working document but must not appear verbatim in the final brief.
 
-### 4.2 写作任务书
+### 4.2 Writing Brief
 
-`写作任务书` 是给 `writer` 的唯一输入。
+The writing brief is the sole input to `writer`.
 
-它只保留对成文直接有用的信息，并改写成约稿口吻。
+It retains only information directly useful for drafting, rewritten in a commissioning voice.
 
-它不暴露：
+It does not expose:
 
-- 来源
-- 文件名
-- 合同层级
-- 检查流程
-- 数据处理流程
+- Sources
+- File names
+- Contract hierarchy
+- Validation procedures
+- Data-processing procedures
 
 ---
 
-## 5. 哪些内容不进 CSV
+## 5. What Must Stay Out of CSV
 
-### 5.1 明确不进 CSV
+### 5.1 Explicit Exclusions
 
-以下内容继续保留为 md 或模板层资产：
+Keep these as Markdown or template-layer assets:
 
 1. `anti-ai-guide.md`
-2. `core-constraints.md` 中的全局流程与通用守则
-3. 写作任务书模板本身
-4. `context-agent` / `writer` 的角色边界
-5. 完整风格锚点正文
+2. Global processes and general guidelines in `core-constraints.md`
+3. The writing brief template itself
+4. The role boundaries of `context-agent` / `writer`
+5. Complete style-anchor passages
 
-原因一致：
+The reasons are the same:
 
-- 这些内容不是按需检索条目
-- 不是命中几条就够
-- 顺序、语气和整体结构本身就是信息
+- These are not on-demand retrieval entries.
+- Retrieving a few matching items is not enough.
+- Their order, tone, and overall structure are themselves information.
 
-### 5.2 后续可继续进 CSV 的内容
+### 5.2 Content That Can Still Move Into CSV
 
-以下内容仍适合继续结构化：
+These remain suitable for further structuring:
 
-1. 题材化爽点类型
-2. 题材化节奏风险
-3. 场景化写作重定向
-4. 题材特定毒点与误区
-5. 可复用桥段推进方式
+1. Genre-specific payoff types
+2. Genre-specific pacing risks
+3. Scene-specific writing redirections
+4. Genre-specific reader turn-offs and pitfalls
+5. Reusable plot-progression techniques
 
-也就是说：
+In other words:
 
-- 通用写作运行守则，不进 CSV
-- 题材化、场景化、可检索知识，继续进 CSV
+- General writing operating guidelines stay out of CSV.
+- Genre-specific, scene-specific, retrievable knowledge continues to move into CSV.
 
 ---
 
-## 6. `core-constraints` 与 `anti-ai-guide` 的处理方式
+## 6. Handling `core-constraints` and `anti-ai-guide`
 
 ### 6.1 `anti-ai-guide.md`
 
-规则固定为：
+The fixed rules are:
 
-1. 全文读取
-2. 不拆 CSV
-3. 不原样给 `writer`
-4. 只翻译成任务书里的自然提醒
+1. Read it in full.
+2. Do not split it into CSV.
+3. Do not pass it verbatim to `writer`.
+4. Convert it only into natural reminders within the brief.
 
 ### 6.2 `core-constraints.md`
 
-规则固定为：
+The fixed rules are:
 
-1. 全文读取
-2. 不原样给 `writer`
-3. 只提炼其中会直接影响本章成文的部分
+1. Read it in full.
+2. Do not pass it verbatim to `writer`.
+3. Extract only the parts that directly affect drafting this chapter.
 
-以下内容通常不应进入最终任务书：
+These should generally not enter the final brief:
 
 - Data Agent
 - `index.db`
-- 新实体处理流程
-- 路径、命令、系统流程
-- 只对系统运转有意义的后台规则
+- New-entity processing procedures
+- Paths, commands, and system processes
+- Background rules relevant only to system operation
 
-### 6.3 最终呈现方式
+### 6.3 Final Presentation
 
-最终任务书中，这两份材料都只能变成这种表达：
+In the final brief, both sources may appear only as wording such as:
 
-- “这章先把人和事往前推，不要急着解释”
-- “情绪尽量落在动作和反应里，不要一上来把话说透”
-- “结尾别把局面放平，留一点还没彻底落地的东西”
+- “Move the people and events forward first in this chapter; do not rush to explain.”
+- “Let emotion come through actions and reactions rather than spelling it all out immediately.”
+- “Do not settle everything at the end; leave something not quite resolved.”
 
-而不是：
+Not:
 
-- “执行 Anti-AI 第 3 条”
-- “遵守三大定律”
-- “检查 blocking rules”
-
----
-
-## 7. 写作任务书的固定结构
-
-最终任务书固定为五段式。
-
-### 7.1 开篇委托
-
-先说清这是什么书、哪一章、这一章一句话要写成什么。
-
-应像：
-
-- 你现在要写《某书》第 12 章《某标题》
-- 这一章主要写……
-- 重点不是……而是……
-
-### 7.2 这一章的故事
-
-说清：
-
-- 这一章谁要做什么
-- 为什么非做不可
-- 真正难的地方在哪
-- 局面会怎么推进
-
-### 7.3 这章的人物
-
-只写对成文直接有用的人物信息：
-
-- 当前状态
-- 眼前驱动力
-- 这章里的主要作用
-- 说话和行动倾向
-
-### 7.4 这章怎么写更顺
-
-这一段负责承接：
-
-- 节奏提醒
-- 情绪写法
-- 对话写法
-- 参考气质
-- 风格锚点
-- 从 `anti-ai-guide` 和 `core-constraints` 翻译来的自然提醒
-
-这一段是整个任务书最关键的部分。
-
-### 7.5 这章收在哪里
-
-只说明结尾应该停在什么感觉上：
-
-- 某个动作
-- 某个画面
-- 某句对话
-- 某种未完感
-
-不把事情全部讲平。
+- “Execute Anti-AI rule 3.”
+- “Follow the three laws.”
+- “Check blocking rules.”
 
 ---
 
-## 8. 语言要求
+## 7. Fixed Writing Brief Structure
 
-`写作任务书` 的语言必须满足：
+The final brief has five sections.
 
-1. 简洁中文
-2. 短句优先
-3. 不端着
-4. 不训话
-5. 不写制度口吻
-6. 不暴露系统术语
+### 7.1 Opening Commission
 
-推荐语气：
+First clarify the book, chapter, and one-sentence objective for this chapter.
 
-- 像懂创作的搭档作者
-- 像在交代这一章怎么写会更顺
-- 像约稿，不像操作手册
+For example:
+
+- You are writing chapter 12, “Chapter Title,” of *Book Title*.
+- This chapter is mainly about…
+- The focus is not… but…
+
+### 7.2 This Chapter’s Story
+
+Explain:
+
+- Who needs to do what
+- Why they must do it
+- What makes it truly difficult
+- How the situation will progress
+
+### 7.3 This Chapter’s Characters
+
+Include only character information directly useful for drafting:
+
+- Current state
+- Immediate motivation
+- Main role in this chapter
+- Speech and action tendencies
+
+### 7.4 How to Make This Chapter Flow
+
+This section incorporates:
+
+- Pacing reminders
+- Emotional expression
+- Dialogue approach
+- Reference atmosphere
+- Style anchors
+- Natural reminders translated from `anti-ai-guide` and `core-constraints`
+
+This is the most important part of the entire brief.
+
+### 7.5 Where This Chapter Ends
+
+Describe only the feeling on which the ending should stop:
+
+- An action
+- An image
+- A line of dialogue
+- A sense of incompletion
+
+Do not resolve everything.
 
 ---
 
-## 9. 流程改造
+## 8. Language Requirements
 
-### 9.1 新流程
+The writing brief must use:
 
-后续写前主链改为：
+1. Concise Chinese
+2. Short sentences where possible
+3. An unpretentious voice
+4. No lecturing
+5. No institutional tone
+6. No exposed system terminology
+
+Recommended voice:
+
+- Like a co-author who understands creative writing
+- Like someone explaining how to make the chapter flow better
+- Like a commission, not an operating manual
+
+---
+
+## 9. Workflow Changes
+
+### 9.1 New Workflow
+
+The pre-writing mainline becomes:
 
 ```text
 Step 1: context-agent
   -> research
-  -> 生成内部底稿
-  -> 生成写作任务书
+  -> generate internal working document
+  -> generate writing brief
 
 Step 2: writer
-  -> 只接收写作任务书
-  -> 直接起草正文
+  -> receive only the writing brief
+  -> draft the chapter directly
 ```
 
-### 9.2 `Step 0.5` 的处理
+### 9.2 Handling `Step 0.5`
 
-现有 `Step 0.5` 的职责应全部回收给 `context-agent`。
+All existing `Step 0.5` responsibilities should return to `context-agent`.
 
-不再允许：
+No longer allow:
 
-- 一部分信息由 `context-agent` 做
-- 一部分信息由 `writer` 自己补
-- 一部分提醒在写时临时再拼
+- Some information to be prepared by `context-agent`
+- Other information to be supplied by `writer` itself
+- Other reminders to be assembled ad hoc during writing
 
-### 9.3 失败语义
+### 9.3 Failure Semantics
 
-如果 `writer` 在只读任务书的前提下仍然表现出：
+If `writer`, while reading only the brief, still shows:
 
-- 信息不够
-- 情绪不对
-- 冲突不清
-- 节奏发硬
+- Insufficient information
+- Incorrect emotional tone
+- Unclear conflict
+- Stiff pacing
 
-应优先判断为：
+First conclude that:
 
-- `context-agent` 的任务书写得不够好
+- The brief produced by `context-agent` is not good enough.
 
-而不是给 `writer` 继续开放原始材料。
-
----
-
-## 10. 验收标准
-
-这次改造完成后，至少要满足：
-
-1. `context-agent` 成为唯一写前组装入口
-2. 现有任务包继续作为内部底稿使用
-3. `writer` 的最终输入只剩一份写作任务书
-4. 任务书正文不出现“约束 / 检查 / 合同 / Anti-AI”等词
-5. 任务书正文读起来像约稿，不像制度说明
-6. `anti-ai-guide.md` 全文继续参与生成，但不原样暴露
-7. `core-constraints.md` 全文继续参与生成，但只挑成文相关内容翻译
+Do not respond by giving `writer` more access to raw material.
 
 ---
 
-## 11. 实施建议
+## 10. Acceptance Criteria
 
-实现顺序建议如下：
+After the change, at minimum:
 
-1. 先改 `context-agent` 的职责说明
-2. 再改任务书生成模板
-3. 再收掉 `Step 0.5` 的重复职责
-4. 最后把 `writer` 的输入面切到只读任务书
+1. `context-agent` is the sole pre-writing assembly entry point.
+2. The existing task package remains the internal working document.
+3. The final input to `writer` is a single writing brief.
+4. The brief body contains no terms such as “constraint / check / contract / Anti-AI.”
+5. The brief reads like a commission, not a policy document.
+6. The full `anti-ai-guide.md` still participates in generation without being exposed verbatim.
+7. The full `core-constraints.md` still participates in generation, with only drafting-relevant content translated into the brief.
 
-这次不要先动合同 schema，也不要先扩 CSV。
+---
 
-先把写前入口和最终文案收束，收益最大，风险最小。
+## 11. Implementation Recommendations
+
+Recommended implementation order:
+
+1. Update the responsibility description for `context-agent`.
+2. Update the brief-generation template.
+3. Remove the duplicated responsibilities of `Step 0.5`.
+4. Finally, restrict `writer` input to the brief alone.
+
+Do not start by changing the contract schema or expanding CSV.
+
+Consolidating the pre-writing entry point and final wording first offers the greatest benefit with the least risk.

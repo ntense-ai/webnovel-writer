@@ -1,120 +1,120 @@
-# Story System 最终收束 Spec
+# Story System Final Convergence Specification
 
-> **日期**: 2026-04-14
-> **状态**: 草案 v1
-> **定位**: 基于当前代码真实状态，把 Story System 从“半成品并存”收束到“六层主链 + 消费端同步”的最终 spec
+> **Date**: 2026-04-14
+> **Status**: Draft v1
+> **Purpose**: Based on the actual codebase, converge Story System from coexisting partial implementations into a six-layer mainline with synchronized consumers
 
 ---
 
-## 1. 文档定位
+## 1. Document Purpose
 
-### 1.1 这份 spec 解决什么问题
+### 1.1 Problems This Specification Addresses
 
-前面的文档已经分别回答了三个问题：
+Earlier documents answered three questions:
 
 - [`current-system-diagnosis.md`](../../architecture/current-system-diagnosis.md)
-  - 当前系统哪里散、哪里重复、哪里有半成品
+  - Where the current system is fragmented, duplicated, or only partially implemented
 - [`2026-04-12-story-system-evolution-spec.md`](./2026-04-12-story-system-evolution-spec.md)
-  - 六层主链应该长什么样
+  - What the six-layer mainline should look like
 - [`2026-04-14-context-agent-writing-brief-design.md`](./2026-04-14-context-agent-writing-brief-design.md)
-  - 写前任务书入口怎么收束
+  - How to consolidate the pre-writing brief entry point
 
-这份 spec 解决的是更直接的问题：
+This specification addresses a more direct question:
 
-> 在不考虑向后兼容的前提下，如何把现在的代码、CSV、合同、提交链、投影链和消费端，一次性收束到最终可用状态。
+> Without preserving backward compatibility, how can the current code, CSVs, contracts, commit pipeline, projections, and consumers converge in one effort into a usable final state?
 
-### 1.2 一句话结论
+### 1.2 One-Sentence Conclusion
 
-这次收束的目标不是“再补一个模块”，而是：
+The goal is not to add another module, but to:
 
-- 六层全做
-- 旧散写路径直接删
-- `context_manager` 降级为纯 JSON 组装器
-- `CSV_CONFIG + 裁决表 + 合同树 + commit/projection` 成为唯一主链
-- 所有消费者只吃合同和投影视图
+- Complete all six layers
+- Delete scattered legacy write paths outright
+- Reduce `context_manager` to a pure JSON assembler
+- Make `CSV_CONFIG + reasoning table + contract tree + commit/projection` the sole mainline
+- Have all consumers use only contracts and projection views
 
 ---
 
-## 2. 已确认的关键决策
+## 2. Confirmed Key Decisions
 
-这轮 brainstorming 已经确认以下决策，不再反复摇摆：
+The following decisions were confirmed in brainstorming and should not be repeatedly reconsidered.
 
-### 2.1 范围
+### 2.1 Scope
 
-- 做 **六层全覆盖**
-- 不只改代码层
-- 必须同步改 skill / agent / CLI / eval / docs 等消费端
+- Cover **all six layers**.
+- Do not change only the code layer.
+- Synchronize consumers including skills, agents, CLI, evals, and documentation.
 
-### 2.2 向后兼容
+### 2.2 Backward Compatibility
 
-- **不考虑向后兼容**
-- 旧散写路径、旧直读路径、旧 fallback 路径，能删就删
-- 不保留 deprecated 双路径
+- **Do not preserve backward compatibility.**
+- Delete legacy scattered-write, direct-read, and fallback paths wherever possible.
+- Do not retain deprecated dual paths.
 
 ### 2.3 `context_manager`
 
-- 降级为 **纯 JSON payload 组装器**
-- 不再负责 text 渲染
-- 不再保留为旧说明书式文本输出服务的 snapshot 逻辑
+- Reduce it to a **pure JSON payload assembler**.
+- Remove text-rendering responsibilities.
+- Remove snapshot logic serving the old instruction-manual text output.
 
 ### 2.4 `CSV_CONFIG`
 
-- 放在 `reference_search.py` 里
-- 形态模仿 `ui-ux-pro-max/core.py`
-- 每张表显式声明 `file / search_cols / output_cols / poison_cols / role`
+- Place it in `reference_search.py`.
+- Model its form on `ui-ux-pro-max/core.py`.
+- Explicitly declare `file / search_cols / output_cols / poison_cols / role` for every table.
 
-### 2.5 裁决层
+### 2.5 Reasoning Layer
 
-- 新建独立 `裁决规则.csv`
-- key 为题材
-- 它回答的是“命中后怎么裁决、优先谁、注入哪层”，不是“查哪些表”
+- Create an independent `裁决规则.csv`.
+- Key it by genre.
+- It determines how to adjudicate matches, what takes priority, and where to inject results, not which tables to search.
 
-### 2.6 `anti-ai-guide.md` 与 `core-constraints.md`
+### 2.6 `anti-ai-guide.md` and `core-constraints.md`
 
-- `anti-ai-guide.md` 保留为 md 真源
-  - 不拆 CSV
-  - 不给消费者直读
-  - 只在需要的步骤被上游吸收后转写
-- `core-constraints.md` 不再整篇读取
-  - 拆成具体约束
-  - 分步骤落到合同、runtime、review、commit 校验和消费端文案里
+- Keep `anti-ai-guide.md` as the Markdown source of truth.
+  - Do not split it into CSV.
+  - Do not let consumers read it directly.
+  - Upstream stages absorb and rewrite it only where needed.
+- Stop reading `core-constraints.md` in full.
+  - Decompose it into concrete constraints.
+  - Place them at the appropriate stages in contracts, runtime, review, commit validation, and consumer wording.
 
-### 2.7 消费端真源
+### 2.7 Consumer Sources of Truth
 
-- 所有消费者只允许直接吃：
-  - 合同树
+- All consumers may directly consume only:
+  - The contract tree
   - `CHAPTER_COMMIT`
-  - 投影视图
-- 不再允许运行时直接读 CSV / md / reference 来补洞
+  - Projection views
+- Do not allow direct runtime reads of CSV / Markdown / references to fill gaps.
 
-### 2.8 首批题材范围
+### 2.8 Initial Genre Scope
 
-这次先做好 7 个题材：
+Complete these seven genres first (exact table labels retained):
 
-1. 西方奇幻
-2. 东方仙侠
-3. 科幻末世
-4. 都市日常
-5. 都市修真
-6. 都市高武
-7. 历史古代
+1. Western fantasy (`西方奇幻`)
+2. Eastern xianxia (`东方仙侠`)
+3. Science-fiction apocalypse (`科幻末世`)
+4. Urban slice of life (`都市日常`)
+5. Urban cultivation (`都市修真`)
+6. Urban high martial arts (`都市高武`)
+7. Historical fiction (`历史古代`)
 
-其余题材不在本轮收束范围内。
+Other genres are outside this convergence effort.
 
-### 2.9 实施顺序
+### 2.9 Implementation Order
 
-- 从底层往上推
-- 走串行，不走并行
-- 先把基础收稳，再做消费者同步
+- Work upward from the foundations.
+- Execute serially, not in parallel.
+- Stabilize the foundations before synchronizing consumers.
 
 ---
 
-## 3. 总体链路
+## 3. Overall Pipeline
 
-最终链路固定为：
+The final pipeline is fixed:
 
 ```text
-知识表 / 裁决表
+Knowledge tables / reasoning table
         ↓
 CSV_CONFIG + reference_search
         ↓
@@ -122,11 +122,11 @@ story_system_engine
         ↓
 MASTER / VOLUME / CHAPTER / REVIEW
         ↓
-context_manager（只出 JSON）
+context_manager (JSON only)
         ↓
-context-agent（按示例写任务书）
+context-agent (write the brief following examples)
         ↓
-webnovel-write Step 2（只吃任务书）
+webnovel-write Step 2 (brief only)
         ↓
 review / data-agent
         ↓
@@ -137,23 +137,23 @@ projection writers
 state / index / summaries / memory / vector
 ```
 
-这里有两个硬边界：
+Two hard boundaries apply:
 
-1. 消费端不再运行时直读知识层
-2. 写后事实只允许经 `CHAPTER_COMMIT -> projection` 进入各存储
+1. Consumers no longer read the knowledge layer directly at runtime.
+2. Post-writing facts enter storage only through `CHAPTER_COMMIT -> projection`.
 
 ---
 
-## 4. Section 1：`CSV_CONFIG` 注册层
+## 4. Section 1: `CSV_CONFIG` Registry Layer
 
-### 4.1 要做什么
+### 4.1 Work Required
 
-在 `reference_search.py` 里引入注册式 `CSV_CONFIG`，替代当前全局硬编码的：
+Introduce a registry-based `CSV_CONFIG` in `reference_search.py`, replacing the current global hard-coded:
 
 - `_SEARCH_FIELD_WEIGHTS`
 - `_CONTENT_COLUMNS`
 
-改成每张表自己定义：
+Each table instead defines:
 
 - `file`
 - `search_cols`
@@ -161,7 +161,7 @@ state / index / summaries / memory / vector
 - `poison_cols`
 - `role`
 
-### 4.2 目标形态
+### 4.2 Target Form
 
 ```python
 CSV_CONFIG = {
@@ -204,114 +204,111 @@ CSV_CONFIG = {
     },
 }
 ```
-
-### 4.3 改动要求
+### 4.3 Required Changes
 
 - `reference_search.py`
-  - 改为从 `CSV_CONFIG` 读取 per-table 配置
+  - Read per-table configuration from `CSV_CONFIG`.
 - `story_system_engine.py`
-  - 不再内部硬编码表角色
-  - 改为使用 `CSV_CONFIG`
-- 新增校验脚本
-  - 校验 `CSV_CONFIG`
-  - 校验 CSV 表头
-  - 校验 `README.md`
+  - Stop hard-coding table roles internally.
+  - Use `CSV_CONFIG` instead.
+- Add a validation script.
+  - Validate `CSV_CONFIG`.
+  - Validate CSV headers.
+  - Validate `README.md`.
 
-### 4.4 验收
+### 4.4 Acceptance
 
-- 同一 CLI 在不同表上确实用的是不同 `search_cols`
-- `CSV_CONFIG` 的每张表字段都能在 CSV 头里找到
-- 校验脚本通过
+- The same CLI actually uses different `search_cols` for different tables.
+- Every field declared in `CSV_CONFIG` exists in the corresponding CSV header.
+- The validation script passes.
 
 ---
 
-## 5. Section 2：CSV 内容修补
+## 5. Section 2: CSV Content Repairs
 
-### 5.1 要做什么
+### 5.1 Work Required
 
-对现有表做一次统一审计和修补，让它们能稳定被裁决层和合同层消费。
+Audit and repair existing tables consistently so the reasoning and contract layers can consume them reliably.
 
-### 5.2 重点问题
+### 5.2 Main Problems
 
-- 毒点列命名不统一
-- 路由表字段不足
-- 同义词填充不足
-- 各题材覆盖不均衡
+- Inconsistent names for reader-turn-off columns
+- Insufficient routing-table fields
+- Too few synonyms
+- Uneven genre coverage
 
-### 5.3 具体改造
+### 5.3 Specific Changes
 
-#### 5.3.1 毒点列统一
+#### 5.3.1 Standardize Reader-Turn-Off Columns
 
-把以下旧列统一改名为 `毒点`：
+Rename these legacy columns uniformly to `毒点`:
 
 - `反面写法`
 - `忌讳写法`
 - `常见误区`
 - `常见崩盘误区`
 
-#### 5.3.2 路由表补字段
+#### 5.3.2 Add Routing-Table Fields
 
-`题材与调性推理.csv` 至少补齐：
+At minimum, add these to `题材与调性推理.csv`:
 
 - `推荐基础表`
 - `推荐动态表`
 - `默认调性`
 - `风格锚点`
 
-#### 5.3.3 内容补全规则
+#### 5.3.3 Content-Completion Rules
 
-所有补全都手工做，不写自动迁移脚本。
+Make all additions manually; do not write an automated migration script.
 
-最低要求：
+Minimum requirements:
 
-- 每张表至少覆盖这 7 个题材的常见场景
-- 每条 `意图与同义词` 至少 3 个同义表达
-- 每条 `毒点` 非空
+- Every table covers common scenarios for all seven genres.
+- Every `意图与同义词` entry includes at least three synonymous expressions.
+- Every `毒点` entry is nonempty.
 
-#### 5.3.4 README 同步
+#### 5.3.4 Synchronize README
 
-`README.md` 必须同步更新：
+Update `README.md` to reflect:
 
-- 毒点列统一命名
-- 路由表新字段
-- 各表 schema 描述
+- The standardized reader-turn-off column name
+- New routing-table fields
+- Each table's schema
 
-### 5.4 验收
+### 5.4 Acceptance
 
-- 所有表的毒点列统一叫 `毒点`
-- 路由表能返回推荐基础表和动态表
-- `README` 与 `CSV_CONFIG` 对齐
+- All reader-turn-off columns are named `毒点`.
+- The routing table returns recommended base and dynamic tables.
+- `README` and `CSV_CONFIG` agree.
 
 ---
 
-## 6. Section 3：裁决表
+## 6. Section 3: Reasoning Table
 
-### 6.1 要做什么
+### 6.1 Work Required
 
-新建 `裁决规则.csv`，作为独立 `Reasoning Layer`。
+Create `裁决规则.csv` as an independent `Reasoning Layer`.
 
-它不负责“查哪些表”，只负责：
+It does not choose which tables to search. It determines:
 
-- 多条命中后怎么选
-- 哪类爽点优先
-- 哪类毒点更致命
-- 结果注入合同树哪一层
+- How to select among multiple matches
+- Which payoff types take priority
+- Which reader turn-offs are more damaging
+- Which contract-tree layer receives the results
 
-### 6.2 与路由表的边界
+### 6.2 Boundary With the Routing Table
 
-- 路由表：回答“查哪些表”
-- 裁决表：回答“查到之后怎么用”
+- Routing table: which tables to search
+- Reasoning table: how to use the results
 
-这正是 `ui-ux-pro-max` 里：
+This matches the relationship in `ui-ux-pro-max` between:
 
 - `products.csv`
 - `ui-reasoning.csv`
 
-的对应关系。
+### 6.3 Fields
 
-### 6.3 字段
-
-`裁决规则.csv` 至少包含：
+`裁决规则.csv` must include at least:
 
 - `题材`
 - `风格优先级`
@@ -322,33 +319,33 @@ CSV_CONFIG = {
 - `contract注入层`
 - `反模式`
 
-### 6.4 首批覆盖
+### 6.4 Initial Coverage
 
-先覆盖 7 个题材，各 1 行。
+Cover the seven genres first, one row each.
 
-### 6.5 验收
+### 6.5 Acceptance
 
-- `source_trace` 能追溯到裁决表
-- 多表命中时，顺序符合 `冲突裁决`
-- 同题材输出能解释“为什么是这些条目进入合同”
+- `source_trace` can trace results to the reasoning table.
+- Ordering across multiple table matches follows `冲突裁决`.
+- Genre-specific output can explain why these entries entered the contract.
 
 ---
 
-## 7. Section 4：engine 接入裁决表
+## 7. Section 4: Integrate the Reasoning Table Into the Engine
 
-### 7.1 当前问题
+### 7.1 Current Problem
 
-现在的 `story_system_engine.build()` 只有：
+Currently `story_system_engine.build()` performs only:
 
-1. 路由
-2. 检索
-3. 直接组装
+1. Routing
+2. Retrieval
+3. Direct assembly
 
-没有显式裁决层。
+There is no explicit reasoning layer.
 
-### 7.2 目标流程
+### 7.2 Target Workflow
 
-改成：
+Change it to:
 
 1. `_route()`
 2. `_collect_tables()`
@@ -357,7 +354,7 @@ CSV_CONFIG = {
 5. `_rank_anti_patterns()`
 6. `_assemble_contract()`
 
-### 7.3 新增方法
+### 7.3 New Methods
 
 - `_load_reasoning(genre)`
 - `_apply_reasoning(reasoning, base, dynamic)`
@@ -366,7 +363,7 @@ CSV_CONFIG = {
 
 ### 7.4 `source_trace`
 
-最终进入合同的内容都要带：
+Everything entering a final contract must include:
 
 - `source_table`
 - `source_id`
@@ -374,50 +371,50 @@ CSV_CONFIG = {
 - `priority_rank`
 - `inject_target`
 
-### 7.5 验收
+### 7.5 Acceptance
 
-- `writing_guidance` 顺序符合裁决表
-- `source_trace` 都有 `reasoning_rule`
-- 低优先级冲突条目能被过滤或降级
+- `writing_guidance` ordering follows the reasoning table.
+- Every `source_trace` includes `reasoning_rule`.
+- Lower-priority conflicting entries can be filtered or downgraded.
 
 ---
 
-## 8. Section 5：`context_manager` 瘦身
+## 8. Section 5: Slim Down `context_manager`
 
-### 8.1 目标
+### 8.1 Goal
 
-把 `context_manager.py` 从：
+Reduce `context_manager.py` from handling:
 
-- 数据组装
-- 文本渲染
-- snapshot 缓存
-- checklist/评分说明书
+- Data assembly
+- Text rendering
+- Snapshot caching
+- Checklist/scoring instruction manuals
 
-降级为：
+To:
 
-- **纯 JSON payload 组装器**
+- **Pure JSON payload assembly**
 
-### 8.2 保留职责
+### 8.2 Retained Responsibilities
 
-- 读 contracts
-- 读 runtime sources
-- 组装 `genre_profile`
-- 组装 `writing_guidance`
-- 组装 `reader_signal`
-- 组装 `plot_structure`
-- 组装 `prewrite_validation`
-- 返回统一 dict
+- Read contracts
+- Read runtime sources
+- Assemble `genre_profile`
+- Assemble `writing_guidance`
+- Assemble `reader_signal`
+- Assemble `plot_structure`
+- Assemble `prewrite_validation`
+- Return a unified dict
 
-### 8.3 删除职责
+### 8.3 Removed Responsibilities
 
-- 所有 `_render_*`
-- 所有旧说明书式 text 输出
-- 为 text 渲染服务的 snapshot 管理
-- 与已拆 builder 重复的内联逻辑
+- All `_render_*` methods
+- All legacy instruction-manual text output
+- Snapshot management serving text rendering
+- Inline logic duplicated by extracted builders
 
-### 8.4 输出形态
+### 8.4 Output Form
 
-`build_context()` 只返回：
+`build_context()` returns only:
 
 ```json
 {
@@ -436,188 +433,188 @@ CSV_CONFIG = {
 }
 ```
 
-### 8.5 相关要求
+### 8.5 Related Requirements
 
 - `snapshot_manager.py`
-  - 若无其他消费方，整文件删除
+  - Delete the whole file if it has no other consumers.
 - `extract_chapter_context.py`
-  - 不再承担旧审计式文本说明书职责
-- 最终写作任务书
-  - 由 `context-agent` 直接根据 JSON payload + 示例生成
+  - Stop producing the legacy audit-style text manual.
+- Final writing brief
+  - `context-agent` generates it directly from the JSON payload and examples.
 
-### 8.6 验收
+### 8.6 Acceptance
 
-- `context_manager.py` 行数压到 400 行以下
-- 不再有字符串拼接型说明书输出
-- snapshot 逻辑已删除
+- `context_manager.py` is fewer than 400 lines.
+- No string-concatenated instruction-manual output remains.
+- Snapshot logic is removed.
 
 ---
 
-## 9. Section 6：旧散写路径清理
+## 9. Section 6: Remove Scattered Legacy Write Paths
 
-### 9.1 问题
+### 9.1 Problem
 
-现在仍有两条写入路径并存：
+Two write paths still coexist:
 
-- 新链：`data-agent -> chapter-commit -> projection`
-- 旧链：skill / agent 直接写 `state / index / summaries / memory`
+- New: `data-agent -> chapter-commit -> projection`
+- Old: skills / agents directly write `state / index / summaries / memory`
 
-这必须收束成一条。
+These must converge into one.
 
-### 9.2 要删的路径
+### 9.2 Paths to Remove
 
 #### `webnovel-write`
 
-- Step 2 直接 `state set-chapter-status`
-- Step 4 直接 `state set-chapter-status`
+- Direct `state set-chapter-status` in Step 2
+- Direct `state set-chapter-status` in Step 4
 
-#### 其他直写入口
+#### Other Direct-Write Entry Points
 
-- skill / agent 中任何 `index process-chapter`
-- data-agent 中任何直接写 `state/index/memory` 的描述
+- Any `index process-chapter` in skills / agents
+- Any data-agent instructions to write `state/index/memory` directly
 
-### 9.3 合法直写保留
+### 9.3 Permitted Direct Writes
 
-只保留：
+Retain only:
 
 - `webnovel-init`
 - `webnovel-plan`
-- 运维类人工修复命令
+- Manual operational repair commands
 
-都不在创作主链内。
+None are part of the creative mainline.
 
 ### 9.4 `chapter_status`
 
-不再由 skill 分步手推。
+Skills no longer advance it manually step by step.
 
-改成：
+Instead:
 
-- accepted commit -> projection 推到 `chapter_committed`
-- rejected commit -> projection 推到 `chapter_rejected`
+- accepted commit -> projection advances to `chapter_committed`
+- rejected commit -> projection advances to `chapter_rejected`
 
-### 9.5 验收
+### 9.5 Acceptance
 
-- `skills/` 和 `agents/` 里不再有 `state set-chapter-status`
-- `skills/` 和 `agents/` 里不再有 `index process-chapter`
-- 各存储只由对应 projection writer 写入
+- No `state set-chapter-status` remains in `skills/` or `agents/`.
+- No `index process-chapter` remains in `skills/` or `agents/`.
+- Each store is written only by its corresponding projection writer.
 
 ---
 
-## 10. Section 7：projection 层收束
+## 10. Section 7: Consolidate the Projection Layer
 
-### 10.1 目标
+### 10.1 Goal
 
-确认 `CHAPTER_COMMIT -> projection` 是唯一写入链路，并补完 event 路由覆盖。
+Confirm `CHAPTER_COMMIT -> projection` is the only write pipeline and complete event-routing coverage.
 
-### 10.2 要做的事
+### 10.2 Work Required
 
-#### 10.2.1 补全 `EventProjectionRouter`
+#### 10.2.1 Complete `EventProjectionRouter`
 
-对照 `story_event_schema.py`，确保事件类型覆盖完整。
+Check against `story_event_schema.py` to ensure every event type is covered.
 
-#### 10.2.2 `chapter_status` 统一由 `state_projection_writer` 推进
+#### 10.2.2 Advance `chapter_status` Exclusively Through `state_projection_writer`
 
 - accepted -> `chapter_committed`
 - rejected -> `chapter_rejected`
 
-#### 10.2.3 `projection_status` 回写 commit
+#### 10.2.3 Write `projection_status` Back to the Commit
 
-最终 commit 文件里不允许残留 `pending`。
+No `pending` status may remain in the final commit file.
 
-#### 10.2.4 失败隔离
+#### 10.2.4 Failure Isolation
 
-单个 writer 失败：
+If one writer fails:
 
-- 不阻断其他 writer
-- 失败项写 `failed`
-- 允许只补跑失败 writer
+- Do not block other writers.
+- Record `failed` for that item.
+- Allow rerunning only failed writers.
 
-### 10.3 验收
+### 10.3 Acceptance
 
-- `projection_status` 最终都是 `done / failed / skipped`
-- accepted commit 后状态自动推进
-- 单个 writer 失败不拖死全链
+- Final `projection_status` values are all `done / failed / skipped`.
+- State advances automatically after an accepted commit.
+- A single writer failure does not stall the entire pipeline.
 
 ---
 
-## 11. Section 8：消费端同步
+## 11. Section 8: Synchronize Consumers
 
-### 11.1 要改的文件
+### 11.1 Files to Change
 
 - `agents/context-agent.md`
 - `agents/data-agent.md`
-- `agents/reviewer.md`（必要时）
+- `agents/reviewer.md` (if needed)
 - `skills/webnovel-write/SKILL.md`
 - `skills/webnovel-review/SKILL.md`
 - `skills/webnovel-query/SKILL.md`
-- `skills/webnovel-plan/SKILL.md`（检查）
-- `skills/webnovel-init/SKILL.md`（检查）
+- `skills/webnovel-plan/SKILL.md` (inspect)
+- `skills/webnovel-init/SKILL.md` (inspect)
 - `skills/webnovel-dashboard/SKILL.md`
 - `skills/webnovel-write/evals/evals.json`
 - `docs/guides/commands.md`
 
-### 11.2 关键改动
+### 11.2 Key Changes
 
 #### `webnovel-write`
 
-- 删除 Step 2/4 的状态直写
-- 删除 Step 2 直接加载 `core-constraints` / `anti-ai-guide`
-- Step 1 生成任务书
-- Step 2 只吃任务书
-- Step 5 简化为：
-  - 调 data-agent
-  - 调 chapter-commit
-  - 确认 projection 完成
+- Remove direct state writes in Steps 2/4.
+- Remove direct Step 2 loading of `core-constraints` / `anti-ai-guide`.
+- Step 1 generates the brief.
+- Step 2 consumes only the brief.
+- Simplify Step 5 to:
+  - Call data-agent.
+  - Call chapter-commit.
+  - Confirm projection completion.
 
 #### `context-agent`
 
-- research 用底稿
-- 最终按示例写任务书
-- 不再输出旧执行包三层结构
+- Use the working document for research.
+- Write the final brief following examples.
+- Stop outputting the old three-layer execution package.
 
 #### `data-agent`
 
-- 只提取事实
-- 只产出 commit artifacts
-- 不再直接写 `state/index/memory`
+- Extract facts only.
+- Produce commit artifacts only.
+- Do not write directly to `state/index/memory`.
 
 #### `webnovel-query`
 
-- 查询路径改成 commit / projection
-- 不再运行时直接拼旧真源
+- Route queries through commit / projection.
+- Stop directly assembling legacy sources of truth at runtime.
 
-### 11.3 静态测试
+### 11.3 Static Tests
 
-`test_prompt_integrity.py` 至少新增：
+At minimum, add these checks to `test_prompt_integrity.py`:
 
-- skill / agent 不得引用已删散写命令
-- `data-agent` 不直写
-- CLI 子命令引用都在注册表里
+- Skills / agents must not reference removed scattered-write commands.
+- `data-agent` must not write directly.
+- Every referenced CLI subcommand exists in the registry.
 
-### 11.4 验收
+### 11.4 Acceptance
 
-- skills / agents 不再引用旧散写路径
-- 静态测试通过
-- eval 与命令文档同步
+- Skills / agents no longer reference legacy scattered-write paths.
+- Static tests pass.
+- Evals and command documentation are synchronized.
 
 ---
 
-## 12. Section 9：向量索引增强 + 时序查询接口
+## 12. Section 9: Vector Index Enhancements and Temporal Query Interfaces
 
-### 12.1 这轮只做轻量增强
+### 12.1 Lightweight Enhancements Only
 
-不引入真正的图引擎，不做新项目级图谱系统。
+Do not introduce a real graph engine or a new project-level knowledge-graph system.
 
-这轮只做两件轻量事：
+Do only two lightweight things:
 
-1. commit 后把实体/事件写进向量索引
-2. 给现有 SQLite 表加统一的时序查询接口
+1. Write entities/events into the vector index after commits.
+2. Add unified temporal query interfaces over existing SQLite tables.
 
-### 12.2 向量索引补实体语义
+### 12.2 Add Entity Semantics to the Vector Index
 
 #### `EventProjectionRouter`
 
-给关键事件加 `vector` 路由：
+Add `vector` routes for key events:
 
 - `character_state_changed`
 - `power_breakthrough`
@@ -626,76 +623,76 @@ CSV_CONFIG = {
 - `world_rule_broken`
 - `artifact_obtained`
 
-#### 新增 `vector_projection_writer.py`
+#### Add `vector_projection_writer.py`
 
-职责：
+Responsibilities:
 
-- 把 `accepted_events`
-- 把 `entity_deltas`
+- Convert `accepted_events`
+- Convert `entity_deltas`
 
-转成自然语言句子，再写入向量库。
+Into natural-language sentences and write them to the vector store.
 
-例如：
+For example:
 
-- `第47章：韩立突破筑基初期`
-- `第47章：韩立与陈巧倩关系变为合作`
+- `Chapter 47: Han Li breaks through to early Foundation Establishment`
+- `Chapter 47: Han Li and Chen Qiaoqian's relationship becomes cooperative`
 
-### 12.3 时序查询接口
+### 12.3 Temporal Query Interfaces
 
-新建 `knowledge_query.py`，提供：
+Create `knowledge_query.py` providing:
 
 - `entity_state_at_chapter(entity_id, chapter)`
 - `entity_relationships_at_chapter(entity_id, chapter)`
 
-供 `context-agent` research 阶段调用。
+For calls during `context-agent` research.
 
-### 12.4 不做的事
+### 12.4 Non-Goals
 
-- 不引入 `neo4j`
-- 不引入 `petgraph`
-- 不做图遍历
-- 不做关系可视化
+- Do not introduce `neo4j`.
+- Do not introduce `petgraph`.
+- Do not implement graph traversal.
+- Do not implement relationship visualization.
 
-### 12.5 验收
+### 12.5 Acceptance
 
-- 事件 chunk 能进向量库
-- 指定章节状态查询可用
-- 指定章节关系查询可用
-- RAG 能同时命中正文 chunk 和事件 chunk
+- Event chunks enter the vector store.
+- State queries at a specified chapter work.
+- Relationship queries at a specified chapter work.
+- RAG can retrieve both prose chunks and event chunks.
 
 ---
 
-## 13. 实施顺序
+## 13. Implementation Order
 
-这轮按严格串行走：
+Proceed strictly serially:
 
 1. `CSV_CONFIG`
-2. CSV 内容修补
-3. 裁决表
-4. engine 接入裁决表
-5. `context_manager` 瘦身
-6. 旧散写路径清理
-7. projection 层收束
-8. 消费端同步
-9. 向量索引增强 + 时序查询
+2. CSV content repairs
+3. Reasoning table
+4. Engine integration with the reasoning table
+5. `context_manager` slimming
+6. Scattered legacy write-path cleanup
+7. Projection-layer consolidation
+8. Consumer synchronization
+9. Vector index enhancements + temporal queries
 
-原因很简单：
+The rationale is simple:
 
-- 这不是日常迭代
-- 这是一次性系统收束
-- 中间态存在多久不重要
-- 重要的是每一步的验收标准清楚，最终状态正确
+- This is not routine iteration.
+- It is a one-time system convergence.
+- The duration of intermediate states is not important.
+- Clear acceptance criteria for each step and a correct final state are what matter.
 
 ---
 
-## 14. 最终判断
+## 14. Final Assessment
 
-这份 spec 的最终判断可以压成五句话：
+This specification's conclusion reduces to five statements:
 
-1. 六层必须一起收束，不能只补前四层
-2. 消费端不能再直读知识层，必须只吃合同和投影视图
-3. `core-constraints` 要被拆成具体约束，不再整篇读
-4. `anti-ai-guide` 保留，但只由上游吸收后转写
-5. `CHAPTER_COMMIT -> projection` 是唯一写后真源路径
+1. Converge all six layers together, not just the first four.
+2. Consumers must not read the knowledge layer directly; they consume only contracts and projection views.
+3. Decompose `core-constraints` into concrete constraints instead of reading it in full.
+4. Retain `anti-ai-guide`, but only for upstream absorption and rewriting.
+5. `CHAPTER_COMMIT -> projection` is the sole post-writing source-of-truth path.
 
-做到这一步，`webnovel-writer` 才算真正从“半成品并存”进入“统一主链”状态。
+Only then does `webnovel-writer` truly move from coexisting partial implementations to a unified mainline.

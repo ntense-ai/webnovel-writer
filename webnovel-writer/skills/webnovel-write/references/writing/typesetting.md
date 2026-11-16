@@ -1,60 +1,60 @@
-# 排版与阅读体验（移动端优先）
+# Typesetting and reading experience (mobile first)
 
-> **目的**：让读者“滑着读”更顺（手机屏幕），避免因为段落/对话/标点问题造成弃读。
-
----
-
-## 1. 段落规则（最重要）
-
-- **一段一动作/一信息**：每段只承担一个功能（推进/展示/情绪/信息）。
-- **段落不要太长**：连续 5 行以上的长段落，优先拆成 2-3 段（尤其是解释说明段）。
-- **“快段落”用在高潮**：高潮/战斗/追逐时，多用短句+短段落，提升阅读速度与冲击力。
-- **“慢段落”用在铺垫**：铺垫允许稍长，但要确保每段都有新信息，不要纯形容堆砌。
+> **Purpose**: make scrolling through the story smoother on phone screens, preventing readers from dropping it because of paragraph, dialogue, or punctuation problems.
 
 ---
 
-## 2. 对话排版（默认规范）
+## 1. Paragraph rules (most important)
 
-- **一人一句一行**：换人就换行；不要同段塞 3-4 句多人对白。
-- **对话夹动作**：用动作/表情/环境插入，帮助读者辨认说话者、控制节奏。
-- **避免“谁在说”混乱**：多人场景每 2-3 句补一次明确的说话者或动作锚点。
+- **One action/information unit per paragraph**: each paragraph has one function (advance/show/emotion/information).
+- **Keep paragraphs manageable**: prioritize splitting paragraphs longer than five consecutive lines into 2–3 paragraphs, especially exposition.
+- **Use “fast paragraphs” at climaxes**: short sentences and paragraphs during climaxes/combat/chases improve speed and impact.
+- **Use “slow paragraphs” for setup**: slightly longer paragraphs are acceptable, but each must add information rather than merely pile on descriptions.
 
-**示例（推荐）**：
+---
+
+## 2. Dialogue formatting (default standard)
+
+- **One speaker's line per paragraph**: start a new paragraph when the speaker changes; do not pack 3–4 lines from multiple speakers into one paragraph.
+- **Interleave dialogue and action**: actions, expressions, and environment cues identify speakers and control pacing.
+- **Avoid “who is speaking?” confusion**: in multi-character scenes, add an explicit speaker or action anchor every 2–3 lines.
+
+**Recommended example**:
 ```markdown
-“你确定要进去？”李雪压低声音。
+“Are you sure you want to go in?” Li Xue lowered her voice.
 
-林天看向黑雾翻涌的洞口，喉结滚了滚：“不进去，答案永远都在外面。”
+Lin Tian looked toward the cave mouth, black mist churning within. His throat moved. “If I don't, the answer will always stay out of reach.”
 
-“那就别死。”她把一枚玉符塞到他掌心。
+“Then don't die.” She pressed a jade talisman into his palm.
 ```
 
 ---
 
-## 3. 标点与可读性
+## 3. Punctuation and readability
 
-- **少用长串省略号/感叹号**：`……！！！` 这类组合一章内别反复出现。
-- **解释句别太“论文味”**：避免“首先/其次/总之/由此可见”式结构化套话。
-- **专有名词统一写法**：人名/势力/境界/技能名，统一一个版本（写入 `设定集/`，后续由 accepted `CHAPTER_COMMIT` 投影到 index/state/memory）。
-
----
-
-## 4. 场景切换与章节结构
-
-- **切镜头要留呼吸**：场景切换前后各留一个空行；必要时用 `---` 做分隔。
-- **信息密度要可见**：关键设定/关键线索/关键转折，尽量落在段首或段尾，减少“翻半屏才看到重点”。
-- **后段建议有期待锚点**：疑问/威胁/承诺/反转其一即可（避免“回去睡觉了”式机械收尾）。
+- **Limit strings of ellipses/exclamation marks**: do not repeatedly use combinations like `……！！！` within one chapter.
+- **Avoid essay-like explanations**: avoid formulaic structures such as “first/second/in conclusion/therefore we can see”.
+- **Use consistent proper nouns**: standardize character/faction/realm/skill names (record in `设定集/`; accepted `CHAPTER_COMMIT` later projects them into index/state/memory).
 
 ---
 
-## 5. 发布前 10 项速查
+## 4. Scene transitions and chapter structure
 
-1. 对话是否“换人换行”
-2. 是否存在 5 行以上的长段落（能否拆）
-3. 同一段是否混入多名角色对白（能否拆）
-4. 是否出现大量“总结/列举口吻”的解释段
-5. 专有名词是否与 `设定集/` 一致
-6. 是否有“???/占位符正文”暴露给读者
-7. 场景切换是否清晰（空行/分隔/过渡句）
-8. 章内是否至少 1 个明确推进点（信息/行动/转折）
-9. 章末是否有钩子
-10. 新实体首次出现是否写清楚（名字/身份/记忆点）；如需手动标注（可选）：使用隐藏 XML 标签（见 `${CLAUDE_PLUGIN_ROOT}/skills/webnovel-query/references/tag-specification.md`）
+- **Give scene cuts breathing room**: leave a blank line before and after transitions; use `---` when necessary.
+- **Make important information visible**: place key settings/clues/turns near paragraph beginnings or endings so readers need not scroll half a screen to find the point.
+- **Include an anticipation anchor late in the chapter**: a question/threat/promise/reversal suffices; avoid mechanical endings like “went home to sleep”.
+
+---
+
+## 5. Ten-point pre-publication check
+
+1. Does dialogue start a new paragraph for each new speaker?
+2. Are there paragraphs over five lines that could be split?
+3. Does one paragraph mix dialogue from multiple characters that could be separated?
+4. Are there excessive explanatory paragraphs using a summarizing/listing voice?
+5. Are proper nouns consistent with `设定集/`?
+6. Is any “???/placeholder prose” exposed to readers?
+7. Are scene transitions clear (blank lines/separators/transitional sentences)?
+8. Is there at least one clear advancement (information/action/turn) in the chapter?
+9. Is there an ending hook?
+10. Are new entities clearly introduced (name/identity/memorable trait)? For optional manual annotation, use hidden XML tags (see `${CLAUDE_PLUGIN_ROOT}/skills/webnovel-query/references/tag-specification.md`).

@@ -1,298 +1,298 @@
-# 灵感收集整理参考指南
+# Inspiration Collection and Organization Guide
 
-## 核心定位
+## Purpose
 
-将零散想法转化为可执行的创作方向，通过系统化方法提炼、标注和组合灵感。
+Turn scattered ideas into actionable creative directions through systematic extraction, tagging, and combination.
 
 ---
 
-## 1. 灵感分类体系
+## 1. Classification
 
-### 1.1 灵感类型识别
+### 1.1 Identify Inspiration Types
 
-| 类型 | 特征 | 示例 |
+| Type | Features | Examples |
 |------|------|------|
-| **题材灵感** | 故事背景与世界类型 | 都市重生、星际争霸、古代宫斗 |
-| **人设灵感** | 角色特质与身份 | 冷酷杀手、天真学霸、腹黑总裁 |
-| **世界观灵感** | 设定规则与体系 | 修仙体系、未来科技、平行世界 |
-| **情节钩子** | 吸引读者的剧情点 | 身份互换、时间循环、真相反转 |
-| **金手指灵感** | 主角特殊优势 | 系统签到、重生记忆、异能觉醒 |
-| **情绪体验灵感** | 想传达的情感 | 热血燃情、甜蜜治愈、紧张刺激 |
+| **Genre** | Setting and world type | Urban rebirth, interstellar conflict, ancient palace intrigue |
+| **Character** | Traits and identity | Cold assassin, innocent academic star, calculating CEO |
+| **Worldbuilding** | Rules and systems | Cultivation systems, future technology, parallel worlds |
+| **Plot hook** | Attractive plot elements | Swapped identities, time loops, truth reversals |
+| **Special advantage** | Protagonist's unusual edge | Check-in system, rebirth memories, awakened powers |
+| **Emotional experience** | Intended feelings | Passionate excitement, sweet healing, tense thrills |
 
-### 1.2 创意成熟度分级
+### 1.2 Maturity Levels
 
-- **基础层**：仅有概念，缺少具体设定
-- **发展层**：有初步人设或世界观框架
-- **成熟层**：具备完整故事结构和主线设计
+- **Basic**: Concept only, without concrete settings.
+- **Developing**: Initial character or world framework.
+- **Mature**: Complete story structure and main plot.
 
 ---
 
-## 2. 单一灵感深度挖掘
+## 2. Explore One Idea Deeply
 
-### 2.1 核心概念提取
+### 2.1 Extract the Core Concept
 
-**公式**："如果 [设定/事件]，会怎样？"
+**Formula**: “What if [setting/event]?”
 
-示例：
-- "如果主角可以看到别人的死亡倒计时，会怎样？"
-- "如果所有人都失去了昨天的记忆，会怎样？"
+Examples:
+- “What if the protagonist could see everyone's death countdown?”
+- “What if everyone lost yesterday's memories?”
 
-### 2.2 五维潜力评估（1-5分制）
+### 2.2 Five-Dimensional Potential Assessment (1–5)
 
-| 维度 | 评估要点 | 1分 | 5分 |
+| Dimension | Focus | 1 point | 5 points |
 |------|---------|-----|-----|
-| **原创性** | 市场同质化程度 | 烂大街套路 | 独一无二 |
-| **市场潜力** | 读者群体规模 | 小众冷门 | 大众热门 |
-| **扩展性** | 能否支撑长篇（30万字+） | 难以展开 | 故事空间大 |
-| **创作难度** | 设定/情节复杂度 | 极难驾驭 | 易于实现 |
-| **个人匹配** | 知识储备/兴趣/资源 | 完全陌生 | 驾轻就熟 |
+| **Originality** | Similarity to existing work | Ubiquitous trope | Unique |
+| **Market potential** | Audience size | Obscure niche | Broad popularity |
+| **Expandability** | Can it sustain 300,000+ Chinese characters? | Little room to develop | Broad story space |
+| **Writing difficulty** | Setting/plot complexity | Extremely difficult | Easy to execute |
+| **Personal fit** | Knowledge, interests, resources | Completely unfamiliar | Well within expertise |
 
-**总分参考**：
-- 20-25分：高潜力，优先开发
-- 15-19分：中等潜力，需打磨
-- <15分：暂时搁置或重组
+**Total-score guide**:
+- 20–25: High potential; develop first.
+- 15–19: Moderate potential; refine.
+- Below 15: Set aside or recombine.
 
-### 2.3 风险识别清单
+### 2.3 Risk Checklist
 
-常见创作风险：
-- ❌ 设定过于复杂，易崩盘
-- ❌ 节奏难以把控（过快/过慢）
-- ❌ 同质化竞争激烈
-- ❌ 需要专业知识但储备不足
-- ❌ 爽点设计单一，后期乏力
-
----
-
-## 3. 灵感标签化系统
-
-### 3.1 标签命名规范
-
-**格式**：`[主类别]-[子类别]` 或 `[核心元素]-[变体]`
-
-示例：
-```
-都市-重生
-系统-签到流
-反派-洗白
-群像-多视角
-悬念-规则怪谈
-玄幻-修仙
-科幻-星际
-```
-
-### 3.2 标签组合策略
-
-**单标签**：明确题材定位
-```
-玄幻
-```
-
-**双标签**：题材 + 卖点
-```
-都市-重生
-玄幻-系统
-```
-
-**三标签+**：题材 + 卖点 + 特色
-```
-都市-重生-复仇
-玄幻-系统-群像
-科幻-星际-权谋
-```
+Common writing risks:
+- ❌ Overcomplicated settings prone to collapse.
+- ❌ Pacing difficult to control, too fast or too slow.
+- ❌ Heavy competition from similar works.
+- ❌ Required expertise exceeds available knowledge.
+- ❌ One-dimensional payoffs lose momentum later.
 
 ---
 
-## 4. 创意组合创新法
+## 3. Inspiration Tags
 
-### 4.1 A+B 双元素组合
+### 3.1 Naming
 
-**公式**：不同灵感的核心元素叠加
+**Format**: `[main category]-[subcategory]` or `[core element]-[variant]`
 
-示例：
-- `都市重生 + 系统签到` → 重生都市签到流
-- `悬疑推理 + 规则怪谈` → 规则解谜流
-- `古代宫斗 + 现代记忆` → 穿越宫斗文
-
-**评估标准**：
-- ✅ 化学反应：两元素结合后产生新的吸引力
-- ✅ 可行性：组合后设定逻辑自洽
-- ❌ 冲突：元素相互矛盾，难以融合
-
-### 4.2 A+B+C 三元素组合
-
-**公式**：题材 + 卖点 + 人设特色
-
-示例：
+Examples:
 ```
-都市 + 重生 + 反派洗白
-= 重生成反派的都市文，通过洗白实现逆袭
-
-玄幻 + 系统 + 群像多视角
-= 多主角都有系统，相互博弈的玄幻文
-
-科幻 + 时间循环 + 推理解谜
-= 困在时间循环中破解真相的科幻悬疑
+Urban-Rebirth
+System-Check-ins
+Antagonist-Redemption
+Ensemble-Multiple viewpoints
+Mystery-Rule-based horror
+Fantasy-Cultivation
+Science fiction-Interstellar
 ```
 
-**警告**：避免要素过多导致主线混乱、节奏失控。
+### 3.2 Combining Tags
 
-### 4.3 微创新与变体
-
-**方法**：对既有灵感进行"换X"操作
-
-- **换视角**：反派视角、配角视角、多视角
-- **换载体**：书变游戏、梦境变现实
-- **换时代**：现代背景变古代、未来变过去
-- **换能力**：主角弱化、敌人强化、规则改变
-
----
-
-## 5. 创意地图可视化
-
-### 5.1 四维分类法
-
-**按题材分类**：
+**One tag**: Clear genre.
 ```
-玄幻类：
-  - INSP-001：修仙体系创新
-  - INSP-005：异世大陆争霸
-
-都市类：
-  - INSP-002：重生复仇
-  - INSP-008：商战权谋
+Fantasy
 ```
 
-**按创新度分类**：
+**Two tags**: Genre + selling point.
 ```
-传统型（稳妥但竞争大）：
-  - INSP-001：经典修仙升级
-
-微创新（风险适中）：
-  - INSP-003：修仙 + 现代科技
-
-颠覆型（高风险高回报）：
-  - INSP-007：无修炼的修仙世界
+Urban-Rebirth
+Fantasy-System
 ```
 
-**按成熟度分类**：
+**Three or more**: Genre + selling point + distinctive feature.
 ```
-概念级（只有想法）：
-  - INSP-004：时间倒流的世界
-
-雏形级（有初步设定）：
-  - INSP-006：主角可以复制他人能力
-
-完整级（有完整故事框架）：
-  - INSP-002：重生复仇文，3卷大纲已完成
-```
-
-**按优先级分类**：
-```
-高潜力（立即开发）：
-  - INSP-002：市场潜力5分，个人匹配5分
-
-中等潜力（需打磨）：
-  - INSP-005：原创性高但难度大
-
-低优先级（暂时搁置）：
-  - INSP-009：市场过于小众
-```
-
-### 5.2 缺口分析
-
-**检查清单**：
-- [ ] 是否只有题材没有卖点？
-- [ ] 是否只有设定没有冲突？
-- [ ] 是否缺少金手指系统？
-- [ ] 是否缺少明确的读者爽点？
-- [ ] 是否缺少主角成长路线？
-
-**建议**：发现缺口后，通过「创意组合」或「微创新」补齐。
-
----
-
-## 6. Top 推荐筛选法
-
-### 6.1 筛选标准
-
-综合评分公式：
-```
-总分 = 原创性×2 + 市场潜力×3 + 扩展性×2 + 个人匹配×2 - 创作难度×1
-```
-
-**权重说明**：
-- 市场潜力最重要（×3）
-- 原创性、扩展性、个人匹配同等重要（×2）
-- 创作难度作为负面因子（-×1）
-
-### 6.2 推荐理由模板
-
-```
-【推荐 #1】INSP-002 - 都市重生复仇
-优先级：1（最高）
-理由：市场潜力高（大众题材）+ 创新度适中（反派洗白新颖）+
-     创作难度可控（都市背景易驾驭）+ 个人匹配度高（熟悉都市生活）
-下一步：进入「市场定位分析」阶段，明确目标读者与平台策略
+Urban-Rebirth-Revenge
+Fantasy-System-Ensemble
+Science fiction-Interstellar-Political intrigue
 ```
 
 ---
 
-## 7. 实战工作流程
+## 4. Combination Methods
 
-### 阶段一：灵感捕捉（1-3天）
+### 4.1 A+B: Two Elements
 
-1. **广泛收集**：记录所有想法，不做评判
-2. **初步分类**：按灵感类型归档
-3. **快速标注**：为每条灵感打上初步标签
+**Formula**: Combine the core elements of different ideas.
 
-### 阶段二：深度挖掘（3-5天）
+Examples:
+- `Urban rebirth + system check-ins` → Urban rebirth check-in fiction.
+- `Mystery deduction + rule-based horror` → Rule-solving fiction.
+- `Ancient palace intrigue + modern memories` → Transmigration palace intrigue.
 
-1. **逐条评估**：使用五维评估法打分
-2. **识别风险**：列出潜在创作难点
-3. **补充信息**：丰富灵感的背景与细节
+**Evaluation**:
+- ✅ Synergy: The combination creates new appeal.
+- ✅ Feasibility: The resulting setting is coherent.
+- ❌ Conflict: Elements contradict each other and resist integration.
 
-### 阶段三：组合创新（2-3天）
+### 4.2 A+B+C: Three Elements
 
-1. **尝试A+B组合**：寻找化学反应
-2. **探索A+B+C**：构建差异化优势
-3. **微创新变体**：从不同角度重塑灵感
+**Formula**: Genre + selling point + character distinction.
 
-### 阶段四：可视化整理（1-2天）
+Examples:
+```
+Urban + rebirth + antagonist redemption
+= Reborn as an antagonist, the protagonist rises through redemption
 
-1. **建立创意地图**：四维分类法整理
-2. **缺口分析**：识别短板并补强
-3. **Top筛选**：选出3-5个最值得开发的创意
+Fantasy + system + multiple viewpoints
+= Several protagonists have systems and compete strategically
 
----
+Science fiction + time loop + deduction
+= A science-fiction mystery about finding the truth inside a time loop
+```
 
-## 8. 常见问题与解决方案
+**Warning**: Too many elements muddle the main plot and disrupt pacing.
 
-### Q1: 灵感太多，不知道选哪个？
+### 4.3 Small Innovations and Variants
 
-**A**: 使用「综合评分公式」量化评估，优先开发高分项。
+**Method**: Change one dimension of an existing idea.
 
-### Q2: 灵感感觉很好，但无法扩展？
-
-**A**: 检查「扩展性」维度，尝试A+B组合引入新元素。
-
-### Q3: 同质化严重，如何创新？
-
-**A**: 使用「微创新法」（换视角/换载体/换时代），在熟悉框架上做变体。
-
-### Q4: 灵感只有概念，缺少具体设定？
-
-**A**: 进入下一步「市场定位分析」或「核心卖点定位」，通过目标读者反推设定需求。
+- **Viewpoint**: Antagonist, supporting character, or multiple perspectives.
+- **Medium**: Book becomes game; dream becomes reality.
+- **Era**: Modern becomes ancient; future becomes past.
+- **Ability**: Weaken the protagonist, strengthen enemies, or change rules.
 
 ---
 
-## 9. 关联参考文档
+## 5. Visualizing an Idea Map
 
-本文档是「创意阶段」的第一步，完成后可参考：
+### 5.1 Four Classification Dimensions
 
-- **下一步**：`market-positioning.md`（市场定位分析）
-- **平行参考**：`creative-combination.md`（更深入的组合方法论）
-- **后续步骤**：`selling-points.md`（从灵感中提炼核心卖点）
+**By genre**:
+```
+Fantasy:
+  - INSP-001: Innovative cultivation system
+  - INSP-005: Power struggle on another world's continent
+
+Urban:
+  - INSP-002: Rebirth revenge
+  - INSP-008: Business conflict and political intrigue
+```
+
+**By innovation**:
+```
+Traditional (reliable, highly competitive):
+  - INSP-001: Classic cultivation progression
+
+Small innovation (moderate risk):
+  - INSP-003: Cultivation + modern technology
+
+Disruptive (high risk, high reward):
+  - INSP-007: A cultivation world without cultivation
+```
+
+**By maturity**:
+```
+Concept only:
+  - INSP-004: A world where time runs backward
+
+Initial framework:
+  - INSP-006: Protagonist can copy abilities
+
+Complete structure:
+  - INSP-002: Rebirth revenge with three volume outlines finished
+```
+
+**By priority**:
+```
+High potential (develop now):
+  - INSP-002: Market potential 5, personal fit 5
+
+Moderate potential (refine):
+  - INSP-005: Highly original but difficult
+
+Low priority (set aside):
+  - INSP-009: Market too narrow
+```
+
+### 5.2 Gap Analysis
+
+**Checklist**:
+- [ ] Genre but no selling point?
+- [ ] Setting but no conflict?
+- [ ] Missing a special-advantage system?
+- [ ] No clear reader payoff?
+- [ ] No protagonist growth path?
+
+**Recommendation**: Fill gaps through combination or small innovations.
 
 ---
 
-**使用建议**：将灵感整理视为持续迭代的过程，定期回顾和更新创意地图，保持灵感池的活力与新鲜度。
+## 6. Selecting Top Recommendations
+
+### 6.1 Criteria
+
+Combined scoring formula:
+```
+Total = originality×2 + market potential×3 + expandability×2 + personal fit×2 - writing difficulty×1
+```
+
+**Weights**:
+- Market potential is most important (×3).
+- Originality, expandability, and personal fit are equally weighted (×2).
+- Writing difficulty is a negative factor (−×1).
+
+### 6.2 Recommendation Template
+
+```
+[Recommendation #1] INSP-002 - Urban Rebirth Revenge
+Priority: 1 (highest)
+Reasons: Broad market + moderate innovation (antagonist redemption) +
+         manageable writing difficulty (urban setting) + strong personal fit (familiarity with city life)
+Next: Market positioning analysis to identify target readers and platform strategy
+```
+
+---
+
+## 7. Practical Workflow
+
+### Stage 1: Capture (1–3 Days)
+
+1. **Collect broadly**: Record every idea without judgment.
+2. **Classify initially**: File by inspiration type.
+3. **Tag quickly**: Add preliminary labels.
+
+### Stage 2: Explore (3–5 Days)
+
+1. **Evaluate each idea**: Use the five-dimensional assessment.
+2. **Identify risks**: List potential writing difficulties.
+3. **Add information**: Enrich background and details.
+
+### Stage 3: Combine (2–3 Days)
+
+1. **Try A+B**: Seek synergy.
+2. **Explore A+B+C**: Build differentiation.
+3. **Create variants**: Reshape ideas from different angles.
+
+### Stage 4: Organize Visually (1–2 Days)
+
+1. **Build the map**: Use the four classification dimensions.
+2. **Analyze gaps**: Identify and strengthen weaknesses.
+3. **Select the top ideas**: Choose 3–5 worth developing.
+
+---
+
+## 8. Common Questions
+
+### Q1: Too Many Ideas to Choose From?
+
+**A**: Quantify them with the combined scoring formula and prioritize high scores.
+
+### Q2: A Good Idea That Will Not Expand?
+
+**A**: Revisit expandability and introduce another element through A+B combination.
+
+### Q3: Everything Feels Too Similar?
+
+**A**: Change viewpoint, medium, or era to create variants within familiar frameworks.
+
+### Q4: Only a Concept, Without Concrete Settings?
+
+**A**: Move to market positioning or core selling-point design and work backward from target-reader needs.
+
+---
+
+## 9. Related References
+
+This is the first creative-stage step. Next consult:
+
+- **Next step**: `market-positioning.md` for market positioning.
+- **Parallel reference**: `creative-combination.md` for deeper combination methods.
+- **Later step**: `selling-points.md` for extracting core selling points.
+
+---
+
+**Usage note**: Treat inspiration organization as continuous iteration. Review and update the idea map regularly to keep the pool active and fresh.

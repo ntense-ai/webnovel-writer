@@ -1,162 +1,162 @@
-# Phase 0 审计：瘦身与读取方式清单（2026-06-06）
+# Phase 0 Audit: Slimming and Reading-Method Inventory (2026-06-06)
 
-> 只读审计 + 实测。本文件只「记录可追踪结论」，不修改任何 skill / agent / reference / 测试文件。
-> 目的：把 `context-minimal-writing-flow-plan-2026-06-05.md`（下称 Plan）第 4 节四条裁剪判据、§4.2 职责表、§6.2 读取方式，落成各瘦身 Phase 可直接照做的操作清单。
-> 不复述 Plan，只给「文件 → 读取方式 / 归属 / 处理 Task」的可执行行。
+> Read-only audit and measurements. This document records traceable conclusions only; it changes no skill / agent / reference / test files.
+> Purpose: Turn the four trimming criteria in Section 4, the responsibility table in §4.2, and the reading methods in §6.2 of `context-minimal-writing-flow-plan-2026-06-05.md` (the Plan) into an actionable checklist for each slimming phase.
+> Rather than repeat the Plan, provide actionable rows: file → reading method / ownership / task.
 >
-> 工作目录（git 仓库根 = worktree）：`D:/wk/novel skill/webnovel-writer/.worktrees/context-minimal-flow`
-> 插件目录（嵌套）：仓库根下 `webnovel-writer/` 子目录。下表路径均相对插件目录。
-> 行数列为 `wc -l` 实测（2026-06-06，本机 Bash），不沿用 Plan 任何预填数字。
+> Working directory (Git repository root = worktree): `D:/wk/novel skill/webnovel-writer/.worktrees/context-minimal-flow`
+> Plugin directory (nested): the `webnovel-writer/` subdirectory beneath the repository root. All paths below are relative to the plugin directory.
+> Line counts were measured using `wc -l` (2026-06-06, local Bash), not copied from the Plan's prefilled figures.
 
 ---
 
-## 用法
+## Usage
 
-- **Section A** 覆盖 Plan §6.2.1 reference-loading-map「直接 Read 的 md」全部条目，逐条定读取方式；Phase 4（Task #13/#14）按此改读取、清死文件。
-- **Section B** 覆盖 8 Skill + 4 Agent，按 §4.2 职责表给保留要点与可压缩项；Phase 1–5（Task #5–#16）按此瘦身。
-- 读取方式四分类（判据四 + §6.2.2）：**全文读** / **区段读** / **检索读**（CSV，单列于 A.3） / **不读**（清理候选）。
-- 区段读锚点列给的是**文件里的真实标题原文**（已 Grep `^#{1,4} ` 核实）。Plan 正文锚点用了简写（去掉「、」、缩短标题），与真实标题**不逐字相等**；区段读时必须按本表真实锚点匹配，否则 `Grep ^## 一 ` 会匹配不到 `## 一、`。差异见 A.4「锚点校验与 FLAG」。
+- **Section A** covers every directly Read Markdown entry in the reference-loading-map from Plan §6.2.1 and assigns a reading method. Phase 4 (Tasks #13/#14) uses this to change loading and remove dead files.
+- **Section B** covers 8 Skills and 4 Agents, identifying essentials to retain and material to compress using the responsibility table in §4.2. Phases 1–5 (Tasks #5–#16) use this for slimming.
+- Four reading categories (criterion four + §6.2.2): **full-file read** / **section read** / **retrieval read** (CSV, listed separately in A.3) / **do not read** (cleanup candidates).
+- Section-read anchors are **literal headings from the files** (verified with Grep `^#{1,4} `). The Plan abbreviates anchors (removing `、` and shortening titles), so they **do not match actual headings verbatim**. Match this table's real anchors when reading sections; otherwise `Grep ^## 一 ` will not match `## 一、`. See the anchor-validation and FLAG discussion below. Historical Chinese anchor literals are retained for traceability.
 
 ---
 
-## Section A — 读取方式审计（逐个「直接 Read 的 md」）
+## Section A — Reading-Method Audit (Each Directly Read Markdown File)
 
-行数 = 实测。「处理 Task」：靶心大文件区段读 = #13；死文件清理 = #14；其余「按需 / 全文」随其消费 Skill 的瘦身 Task 走（见 Section B），读取方式本身不单独占 Task，但 Phase 4 登记 loading-map 时一并写入（#13）。
+Line counts are measured. Assigned tasks: section reads for large target files = #13; dead-file cleanup = #14; other on-demand / full reads follow the consuming Skill's slimming task (Section B). Reading methods do not get separate tasks, but are recorded together in the Phase 4 loading-map (#13).
 
-### A.1 七个靶心大文件（区段读 → Task #13）
+### A.1 Seven Large Target Files (Section Reads → Task #13)
 
-`always` / 高频触发的大 md，是 init / plan / write 每跑必吞的常驻成本。锚点已逐个 Grep 核实存在。
+Large Markdown files triggered `always` or frequently impose a recurring cost on every init / plan / write run. Each anchor has been verified with Grep.
 
-| 文件 | 实测行数 | 读取方式 | 区段：真实稳定标题锚点（原文） | 处理 Task |
+| File | Measured lines | Reading method | Section: actual stable heading anchor (literal) | Assigned task |
 |---|---|---|---|---|
-| `references/genre-profiles.md` | 696 | 区段读 | 当前 genre 的**单个** `### 2.x`（`### 2.1`…`### 2.13`，13 题材各约 44 行）；按需加 `## 一、Profile 字段说明`。单本书只用 1 题材 → 省约 90% | #13 |
-| `skills/webnovel-init/references/creativity/selling-points.md` | 687 | 区段读 | `## 9. 核心卖点定位模板`（骨架）；按需补 `### 1.3 核心卖点黄金公式`、`## 7. 实战检查清单` | #13 |
-| `references/reading-power-taxonomy.md` | 361 | 区段读 | 按需取 `## 一、钩子类型` / `## 二、爽点模式` / `## 三、即时满足/微兑现` | #13 |
-| `skills/webnovel-plan/references/outlining/chapter-planning.md` | 322 | 区段读 | `## 10. 结构化节点规范（CBN/CPNs/CEN）`（L299，至文件末）；需模板时加 `## 7. 章节规划模板` | #13 |
-| `skills/webnovel-init/references/creativity/creativity-constraints.md` | 327 | 区段读 | 展示评分取 `### 8.1 五维评分`（L262，约 10 行）；创意采集读 `## 一、创意包 Schema (Idea Package)` / `## 六、硬约束驱动创意 (Hard Constraints)` / `## 八、评分系统 (Scoring System)` | #13 |
-| `skills/webnovel-write/references/polish-guide.md` | 351 | 区段读 | 主路径 `## 2. 执行顺序（必须按序）`；Anti-AI 词库单独区段 `## 98:Phase 1 增补：Anti-AI 规范`（另有 `## 2A. Anti-AI 检测细则`）。**不可条目化进 CSV（csv/README 硬边界）** | #13 |
-| `references/shared/cool-points-guide.md` | 313 | 区段读 | 所需爽点维度段；题材适配取 `## 九、题材适配`（L194）下对应题材 | #13 |
+| `references/genre-profiles.md` | 696 | Section read | The **single** `### 2.x` for the current genre (`### 2.1`…`### 2.13`, 13 genres at about 44 lines each); optionally add `## 一、Profile 字段说明`. One genre per book → about 90% saved | #13 |
+| `skills/webnovel-init/references/creativity/selling-points.md` | 687 | Section read | `## 9. 核心卖点定位模板` (skeleton); optionally add  `### 1.3 核心卖点黄金公式`、`## 7. 实战检查清单` | #13 |
+| `references/reading-power-taxonomy.md` | 361 | Section read | As needed, read  `## 一、钩子类型` / `## 二、爽点模式` / `## 三、即时满足/微兑现` | #13 |
+| `skills/webnovel-plan/references/outlining/chapter-planning.md` | 322 | Section read | `## 10. 结构化节点规范（CBN/CPNs/CEN）` (L299 to EOF); when a template is needed, add  `## 7. 章节规划模板` | #13 |
+| `skills/webnovel-init/references/creativity/creativity-constraints.md` | 327 | Section read | For score display, read  `### 8.1 五维评分` (L262, about 10 lines); for idea collection, read  `## 一、创意包 Schema (Idea Package)` / `## 六、硬约束驱动创意 (Hard Constraints)` / `## 八、评分系统 (Scoring System)` | #13 |
+| `skills/webnovel-write/references/polish-guide.md` | 351 | Section read | Main path `## 2. 执行顺序（必须按序）`; separate Anti-AI vocabulary section  `## 98:Phase 1 增补：Anti-AI 规范` (also `## 2A. Anti-AI 检测细则`). **Must not be itemized into CSV (hard boundary in csv/README)** | #13 |
+| `references/shared/cool-points-guide.md` | 313 | Section read | Required payoff-dimension section; for genre adaptation use  `## 九、题材适配` (L194), selecting the relevant genre | #13 |
 
-> 区段读手法：先 `Grep` content 输出匹配 `^#{1,4} ` 拿锚点行号，再 `Read` offset/limit 取段。两者均 Claude Code 内置，平台无关。
+> Section-read technique: use `Grep` content output matching `^#{1,4} ` to get anchor line numbers, then `Read` with offset/limit. Both are built into Claude Code and platform-independent.
 
-### A.2 其余「直接 Read 的 md」（全文 / 区段 / 不读）
+### A.2 Other Directly Read Markdown Files (Full / Section / Do Not Read)
 
-判据：≤ ~150 行且需整体理解 → 全文读；明显大且只取某节、且 Plan 标了「按需 / 需X」触发 → 区段读；当前非直接调用 → 不读。
+Criteria: ≤ ~150 lines and requiring whole-document understanding → full read; clearly large, only one section needed, and triggered on demand / when X is needed in the Plan → section read; not currently called directly → do not read.
 
-| 文件 | 实测行数 | 读取方式 | 区段：真实锚点（若区段读） | 处理 Task |
+| File | Measured lines | Reading method | Section: actual anchor (if section read) | Assigned task |
 |---|---|---|---|---|
 | **webnovel-init** | | | | |
-| `skills/webnovel-init/references/system-data-flow.md` | 43 | 全文读 | — | #10 |
-| `skills/webnovel-init/references/genre-tropes.md` | 183 | 区段读 | 当前题材段（题材套路库，按 genre 取对应小节） | #10 |
-| `skills/webnovel-init/references/worldbuilding/world-rules.md` | 86 | 全文读 | — | #10 |
-| `skills/webnovel-init/references/worldbuilding/faction-systems.md` | 179 | 区段读（按需） | always 触发但偏长；按当前世界观需要的小节取 | #10 |
-| `skills/webnovel-init/references/worldbuilding/power-systems.md` | 160 | 区段读（按需） | 仅「力量体系」相关项触发；取对应小节 | #10 |
-| `skills/webnovel-init/references/worldbuilding/character-design.md` | 111 | 全文读 | — | #10 |
-| `skills/webnovel-init/references/worldbuilding/setting-consistency.md` | 215 | 区段读 | always 触发但偏长；取一致性校验小节 | #10 |
-| `skills/webnovel-init/references/creativity/creative-combination.md` | 510 | 区段读 | **非 7 靶心但 510 行**：仅「需创意组合」触发，按当前混搭轴取小节，禁止全文 | #10 |
-| `skills/webnovel-init/references/creativity/inspiration-collection.md` | 298 | 区段读 | 仅 Step1.5 灵感来源询问触发；取所需采集小节 | #10 |
-| `skills/webnovel-init/references/creativity/anti-trope-game.md` | 170 | 区段读（按需） | 仅 game 题材 + 「需反套路」触发；取对应反套路项 | #10 |
-| `skills/webnovel-init/references/creativity/anti-trope-rules-mystery.md` | 214 | 区段读（按需） | 仅 rules-mystery 题材触发 | #10 |
-| `skills/webnovel-init/references/creativity/anti-trope-urban.md` | 169 | 区段读（按需） | 仅 urban 题材触发 | #10 |
-| `skills/webnovel-init/references/creativity/anti-trope-xianxia.md` | 159 | 区段读（按需） | 仅 xianxia 题材触发 | #10 |
+| `skills/webnovel-init/references/system-data-flow.md` | 43 | Full read | — | #10 |
+| `skills/webnovel-init/references/genre-tropes.md` | 183 | Section read | Current-genre section (genre trope library; select by genre) | #10 |
+| `skills/webnovel-init/references/worldbuilding/world-rules.md` | 86 | Full read | — | #10 |
+| `skills/webnovel-init/references/worldbuilding/faction-systems.md` | 179 | Section read (on demand) | Triggered always but long; select sections needed for the current world | #10 |
+| `skills/webnovel-init/references/worldbuilding/power-systems.md` | 160 | Section read (on demand) | Triggered only for power-system items; select the relevant subsection | #10 |
+| `skills/webnovel-init/references/worldbuilding/character-design.md` | 111 | Full read | — | #10 |
+| `skills/webnovel-init/references/worldbuilding/setting-consistency.md` | 215 | Section read | Triggered always but long; select consistency-check subsections | #10 |
+| `skills/webnovel-init/references/creativity/creative-combination.md` | 510 | Section read | **Not among the 7 targets, but 510 lines**: trigger only when creative combinations are needed; select by current combination axis; full reads prohibited | #10 |
+| `skills/webnovel-init/references/creativity/inspiration-collection.md` | 298 | Section read | Triggered only by Step1.5 inspiration-source questions; select the required collection subsection | #10 |
+| `skills/webnovel-init/references/creativity/anti-trope-game.md` | 170 | Section read (on demand) | Triggered only for game genre + anti-trope needs; select the relevant anti-trope item | #10 |
+| `skills/webnovel-init/references/creativity/anti-trope-rules-mystery.md` | 214 | Section read (on demand) | Triggered only for rules-mystery genre | #10 |
+| `skills/webnovel-init/references/creativity/anti-trope-urban.md` | 169 | Section read (on demand) | Triggered only for urban genre | #10 |
+| `skills/webnovel-init/references/creativity/anti-trope-xianxia.md` | 159 | Section read (on demand) | Triggered only for xianxia genre | #10 |
 | **webnovel-plan** | | | | |
-| `templates/output/大纲-卷节拍表.md` | 38 | 全文读 | — 模板，须整体套用 | #11 |
-| `templates/output/大纲-卷时间线.md` | 51 | 全文读 | — 模板，须整体套用 | #11 |
-| `references/shared/strand-weave-pattern.md` | 111 | 全文读 | — Plan §6.2.2 明示短文件维持全文 | #11 |
-| `references/outlining/plot-signal-vs-spoiler.md` | 53 | 全文读 | — | #11 |
-| `skills/webnovel-plan/references/outlining/conflict-design.md` | 277 | 区段读 | 仅「需冲突」触发；取对应冲突类型小节 | #11 |
-| `skills/webnovel-plan/references/outlining/genre-volume-pacing.md` | 84 | 全文读 | — 短，卷级节奏整体读 | #11 |
+| `templates/output/大纲-卷节拍表.md` | 38 | Full read | — Template; must be applied as a whole | #11 |
+| `templates/output/大纲-卷时间线.md` | 51 | Full read | — Template; must be applied as a whole | #11 |
+| `references/shared/strand-weave-pattern.md` | 111 | Full read | — Plan §6.2.2 explicitly keeps full reads for short files | #11 |
+| `references/outlining/plot-signal-vs-spoiler.md` | 53 | Full read | — | #11 |
+| `skills/webnovel-plan/references/outlining/conflict-design.md` | 277 | Section read | Triggered only when conflict guidance is needed; select the relevant conflict-type subsection | #11 |
+| `skills/webnovel-plan/references/outlining/genre-volume-pacing.md` | 84 | Full read | — Short; read all volume-level pacing guidance | #11 |
 | **webnovel-write** | | | | |
-| `skills/webnovel-write/references/writing/typesetting.md` | 60 | 全文读 | — Step4 always，短 | #5 |
-| `skills/webnovel-write/references/style-adapter.md` | 71 | 全文读 | — Step4 always，短 | #5 |
+| `skills/webnovel-write/references/writing/typesetting.md` | 60 | Full read | — Step4 always; short | #5 |
+| `skills/webnovel-write/references/style-adapter.md` | 71 | Full read | — Step4 always; short | #5 |
 | **webnovel-review** | | | | |
-| `references/shared/core-constraints.md` | 111 | 全文读 | — always 铁律，须整体 | #8/#12 |
-| `references/review-schema.md` | 59 | 全文读 | — schema，须整体 | #8/#12 |
-| `references/review/blocking-override-guidelines.md` | 47 | 全文读 | — 按需，短 | #12 |
+| `references/shared/core-constraints.md` | 111 | Full read | — Always-loaded hard rules; read in full | #8/#12 |
+| `references/review-schema.md` | 59 | Full read | — Schema; read in full | #8/#12 |
+| `references/review/blocking-override-guidelines.md` | 47 | Full read | — On demand; short | #12 |
 | **webnovel-query** | | | | |
-| `skills/webnovel-query/references/system-data-flow.md` | 343 | 区段读 | 偏长，按查询类型取数据源优先级小节 | #15 |
-| `skills/webnovel-query/references/advanced/foreshadowing.md` | 120 | 全文读 | — 按需，伏笔查询整体读 | #15 |
-| `skills/webnovel-query/references/tag-specification.md` | 154 | 全文读（边界） | — 154 行、tag 规范须整体；如证明只用单段可降区段读 | #15 |
+| `skills/webnovel-query/references/system-data-flow.md` | 343 | Section read | Long; select the data-source-priority subsection by query type | #15 |
+| `skills/webnovel-query/references/advanced/foreshadowing.md` | 120 | Full read | — On demand; full read for foreshadowing queries | #15 |
+| `skills/webnovel-query/references/tag-specification.md` | 154 | Full read (borderline) | — 154 lines; tag specification requires a full read; may become a section read if only one section is proven necessary | #15 |
 
-> `cool-points-guide.md`(313)、`strand-weave-pattern.md`(111) 同时被 plan/review 直接 Read：前者已入 A.1 靶心区段读；后者全文读，跨 Skill 共用同一结论。
+> Both plan/review directly Read `cool-points-guide.md` (313) and `strand-weave-pattern.md` (111): the former is already a target section read in A.1; the latter is a full read. Apply the same decision across Skills.
 
-### A.3 检索读（CSV-backed，不在「直接 Read md」清单，单列）
+### A.3 Retrieval Reads (CSV-Backed; Listed Separately from Direct Markdown Reads)
 
-Plan §6.2.1 明示 CSV 那条线「已做对，本轮不重做」。这里只登记，**不改造**；Phase 4 登记 loading-map 时保持现状。
+Plan §6.2.1 explicitly says the CSV pipeline is already correct and should not be redone. Record it here **without refactoring**; retain its current behavior in the Phase 4 loading-map.
 
-| 数据源 | 读取方式 | 调用 | 备注 |
+| Data source | Reading method | Invocation | Notes |
 |---|---|---|---|
-| `references/csv/场景写法.csv` | 检索读 | `reference_search.py --table 场景写法 --query ... --genre ...` | write Step2 战斗/对峙/桥段；承接已下线的 combat-scenes 等 md |
-| `references/csv/写作技法.csv` | 检索读 | `reference_search.py --table 写作技法 --query ...` | write Step2 对话/情感；承接 dialogue-writing / emotion-psychology |
-| `references/csv/题材与调性推理.csv`、`裁决规则.csv` 等 8 表 | 检索读（间接） | `story-system` 内部 `_route()` / `_collect_tables()` / `_load_reasoning()` | init/write 经 story-system 间接消费，已按需 |
+| `references/csv/场景写法.csv` | Retrieval read | `reference_search.py --table 场景写法 --query ... --genre ...` | write Step2 combat/confrontation/plot beats; replaces retired Markdown such as combat-scenes |
+| `references/csv/写作技法.csv` | Retrieval read | `reference_search.py --table 写作技法 --query ...` | write Step2 dialogue/emotion; replaces dialogue-writing / emotion-psychology |
+| `references/csv/题材与调性推理.csv`、`裁决规则.csv` and 8 tables in total | Retrieval read (indirect) | `story-system` internal `_route()` / `_collect_tables()` / `_load_reasoning()` | init/write consume indirectly through story-system; already on demand |
 
-> 现存 CSV：`裁决规则 / 场景写法 / 金手指与设定 / 命名规则 / 桥段套路 / 人设与关系 / 爽点与节奏 / 题材与调性推理 / 写作技法`（9 表）+ `genre-canonical.md` + `README.md`。
+> Existing CSVs: `裁决规则 / 场景写法 / 金手指与设定 / 命名规则 / 桥段套路 / 人设与关系 / 爽点与节奏 / 题材与调性推理 / 写作技法` (9 tables)+ `genre-canonical.md` + `README.md`。
 
-### A.4 不读（Phase 4 清理候选 → Task #14）
+### A.4 Do Not Read (Phase 4 Cleanup Candidates → Task #14)
 
-loading-map「当前非直接调用项」+ Plan §6.2.3 点名的 writing/* 迁移候选。合计约 1402 行死内容（实测）。处置：先核 CSV 覆盖，已覆盖则删或留空壳指向 CSV，未覆盖先补 CSV 再处置。
+Items not currently called directly in the loading-map, plus writing/* migration candidates named in Plan §6.2.3. Approximately 1402 lines of dead content in total (measured). First verify CSV coverage; delete covered files or leave stubs pointing to CSV. For uncovered content, extend CSV before cleanup.
 
-| 文件 | 实测行数 | 现状 / CSV 承接 | 处理 Task |
+| File | Measured lines | Current state / CSV replacement | Assigned task |
 |---|---|---|---|
-| `skills/webnovel-write/references/writing/combat-scenes.md` | 229 | 战斗触发已由 `场景写法.csv` 承接，不直接 Read | #14 |
-| `skills/webnovel-write/references/writing/dialogue-writing.md` | 231 | 对话触发已由 `写作技法.csv` 承接 | #14 |
-| `skills/webnovel-write/references/writing/emotion-psychology.md` | 265 | 情感触发已由 `写作技法.csv` 承接 | #14 |
-| `skills/webnovel-write/references/writing/scene-description.md` | 263 | Plan §6.2.3 点名；不在直接 Read 清单，核 `场景写法.csv` 覆盖后处置 | #14 |
-| `skills/webnovel-write/references/writing/desire-description.md` | 311 | 同上；核 CSV 覆盖后处置 | #14 |
-| `skills/webnovel-write/references/writing/genre-hook-payoff-library.md` | 85 | Plan §6.2.3 点名；不在直接 Read 清单，核 CSV 覆盖后处置 | #14 |
-| `skills/webnovel-write/references/style-variants.md` | 38 | 非直接调用项 | #14 |
-| `skills/webnovel-review/references/common-mistakes.md` | 96 | 非直接调用项 | #14 |
-| `skills/webnovel-review/references/pacing-control.md` | 129 | 非直接调用项 | #14 |
+| `skills/webnovel-write/references/writing/combat-scenes.md` | 229 | Combat triggers now use `场景写法.csv`; not directly Read | #14 |
+| `skills/webnovel-write/references/writing/dialogue-writing.md` | 231 | Dialogue triggers now use `写作技法.csv` | #14 |
+| `skills/webnovel-write/references/writing/emotion-psychology.md` | 265 | Emotion triggers now use `写作技法.csv` | #14 |
+| `skills/webnovel-write/references/writing/scene-description.md` | 263 | Named in Plan §6.2.3; not directly Read; verify `场景写法.csv` coverage before cleanup | #14 |
+| `skills/webnovel-write/references/writing/desire-description.md` | 311 | Same as above; verify CSV coverage before cleanup | #14 |
+| `skills/webnovel-write/references/writing/genre-hook-payoff-library.md` | 85 | Named in Plan §6.2.3; not directly Read; verify CSV coverage before cleanup | #14 |
+| `skills/webnovel-write/references/style-variants.md` | 38 | Not directly called | #14 |
+| `skills/webnovel-review/references/common-mistakes.md` | 96 | Not directly called | #14 |
+| `skills/webnovel-review/references/pacing-control.md` | 129 | Not directly called | #14 |
 
-> `scene-description.md`(263)、`desire-description.md`(311)、`genre-hook-payoff-library.md`(85) 三者**存在且当前非直接 Read**，按 Plan 要求纳入清理核验。
-> 其余存在但本轮无显式处置的 reference（不直接 Read、Plan 未点名）：`skills/webnovel-write/references/anti-ai-guide.md`(74，内容已并入 polish-guide §98/§2A，建议 #14 一并核验是否死)、`skills/webnovel-init/references/init-collection-schema.md`(74，Plan §6.2.4 指定 init 区段读真源，**保留**)、`skills/webnovel-init/references/creativity/market-positioning.md`(424，未登记直接 Read，建议 #14 核验)、`references/shared/naming-and-voice-gaps.md`(63)、`skills/webnovel-plan/references/outlining/outline-structure.md`、`plot-frameworks.md`（未登记直接 Read，建议 #13/#14 核验消费方）。
+> `scene-description.md` (263), `desire-description.md` (311), and `genre-hook-payoff-library.md` (85) **all exist and are not currently directly Read**. Include them in cleanup verification as required by the Plan.
+> Other existing references with no explicit action this round (not directly Read, not named by the Plan): `skills/webnovel-write/references/anti-ai-guide.md` (74; content merged into polish-guide §98/§2A; verify whether dead in #14)、`skills/webnovel-init/references/init-collection-schema.md` (74; Plan §6.2.4 designates this the source for init section reads; **retain**)、`skills/webnovel-init/references/creativity/market-positioning.md` (424; not registered as directly Read; verify in #14)、`references/shared/naming-and-voice-gaps.md`(63)、`skills/webnovel-plan/references/outlining/outline-structure.md`、`plot-frameworks.md` (not registered as directly Read; verify consumers in #13/#14)。
 
-### A.5 锚点校验与 FLAG
+### A.5 Anchor Validation and FLAG
 
-所有 7 靶心锚点经 Grep `^#{1,4} ` 核实**真实存在**，无缺失锚点。需注意的「Plan 简写 vs 真实标题」差异（不是缺失，是匹配口径，区段读时必须用右列）：
+All 7 target anchors were verified with Grep `^#{1,4} ` to **exist**. None are missing. Note differences between Plan abbreviations and real headings (matching differences, not missing anchors; section reads must use the right-hand column):
 
-| 文件 | Plan 正文写法 | 真实标题（区段读须匹配此） |
+| File | Wording in the Plan | Actual heading (match this for section reads) |
 |---|---|---|
 | genre-profiles | 「一、字段说明」 | `## 一、Profile 字段说明` |
 | reading-power-taxonomy | 「## 一 钩子类型 / ## 二 爽点模式 / ## 三 微兑现」 | `## 一、钩子类型` / `## 二、爽点模式` / `## 三、即时满足/微兑现` |
 | selling-points | 「### 1.3」「## 7」「## 9」 | `### 1.3 核心卖点黄金公式` / `## 7. 实战检查清单` / `## 9. 核心卖点定位模板` |
 | chapter-planning | 「## 10 …」「## 7」 | `## 10. 结构化节点规范（CBN/CPNs/CEN）` / `## 7. 章节规划模板` |
 | creativity-constraints | 「### 8.1」「一 Schema / 六 硬约束 / 八 评分」 | `### 8.1 五维评分` / `## 一、创意包 Schema (Idea Package)` / `## 六、硬约束驱动创意 (Hard Constraints)` / `## 八、评分系统 (Scoring System)` |
-| polish-guide | 「## 2 执行顺序」「Anti-AI 词库段」 | `## 2. 执行顺序（必须按序）` / `## 98:Phase 1 增补：Anti-AI 规范`（另 `## 2A. Anti-AI 检测细则`） |
+| polish-guide | 「## 2 执行顺序」「Anti-AI 词库段」 | `## 2. 执行顺序（必须按序）` / `## 98:Phase 1 增补：Anti-AI 规范` (also `## 2A. Anti-AI 检测细则`) |
 | cool-points-guide | 「## 九 题材适配」 | `## 九、题材适配` |
 
-**FLAG：无缺失锚点。** 唯一注意点：Plan 锚点去掉了中文序号点「、」并缩短标题，按字面 `Grep` 会漏匹配——Phase 4 区段读与 loading-map 登记一律以本表右列真实标题为准。
+**FLAG: No missing anchors.** The only caveat: the Plan removes the Chinese enumeration delimiter `、` and shortens headings, so literal `Grep` can miss them. Phase 4 section reads and loading-map entries must use the actual headings in the right-hand column.
 
 ---
 
-## Section B — 逐组件归属（8 Skill + 4 Agent）
+## Section B — Component Ownership (8 Skills + 4 Agents)
 
-依 §4.2 职责表。「层」标主 agent 契约形状（Skill）/ subagent（Agent）/ runtime 边界。每格一句话，细节交叉引用 Plan，不复述。
+Based on the responsibility table in §4.2. Layer indicates the main-agent contract shape (Skill), subagent (Agent), or runtime boundary. Each cell is one sentence; cross-reference the Plan for details rather than repeating it.
 
-| 组件 | 层 | 保留要点（一句话） | 主要可压缩 / 下沉项（一句话） | 处理 Task |
+| Component | Layer | Essentials to retain (one sentence) | Main compression / relocation opportunities (one sentence) | Assigned task |
 |---|---|---|---|---|
-| `skills/webnovel-write/SKILL.md`（202） | Skill：主 agent 契约形状 | 三模式 + 准备链 + 三 Agent 调用合同 + 三道 gate/commit/postcommit/backup（§3.4、§8.2），新增提交前只读 `git diff`（§5.2 B） | context/reviewer/data 内部教程、data payload schema、长润色教程下沉 Agent/reference（§8.3） | #5 |
-| `agents/context-agent.md`（181） | subagent | 五段写作任务书 + `memory-contract load-context` + 按需 query + `.story-system` 优先 + blocker（§9.1） | 长示例、过细推断说明、术语解释删（§9.1） | #6 |
-| `agents/data-agent.md`（120） | subagent（含完整 artifact schema 真源） | 三份 artifact 顶层/子项最小字段 + 禁写 state/projection（§9.2、§4.3）；`tools` 含 `Write` | 各 event_type 长 payload 说明、长 JSON 示例、旧字段名解释压缩（§9.2） | #7 |
-| `agents/reviewer.md`（135） | subagent | 五维 `dimension_results`(pass 也写) + evidence/fix_hint + 严格 JSON、不评分（§9.3）；不授 `Write`，只返 JSON | 删「思维链/ReAct」元叙述、删过长审查教程（§9.3、§12.2 松绑段号测试） | #8 |
-| `agents/deconstruction-agent.md`（296） | subagent | quick/deep/auto 路由 + 不写文件 + 不造 canon + `init_reference_research`/quality/防污染（§9.4、§3.2） | 长质量门控表、超长 schema、深度分阶段长说明压缩（§9.4） | #9 |
-| `skills/webnovel-init/SKILL.md`（402） | Skill：主 agent 契约形状 | §3.2 全链：Step1.5 灵感询问、deconstruction 调用边界、确认前不写 canon、root 安全化、idea_bank、patch 总纲、init 后 MASTER、验证回滚（§10.1） | 采集字段→`init-collection-schema.md` 区段读、题材列表收敛、CLI 长表收缩、创意/反套路/世界观按需读（§10.1、§6.2.4） | #10 |
-| `skills/webnovel-plan/SKILL.md`（394） | Skill：主 agent 契约形状 | §3.3 全链：placeholder-scan、跨卷状态、设定基线、节拍表/时间线/卷纲/批量章纲、设定写回、总纲写回 JSON、master-outline-sync、update-state、真实 CHAPTER_GOAL 刷合同（§10.2） | CBN/CPN/CEN 细则→`chapter-planning.md`§10 区段读、长 reference 表改按阶段触发、节点示例下沉（§10.2、§6.2.4） | #11 |
-| `skills/webnovel-review/SKILL.md`（170） | Skill：主 agent 契约形状 | §3.5 全链：合同缺失补 story-system、reviewer 调用、`review-pipeline --save-metrics`、`update-state --add-review`、blocking 用户裁决（§10.3） | reviewer 审查方法 / 证据查询过程不在 Skill 展开（§10.3） | #12 |
-| `skills/webnovel-query/SKILL.md`（109） | Skill：主 agent 契约形状（只读） | 只读 + root 保护 + 数据源优先级(`.story-system`→accepted commit→memory-contract→projection) + 降级说明（§11.1、§3.6） | 默认全量 `load-context` 改按查询类型用最窄工具（entity-state/relationships/query-rules/open-loop）（§11.1） | #15 |
-| `skills/webnovel-learn/SKILL.md`（82） | Skill：主 agent 契约形状 | root 保护 + 读当前章节号 + `project-memory add-pattern` + 不手写 JSON（§11.2） | 已极简，基本无可压缩；维持（§11.2） | #16 |
-| `skills/webnovel-dashboard/SKILL.md`（101） | Skill：主 agent 契约形状（只读） | 只读边界 + `story-runtime/health` + root 解析 + dist 校验（§11.3） | 不默认装依赖（缺依赖提示命令）、启动前轻量检查（§11.3） | #16 |
-| `skills/webnovel-doctor/SKILL.md`（70） | Skill：主 agent 契约形状（只读） | `project-status` 先行 + `doctor` 阶段感知 + 不修复/不装/不启 dashboard（§11.4、§3.6） | frontmatter description 改简洁中文触发型（§11.4） | #16 |
+| `skills/webnovel-write/SKILL.md`（202） | Skill: main-agent contract shape | Three modes + preparation chain + invocation contracts for three Agents + three gates/commit/postcommit/backup (§3.4, §8.2); add read-only precommit `git diff` (§5.2 B) | Move context/reviewer/data internal tutorials, data payload schema, and long polishing tutorials to Agent/reference (§8.3) | #5 |
+| `agents/context-agent.md`（181） | subagent | Five-section writing brief + `memory-contract load-context` + on-demand queries + `.story-system` priority + blockers (§9.1) | Remove long examples, over-detailed inference guidance, and terminology explanations (§9.1) | #6 |
+| `agents/data-agent.md`（120） | subagent (including the authoritative full artifact schema) | Minimum top-level/nested fields for three artifacts + no state/projection writes (§9.2, §4.3); `tools` includes `Write` | Compress long event_type payload descriptions, JSON examples, and legacy-field explanations (§9.2) | #7 |
+| `agents/reviewer.md`（135） | subagent | Five-dimensional `dimension_results` (including passes) + evidence/fix_hint + strict JSON, no scores (§9.3); no `Write` permission, return JSON only | Remove chain-of-thought/ReAct metanarrative and lengthy review tutorials (§9.3; §12.2 loosens section-number tests) | #8 |
+| `agents/deconstruction-agent.md`（296） | subagent | quick/deep/auto routing + no file writes + no invented canon + `init_reference_research`/quality/contamination prevention (§9.4, §3.2) | Compress long quality-gate tables, oversized schema, and detailed phased deep-analysis guidance (§9.4) | #9 |
+| `skills/webnovel-init/SKILL.md`（402） | Skill: main-agent contract shape | Full §3.2 chain: Step1.5 inspiration questions, deconstruction invocation boundary, no canon writes before confirmation, root safety, idea_bank, patch master outline, MASTER after init, validation/rollback (§10.1) | Collection fields → section reads of `init-collection-schema.md`; consolidate genres, shrink CLI tables, load creativity/anti-tropes/worldbuilding on demand (§10.1, §6.2.4) | #10 |
+| `skills/webnovel-plan/SKILL.md`（394） | Skill: main-agent contract shape | Full §3.3 chain: placeholder-scan, cross-volume state, settings baseline, beat sheet/timeline/volume outline/batch chapter outlines, settings writeback, master-outline writeback JSON, master-outline-sync, update-state, refresh contracts using actual CHAPTER_GOAL (§10.2) | CBN/CPN/CEN rules → section reads of `chapter-planning.md` §10; trigger long reference tables by phase; relocate node examples (§10.2, §6.2.4) | #11 |
+| `skills/webnovel-review/SKILL.md`（170） | Skill: main-agent contract shape | Full §3.5 chain: story-system for missing contracts, reviewer invocation, `review-pipeline --save-metrics`, `update-state --add-review`, user decisions on blocking findings (§10.3) | Do not expand reviewer methodology / evidence queries in the Skill (§10.3) | #12 |
+| `skills/webnovel-query/SKILL.md`（109） | Skill: main-agent contract shape (read-only) | Read-only + root protection + source priority (`.story-system`→accepted commit→memory-contract→projection) + degradation explanation (§11.1, §3.6) | Replace default full `load-context` with the narrowest query-specific tool (entity-state/relationships/query-rules/open-loop) (§11.1) | #15 |
+| `skills/webnovel-learn/SKILL.md`（82） | Skill: main-agent contract shape | Root protection + read current chapter number + `project-memory add-pattern` + no handwritten JSON (§11.2) | Already minimal; little to compress; retain (§11.2) | #16 |
+| `skills/webnovel-dashboard/SKILL.md`（101） | Skill: main-agent contract shape (read-only) | Read-only boundary + `story-runtime/health` + root resolution + dist validation (§11.3) | Do not install dependencies by default (show commands if missing); lightweight prelaunch checks (§11.3) | #16 |
+| `skills/webnovel-doctor/SKILL.md`（70） | Skill: main-agent contract shape (read-only) | Run `project-status` first + stage-aware `doctor` + no repairs/installation/dashboard launch (§11.4, §3.6) | Change frontmatter description to a concise Chinese trigger description (§11.4) | #16 |
 
-> Runtime 层（`webnovel.py` 各命令、artifact_validator、write-gate、chapter-commit、projection）承载 schema/gate/commit/projection/backup/状态推进，不在本轮 prompt 瘦身改动范围；各 Skill/Agent 只保留「调用形状」，校验留给 runtime（§4.2、§4.5 写入所有权矩阵）。
-> Agent 单文件约束（§4.3）：4 个 Agent 均为 `agents/*.md` 单文件，不得新增 `agents/references/*`；其产物 schema 作为单文件唯一真源（data-agent 尤为关键）。
+> The runtime layer (`webnovel.py` commands, artifact_validator, write-gate, chapter-commit, projection) owns schema/gate/commit/projection/backup/state advancement and is outside this prompt-slimming scope. Skills/Agents retain only invocation shapes; validation stays in the runtime (§4.2, §4.5 write-ownership matrix).
+> Agent single-file constraint (§4.3): all 4 Agents remain single `agents/*.md` files; do not add `agents/references/*`. Their artifact schemas remain authoritative in those single files (especially important for data-agent).
 
 ---
 
-## 体量小结（实测）
+## Size Summary (Measured)
 
-- 8 Skill 合计 **1530 行**（write 202 / init 402 / plan 394 / review 170 / query 109 / learn 82 / dashboard 101 / doctor 70）；init、plan 最大，是 §10 主战场。
-- 4 Agent 合计 **732 行**（context 181 / data 120 / reviewer 135 / deconstruction 296）；deconstruction 最大。
-- 7 靶心 reference 合计 **3057 行**（区段读后单本书常驻锐减，genre-profiles 单题材约省 90%）。
-- 不读清理候选合计 **约 1402 行**（A.4 九个核心候选，待核 CSV 覆盖后处置）。
-- 读取方式分布：靶心区段读 7；A.2 区段读 11；全文读 15（含模板/schema/铁律/短文件）；检索读 CSV 3 类（不改造）；不读 9（+ 建议核验若干）。
+- 8 Skills total **1530 lines** (write 202 / init 402 / plan 394 / review 170 / query 109 / learn 82 / dashboard 101 / doctor 70); init and plan are the largest and the main focus of §10.
+- 4 Agents total **732 lines** (context 181 / data 120 / reviewer 135 / deconstruction 296); deconstruction is largest.
+- 7 target references total **3057 lines** (section reads greatly reduce recurring per-book context; a single genre saves about 90% of genre-profiles).
+- Do-not-read cleanup candidates total **about 1402 lines** (9 core candidates in A.4, pending CSV coverage verification).
+- Reading distribution: 7 target section reads; 11 section reads in A.2; 15 full reads (templates/schemas/hard rules/short files); 3 CSV retrieval categories (unchanged); 9 do-not-read items (plus several suggested checks).

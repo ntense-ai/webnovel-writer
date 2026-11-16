@@ -1,8 +1,8 @@
-# state.json 结构说明
+# state.json Schema
 
-> 该文件为运行态精简状态，避免体量膨胀。实体等大数据存于 index.db。
+> This file contains a compact runtime state to prevent uncontrolled growth. Large datasets, such as entities, are stored in index.db.
 >
-> 以下示例与 `update_state.py` 当前校验字段保持一致。
+> The following example matches the fields currently validated by `update_state.py`.
 
 ```json
 {

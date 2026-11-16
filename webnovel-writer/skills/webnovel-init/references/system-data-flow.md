@@ -1,43 +1,43 @@
 ---
 name: system-data-flow-redirect
-purpose: 重定向到权威版本
+purpose: Redirect to the authoritative version
 ---
 
 <context>
-此文件已迁移到统一位置，避免多版本不同步问题。
+This file has moved to a unified location to avoid divergent versions.
 </context>
 
 <instructions>
 
-## 权威版本位置
+## Authoritative version
 
 `${CLAUDE_PLUGIN_ROOT}/skills/webnovel-query/references/system-data-flow.md`
 
-## 加载方式
+## Loading
 
 ```bash
 cat "${CLAUDE_PLUGIN_ROOT}/skills/webnovel-query/references/system-data-flow.md"
 ```
 
-## 快速参考
+## Quick reference
 
-### 目录结构
+### Directory structure
 ```
-项目根目录/
-├── 正文/           # 章节文件
-├── 大纲/           # 卷纲/章纲
-├── 设定集/         # 世界观/力量体系/角色卡
+project-root/
+├── 正文/           # Chapter files
+├── 大纲/           # Volume/chapter outlines
+├── 设定集/         # Worldbuilding/power systems/character sheets
 └── .webnovel/
-    ├── state.json          # 权威状态
-    ├── workflow_state.json # 工作流断点
-    ├── index.db            # SQLite 索引
-    └── archive/            # 归档数据
+    ├── state.json          # Authoritative state
+    ├── workflow_state.json # Workflow checkpoints
+    ├── index.db            # SQLite index
+    └── archive/            # Archived data
 ```
 
-### 当前结构核心变化
-- **双 Agent 架构**: Context Agent (读) + Data Agent (写)
-- **无 XML 标签**: 纯正文写作，Data Agent AI 自动提取实体
-- **SQLite 存储**: entities/aliases/state_changes 迁移到 index.db
-- **state.json 精简**: 保持 < 5KB，主要包含 progress/protagonist_state/strand_tracker/disambiguation
+### Key changes in the current structure
+- **Dual-Agent architecture**: Context Agent (reads) + Data Agent (writes).
+- **No XML tags**: write plain chapter prose; Data Agent AI automatically extracts entities.
+- **SQLite storage**: entities/aliases/state_changes moved to index.db.
+- **Slim state.json**: keep below 5KB; primarily contains progress/protagonist_state/strand_tracker/disambiguation.
 
 </instructions>

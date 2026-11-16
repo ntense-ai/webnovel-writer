@@ -1,424 +1,422 @@
-# 市场定位分析参考指南
+# Market Positioning Analysis Guide
 
-> 时效说明：本文中的平台画像与“2025年趋势”仅作为历史样例。
-> 执行 Step 1 平台定位时，必须先用 WebSearch/WebFetch 核验当期平台规则与榜单信号，再决定是否采纳。
+> Currency note: Platform profiles and “2025 trends” below are historical examples only.
+> Before applying Step 1 platform positioning, use WebSearch/WebFetch to verify current platform rules and ranking signals, then decide whether to adopt them.
 
-## 核心定位
+## Purpose
 
-精准识别目标平台与读者群体，制定差异化竞争策略，确保作品在市场中找到最佳位置。
-
----
-
-## 1. 主流平台分析框架（2025样例）
-
-### 1.1 起点中文网
-
-**读者画像**：
-- **核心年龄**：25-35岁男性为主（占比70%+）
-- **付费习惯**：高付费意愿，月均消费50-200元
-- **阅读偏好**：深度世界观、逻辑自洽、长篇连载
-
-**题材优势**：
-- ✅ 玄幻修仙（传统强项）
-- ✅ 都市异能（稳定受众）
-- ✅ 科幻军事（垂直深度）
-- ✅ 游戏竞技（电竞崛起）
-
-**平台特色**：
-- 订阅付费模式（千字5分）
-- 推荐位竞争激烈（新书榜、分类榜）
-- 读者互动活跃（本章说、书评区）
-
-**2025年趋势样例**：
-- 🔥 多元宇宙/平行世界设定
-- 🔥 硬核升级流（数值可视化）
-- 🔥 群像多主角（非单一视角）
-- ❌ 过时：无脑打脸、后宫流水账、拖沓升级
-
-### 1.2 番茄小说
-
-**读者画像**：
-- **核心年龄**：18-28岁，下沉市场用户
-- **付费习惯**：免费阅读为主，广告变现
-- **阅读偏好**：快节奏、爽点密集、短中篇
-
-**题材优势**：
-- ✅ 赘婿逆袭（爽文经典）
-- ✅ 甜宠短篇（女频热门）
-- ✅ 快穿系统（节奏紧凑）
-- ✅ 乡村题材（贴近生活）
-
-**平台特色**：
-- 算法推荐驱动（CTR为王）
-- 免费模式（字数越多收益越高）
-- 短篇友好（5-20万字完本）
-
-**2025年趋势样例**：
-- 🔥 知乎体短篇（2-3万字）
-- 🔥 多题材融合（都市+玄幻）
-- 🔥 反套路创新（反转传统爽文）
-- ❌ 过时：拖沓铺垫、慢热开篇、复杂世界观
-
-### 1.3 七猫小说
-
-**读者画像**：
-- **核心年龄**：30-45岁，三四线城市为主
-- **付费习惯**：免费阅读，广告容忍度高
-- **阅读偏好**：家庭伦理、现实题材、情感共鸣
-
-**题材优势**：
-- ✅ 婆媳关系（现实共鸣）
-- ✅ 重生复仇（情感宣泄）
-- ✅ 乡村振兴（时代主题）
-- ✅ 职场奋斗（励志向上）
-
-**平台特色**：
-- 推荐算法（完读率>点击率）
-- 女频占比高（60%+）
-- 现实题材友好
-
-### 1.4 晋江文学城
-
-**读者画像**：
-- **核心年龄**：20-30岁女性（95%+）
-- **付费习惯**：高粘性付费用户
-- **阅读偏好**：耽美言情、古言仙侠、娱乐圈
-
-**题材优势**：
-- ✅ 耽美（平台标志性题材）
-- ✅ 古言宫斗（经典品类）
-- ✅ 娱乐圈（现实向甜文）
-- ✅ 无限流（女性向冒险）
-
-**平台特色**：
-- 积分付费（VIP订阅）
-- 文笔要求较高
-- 社区文化浓厚（读者粘性强）
+Identify target platforms and readers precisely, develop differentiated competitive strategies, and find the best market position for the work.
 
 ---
 
-## 2. 目标读者画像深度构建
+## 1. Major Platform Analysis Framework (2025 Examples)
 
-### 2.1 基础特征四维度
+### 1.1 Qidian
 
-| 维度 | 核心问题 | 分析要点 |
+**Reader profile**:
+- **Core age**: Mainly men aged 25–35 (70%+).
+- **Spending**: Strong willingness to pay; average RMB 50–200 monthly.
+- **Preferences**: Deep worldbuilding, coherent logic, long serials.
+
+**Genre strengths**:
+- ✅ Fantasy/cultivation, a traditional strength.
+- ✅ Urban superpowers, with a stable audience.
+- ✅ Science fiction/military, with niche depth.
+- ✅ Gaming/competition, supported by esports growth.
+
+**Platform features**:
+- Paid subscriptions, RMB 0.05 per 1,000 Chinese characters.
+- Fierce competition for new-book and genre rankings.
+- Active chapter comments and reviews.
+
+**Historical 2025 trend examples**:
+- 🔥 Multiverses/parallel worlds.
+- 🔥 Hardcore progression with visible numbers.
+- 🔥 Ensemble casts and multiple protagonists.
+- ❌ Dated: mindless humiliation of rivals, repetitive harem stories, slow progression.
+
+### 1.2 Fanqie Novel
+
+**Reader profile**:
+- **Core age**: 18–28, readers in lower-tier markets.
+- **Spending**: Primarily free reading monetized by advertising.
+- **Preferences**: Fast pace, frequent payoffs, short-to-medium works.
+
+**Genre strengths**:
+- ✅ Underdog live-in son-in-law comebacks.
+- ✅ Sweet short romance.
+- ✅ Rapid-transmigration systems.
+- ✅ Rural stories close to everyday life.
+
+**Platform features**:
+- Algorithmic recommendations driven by click-through rate.
+- Free model; the historical example associates more content with more revenue.
+- Short-work friendly, with completed works of 50,000–200,000 Chinese characters.
+
+**Historical 2025 trend examples**:
+- 🔥 Zhihu-style shorts of 20,000–30,000 Chinese characters.
+- 🔥 Genre fusion, such as urban + fantasy.
+- 🔥 Reversals of conventional payoff fiction.
+- ❌ Dated: lengthy setup, slow openings, complicated worldbuilding.
+
+### 1.3 Qimao
+
+**Reader profile**:
+- **Core age**: 30–45, mainly third- and fourth-tier cities.
+- **Spending**: Free reading; relatively high advertising tolerance.
+- **Preferences**: Family ethics, realism, emotional resonance.
+
+**Genre strengths**:
+- ✅ Mother-in-law/daughter-in-law relationships.
+- ✅ Rebirth revenge and emotional release.
+- ✅ Rural revitalization.
+- ✅ Workplace struggle and aspiration.
+
+**Platform features**:
+- Recommendation algorithms prioritize completion over clicks.
+- Women's fiction exceeds 60% in this historical profile.
+- Friendly to realistic fiction.
+
+### 1.4 Jinjiang Literature City
+
+**Reader profile**:
+- **Core age**: Women aged 20–30 (95%+).
+- **Spending**: Loyal paying users.
+- **Preferences**: Danmei and romance, historical romance/cultivation, entertainment industry.
+
+**Genre strengths**:
+- ✅ Danmei, a signature category.
+- ✅ Historical romance and palace intrigue.
+- ✅ Entertainment-industry sweet romance.
+- ✅ Infinite-flow adventures for women readers.
+
+**Platform features**:
+- Credit-based VIP subscriptions.
+- Higher prose expectations.
+- Strong community culture and reader loyalty.
+
+---
+
+## 2. Detailed Target-Reader Profiles
+
+### 2.1 Four Basic Dimensions
+
+| Dimension | Core question | Analysis |
 |------|---------|---------|
-| **年龄分布** | 主要读者年龄段？ | 18-25（学生党）/ 25-35（职场人）/ 35+（资深读者） |
-| **性别比例** | 男女读者占比？ | 男频（70%+ 男性）/ 女频（70%+ 女性）/ 通吃型 |
-| **地域分布** | 主要来源地区？ | 一二线城市（高消费）/ 三四线（下沉市场）|
-| **消费能力** | 付费意愿如何？ | 高付费（月均100+）/ 中等（30-100）/ 低付费（<30） |
+| **Age** | Main reader age range? | 18–25 students / 25–35 workers / 35+ experienced readers |
+| **Gender** | Reader proportions? | Men's fiction (70%+ men) / women's fiction (70%+ women) / broad appeal |
+| **Location** | Main regions? | First/second-tier cities, higher spending / third/fourth-tier markets |
+| **Spending power** | Willingness to pay? | High: RMB 100+/month / medium: 30–100 / low: below 30 |
 
-### 2.2 阅读行为分析
+### 2.2 Reading Behavior
 
-**阅读场景识别**：
-- 🚇 通勤碎片时间（10-30分钟）→ 快节奏短篇
-- 🌙 睡前放松时段（30-60分钟）→ 轻松甜文
-- ⏰ 周末集中追更（1-3小时）→ 长篇深度文
+**Situations**:
+- 🚇 Commute fragments, 10–30 minutes → fast-paced short fiction.
+- 🌙 Before-bed relaxation, 30–60 minutes → light, sweet fiction.
+- ⏰ Weekend sessions, 1–3 hours → deep long-form fiction.
 
-**阅读设备偏好**：
-- 📱 手机为主（90%+）→ 排版需适配小屏
-- 💻 PC为辅（10%）→ 长评论区互动
+**Devices**:
+- 📱 Mainly phones (90%+) → small-screen formatting.
+- 💻 Secondary PC use (10%) → longer review interactions.
 
-**追更习惯**：
-- 日更党：期望每日更新，断更即弃
-- 养肥党：等完本或积累章节再看
-- 随缘党：有空就看，不强求更新
+**Following updates**:
+- Daily readers expect daily updates and may leave after interruptions.
+- Binge readers wait for completion or accumulated chapters.
+- Casual readers read when free without strict update expectations.
 
-### 2.3 内容偏好深度分析
+### 2.3 Content Preferences
 
-**核心爽点偏好**（按题材分类）：
+**Core payoffs by genre**:
 
-| 题材 | 读者期待爽点 | 爽点频率要求 |
+| Genre | Expected payoff | Frequency |
 |------|-------------|-------------|
-| **都市重生** | 打脸反转、装逼啪啪啪 | 每3-5章一个小高潮 |
-| **玄幻修仙** | 越级击杀、境界突破 | 每10章一次大战 |
-| **系统流** | 任务奖励、能力提升 | 每章至少一次签到/抽奖 |
-| **甜宠文** | 霸总宠溺、误会解除 | 每2-3章一次甜蜜互动 |
+| **Urban rebirth** | Vindication, reversals, impressive displays | Small climax every 3–5 chapters |
+| **Fantasy/cultivation** | Defeating stronger foes, realm breakthroughs | Major battle every 10 chapters |
+| **System fiction** | Mission rewards and ability improvements | At least one check-in/lottery per chapter |
+| **Sweet romance** | Affection from a powerful partner, resolved misunderstandings | Sweet interaction every 2–3 chapters |
 
-**情节模式偏好**：
-- ✅ 升级流：明确成长路径，数值可视化
-- ✅ 种田流：稳步发展，成就感积累
-- ✅ 群像流：多角色视角，剧情丰富
-- ❌ 避免：拖沓铺垫、重复情节、强行虐主
+**Plot preferences**:
+- ✅ Progression: clear growth and visible numbers.
+- ✅ Development/farming: steady gains and accumulated achievement.
+- ✅ Ensembles: multiple viewpoints and richer plots.
+- ❌ Avoid slow setup, repetitive plots, and forced suffering.
 
-**人物期待**：
-- 主角：杀伐果断 > 圣母犹豫
-- 主角：智商在线 > 降智决策
-- 配角：立体鲜明 > 工具人脸谱化
-- 反派：动机合理 > 无脑送人头
+**Character expectations**:
+- Decisive protagonist over indiscriminate mercy and hesitation.
+- Intelligent decisions over artificially foolish choices.
+- Vivid supporting characters over flat plot devices.
+- Reasonable antagonist motives over suicidal stupidity.
 
-**创新边界**：
-- ✅ 可接受：世界观微创新、人设反套路
-- ✅ 必须保留：核心爽点模式、基础升级逻辑
-- ❌ 禁区：完全颠覆读者期待、拒绝常规爽点
+**Innovation boundaries**:
+- ✅ Acceptable: small worldbuilding innovations and unconventional characters.
+- ✅ Retain: core payoff patterns and basic progression logic.
+- ❌ Avoid completely rejecting reader expectations and conventional satisfaction.
 
-### 2.4 读者雷区清单（必须规避）
+### 2.4 Reader Dealbreakers
 
-**通用雷区**：
-- ❌ 圣母主角（优柔寡断、滥发善心）
-- ❌ 降智反派（无脑送死、重复犯错）
-- ❌ 拖沓升级（十几章才升一级）
-- ❌ 后宫无脑收（女角色工具化）
-- ❌ NTR情节（绿帽/被背叛）
+**General**:
+- ❌ Indecisive, indiscriminately charitable protagonists.
+- ❌ Foolish antagonists repeatedly courting death or making the same mistakes.
+- ❌ Progression taking a dozen chapters for one level.
+- ❌ Indiscriminate harem recruitment that reduces women to tools.
+- ❌ NTR/cuckoldry or romantic betrayal plots.
 
-**平台特定雷区**：
-- 起点：过度水字数、无逻辑金手指
-- 番茄：开篇节奏慢、前三章无爽点
-- 晋江：三观不正、性别歧视
+**Platform-specific historical examples**:
+- Qidian: excessive padding and illogical advantages.
+- Fanqie: slow opening and no payoff in the first three chapters.
+- Jinjiang: objectionable values and sexism.
 
 ---
 
-## 3. 市场趋势识别（2025样例）
+## 3. Identifying Trends (2025 Examples)
 
-### 3.1 题材生命周期判断
+### 3.1 Genre Lifecycle
 
-**生命周期阶段**：
-
-| 阶段 | 特征 | 策略 |
+| Stage | Features | Strategy |
 |------|------|------|
-| **萌芽期** | 少量试水作品，市场接受度未知 | 高风险高回报，适合创新者 |
-| **成长期** | 爆款出现，跟风作品增多 | 黄金入场期，需差异化 |
-| **成熟期** | 市场饱和，竞争激烈 | 必须有独特卖点 |
-| **衰退期** | 读者审美疲劳，新作难出头 | 避免入场或深度创新 |
+| **Emerging** | Few exploratory works; acceptance unknown | High risk/reward; suitable for innovators |
+| **Growing** | Hits appear and imitators increase | Ideal entry window, with differentiation |
+| **Mature** | Saturation and fierce competition | A distinctive selling point is essential |
+| **Declining** | Reader fatigue; new works struggle | Avoid or innovate deeply |
 
-**2025年题材生命周期样例速查**：
+**Historical 2025 examples**:
 ```
-萌芽期：AI觉醒流、元宇宙冒险
-成长期：规则怪谈、无限流女频
-成熟期：都市重生、玄幻修仙、系统流
-衰退期：传统后宫、无脑打脸流
+Emerging: AI awakening, metaverse adventures
+Growing: Rule-based horror, women's infinite-flow fiction
+Mature: Urban rebirth, fantasy/cultivation, system fiction
+Declining: Traditional harems, mindless rival-humiliation stories
 ```
 
-### 3.2 新兴热门元素
+### 3.2 Emerging Elements
 
-**2025年趋势关键词样例**：
-- 🔥 **群像多视角**：不再单一主角，多线叙事
-- 🔥 **反转真相**：悬念铺设+真相揭秘
-- 🔥 **规则怪谈**：SCP风格，规则破解
-- 🔥 **现实题材**：贴近生活，情感共鸣
-- 🔥 **女强不恋爱**：事业线为主，感情线为辅
+**Historical 2025 trend keywords**:
+- 🔥 **Ensemble viewpoints**: Multiple narrative lines rather than one protagonist.
+- 🔥 **Revealed truths**: Suspense setup and revelation.
+- 🔥 **Rule-based horror**: SCP-style rules and deduction.
+- 🔥 **Realism**: Everyday life and emotional resonance.
+- 🔥 **Career-first heroines**: Career leads; romance supports.
 
-**正在过时的元素**：
-- ❌ 单一升级流（纯数值堆砌）
-- ❌ 无脑打脸（缺少智商博弈）
-- ❌ 后宫流水账（女角色脸谱化）
-- ❌ 拖沓铺垫（前期过慢）
+**Elements described as fading in the example**:
+- ❌ Pure numerical progression.
+- ❌ Mindless vindication without intellectual contests.
+- ❌ Repetitive harems and flat female characters.
+- ❌ Slow opening setup.
 
-### 3.3 跨题材融合趋势
+### 3.3 Genre Fusion
 
-**成功组合案例**：
-- 都市 + 玄幻 = 都市修仙（现代背景+修炼体系）
-- 悬疑 + 科幻 = 未来犯罪推理
-- 历史 + 穿越 = 架空历史争霸
-- 甜宠 + 悬疑 = 破案小甜文
+**Successful combination examples**:
+- Urban + fantasy = modern cultivation.
+- Mystery + science fiction = future crime investigation.
+- History + transmigration = alternate-history power struggles.
+- Sweet romance + mystery = light romantic detective fiction.
 
-**融合原则**：
-1. 主题材占70%，辅题材30%
-2. 两者产生化学反应，非简单拼凑
-3. 目标读者群体有交集
+**Principles**:
+1. Primary genre 70%, secondary 30%.
+2. Create synergy rather than merely stacking elements.
+3. Target audiences should overlap.
 
 ---
 
-## 4. 三句话作品定位法
+## 4. Three-Sentence Positioning
 
-### 4.1 第一句：题材+卖点+承诺
+### 4.1 Sentence One: Genre + Selling Point + Promise
 
-**模板**：
+**Template**:
 ```
-这是一部 [题材] 小说，核心卖点是 [独特卖点]，
-向读者承诺 [核心体验/情感满足]。
-```
-
-**示例**：
-```
-这是一部都市重生文，核心卖点是「反派洗白+反转复仇」，
-向读者承诺极致的反转快感与情绪释放。
+This is a [genre] novel whose central selling point is [distinctive feature],
+promising readers [core experience/emotional satisfaction].
 ```
 
-### 4.2 第二句：目标读者+平台策略
-
-**模板**：
+**Example**:
 ```
-主要面向 [年龄+性别] 的 [平台] 读者，
-满足他们对 [核心需求] 的期待。
+This urban rebirth novel centers on antagonist redemption and revenge reversals,
+promising intense surprises and emotional release.
 ```
 
-**示例**：
+### 4.2 Sentence Two: Target Reader + Platform
+
+**Template**:
 ```
-主要面向25-35岁男性起点读者，
-满足他们对「智商在线+爽点密集+世界观完整」的期待。
+It primarily targets [age/gender] readers on [platform],
+meeting their expectations for [core needs].
 ```
 
-### 4.3 第三句：差异化+竞争策略
-
-**模板**：
+**Example**:
 ```
-与同类作品相比，本作的差异化在于 [独特点]，
-通过 [具体策略] 实现市场竞争优势。
+It targets male Qidian readers aged 25–35,
+seeking intelligent characters, frequent payoffs, and a complete world.
 ```
 
-**示例**：
+### 4.3 Sentence Three: Differentiation + Competitive Strategy
+
+**Template**:
 ```
-与同类作品相比，本作的差异化在于「多视角群像+反转真相」，
-通过「每章一个小反转+每10章一个大反转」的节奏设计实现竞争优势。
+Compared with similar works, its distinction is [unique feature],
+using [specific strategy] to gain a competitive advantage.
+```
+
+**Example**:
+```
+Its distinctive combination is ensemble viewpoints and truth reversals,
+with a small reversal each chapter and a major one every ten chapters.
 ```
 
 ---
 
-## 5. 对标作品分析法
+## 5. Benchmark Works
 
-### 5.1 成功案例研究
+### 5.1 Study Successes
 
-**分析维度**（每部作品）：
-1. **核心卖点**：最吸引读者的要素是什么？
-2. **差异化**：与同题材作品有何不同？
-3. **节奏把控**：如何设置爽点与高潮？
-4. **人设亮点**：主角/配角/反派的特色？
-5. **读者好评**：评论区高频称赞点？
+**Dimensions for each work**:
+1. **Core selling point**: What attracts readers most?
+2. **Differentiation**: How does it differ within its genre?
+3. **Pacing**: How are payoffs and climaxes arranged?
+4. **Character highlights**: What distinguishes leads, supporting cast, and antagonists?
+5. **Reader praise**: What is praised repeatedly in comments?
 
-**示例分析表格**：
+**Example**:
 
-| 作品名 | 核心卖点 | 成功要素 | 读者好评点 |
+| Work | Selling point | Success factors | Reader praise |
 |--------|---------|---------|-----------|
-| 作品A | 反派洗白 | 节奏紧凑+反转密集 | "反转出人意料" |
-| 作品B | 系统签到 | 数值可视化+成长感 | "爽点频率高" |
+| Work A | Antagonist redemption | Tight pacing and frequent reversals | “Unexpected twists” |
+| Work B | System check-ins | Visible numbers and tangible growth | “Frequent payoffs” |
 
-### 5.2 失败案例避坑
+### 5.2 Learn from Failures
 
-**常见失败模式**：
-- 高开低走：开篇吸引人，后期崩盘
-- 节奏失控：前期拖沓 or 后期仓促
-- 人设崩塌：主角OOC（Out of Character）
-- 逻辑混乱：设定自相矛盾
+**Patterns**:
+- Strong opening, later collapse.
+- Slow beginning or rushed ending.
+- Protagonist acting out of character (OOC).
+- Contradictory settings and confused logic.
 
-**分析要点**：
-- 在哪个阶段开始走下坡路？
-- 读者流失的直接原因是什么？
-- 哪些错误可以提前规避？
+**Questions**:
+- When did the decline start?
+- What directly caused reader loss?
+- Which mistakes could have been prevented?
 
 ---
 
-## 6. 平台策略与发布规划
+## 6. Platform and Publishing Strategy
 
-### 6.1 首发平台选择决策树
+### 6.1 First-Publication Decision Tree
 
 ```
-是否有付费读者基础？
-├─ 是 → 起点/晋江（订阅收益高）
-└─ 否 → 番茄/七猫（免费流量大）
+Existing paying readership?
+├─ Yes → Qidian/Jinjiang (higher subscription returns)
+└─ No → Fanqie/Qimao (large free-reading audiences)
     │
-    └─ 题材偏爽文？
-        ├─ 是 → 番茄（算法推荐快）
-        └─ 否 → 七猫（女频现实题材友好）
+    └─ Payoff-driven genre?
+        ├─ Yes → Fanqie (fast algorithmic recommendations)
+        └─ No → Qimao (friendly to women's realistic fiction)
 ```
 
-### 6.2 多平台策略
+### 6.2 Multiple Platforms
 
-**何时选择多平台**：
-- ✅ 题材受众广（都市、甜宠）
-- ✅ 有精力维护多个更新渠道
-- ✅ 不同平台内容差异化（如番茄版节奏更快）
+**When appropriate**:
+- ✅ Broad genre appeal, such as urban or sweet romance.
+- ✅ Capacity to maintain multiple update channels.
+- ✅ Platform-specific versions, such as faster Fanqie pacing.
 
-**多平台发布策略**：
-1. **首发独占期**：选择一个平台独占1-3个月
-2. **分发期**：授权其他平台同步或延迟发布
-3. **内容差异化**：根据平台调整节奏/篇幅
-   - 起点版：深度世界观，长篇连载
-   - 番茄版：快节奏，章节精简
+**Strategy**:
+1. **Initial exclusivity**: One platform for 1–3 months.
+2. **Distribution**: License simultaneous or delayed publication elsewhere.
+3. **Differentiate content**:
+   - Qidian: deeper worldbuilding and longer serialization.
+   - Fanqie: faster pace and leaner chapters.
 
-### 6.3 更新策略
+### 6.3 Updates
 
-**更新频率建议**：
+**Historical frequency examples**:
 
-| 平台 | 建议频率 | 单章字数 | 理由 |
+| Platform | Frequency | Chapter length (Chinese characters) | Reason |
 |------|---------|---------|------|
-| 起点 | 日更 | 3000-4000字 | 榜单竞争需要稳定更新 |
-| 番茄 | 日更2-3章 | 2000-2500字 | 算法偏好高频更新 |
-| 晋江 | 隔日更或日更 | 3000-5000字 | 读者接受度高 |
+| Qidian | Daily | 3,000–4,000 | Rankings require consistency |
+| Fanqie | 2–3 chapters daily | 2,000–2,500 | Algorithms favor frequent updates |
+| Jinjiang | Daily or alternate days | 3,000–5,000 | Readers accept this cadence |
 
-**免费章节数量**：
-- 起点：10-15章（约3-5万字）
-- 番茄：前20-30章免费（吸引流量）
-- 晋江：5-10章（快速进入VIP）
+**Historical free-chapter examples**:
+- Qidian: 10–15 chapters, approximately 30,000–50,000 Chinese characters.
+- Fanqie: first 20–30 chapters free to attract traffic.
+- Jinjiang: 5–10 chapters, moving quickly to VIP.
 
-### 6.4 商业化路径
+### 6.4 Monetization
 
-**VIP上架时机**：
-- 字数标准：3-5万字
-- 章节数：10-20章
-- 数据指标：收藏≥500，推荐票≥200
+**Historical VIP timing benchmarks**:
+- Length: 30,000–50,000 Chinese characters.
+- Chapters: 10–20.
+- Metrics: at least 500 saves and 200 recommendation votes.
 
-**推荐位申请策略**：
-1. **新书期**（0-30天）：争取新书榜、签约推荐
-2. **成长期**（1-3个月）：分类推荐、强推
-3. **稳定期**（3个月+）：精品推荐、首页推荐
+**Recommendation placement strategy**:
+1. **New book, days 0–30**: New-book rankings and contract recommendations.
+2. **Growth, months 1–3**: Genre recommendations and prominent promotion.
+3. **Stable, 3+ months**: Premium and homepage recommendations.
 
-**读者运营建议**：
-- 定期互动：每周至少回复一次评论
-- 单章说：提前预告剧情，吊读者胃口
-- 福利活动：加更、抽奖、角色投票
-
----
-
-## 7. 风险预警与规避
-
-### 7.1 市场竞争风险
-
-**风险描述**：
-- 同类作品过多，头部作品挤压市场空间
-- 新作难以突围，流量被分流
-
-**规避策略**：
-1. **差异化卖点**：避开红海，寻找蓝海细分
-2. **提升质量**：文笔/逻辑/节奏全面优化
-3. **精准定位**：深耕垂直读者群体
-
-### 7.2 读者需求变化风险
-
-**风险描述**：
-- 读者口味快速变化，题材过时
-- 目标读者群体过小，天花板低
-
-**规避策略**：
-1. **持续调研**：关注平台热榜、读者评论
-2. **灵活调整**：根据反馈微调剧情方向
-3. **多元尝试**：不把鸡蛋放在一个篮子
-
-### 7.3 平台规则风险
-
-**风险描述**：
-- 平台算法调整，推荐机制变化
-- 审核标准收紧，内容被下架
-
-**规避策略**：
-1. **研究规则**：定期查看平台公告
-2. **合规创作**：避开敏感题材与违禁词
-3. **多平台备份**：不依赖单一平台
+**Reader engagement**:
+- Reply to comments at least weekly.
+- Use chapter notes to preview developments and build anticipation.
+- Offer bonus chapters, giveaways, and character polls.
 
 ---
 
-## 8. 实战检查清单
+## 7. Risks and Mitigation
 
-在完成市场定位分析后，逐项确认：
+### 7.1 Competition
 
-- [ ] 明确首发平台及理由？
-- [ ] 绘制目标读者画像（年龄/性别/付费习惯）？
-- [ ] 列出核心爽点偏好与雷区清单？
-- [ ] 完成三句话作品定位？
-- [ ] 分析至少3部成功对标作品？
-- [ ] 制定更新策略（频率/字数/免费章节）？
-- [ ] 识别主要竞争风险并制定应对方案？
+**Risks**:
+- Too many similar works; leading titles crowd the market.
+- New works struggle to stand out and traffic fragments.
+
+**Mitigation**:
+1. Find differentiated, less crowded niches.
+2. Improve prose, logic, and pacing together.
+3. Serve a defined reader segment deeply.
+
+### 7.2 Changing Reader Needs
+
+**Risks**:
+- Fast-changing tastes make genres outdated.
+- A narrow audience imposes a low ceiling.
+
+**Mitigation**:
+1. Monitor rankings and reader comments continuously.
+2. Adjust plot direction modestly in response to feedback.
+3. Diversify experiments rather than relying on one approach.
+
+### 7.3 Platform Rules
+
+**Risks**:
+- Algorithm and recommendation changes.
+- Stricter review standards and content removal.
+
+**Mitigation**:
+1. Read platform announcements regularly.
+2. Follow content rules and avoid prohibited material or terms.
+3. Maintain platform alternatives rather than total dependence on one.
 
 ---
 
-## 9. 关联参考文档
+## 8. Practical Checklist
 
-本文档是「创意阶段」的第二步，完成后可参考：
+After positioning analysis, confirm:
 
-- **上一步**：`inspiration-collection.md`（从灵感池中选定方向）
-- **下一步**：`selling-points.md`（提炼核心卖点）
-- **平行参考**：`creative-combination.md`（组合创新强化差异化）
+- [ ] First-publication platform and reason identified?
+- [ ] Reader profile covers age, gender, and payment habits?
+- [ ] Core payoffs and dealbreakers listed?
+- [ ] Three-sentence positioning completed?
+- [ ] At least three successful benchmark works analyzed?
+- [ ] Update frequency, length, and free chapters planned?
+- [ ] Main competitive risks and responses identified?
 
 ---
 
-**使用建议**：市场定位不是一次性工作，应在创作过程中持续追踪数据，根据读者反馈动态调整策略。
+## 9. Related References
+
+This is creative-stage step two:
+
+- **Previous**: `inspiration-collection.md`, selecting a direction from the idea pool.
+- **Next**: `selling-points.md`, extracting core selling points.
+- **Parallel**: `creative-combination.md`, strengthening differentiation through combination.
+
+---
+
+**Usage note**: Positioning is ongoing. Track data during writing and adjust strategy based on reader feedback.

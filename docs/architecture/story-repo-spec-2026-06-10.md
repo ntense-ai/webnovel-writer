@@ -1,112 +1,112 @@
-# Story Repo 格式规格（v7 草案 0.4 · 已冻结）
+# Story Repo Format Specification (v7 Draft 0.4 · Frozen)
 
-> 状态：0.4。相对 0.3 的变更：伞目录「定稿/」改名「定稿/」（作者拍板，贴作者心智：草稿在工作区，验收后入定稿）。相对 0.2 的变更：废除大一统 YAML 数据文件，承诺与信息差改为"每条一个 Markdown + 平铺 front matter"（§4.3、§5）；新增防呆方言（§2.2）、修复卡（§10 第 0 态）、"对话即编辑器"不变量（§1.9）。决策记录见 §14。
-> 来源：2026-06-10「最正确架构」讨论 + 绞杀式收敛计划 Phase 0。
-> 地位：本规格是 v7 的法律文本。代码是格式的派生物——任何实现与本规格冲突时，改实现或改规格，不允许"代码里悄悄多存一份"。
+> Status: 0.4. Change from 0.3: rename the umbrella directory to `定稿/` (finalized content), as chosen by the author: drafts stay in the workspace and move to finalized content after acceptance. Change from 0.2: abolish monolithic YAML data files; promises and information gaps use one Markdown file per entry with flat frontmatter (§4.3, §5). Add an error-resistant dialect (§2.2), repair cards (state 0 in §10), and the conversation-as-editor invariant (§1.9). See §14 for decisions.
+> Source: the 2026-06-10 discussion of the most appropriate architecture + Phase 0 of the strangler-style convergence plan.
+> Authority: this specification is the law for v7. Code derives from the format. If implementation conflicts with this specification, change one or the other; never silently store an extra copy in code.
 
 ---
 
-## 0. 一句话
+## 0. In One Sentence
 
-一本书 = 一个 git 仓库。`定稿/` 存已接受的事实与正文，`大纲/` 存作者意图与承诺，`文风/` 存品味，`工作区/` 存棘轮之前的一切。接受一章 = 一次原子 commit。除一个可随时删除的缓存外，不存在任何持久派生物。
+One book = one Git repository. `定稿/` stores accepted facts and prose, `大纲/` author intent and promises, `文风/` taste, and `工作区/` everything before the acceptance boundary. Accepting a chapter = one atomic commit. No persistent derived artifacts exist except one disposable cache.
 
-## 1. 设计不变量（法律条款）
+## 1. Design Invariants (Binding Rules)
 
-1. **文件即真相**：全部状态是人可读、敢手改的 Markdown/YAML。系统检测手改并提议结转，永不报错拒绝。
-2. **派生物可丢弃**：删光 `.cache/` 后，系统从源文件全量重建，所有查询照常回答。这是 CI 验收项。
-3. **定稿只增不改**：已接受章节的事实不可逆改。错别字修正例外；真要改设定走显式 retcon 事务（§9）。
-4. **结转原子性**：章事务的 settle 要么完成一次 commit，要么工作区原样保留，没有中间态。
-5. **写评分离**：渲染与评审必须在不同上下文中进行；机检先于模型评审。
-6. **升级原则**：脚本 < 模型 < 作者。能数的不让模型估，能模型判的不打扰作者；作者的界面单位是决策卡，不是命令。
-7. **不在 VCS 里再造 VCS**：版本、审计、分支、回溯一律用 git，不自建提交链。
-8. **容错读取**：解析任何源文件遇到未知字段，必须保留并原样写回。开源使用者会扩展格式，工具不得丢数据。
-9. **对话即编辑器**：任何结构化数据的修改都可以用一句自然语言完成（"把 P-031 弃了，理由是改走暗线"）。作者无须学习任何文件格式；手改文件永远只是逃生门。
+1. **Files are truth**: All state is human-readable Markdown/YAML that authors can confidently edit. Detect manual changes and propose settlement; never reject them with an error.
+2. **Derived artifacts are disposable**: After deleting all of `.cache/`, rebuild everything from source files and answer all queries normally. This is a CI acceptance criterion.
+3. **Finalized content is append-only**: Do not retroactively change accepted chapter facts. Typo fixes are an exception; actual setting changes require an explicit retcon transaction (§9).
+4. **Atomic settlement**: A chapter transaction's settle either completes one commit or leaves the workspace intact; no intermediate state.
+5. **Separate writing and review**: Rendering and review must use different contexts; machine checks precede model review.
+6. **Escalation principle**: Script < model < author. Do not ask a model to estimate what can be counted; do not interrupt authors over what a model can judge. The author interface uses decision cards, not commands.
+7. **Do not build another VCS inside the VCS**: Use Git for versions, auditing, branches, and rollback; do not build a custom commit chain.
+8. **Tolerant reads**: Preserve unknown fields encountered in any source file and write them back unchanged. Open-source users will extend the format; tools must not lose data.
+9. **Conversation is the editor**: Any structured-data edit can be expressed in one natural-language sentence ("Abandon P-031 because we are switching to a hidden subplot"). Authors need not learn any file format; manual editing is only an escape hatch.
 
-## 2. 目录总览（全中文）
+## 2. Directory Overview (Chinese Runtime Names)
 
-使用者全部是中文网文作者，**目录结构、文件名、作者可见的字段名一律中文**。ASCII 只保留给机器协议：条目编号（P-031、S-021）、commit 前缀（ch/vol/retcon/fix）、`spec_version`、技术文件（`book.yaml`、`.gitignore`、`.cache/`）。
+The original design targets Chinese-language web-novel authors; **directory names, filenames, and author-visible field names are Chinese**. This English documentation preserves those format literals. ASCII is reserved for machine protocols: entry IDs (P-031, S-021), commit prefixes (ch/vol/retcon/fix), `spec_version`, and technical files (`book.yaml`, `.gitignore`, `.cache/`).
 
 ```text
 <书名>/
 ├── .git/
-├── .gitignore                 # 至少含 .cache/ 与 工作区/
-├── book.yaml                  # 全书配置（§3）
-├── 定稿/                       # ── 棘轮之后 ──
+├── .gitignore                 # Includes at least .cache/ and 工作区/
+├── book.yaml                  # Book-wide configuration (§3)
+├── 定稿/                       # ── After the acceptance boundary ──
 │   ├── 正文/
-│   │   └── 0152-北境的雪.md    # 章节 + front matter（§4.1）
+│   │   └── 0152-北境的雪.md    # Chapter + frontmatter (§4.1)
 │   ├── 设定/
 │   │   ├── 角色/
-│   │   │   └── 林晚.md         # 角色卡（§4.2）
+│   │   │   └── 林晚.md         # Character profile (§4.2)
 │   │   ├── 信息差/
-│   │   │   └── S-021-灭门真凶.md  # 信息差，每条一文件（§4.3）
-│   │   ├── 世界观.md           # 世界规则、力量体系
-│   │   ├── 时间线.md           # append-only 表（§4.4）
-│   │   └── 名册.md             # 实体名册：正名/别名/首现章（§4.5）
+│   │   │   └── S-021-灭门真凶.md  # Information gaps, one file per entry (§4.3)
+│   │   ├── 世界观.md           # World rules and power system
+│   │   ├── 时间线.md           # Append-only table (§4.4)
+│   │   └── 名册.md             # Entity register: canonical name/aliases/first chapter (§4.5)
 │   └── 记忆/
-│       ├── 章摘要/0152.md      # settle 时入册（§4.6）
-│       └── 卷摘要/第05卷.md    # 卷复盘时生成
-├── 大纲/                       # ── 作者意图，可变 ──
-│   ├── 总纲.md                 # 主题、金手指、结局承诺
+│       ├── 章摘要/0152.md      # Recorded at settle (§4.6)
+│       └── 卷摘要/第05卷.md    # Generated during volume retrospective
+├── 大纲/                       # ── Mutable author intent ──
+│   ├── 总纲.md                 # Theme, special ability, ending promise
 │   ├── 卷纲/
 │   │   └── 第05卷.md
 │   └── 承诺/
-│       └── P-031-灭门真凶.md   # 承诺，每条一文件（§5）
-├── 文风/                       # ── 品味库 ──
+│       └── P-031-灭门真凶.md   # Promises, one file per entry (§5)
+├── 文风/                       # ── Taste library ──
 │   ├── 风格宪法.md             # （§6.1）
-│   └── 金句库/                 # 自动收割（§6.2）
-├── 工作区/                     # ── 棘轮之前，默认不入 git ──
+│   └── 金句库/                 # Automatically harvested (§6.2)
+├── 工作区/                     # ── Before acceptance; Git-ignored by default ──
 │   ├── 决策卡.md               # （§7）
-│   ├── 上下文包.md             # 本次渲染的上下文包，留档供审计
-│   ├── 草稿-A.md               # best-of-N 时 A/B/C
-│   └── 评审报告/               # 机检与镜头评审输出
-└── .cache/                     # 唯一允许的派生缓存（§11）
+│   ├── 上下文包.md             # Context pack for this rendering, retained for audit
+│   ├── 草稿-A.md               # A/B/C for best-of-N
+│   └── 评审报告/               # Machine-check and lens-review output
+└── .cache/                     # Only permitted derived cache (§11)
     └── index.db
 ```
 
-### 2.1 中文路径的工程约束（规范性，CI 强制）
+### 2.1 Engineering Constraints for Chinese Paths (Normative, CI-Enforced)
 
-中文路径的编码税通过以下硬约束消化，不靠运气：
+Handle the encoding cost of Chinese paths through hard constraints, not luck:
 
-- 一切文件 IO 显式 `encoding='utf-8'`；脚本与子进程入口统一注入 `PYTHONUTF8=1`；禁止依赖系统 locale。
-- 仓库初始化时设置 `git config core.quotepath false`（git log 里中文路径可读）。
-- 文件排序一律靠零填充数字前缀（`0152-`、`第05卷`、`P-031`），不依赖中文字典序。
-- 实体引用一律用**正名**（中文），别名经名册（§4.5）解析；不引入 ASCII 实体 id。
-- CI 必须包含 Windows 上中文路径的全链路测试（建库→写章→结转→重建缓存）。
+- Use explicit `encoding='utf-8'` for all file I/O; inject `PYTHONUTF8=1` at script/subprocess entry points; never rely on system locale.
+- Set `git config core.quotepath false` during repository initialization so Chinese paths remain readable in Git logs.
+- Sort files using zero-padded numeric prefixes (`0152-`, `第05卷`, `P-031`), not Chinese lexicographic order.
+- Reference entities by their **canonical Chinese name**; resolve aliases through the register (§4.5). Do not introduce ASCII entity IDs.
+- CI must include an end-to-end Windows test with Chinese paths (create repository → write chapter → settle → rebuild cache).
 
-### 2.2 防呆方言（系统写出格式的规范性约束）
+### 2.2 Error-Resistant Dialect (Normative Output-Format Constraints)
 
-非程序员作者手改 YAML 的三大手滑是全角标点、缩进、类型惊喜。系统写出的一切结构化内容必须遵守以下方言——作者照着系统写的样子改，就不容易错：
+The three main YAML editing pitfalls for nonprogrammers are full-width punctuation, indentation, and surprising type coercion. All system-generated structured content must follow this dialect, so authors can safely imitate it:
 
-- **一律平铺**：front matter 与 `book.yaml` 禁止嵌套映射，字段全部顶层。
-- **列表一律块格式**（一行一条 `- 晚晚`），禁止行内 `[a, b]`——块格式天然免疫全角逗号。
-- **危险值加引号**：写出时凡可能被 YAML 误判类型的字符串（纯数字形、true/false/yes/no/是/否 形）自动加引号。
-- 缩进统一两空格；编码 UTF-8 无 BOM。
-- 多条记录**永远每条一个文件**，禁止大一统数据文件——改坏一条只废一条，且自由文本归 Markdown 正文（全角标点随便用），front matter 只承载少量平铺短字段。
+- **Always flat**: No nested mappings in frontmatter or `book.yaml`; all fields are top-level.
+- **Always block lists** (one item per line, such as `- 晚晚`); no inline `[a, b]`. Block lists avoid full-width comma problems.
+- **Quote risky values**: Automatically quote strings that YAML might misinterpret (numeric-looking values, true/false/yes/no/是/否 forms).
+- Use two-space indentation and UTF-8 without BOM.
+- **Always one record per file**, never monolithic data files. A damaged entry affects only itself. Free text belongs in the Markdown body (full-width punctuation is fine); frontmatter contains only a few short, flat fields.
 
 ## 3. book.yaml
 
-全仓库唯一的纯 YAML 文件：低频、平铺、十行以内。
+The repository's only pure YAML file: infrequently edited, flat, at most ten lines. Chinese format keys and example values below remain literal.
 
 ```yaml
 spec_version: "7.0"
 书名: 示例书名
 类型: 玄幻
 每章目标字数: 3000
-卷规模: 40                 # 参考值，不是硬约束
-文体基线起: 1              # 文体指纹基线章区间，作者可改
+卷规模: 40                 # Reference value, not a hard constraint
+文体基线起: 1              # Style-fingerprint baseline chapter range; author-editable
 文体基线止: 30
-高承诺最大搁置章数: 10     # 超过亮"节奏债"
+高承诺最大搁置章数: 10     # Exceeding this flags pacing debt
 连续弱钩上限: 3
-关键章稿数: 3              # 卷首/转折/高潮章 best-of-N
+关键章稿数: 3              # best-of-N for volume openings/turning points/climaxes
 ```
 
-## 4. 定稿/
+## 4. Finalized Content: `定稿/`
 
-草稿在工作区，验收后入定稿——目录名即心智模型。
+Drafts live in the workspace and move into finalized content after acceptance; the directory name expresses the mental model.
 
-### 4.1 章节文件 `定稿/正文/NNNN-标题.md`
+### 4.1 Chapter Files: `定稿/正文/NNNN-标题.md`
 
-文件名：四位零填充章号 + 短横 + 标题。front matter 携带本章合同与结转摘要——**章节自带自己的验收记录**，审计不依赖外部表。本文件仅由 settle 写出（作者改的是正文，不是 front matter）。
+Filename: four-digit zero-padded chapter number + hyphen + title. Frontmatter carries the chapter contract and settlement summary: **each chapter contains its own acceptance record**, so audits need no external table. Only settle writes this file; authors edit the prose, not frontmatter.
 
 ```markdown
 ---
@@ -114,7 +114,7 @@ spec_version: "7.0"
 标题: 北境的雪
 卷: 5
 视角: 林晚
-书内时间: 大历1023年冬月初三    # 自由文本，全书格式一致
+书内时间: 大历1023年冬月初三    # Free text; consistent format throughout the book
 字数: 3120
 开启承诺:
   - P-058
@@ -123,17 +123,17 @@ spec_version: "7.0"
   - P-007
 兑付承诺:
   - P-019
-合同:                           # 接受时点的合同断言（已验收）
-  - 林晚得知灭门真相的第一条实证
-  - P-058 开启：神秘老者来历
-  - 结尾强钩：玄阶令牌现世
+合同:                           # Contract assertions at acceptance time (validated)
+  - 林晚 obtains the first concrete evidence of the massacre truth
+  - P-058 opens: the mysterious elder's origins
+  - Strong ending hook: the mystic-rank token appears
 ---
-正文……
+Chapter prose…
 ```
 
-### 4.2 角色卡 `定稿/设定/角色/<正名>.md`
+### 4.2 Character Profiles: `定稿/设定/角色/<正名>.md`
 
-front matter 是机检消费的结构化字段（平铺、块列表）；正文是自由设定文本。
+Frontmatter contains structured fields for machine checks (flat, block lists); the body contains free-form setting text.
 
 ```markdown
 ---
@@ -141,23 +141,23 @@ front matter 是机检消费的结构化字段（平铺、块列表）；正文�
 别名:
   - 晚晚
   - 林师妹
-状态: 在世                # 在世/已死/失踪/封印…
-位置: 北境雪原            # 最后已知位置
-境界: 筑基七层            # 量纲见 世界观.md
+状态: 在世                # Alive/dead/missing/sealed…
+位置: 北境雪原            # Last known location
+境界: 筑基七层            # Scale defined in 世界观.md
 持有:
   - 青霜剑
   - 玄阶令牌
 最后变更章: 152
 ---
 ## 设定
-…自由文本…
+…Free text…
 ## 关系
-…自由文本，重要关系变化也应反映在时间线…
+…Free text; significant relationship changes also belong in the timeline…
 ```
 
-### 4.3 信息差 `定稿/设定/信息差/<编号>-<短题>.md`
+### 4.3 Information Gaps: `定稿/设定/信息差/<编号>-<短题>.md`
 
-不追踪"每个角色知道哪些事件"，只登记**值得管理的信息差**，每条一个文件。泄密机检 = 扫描角色对白/内心戏，比对其不知道的信息差关键词；废笔机检 = 向读者复述"读者已知"的信息。群像戏的"谁在场"需求由时间线的在场列（§4.4）补足，不另建机制。
+Do not track every event known by every character. Register only **information gaps worth managing**, one per file. Leakage checks scan dialogue/interior monologue for keywords from information the character does not know. Redundancy checks flag repetition of information already known to the reader. Ensemble-scene attendance is covered by the timeline's present column (§4.4), not a separate mechanism.
 
 ```markdown
 ---
@@ -166,75 +166,75 @@ front matter 是机检消费的结构化字段（平铺、块列表）；正文�
   - 神秘老者
 读者已知: false
 登记章: 87
-关键词:                   # 泄密扫描用
+关键词:                   # Used for leakage scanning
   - 大长老
   - 灭门
   - 血书
 ---
 ## 内容
-灭门真凶是大长老。当年血案的执行者是其门下死士。
+The Grand Elder ordered the massacre; his sworn assassins carried it out.
 ```
 
-### 4.4 时间线 `定稿/设定/时间线.md`
+### 4.4 Timeline: `定稿/设定/时间线.md`
 
-append-only 的 Markdown 表，settle 时追加一行。**在场列可空**：日常章不用填，群像戏、密谋戏建议填——它是后续查"谁见过什么"的唯一数据源。
+An append-only Markdown table; settle appends a row. **The present column may be empty**: unnecessary for everyday chapters, recommended for ensemble/conspiracy scenes. It is the sole source for later queries about who witnessed what.
 
 ```markdown
 | 章 | 书内时间 | 一句话事件 | 在场 |
 |----|----------|------------|------|
-| 152 | 1023冬月初三 | 林晚于北境得血书，玄阶令牌现世 | 林晚, 神秘老者 |
+| 152 | 1023冬月初三 | 林晚 obtains a blood-written letter in the north; the mystic-rank token appears | 林晚, 神秘老者 |
 ```
 
-### 4.5 实体名册 `定稿/设定/名册.md`
+### 4.5 Entity Register: `定稿/设定/名册.md`
 
-防"同人异名/同名异人"。表：`| 正名 | 别名 | 类型 | 首现章 |`。机检在 settle 时比对正文新专名与名册，未登记的专名列入验收卡请作者确认（新实体 or 笔误）。
+Prevent one person appearing under multiple names, or different people sharing a name. Table: `| 正名 | 别名 | 类型 | 首现章 |` (canonical name / aliases / type / first chapter). At settle, machine checks compare new proper names in prose with the register; unregistered names go onto the acceptance card for author confirmation as new entities or typos.
 
-### 4.6 记忆层 `定稿/记忆/`
+### 4.6 Memory Layer: `定稿/记忆/`
 
-- `章摘要/NNNN.md`：≤200 字，settle 前由模型生成、**放进验收卡供作者扫一眼**（可顺手改），随事务入册。
-- `卷摘要/第NN卷.md`：≤500 字，卷复盘时生成：主线推进、关系变化、未兑付承诺清单。
-- 更长程的"全书骨架"是**派生物**：由卷摘要按需拼接压缩，不落盘。
+- `章摘要/NNNN.md`: ≤200 characters, generated by the model before settle and **shown on the acceptance card for the author to review/edit**, then recorded with the transaction.
+- `卷摘要/第NN卷.md`: ≤500 characters, generated at volume retrospective; main-plot progress, relationship changes, and outstanding promises.
+- The longer-range book skeleton is **derived** by assembling/compressing volume summaries on demand; do not persist it.
 
-## 5. 承诺 `大纲/承诺/`（每条一文件）
+## 5. Promises: `大纲/承诺/` (One File per Entry)
 
-系统的心脏。伏笔、悬念、感情线、爽点预期、立旗统一为"对读者的承诺"。文件名 `P-031-灭门真凶.md`（编号-短题）；front matter 只有六个平铺短字段，描述、兑付计划、履历全部是 Markdown 正文——作者爱怎么写怎么写。
+The system's heart. Foreshadowing, mysteries, relationship arcs, anticipated payoffs, and declarations all become promises to the reader. Filename: `P-031-灭门真凶.md` (ID-short title). Frontmatter has only six short, flat fields; description, payoff plan, and history are free-form Markdown body text.
 
 ```markdown
 ---
-类型: 悬念                # 伏笔|悬念|冲突|关系线|立旗|爽点铺垫
-强度: 高                  # 高|中|低
-状态: 进行                # 进行|已兑付|已弃置
+类型: 悬念                # Foreshadowing|mystery|conflict|relationship|declaration|payoff setup
+强度: 高                  # High|medium|low
+状态: 进行                # Active|fulfilled|abandoned
 开启章: 12
-兑付期限: 第7卷           # 卷号或章号；强度为"高"时必填
+兑付期限: 第7卷           # Volume or chapter; required when intensity is high
 最后推进章: 152
 ---
 ## 描述
-灭门真凶的身份。
+The identity of the mastermind behind the massacre.
 
 ## 兑付计划
-第七卷宗门大会当众揭穿。开启时必填，防悬空。
+Expose the mastermind publicly at the sect assembly in volume seven. Required when opening the promise to prevent dangling threads.
 
 ## 履历
-- 第12章：开启
-- 第87章：推进——血书线索现世
-- 第152章：推进——林晚取得实证
+- Chapter 12: opened
+- Chapter 87: advanced; the blood-letter clue appears
+- Chapter 152: advanced; 林晚 obtains concrete evidence
 ```
 
-**结转规则（脚本执行，机检级）**：
+**Settlement rules (script-executed, machine-check level)**:
 
-- 每章 settle 必须 touch（开启/推进/兑付）至少一条承诺，否则打回。**豁免权在决策卡**：作者拍板 brief 时可勾"本章豁免承诺结转"（理由必填，如纯番外）；模型不能自行豁免。
-- settle 对承诺文件的写入 = 更新 front matter（状态/最后推进章）+ 在履历追加一行。
-- 开新承诺必须有兑付计划；强度"高"必须有兑付期限。
-- 节奏债 = 强度"高"且 `当前章 − 最后推进章 > 高承诺最大搁置章数`，亮黄灯进决策卡。
-- 弃置必须在履历中留原因行（作者决定弃坑也要留痕）。
-- 账本级视图（到期清单、节奏债、统计）由 `.cache/` 与盘面提供，**不维护任何汇总文件**。
-- 派生指标（不另建机制）：卡点强度 = 章尾未兑付承诺的强度；追读风险 = 节奏债数量 + 连续弱钩计数。
+- Every chapter settle must touch (open/advance/fulfill) at least one promise or be rejected. **Exemption belongs on the decision card**: when approving the brief, the author may exempt the chapter from promise settlement with a mandatory reason, such as a standalone extra. The model cannot exempt itself.
+- settle writes to promise files by updating frontmatter (status/last-advanced chapter) and appending a history entry.
+- A new promise requires a payoff plan; high-intensity promises require a payoff deadline.
+- Pacing debt = high intensity and `current chapter − last-advanced chapter > maximum idle chapters for high promises`; show a yellow warning on the decision card.
+- Abandonment must record a reason in history; even author-chosen abandonment needs an audit trail.
+- Ledger-level views (due list, pacing debt, statistics) come from `.cache/` and the status board; **maintain no aggregate files**.
+- Derived metrics, not separate mechanisms: cliffhanger intensity = intensity of outstanding promises at chapter end; retention risk = pacing-debt count + consecutive weak-hook count.
 
-## 6. 文风/
+## 6. Style: `文风/`
 
-### 6.1 风格宪法 `文风/风格宪法.md`
+### 6.1 Style Constitution: `文风/风格宪法.md`
 
-系统对作者品味的全部认知，作者可审可改。front matter 为机器消费部分（块列表；口癖按"角色：词条"平铺为列表行，不嵌套）：
+Everything the system knows about the author's taste, available for author review/editing. Frontmatter is machine-consumed (block lists; verbal habits are flat character:phrase list items, not nested):
 
 ```markdown
 ---
@@ -251,138 +251,138 @@ append-only 的 Markdown 表，settle 时追加一行。**在场列可空**：�
 ## 节奏偏好
 …
 ## 来自否决的规则
-- 不要用天气开篇（出处：第 89/103/121 章三次否决）
+- Do not open with weather (source: three rejections in chapters 89/103/121)
 ```
 
-规则入宪走"三次同类否决→系统提议→作者确认"的流程，每条带出处。
+Rules enter the constitution through three similar rejections → system proposal → author confirmation. Every rule cites its source.
 
-### 6.2 金句库 `文风/金句库/`
+### 6.2 Exemplar Library: `文风/金句库/`
 
-settle 时若 `diff(模型草稿, 作者终稿)` 超阈值（默认：单段改动 > 30%），自动把"作者改后段落 + 场景标签"存为样本。渲染同类场景时作为 few-shot 注入。按场景分文件：`战斗.md`、`对白.md`、`情感.md`……每文件保留最近 20 条，旧的轮换归档。
+At settle, if `diff(model draft, author final)` exceeds the threshold (default: >30% change in one paragraph), automatically save the author-edited paragraph plus a scene tag as an exemplar. Inject it as few-shot guidance for similar scenes. Separate files by scene: `战斗.md`, `对白.md`, `情感.md`, etc. Keep the latest 20 entries per file and rotate older entries into archives.
 
-## 7. 工作区/ 与决策卡
+## 7. Workspace (`工作区/`) and Decision Cards
 
-工作区默认整体 gitignored——棘轮之前的一切允许丢失；合同的最终归宿是章节 front matter（§4.1）。**想保留草稿史的使用者删掉 `.gitignore` 里那一行即可**：settle 照常清空工作区，系统行为不变，历史由 git 自然留下。这是规范性要求——实现不得假设工作区未被 git 跟踪。
+The entire workspace is Git-ignored by default; everything before acceptance may be discarded. Contracts ultimately live in chapter frontmatter (§4.1). **Users wanting draft history can remove that one `.gitignore` line**: settle still clears the workspace, behavior is unchanged, and Git retains history naturally. This is normative: implementation must not assume the workspace is untracked.
 
-`决策卡.md` 是作者唯一需要看的界面，固定四段：
+`决策卡.md` is the only interface the author needs to read, with four fixed sections (status board, proposal, contract, alternatives). The example retains literal format headings:
 
 ```markdown
 # 决策卡：第 152 章
 ## 盘面（脚本生成）
-- 位置：第 5 卷 24/40 章
-- 节奏债：P-031（高，12 章未推进）
-- 连续弱钩：2 章
+- Position: volume 5, chapter 24/40
+- Pacing debt: P-031 (high, no progress for 12 chapters)
+- Consecutive weak hooks: 2 chapters
 ## 提案
-推进 P-031（林晚取得实证）、顺手开 P-058、结尾玄阶令牌现世卡章。
+Advance P-031 (林晚 obtains evidence), open P-058 along the way, and end on the mystic-rank token's appearance.
 ## 合同（拍板即生效）
-- [ ] 林晚得知灭门真相的第一条实证
-- [ ] P-058 开启：神秘老者来历
-- [ ] 结尾强钩
+- [ ] 林晚 obtains the first concrete evidence of the massacre truth
+- [ ] P-058 opens: the mysterious elder's origins
+- [ ] Strong ending hook
 ## 备选
-B 方案：本章纯感情线过渡，P-031 推到下章（代价：节奏债 +1）
-（如需豁免承诺结转，在此注明理由）
+Option B: a relationship-only transition chapter; defer P-031 to the next chapter (cost: pacing debt +1)
+(If promise settlement is exempted, state the reason here)
 ```
 
-作者动作只有三种：采纳 / 改卡 / 选备选。改卡 = 直接编辑此文件，或一句话让系统改（不变量 9）。
+The author has only three actions: adopt / edit the card / choose an alternative. Editing means changing this file directly or asking the system in one sentence (invariant 9).
 
-## 8. 章事务（内环）
+## 8. Chapter Transaction (Inner Loop)
 
-| # | 阶段 | 执行体 | 文件效果 |
+| # | Stage | Executor | File effect |
 |---|------|--------|----------|
-| 1 | brief | 脚本读盘面 | 生成 `工作区/决策卡.md` |
-| 2 | 拍板 | **作者** | 决策卡的合同段固化 |
-| 3 | pack | 脚本 | 组装 `工作区/上下文包.md`：盘面+合同+事实切片+信息差边界+近章结尾+反复读清单+风格锚点 |
-| 4 | 渲染 | 模型（干净上下文） | `工作区/草稿-*.md`；关键章 best-of-N |
-| 5 | 机检 | 脚本 | 合同断言比对、泄密扫描（信息差）、禁词/复读、新专名比对名册、字数。**不过关直接打回第 4 步，不打扰作者** |
-| 6 | 镜头评审 | 模型 ×3（各自新鲜上下文） | 读者镜头（爽不爽/哪段想划走）、编辑镜头（结构与商业性）、事实镜头（只解释机检结果）→ `工作区/评审报告/` |
-| 7 | 验收 | **作者** | 验收卡 = 草稿 + 三句话评审 + 待确认新专名 + **章摘要（扫一眼，可改）**。动作：接受 / 改完接受 / 打回 |
-| 8 | settle | 脚本，**原子** | 见下 |
+| 1 | brief | Script reads status board | Generate `工作区/决策卡.md` |
+| 2 | Approve | **Author** | Freeze the decision card contract section |
+| 3 | pack | Script | Assemble `工作区/上下文包.md`: status board + contract + fact slices + information-gap boundaries + recent chapter endings + anti-repetition list + style anchors |
+| 4 | Render | Model (clean context) | `工作区/草稿-*.md`; best-of-N for key chapters |
+| 5 | Machine check | Script | Contract assertions, information-leak scan, banned terms/repetition, new proper names vs. register, character count. **On failure, return to step 4 without interrupting the author** |
+| 6 | Lens review | 3 models (each with fresh context) | Reader lens (satisfaction/where to skip), editor lens (structure/commercial appeal), fact lens (explain machine-check results only) → `工作区/评审报告/` |
+| 7 | Accept | **Author** | Acceptance card = draft + three-sentence review + unconfirmed new names + **chapter summary (review/edit)**. Actions: accept / edit and accept / reject |
+| 8 | settle | Script, **atomic** | See below |
 
-**settle 的一次 commit 包含**：草稿 → `定稿/正文/`（front matter 写入合同与承诺结转）；`设定/` 变更（位置/状态/境界/持有/信息差/名册/时间线）；涉及的 `大纲/承诺/` 文件结转（front matter 更新 + 履历追加）；`记忆/章摘要/`（验收卡定稿版）；`文风/金句库/` 收割（如触发）；工作区清空。
+**One settle commit includes**: draft → `定稿/正文/` (contract and promise settlement in frontmatter); changes to `设定/` (location/status/realm/possessions/information gaps/register/timeline); settlement of affected `大纲/承诺/` files (frontmatter updates + history append); `记忆/章摘要/` (accepted-card final version); harvesting into `文风/金句库/` if triggered; workspace clearing.
 
-**commit message 约定**（前缀 ASCII 是机器协议，便于 `git log --grep`）：
+**Commit-message convention** (ASCII prefixes are machine protocol, convenient for `git log --grep`):
 
 ```text
 ch(152): 北境的雪
 
-承诺: +P-058 ~P-031 ~P-007 $P-019     # + 开启 ~ 推进 $ 兑付
+承诺: +P-058 ~P-031 ~P-007 $P-019     # + open ~ advance $ fulfill
 设定: 林晚.位置=北境雪原; 信息差+S-021
 ```
 
-## 9. 中环、外环与例外事务
+## 9. Middle/Outer Loops and Exceptional Transactions
 
-- **卷复盘** `vol(05): 复盘与下卷规划`：承诺审计（本卷开/收/过期清单）→ `记忆/卷摘要/` → 与作者对谈产出 `大纲/卷纲/第06卷.md` → 顺手做伏笔机会扫描（模型提 3-5 个"本卷可埋、N 卷后响"候选，必须引用总纲的具体远期节点，作者勾选后生成承诺文件）。
-- **体检**（每 50 章自动）：文体指纹 vs 文体基线区间的漂移报告 + 承诺坏账 + 时间线孤儿 → 报告进工作区，不入册；作者决定回拉或更新基线。
-- **retcon**：`retcon(87): 修正大长老境界设定`——显式事务，允许改定稿，要求 commit message 写明原因，设定/承诺同步，审计留痕。
-- **手改检测**：每次启动 `git status` 发现定稿/大纲有未结转的手改 → 决策卡问一句"结转吗"，确认后 `fix(设定): …` 入册。**系统适应作者，不报错。**
-- **分支未来**：作者想试另一条线 → `git branch what-if/xxx`，各推演 3 章纲要，读完 merge 或删分支。
+- **Volume retrospective** `vol(05): 复盘与下卷规划`: audit promises (opened/fulfilled/overdue this volume) → `记忆/卷摘要/` → discuss with the author to create `大纲/卷纲/第06卷.md` → scan foreshadowing opportunities (model proposes 3–5 seeds for this volume paying off N volumes later, citing specific distant master-outline nodes; generate promise files after author selection).
+- **Health check** (automatic every 50 chapters): style-fingerprint drift vs. baseline + bad promise debt + timeline orphans → report in workspace, not settled; author chooses correction or baseline update.
+- **retcon**: `retcon(87): 修正大长老境界设定`. Explicit transaction permitting finalized-content changes, with a reason in the commit message, synchronized settings/promises, and an audit trail.
+- **Manual-edit detection**: On startup, `git status` finds unsettled edits in finalized content/outlines → ask on the decision card whether to settle; after confirmation record as `fix(设定): …`. **The system adapts to the author instead of reporting an error.**
+- **Branching futures**: To explore another plotline, use `git branch what-if/xxx`, project 3 chapter outlines for each option, then merge or delete after reading.
 
-## 10. 盘面状态机（单入口）
+## 10. Status-Board State Machine (Single Entry Point)
 
-系统启动时按序判定，命中即停：
+Evaluate in order at startup; stop at the first match:
 
-| 序 | 条件 | 下一步 |
+| Order | Condition | Next step |
 |----|------|--------|
-| 0 | 任一源文件解析失败 | **修复卡**：定位到行、展示上下文、模型提议保留意图的修复、作者确认。全角冒号/逗号出现在结构位置（键后、列表分隔）属确定性错误，可直接预修复后只报不问。**永不带堆栈崩溃** |
-| 1 | 定稿/大纲有未结转手改 | 提议 fix 结转 |
-| 2 | 工作区有未完成事务 | 从中断的阶段继续 |
-| 3 | 刚结的章是卷末章 | 卷复盘 |
-| 4 | 章号到达体检周期 | 体检卡 |
-| 5 | 其余 | 新章 brief（内环第 1 步） |
+| 0 | Any source file fails to parse | **Repair card**: identify line, show context, propose an intent-preserving model fix, obtain author confirmation. Full-width colons/commas in structural positions (after keys/list separators) are deterministic errors: pre-fix and report without asking. **Never crash with a stack trace** |
+| 1 | Unsettled edits in finalized content/outlines | Propose fix settlement |
+| 2 | Incomplete workspace transaction | Resume from the interrupted stage |
+| 3 | Just-settled chapter ends a volume | Volume retrospective |
+| 4 | Chapter number reaches health-check interval | Health-check card |
+| 5 | Otherwise | New-chapter brief (inner-loop step 1) |
 
-8 个旧命令全部内化为以上状态的阶段。作者只需要一个入口和"继续"。
+All 8 legacy commands become internal stages of these states. Authors need only one entry point and “continue.”
 
-## 11. 派生缓存 `.cache/index.db`
+## 11. Derived Cache: `.cache/index.db`
 
-唯一允许的持久派生物，gitignored，任何时刻可删。首查重建，重建器只读 定稿/大纲/文风 源文件。表（机器域，表名英文）：`chapters`（front matter 展开）、`promises`、`secrets`、`entities`（名册）、`fingerprints`（文体指纹历史）。**重建器即格式的参考实现**——能完整重建，说明格式自洽。
+The only permitted persistent derived artifact, Git-ignored and disposable at any time. Rebuild on the first query, reading only source files in finalized content/outlines/style. Tables (machine domain, English names): `chapters` (expanded frontmatter), `promises`, `secrets`, `entities` (register), `fingerprints` (style-fingerprint history). **The rebuilder is the format's reference implementation**: complete reconstruction demonstrates format coherence.
 
-## 12. 迁移映射（v6 → v7，一次性脚本）
+## 12. Migration Mapping (v6 → v7, One-Time Script)
 
 | v6 | v7 |
 |----|----|
-| `正文/` | `定稿/正文/`（补 front matter，合同字段标"迁移"） |
-| `设定集/` | `定稿/设定/`（角色卡补 front matter） |
-| `大纲/`（总纲、卷纲） | `大纲/总纲.md`、`大纲/卷纲/` |
-| plot_threads / foreshadowing / chase_debt / reading_power | 逐条生成 `大纲/承诺/` 文件 |
-| `.webnovel/state.json` | 一次性展开进 `定稿/设定/` |
+| `正文/` | `定稿/正文/` (add frontmatter; mark contract field as migrated) |
+| `设定集/` | `定稿/设定/` (add character-profile frontmatter) |
+| `大纲/` (master/volume outlines) | `大纲/总纲.md`、`大纲/卷纲/` |
+| plot_threads / foreshadowing / chase_debt / reading_power | Generate one `大纲/承诺/` file per entry |
+| `.webnovel/state.json` | Expand once into `定稿/设定/` |
 | `summaries/` | `定稿/记忆/` |
-| project_memory patterns / scratchpad | `文风/风格宪法.md`（人工过一遍再入宪） |
-| `.story-system/` 提交链 | 迁移时压成一个初始 commit，原目录只读归档 |
-| index.db / vectors.db / projection_log | 删除（index 进 `.cache/` 重建；向量为可选插件） |
+| project_memory patterns / scratchpad | `文风/风格宪法.md` (human review before adoption) |
+| `.story-system/` commit chain | Collapse into one initial migration commit; archive original directory read-only |
+| index.db / vectors.db / projection_log | Delete (rebuild index in `.cache/`; vectors become an optional plugin) |
 
-## 13. 不做清单
+## 13. Explicit Non-Goals
 
-- ❌ 大一统 YAML 数据文件（多条记录一律每条一个 Markdown 文件）
-- ❌ 事件日志表与逐事件 witnesses 投影（被 信息差/ + 时间线在场列 取代）
-- ❌ 持久向量库（语义检索 = 可选插件，永不做事实召回主路径）
-- ❌ 常驻服务（Dashboard 改为按需静态简报，只读 story repo）
-- ❌ 自建提交链 / projection_log / scratchpad
-- ❌ 模型自由评"文笔好坏"（镜头职责里明确排除）
-- ❌ 全自动无人值守模式
+- ❌ Monolithic YAML data files (always one Markdown file per record)
+- ❌ Event-log tables and per-event witnesses projections (replaced by information-gap files + timeline attendance)
+- ❌ Persistent vector databases (semantic retrieval is optional and never the primary factual-recall path)
+- ❌ Persistent services (Dashboard becomes an on-demand static briefing reading the story repo only)
+- ❌ Custom commit chains / projection_log / scratchpad
+- ❌ Unconstrained model judgments of prose quality (explicitly excluded from lens responsibilities)
+- ❌ Fully automatic unattended mode
 
-## 14. 决策记录
+## 14. Decision Log
 
 ### 0.1 → 0.2
 
-| # | 问题 | 决定 | 决策人 | 理由 |
+| # | Question | Decision | Decider | Rationale |
 |---|------|------|--------|------|
-| 1 | 目录语言 | 全中文目录 + 全中文作者可见字段；机器协议保留 ASCII | 作者 | 使用者全是中文网文作者；编码税以 §2.1 硬约束消化 |
-| 2 | 工作区入 git？ | 默认不入；删 `.gitignore` 一行即可选入，实现必须兼容两种状态 | Claude | 默认保持"棘轮前可弃"的简洁，复杂需求一行开关满足 |
-| 3 | 信息差简化够用？ | 保持轻量登记；时间线加可选"在场"列覆盖群像需求 | Claude | 一列数据 vs 一套事件投影机制，成本差两个量级 |
-| 4 | 章摘要谁拍板 | 进验收卡供作者扫一眼、可改，随事务入册 | 作者 | 摘要是长程记忆的源头，错一条污染后面几百章 |
-| 5 | 每章必须结转承诺 | 保持硬机检；豁免权在决策卡、归作者、理由必填 | Claude | 规则要硬才有意义，但豁免是品味决策，归人不归模型 |
+| 1 | Directory language | Chinese directories and author-visible fields; ASCII machine protocols | Author | Users write Chinese web novels; §2.1 constraints handle encoding costs |
+| 2 | Track workspace in Git? | No by default; remove one `.gitignore` line to opt in; support both states | Claude | Keeps pre-acceptance work disposable by default; one-line switch meets advanced needs |
+| 3 | Is simplified information-gap tracking enough? | Lightweight register + optional timeline attendance for ensemble scenes | Claude | One column vs. an event-projection mechanism differs in cost by two orders of magnitude |
+| 4 | Who approves chapter summaries? | Author reviews/edits on acceptance card; settled with transaction | Author | Summaries seed long-term memory; one error can contaminate hundreds of chapters |
+| 5 | Must every chapter settle a promise? | Keep hard machine check; author-only exemption on decision card with reason | Claude | Rules must be firm; exemptions are human taste decisions, not model decisions |
 
-### 0.2 → 0.3（起因：作者质疑"YAML 是否方便作者修改"）
+### 0.2 → 0.3 (Prompted by the Author Questioning Whether YAML Is Easy to Edit)
 
-| # | 问题 | 决定 | 决策人 | 理由 |
+| # | Question | Decision | Decider | Rationale |
 |---|------|------|--------|------|
-| 6 | 大一统 YAML 对非程序员不安全 | 承诺与信息差拆为"每条一个 Markdown + 平铺 front matter"；全仓库唯一纯 YAML 是 book.yaml | 作者提出，Claude 设计 | 全角标点/缩进/类型三类手滑；爆炸半径从全账本缩到单条；自由文本回归正文 |
-| 7 | 手滑预防 | 防呆方言（§2.2）：一律平铺、块列表、危险值加引号 | Claude | 作者照系统写出的样子改，不容易错 |
-| 8 | 手滑兜底 | 解析失败出修复卡（§10 第 0 态），不崩溃；全角标点结构性错误确定性预修复 | Claude | 系统里永远有 LLM 在场，这是普通软件没有的兜底 |
-| 9 | 根治路径 | "对话即编辑器"入宪（不变量 9） | Claude | 作者从头到尾不需要学 YAML |
+| 6 | Monolithic YAML is unsafe for nonprogrammers | One Markdown + flat frontmatter per promise/information gap; book.yaml is the only pure YAML | Author raised it; Claude designed it | Full-width punctuation/indentation/type errors; blast radius shrinks from full ledger to one entry; free text returns to body |
+| 7 | Prevent editing slips | Error-resistant dialect (§2.2): flat fields, block lists, quoted risky values | Claude | Authors can safely imitate generated output |
+| 8 | Recover from editing slips | Repair card on parse failure (state 0 in §10), never crash; deterministic pre-fix of structural full-width punctuation | Claude | An LLM is always available, unlike ordinary software |
+| 9 | Root solution | Adopt conversation-as-editor (invariant 9) | Claude | Authors never need to learn YAML |
 
 ### 0.3 → 0.4
 
-| # | 问题 | 决定 | 决策人 | 理由 |
+| # | Question | Decision | Decider | Rationale |
 |---|------|------|--------|------|
-| 10 | 「正典」译名生硬 | 伞目录改名「定稿/」，结构不变（备选项：顶层拉平、「正史」） | 作者 | 贴作者心智：草稿在工作区，验收后入定稿 |
+| 10 | The translation of canon sounded unnatural | Rename umbrella directory to `定稿/`, structure unchanged (alternatives: flatten top level or use official-history wording) | Author | Matches author thinking: drafts in workspace, accepted work in finalized content |

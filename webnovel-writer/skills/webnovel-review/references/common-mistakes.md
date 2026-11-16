@@ -1,96 +1,96 @@
 ---
 name: common-mistakes
-purpose: 质量审查时快速自检，识别常见错误
+purpose: Quick self-check during quality review to identify common mistakes
 ---
 
 <context>
-此文件用于章节质量快速自检。Claude 已知一般写作错误，这里只列举网文创作特定的常见问题。
+This is a quick chapter-quality self-check. Claude already knows general writing mistakes; only common problems specific to web-fiction writing are listed here.
 </context>
 
 <instructions>
 
-## 快速自检清单
+## Quick self-check
 
-| 检查项 | 通过标准 | 违规后果 |
+| Check | Passing standard | Consequence of violation |
 |--------|----------|----------|
-| 战力合理 | 主角实力 ≤ state.json | 破坏战力体系 |
-| 爽点存在 | 至少 1 个爽点/章 | 读者流失 |
-| 实体识别 | 新实体可被 Data Agent 自动提取 | 设定混乱 |
-| 人物一致 | 对话/行为符合人设 | OOC 出戏 |
-| 节奏平衡 | 未连续 5+ 章同一 Strand | 审美疲劳 |
-| 伏笔追踪 | 伏笔可被识别并记录 | 遗忘伏笔 |
+| Reasonable combat strength | Protagonist strength ≤ state.json | Breaks the power system |
+| Gratification present | At least one gratification beat/chapter | Reader loss |
+| Entity recognition | Data Agent can automatically extract new entities | Setting confusion |
+| Character consistency | Dialogue/actions fit characterization | Immersion-breaking OOC |
+| Balanced pacing | Not 5+ consecutive chapters on one Strand | Reader fatigue |
+| Foreshadowing tracking | Foreshadowing can be recognized and recorded | Forgotten threads |
 
 </instructions>
 
 <examples>
 
 <example>
-<input>错误：主角筑基 3 层，打败金丹期敌人</input>
+<input>Error: protagonist at Foundation Establishment level 3 defeats a Golden Core enemy</input>
 <output>
-❌ **战力崩坏**
+❌ **Broken power scaling**
 
-✅ 修正：如必须越级战斗，需要：
-- 金手指/秘法加持
-- 对手受伤/被削弱
-- 环境优势/陷阱辅助
+✅ Fix: if fighting above one's level is necessary, provide:
+- Special-ability/secret-technique enhancement
+- An injured/weakened opponent
+- Environmental advantage/trap assistance
 </output>
 </example>
 
 <example>
-<input>错误：整章主角赶路，无冲突无爽点</input>
+<input>Error: protagonist travels for the entire chapter, with no conflict or gratification</input>
 <output>
-❌ **爽点缺失**
+❌ **Missing gratification**
 
-✅ 修正：赶路途中安排：
-- 遭遇事件（强盗/妖兽/奇遇）
-- 巧遇角色（伙伴/敌人/女主）
-- 发现隐藏地点/宝物
+✅ Fix: during the journey, arrange:
+- An incident (bandits/beasts/fortuitous encounter)
+- A character encounter (companion/enemy/heroine)
+- Discovery of a hidden location/treasure
 </output>
 </example>
 
 <example>
-<input>错误：突然出现"紫霄宗"，设定集中无此势力</input>
+<input>Error: “Purple Cloud Sect” suddenly appears but is absent from the setting collection</input>
 <output>
-❌ **擅自发明**
+❌ **Unauthorized invention**
 
-✅ 修正：
-- 确保新势力有明确名称和描写
-- Data Agent 会自动提取并询问是否加入设定集
+✅ Fix:
+- Ensure the new faction has a clear name and description.
+- Data Agent will extract it automatically and ask whether to add it to the setting collection.
 </output>
 </example>
 
 <example>
-<input>错误：主角性格"隐忍冷静"，突然暴怒失控</input>
+<input>Error: a “patient and composed” protagonist suddenly flies into an uncontrolled rage</input>
 <output>
-❌ **人物 OOC**
+❌ **Out-of-character behavior**
 
-✅ 修正：
-- 参考角色卡性格
-- 如需转变须有铺垫（触及底线/重大刺激）
-- 标注性格变化原因
+✅ Fix:
+- Refer to the character sheet's personality.
+- A change needs setup (crossed red line/major provocation).
+- Note the reason for the personality change.
 </output>
 </example>
 
 <example>
-<input>错误：反派台词全是"你这个蝼蚁！""不自量力！"</input>
+<input>Error: every antagonist line is “You ant!” or “Know your place!”</input>
 <output>
-❌ **对话脸谱化**
+❌ **Stereotyped dialogue**
 
-✅ 修正：
-- C级反派可脸谱化
-- B级以上应有智商和个性
-- 嘲讽要自然且有信息量
+✅ Fix:
+- Grade C antagonists may be stereotyped.
+- Grade B and above need intelligence and individuality.
+- Taunts should be natural and informative.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 战力崩坏（越级秒杀无理由） → ✅ 检查 state.json，合理设定对手
-❌ 爽点缺失（整章无冲突） → ✅ 至少 1 个爽点，过渡章也要有
-❌ 擅自发明（新实体描写模糊） → ✅ 确保新实体有明确名称和描写
-❌ 人物 OOC（性格突变无铺垫） → ✅ 参考角色卡，有转变需铺垫
-❌ 节奏单调（连续 10 章纯战斗） → ✅ 检查 strand_tracker，切换 Strand
-❌ 伏笔遗忘（超 100 章未回收） → ✅ 核心伏笔 50 章内回收
-❌ 对话脸谱化（反派只会喊口号） → ✅ B级以上反派要有智商
+❌ Broken power scaling (unexplained instant wins above one's level) → ✅ Check state.json and set opponents appropriately
+❌ Missing gratification (no conflict throughout chapter) → ✅ At least one gratification beat, even in transition chapters
+❌ Unauthorized invention (vaguely described new entities) → ✅ Give new entities clear names and descriptions
+❌ OOC behavior (sudden personality change without setup) → ✅ Refer to character sheets; set up changes
+❌ Monotonous pacing (ten consecutive combat-only chapters) → ✅ Check strand_tracker and switch Strands
+❌ Forgotten foreshadowing (unresolved for over 100 chapters) → ✅ Resolve core foreshadowing within 50 chapters
+❌ Stereotyped dialogue (antagonists only shout slogans) → ✅ Grade B+ antagonists need intelligence
 </errors>

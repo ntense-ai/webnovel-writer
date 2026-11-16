@@ -1,86 +1,86 @@
-# 世界观构建指南 (World Building)
+# Worldbuilding Guide
 
-> **核心原则**: 世界观不是“说明书”，而是“舞台”。所有的设定必须服务于剧情冲突和主角成长。
-
----
-
-## 1. 世界观的三大基石
-
-### 物理法则 (Physics & Magic)
-决定这个世界“什么能做，什么不能做”。
-- **能量来源**: 灵气？魔力？核能？精神力？
-- **代价机制**: 获得力量需要付出什么？（寿命？理智？资源？）
-- **铁律**: 绝对不可打破的规则（如：死人不能复活 / 凡人不可直视神）。
-
-### 地理格局 (Geography)
-- **中心与边缘**: 资源富集区（圣地/主城）vs 贫瘠区（新手村/边境）。
-- **隔离机制**: 为什么新手不能直接去高级地图？（界壁？海洋？实力限制？）
-- **险地/秘境**: 专门用于刷怪、夺宝、奇遇的副本区域。
-
-### 势力架构 (Factions)
-建立“冲突网络”。
-- **统治者**: 谁制定规则？（皇室/联盟/神殿）
-- **挑战者**: 谁想破坏规则？（反抗军/魔道/邪神）
-- **中立者**: 谁提供服务？（商会/佣兵公会/炼丹师协会）
+> **Core principle**: A world is a stage, not an instruction manual. Every setting detail must serve plot conflict and protagonist growth.
 
 ---
 
-## 2. 势力设计模板
+## 1. Three Foundations of Worldbuilding
 
-### 宗门/组织卡
+### Physics and Magic
+Determine what is possible and impossible.
+- **Energy source**: Spiritual energy, magic, nuclear energy, or mental power?
+- **Costs**: What must be paid for power: lifespan, sanity, or resources?
+- **Unbreakable rules**: Absolute laws, such as the dead cannot return or mortals cannot look directly at gods.
+
+### Geography
+- **Center and periphery**: Resource-rich sacred lands/main cities versus impoverished starting villages/frontiers.
+- **Separation mechanisms**: Why can beginners not enter high-level regions immediately: dimensional barriers, oceans, or strength requirements?
+- **Danger zones/secret realms**: Areas designed for fighting monsters, competing for treasure, and extraordinary encounters.
+
+### Factions
+Build a network of conflicts.
+- **Rulers**: Who sets the rules: royalty, alliances, or temples?
+- **Challengers**: Who wants to break them: rebels, demonic sects, or evil gods?
+- **Neutrals**: Who provides services: merchant associations, mercenary guilds, or alchemist associations?
+
+---
+
+## 2. Faction Template
+
+### Sect/Organization Card
 ```markdown
-**名称**: 天云宗
-**定位**: 正道魁首 / 霸主级势力
-**核心资源**: 拥有一条极品灵脉 + 上古剑冢
-**标志性功法**: 《流云剑诀》（以快著称）
-**内部矛盾**: 宗主一脉 vs 大长老一脉（权力斗争）
-**对外态度**: 表面护短，实则利益至上
-**与主角关系**: 初期庇护所 → 中期束缚 → 后期被主角超越/掌控
+**Name**: Tianyun Sect
+**Role**: Leader of the righteous path / dominant regional power
+**Core resources**: A supreme-grade spiritual vein and an ancient sword tomb
+**Signature technique**: Flowing Cloud Sword Art, renowned for speed
+**Internal conflict**: Sect master's faction versus grand elder's faction in a power struggle
+**External stance**: Publicly protective of its own; ultimately driven by interests
+**Relationship to protagonist**: Early refuge → mid-story constraint → surpassed/controlled later
 ```
 
-### 势力生态链
-- **依附关系**: 小家族依附于大宗门，大宗门依附于圣地。
-- **敌对关系**: 世仇（争夺资源）、道统之争（理念不合）。
-- **利益同盟**: 面对共同敌人（如兽潮）时的临时结盟。
+### Faction Ecology
+- **Dependency**: Small clans depend on major sects; major sects depend on sacred lands.
+- **Hostility**: Blood feuds over resources or disputes over doctrine.
+- **Interest-based alliances**: Temporary cooperation against a shared enemy, such as a beast tide.
 
 ---
 
-## 3. 世界观构建的“冰山理论”
+## 3. The Iceberg Principle
 
-- **显性设定 (20%)**: 直接在文中写出来的（如：货币是灵石，最高境界是渡劫）。
-- **隐性设定 (80%)**: 作者知道但不必全写出来的（如：灵石的开采工艺、渡劫期的具体寿命）。
-  - **作用**: 当读者深究逻辑时，你能给出合理的解释，让世界显得真实。
-
----
-
-## 4. 常见世界观类型库
-
-### 修仙界 (Cultivation)
-- **残酷法则**: 弱肉强食，资源为王。
-- **社会结构**: 凡人如蝼蚁，修士高高在上。
-- **核心冲突**: 争夺长生机缘。
-
-### 赛博朋克 (Cyberpunk)
-- **高科技，低生活**: 霓虹灯下的贫民窟。
-- **控制者**: 超级公司垄断一切。
-- **反抗**: 黑客、改造人、街头武士。
-
-### 克苏鲁 (Cthulhu)
-- **不可知**: 世界的真相会导致疯狂。
-- **力量体系**: 知识=力量=诅咒。
-- **氛围**: 压抑、绝望、粘稠。
-
-### 废土末世 (Wasteland)
-- **资源匮乏**: 一瓶水能换一条命。
-- **秩序崩坏**: 拳头大就是硬道理。
-- **变异**: 怪物横行，人类也在变异。
+- **Visible setting (20%)**: Explicitly stated in the story, such as spirit-stone currency or Tribulation Transcendence as the highest realm.
+- **Hidden setting (80%)**: Known to the author but not fully explained, such as spirit-stone mining methods or exact lifespans at the highest realm.
+  - **Purpose**: When readers question the logic, you can offer a coherent explanation that makes the world feel real.
 
 ---
 
-## 🛠️ 构建检查清单
+## 4. Common World Types
 
-在 `/webnovel-plan` 阶段，检查世界观是否合格：
-- [ ] **冲突源**: 这个世界是否天然存在导致争斗的因素？（如：资源有限）
-- [ ] **上升通道**: 主角是否有明确的变强路径？（如：考入学院/加入宗门）
-- [ ] **独特性**: 有没有一个让人眼前一亮的微创新？（如：在这个修仙界，灵气有毒）
-- [ ] **自洽性**: 设定之间是否有明显矛盾？
+### Cultivation
+- **Harsh law**: The strong prey on the weak; resources rule.
+- **Social structure**: Mortals are treated as insignificant; cultivators stand above them.
+- **Core conflict**: Competition for immortality.
+
+### Cyberpunk
+- **High tech, low life**: Slums beneath neon lights.
+- **Controllers**: Megacorporations monopolize everything.
+- **Resistance**: Hackers, augmented humans, and street samurai.
+
+### Cosmic Horror
+- **Unknowability**: The truth of the world causes madness.
+- **Power system**: Knowledge = power = curse.
+- **Atmosphere**: Oppressive, hopeless, and cloying.
+
+### Post-apocalyptic Wasteland
+- **Scarcity**: A bottle of water can buy a life.
+- **Collapsed order**: Might makes right.
+- **Mutation**: Monsters roam, and humans mutate too.
+
+---
+
+## 🛠️ Worldbuilding Checklist
+
+During `/webnovel-plan`, check:
+- [ ] **Conflict sources**: Does the world naturally generate struggle, such as competition for limited resources?
+- [ ] **Upward mobility**: Does the protagonist have a clear route to strength, such as entering an academy or joining a sect?
+- [ ] **Distinctiveness**: Is there one striking small innovation, such as toxic spiritual energy in a cultivation world?
+- [ ] **Internal consistency**: Do any settings obviously contradict each other?

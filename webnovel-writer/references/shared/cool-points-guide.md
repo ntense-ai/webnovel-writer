@@ -1,313 +1,313 @@
 ---
 name: cool-points-guide
-purpose: 爽点设计参考，规划大纲时和写作时按需加载
+purpose: Payoff design reference, loaded as needed during outlining and writing
 ---
 
 <context>
-此文件用于爽点(cool-points)设计。Claude 已知基本叙事技巧，这里只补充网文特定的爽点工程方法论。
-注意：此文件为 shared 单一事实源；禁止在各 Skill 的 references 下复制修改。若需更新，请修改本文件。
+This file covers payoff (cool-points) design. Claude already knows basic narrative techniques; this adds webnovel-specific payoff engineering.
+Note: This shared file is the single source of truth. Do not copy and modify it under individual skills' references. Make updates here.
 </context>
 
 <instructions>
 
-## 一、六种爽点执行模式
+## I. Six Payoff Execution Patterns
 
-### 1. 装逼打脸
+### 1. Show of Strength and Vindication
 ```
-对方轻视 → 主角展示实力 → 对方震惊/后悔
+Opponent underestimates → protagonist demonstrates strength → opponent is shocked/regretful
 ```
-**适用**：都市、玄幻、职场
+**Fits**: Urban, xuanhuan, workplace fiction
 
-### 2. 扮猪吃虎
+### 2. Hidden Expert
 ```
-表面弱小 → 关键时刻爆发 → 众人惊艳
+Apparently weak → erupts at the critical moment → everyone is amazed
 ```
-**适用**：重生、隐藏身份、低调流
+**Fits**: Rebirth, hidden identity, low-profile protagonists
 
-### 3. 越级反杀
+### 3. Defeat a Stronger Enemy
 ```
-实力差距明显 → 主角逆袭 → 敌人不可置信
+Obvious power gap → protagonist turns the tables → enemy cannot believe it
 ```
-**适用**：玄幻、武侠、竞技
+**Fits**: Xuanhuan, martial arts, competitive fiction
 
-### 4. 打脸权威
+### 4. Prove Authority Wrong
 ```
-权威质疑 → 主角用实力证明 → 权威认可/尴尬
+Authority doubts → protagonist proves ability → authority acknowledges it/is embarrassed
 ```
-**适用**：职场、学院、技术流
+**Fits**: Workplace, academy, technical-expertise stories
 
-### 5. 反派翻车
+### 5. Villain's Downfall
 ```
-反派得意 → 计划破产 → 反派狼狈
+Villain gloats → plan collapses → villain is humiliated
 ```
-**适用**：所有题材
+**Fits**: All genres
 
-### 6. 甜蜜超预期
+### 6. Sweeter Than Expected
 ```
-平淡日常 → 意外惊喜 → 情感升温
+Ordinary daily life → unexpected surprise → emotional closeness grows
 ```
-**适用**：言情、甜宠
+**Fits**: Romance, sweet romance
 
 ---
 
-## 二、爽点三段式结构 (30/40/30参考框架)
+## II. Three-Part Payoff Structure (30/40/30 Reference)
 
-### 铺垫阶段 (Setup, 30%篇幅)
-- **建立预期**：读者应该期待什么
-- **制造反差**：当前状态 vs 即将展现的状态
-- **信息差设置**：读者知道什么？角色知道什么？
+### Setup (30% of Space)
+- **Establish expectation**: What should readers anticipate?
+- **Create contrast**: Current state vs the state about to be revealed.
+- **Set information gaps**: What do readers know? What do characters know?
 
-### 兑现阶段 (Delivery, 40%篇幅)
-- **触发时机**：什么事件触发爽点
-- **展现方式**：用对话/动作/结果展现
-- **情绪高峰**：爽点的最高潮瞬间
+### Delivery (40% of Space)
+- **Trigger**: What event activates the payoff?
+- **Presentation**: Show through dialogue/actions/results.
+- **Emotional peak**: The payoff's climactic moment.
 
-### 微反转阶段 (Twist, 30%篇幅)
-- **假结束**：读者以为爽点结束了
-- **还有一手**：其实还有更厉害的
-- **余韵**：微反转后的状态与暗示
+### Micro-Twist (30% of Space)
+- **False ending**: Readers think the payoff is over.
+- **Another card**: Something even stronger remains.
+- **Afterglow**: The state and implications after the micro-twist.
 
 ---
 
-## 三、压扬比例控制
+## III. Suppression-to-Release Ratio
 
-### 压扬比例标准
-| 题材类型 | 压扬比例 | 说明 |
+### Reference Ratios
+| Genre type | Suppression:release | Description |
 |---------|---------|------|
-| 传统爽文 | 压3扬7 | 轻度压迫，快速释放 |
-| 硬核正剧 | 压5扬5 | 平衡叙事 |
-| 虐恋/黑深残 | 压7扬3 | 长期压抑，爆发更爽 |
+| Traditional wish fulfillment | 3:7 | Light pressure, rapid release |
+| Serious hard-edged drama | 5:5 | Balanced narrative |
+| Angsty romance / dark tragedy | 7:3 | Prolonged suppression, stronger eruption |
 
-### 压扬节奏控制
+### Rhythm
 ```
-慢铺垫（压） → 快爆发（扬） → 停顿 → 再加速
+Slow setup (suppression) → rapid eruption (release) → pause → accelerate again
 ```
 
-### 句式节奏
-- **短句**：快节奏，动作密集
-- **长句**：慢节奏，细节描写
-- **交替**：制造节奏变化
+### Sentence Rhythm
+- **Short sentences**: Fast pace, dense action.
+- **Long sentences**: Slow pace, detailed description.
+- **Alternation**: Creates rhythmic variation.
 
 ---
 
-## 四、爽点密度建议（滚动窗口）
+## IV. Payoff Density (Rolling Windows)
 
-| 周期 | 要求 |
+| Window | Recommendation |
 |------|------|
-| 逐章 | 优先保证有“爽点或同等兑现”，允许过渡章低密度 |
-| 每 5 章 | 建议 ≥1 个组合爽点（2种模式叠加） |
-| 每 10-15 章 | 建议 ≥1 个里程碑爽点（改变主角地位） |
+| Each chapter | Prioritize a payoff or equivalent fulfillment; transitional chapters may have low density |
+| Every 5 chapters | Prefer ≥1 combined payoff (two patterns layered) |
+| Every 10-15 chapters | Prefer ≥1 milestone payoff (changes protagonist status) |
 
-### 爽点强度分级
-| 级别 | 说明 | 频率 |
+### Intensity Levels
+| Level | Description | Frequency |
 |------|------|------|
-| 小爽点 | 单一模式，日常打脸，规模不大 | 常见（多数章节） |
-| 组合爽点 | 2种以上模式叠加，重要转折 | 中频（阶段节点） |
-| 里程碑爽点 | 改变主角地位的阶段性胜利 | 低频（大节点） |
+| Minor payoff | Single pattern, everyday vindication, modest scale | Common (most chapters) |
+| Combined payoff | Two or more patterns, important turning point | Medium (arc nodes) |
+| Milestone payoff | Stage victory changing protagonist status | Low (major nodes) |
 
 ---
 
-## 五、信息差设计
+## V. Information Gaps
 
-### 信息差层级
-| 层级 | 说明 |
+### Layers
+| Layer | Description |
 |------|------|
-| 读者已知 | 读者通过前文已经知道的信息 |
-| 角色已知 | 场景中的角色知道的信息 |
-| 信息差核心 | 读者知道但角色不知道的关键信息 |
-| 反转信息 | 微反转时揭示的新信息 |
+| Reader knowledge | Information readers already learned earlier |
+| Character knowledge | Information known by characters in the scene |
+| Core information gap | Key information readers know but characters do not |
+| Twist information | New information revealed in the micro-twist |
 
-### 信息差运用
+### Application
 ```
-读者知道主角是隐藏大佬 + 角色不知道 = 期待感
-角色嘲讽主角 + 读者知道主角实力 = 爽感积累
-主角展示实力 + 角色震惊 = 爽感释放
-```
-
----
-
-## 六、打脸四步法（核心套路）
-
-**Step 1 铺垫**: 提前1-2章建立信息差（读者知道主角底牌，反派不知道）
-
-**Step 2 挑衅**: 通过1-3次挑衅建立对照组（反派被追捧 vs 主角被贬低）
-
-**Step 3 拉扯**: 2-3轮交锋，主角示弱 → 反派得意 → 期待拉满
-
-**Step 4 爆发**: 物理碾压 + 精神打击 + 围观群众反应 + 实质收获
-
----
-
-## 七、微反转类型
-
-### 还有更强
-展示了一手，其实还有更厉害的
-```
-"你以为这就是我的全力？"
-```
-
-### 意外收获
-本来只想完成目标，结果还有意外好处
-```
-打败对手 → 获得宝物 → 宝物比预期更珍贵
-```
-
-### 对方更惨
-对方以为只是小失败，其实是大翻车
-```
-输了比赛 → 赌注曝光 → 身败名裂
-```
-
-### 情感升温
-本以为只是甜，其实更甜
-```
-以为只是普通礼物 → 发现是精心准备 → 感动落泪
-```
-
-### 真相揭示
-表面是A，其实是B，而且B更厉害
-```
-以为是普通玉佩 → 其实是上古神器 → 还认主了
+Readers know the protagonist is a hidden expert + characters do not = anticipation
+Characters mock the protagonist + readers know the true strength = accumulated satisfaction
+Protagonist reveals strength + characters are shocked = release
 ```
 
 ---
 
-## 八、爽点升级路径
+## VI. Four-Step Vindication Method (Core Trope)
 
-### 维度1: 规模升级
+**Step 1 Setup**: Establish the information gap 1-2 chapters early (readers know the protagonist's trump card; the villain does not).
+
+**Step 2 Provocation**: Use 1-3 provocations to establish contrast (villain praised vs protagonist belittled).
+
+**Step 3 Push and Pull**: 2-3 exchanges; protagonist appears weak → villain gloats → anticipation peaks.
+
+**Step 4 Eruption**: Physical domination + psychological blow + onlooker reaction + tangible gains.
+
+---
+
+## VII. Micro-Twist Types
+
+### Something Stronger Remains
+One technique has been shown, but a stronger one remains.
 ```
-打脸小流氓 → 打脸世家少爷 → 打脸宗门长老 → 覆灭一个帝国
+"You thought that was my full strength?"
 ```
 
-### 维度2: 方式升级
+### Unexpected Gain
+The goal was modest, but an extra benefit appears.
 ```
-暴力碾压 → 智谋碾压 → 规则掌控 → 因果抹杀
+Defeat opponent → obtain treasure → treasure is more valuable than expected
 ```
 
-### 维度3: 受众升级
+### The Opponent Loses More
+They thought it was a minor defeat; it becomes a catastrophe.
 ```
-让邻居震惊 → 让全城震惊 → 让全国震惊 → 让诸天神魔战栗
+Lose contest → wager exposed → reputation destroyed
+```
+
+### Emotional Closeness
+It seemed sweet, then becomes sweeter.
+```
+Apparently ordinary gift → carefully prepared gift revealed → tears of gratitude
+```
+
+### Truth Revealed
+Apparently A, actually B, and B is stronger.
+```
+Apparently ordinary jade pendant → ancient divine artifact → it recognizes its master
 ```
 
 ---
 
-## 九、题材适配
+## VIII. Payoff Escalation Paths
 
-### 都市爽文
-- 注重装逼打脸
-- 用财力/人脉/身份反转
-- 社会地位碾压
+### Dimension 1: Scale
+```
+Humiliate a thug → a noble heir → a sect elder → overthrow an empire
+```
 
-### 玄幻升级
-- 注重战力反转
-- 用实力碾压/等级差距打破
-- 越级战斗
+### Dimension 2: Method
+```
+Overwhelming force → superior strategy → control of rules → erasure through causality
+```
 
-### 悬疑本格
-- 注重真相反转
-- 用证据/推理打脸
-- 智商碾压
-
-### 甜宠言情
-- 注重情感惊喜
-- 用意外浪漫/深情告白
-- 甜度超标
+### Dimension 3: Audience
+```
+Shock neighbors → the city → the nation → terrify gods and demons across all realms
+```
 
 ---
 
-## 十、AI执行指令
+## IX. Genre Adaptation
 
-创作时必须遵守：
+### Urban Wish Fulfillment
+- Emphasize demonstrations of strength and vindication.
+- Use wealth/connections/identity reversals.
+- Dominate through social status.
 
-1. **设计反转时**: 明确**信息差核心**（谁知道什么，谁不知道什么）
-2. **审核爽感时**: 爽感不足检查**铺垫篇幅（30%）**是否太少导致势能不足
-3. **节奏检查时**: 用 30/40/30 做诊断参考，不作为硬性配比
+### Xuanhuan Progression
+- Emphasize combat-power reversals.
+- Use overwhelming strength / broken level gaps.
+- Fight above one's level.
+
+### Fair-Play Mystery
+- Emphasize truth reversals.
+- Prove others wrong through evidence/reasoning.
+- Dominate intellectually.
+
+### Sweet Romance
+- Emphasize emotional surprises.
+- Use unexpected romance / heartfelt confessions.
+- Exceed expected sweetness.
 
 ---
 
-## 十一、伏笔三层级
+## X. AI Execution Instructions
 
-| 层级 | 回收周期 | 示例 |
+During creation:
+
+1. **Designing reversals**: Specify the **core information gap** (who knows what, and who does not).
+2. **Reviewing satisfaction**: If payoff is weak, check whether **setup space (30%)** is too small to build emotional potential.
+3. **Checking pace**: Use 30/40/30 diagnostically, not as a mandatory allocation.
+
+---
+
+## XI. Three Foreshadowing Tiers
+
+| Tier | Payoff window | Example |
 |------|----------|------|
-| 核心 | 50-300章 | 主角身世/终极敌人/金手指来历 |
-| 支线 | 30-100章 | 配角动机/神秘物品/师门秘密 |
-| 装饰 | 10-30章 | 场景细节/小习惯/路人提及 |
+| Core | 50-300 chapters | Protagonist origins / ultimate enemy / source of special advantage |
+| Subplot | 30-100 chapters | Supporting-character motive / mysterious item / sect secret |
+| Decorative | 10-30 chapters | Scene detail / small habit / a passerby's remark |
 
 </instructions>
 
 <examples>
 
 <example>
-<input>设计一个打脸爽点：主角在宗门大比被嘲笑</input>
+<input>Design a vindication payoff: the protagonist is mocked at a sect tournament.</input>
 <output>
-**铺垫**(第45章): 主角已筑基但隐藏修为，王少以为主角只有练气七层
-**挑衅**: 王少当众嘲讽"废物也来参加？"，长老们追捧王少
-**拉扯**: 第1轮主角用三成力被轻视，第2轮继续示弱，王少大笑"不过如此"
-**爆发**: 主角爆发筑基威压，一拳击飞王少，全场震惊"十八岁筑基天才！"
-**收获**: 晋升内门 + 5000灵石 + 女主好感度+20
+**Setup** (chapter 45): The protagonist has reached Foundation Establishment but hides it. Young Master Wang thinks he is only Qi Refining level seven.
+**Provocation**: Wang publicly sneers, "Even trash gets to compete?" The elders lavish praise on Wang.
+**Push and pull**: In round one the protagonist uses 30% strength and is dismissed. In round two he continues to appear weak; Wang laughs, "Is that all?"
+**Eruption**: The protagonist releases Foundation Establishment pressure and knocks Wang away with one punch. The crowd gasps, "A Foundation Establishment genius at eighteen!"
+**Gains**: Inner-disciple promotion + 5,000 spirit stones + heroine affection +20.
 
-**压扬比例**: 压3扬7（铺垫2章+挑衅拉扯30% / 爆发+收获70%）
+**Suppression:release**: 3:7 (two setup chapters + provocation/exchanges 30% / eruption + gains 70%).
 </output>
 </example>
 
 <example>
-<input>设计越级反杀爽点：主角突破境界</input>
+<input>Design a defeat-the-stronger-enemy payoff: the protagonist breaks through a realm.</input>
 <output>
-**困境**: 被追杀至悬崖，走投无路
-**机缘**: 发现隐藏洞府，获得天材地宝
-**突破**: 服用后突破至筑基期
-**展示**: 回头一掌拍飞追兵，"你们...还追吗？"
+**Predicament**: Pursued to a cliff with nowhere to go.
+**Opportunity**: Finds a hidden cave dwelling and a rare natural treasure.
+**Breakthrough**: Consuming it raises him to Foundation Establishment.
+**Demonstration**: Turns and sends the pursuers flying with one palm strike. "Still... chasing me?"
 
-**30/40/30分配**:
-- 30%: 被追杀过程，生死危机（压）
-- 40%: 发现洞府、突破过程（扬）
-- 30%: 反杀追兵、展示威风（爆）
+**30/40/30 allocation**:
+- 30%: Pursuit and mortal danger (suppression).
+- 40%: Discovering the cave and breaking through (release).
+- 30%: Counterattack and display of power (eruption).
 </output>
 </example>
 
 <example>
-<input>节奏脉冲示例</input>
+<input>Example of a pacing pulse</input>
 <output>
-【慢铺垫】
-"你？"王浩嗤笑一声，上下打量着萧炎，眼中满是不屑，"就凭你一个废物，也配站在这里？"
+[Slow setup]
+"You?" Wang Hao scoffed, looking Xiao Yan up and down with contempt. "A failure like you thinks he deserves to stand here?"
 
-【快爆发】
-萧炎动了。
-一步。
-王浩的笑容僵住。
-两步。
-他的瞳孔骤缩。
-三步。
-"砰！"
+[Rapid eruption]
+Xiao Yan moved.
+One step.
+Wang Hao's smile froze.
+Two steps.
+His pupils contracted.
+Three steps.
+"Bang!"
 
-【停顿】
-全场寂静。
-没有人说话。
-甚至没有人敢呼吸。
+[Pause]
+Silence filled the arena.
+No one spoke.
+No one even dared breathe.
 
-【再加速】
-"还有谁？"萧炎淡淡开口，目光扫过全场。
+[Accelerate again]
+"Who else?" Xiao Yan asked mildly, sweeping his gaze across the crowd.
 </output>
 </example>
 
 <example type="edge_case">
-<input>连续3章都是打脸，如何调整？</input>
+<input>Three consecutive chapters use vindication. How should this change?</input>
 <output>
-❌ 继续打脸 → 审美疲劳
-✅ 第4章改为越级反杀或打脸权威
-✅ 或穿插 Fire Strand（感情线）调节节奏
+❌ More vindication → aesthetic fatigue.
+✅ In chapter four, switch to defeating a stronger enemy or proving authority wrong.
+✅ Or intersperse a Fire Strand (relationship scene) to vary the pace.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 无铺垫的突然反转 → ✅ 提前1-2章埋信息差
-❌ 一招秒杀且无情绪势能 → ✅ 补一到两轮有效拉扯或代价
-❌ 降智反派 → ✅ 基于已知信息的合理轻视
-❌ 打完无收获 → ✅ 建议补战利品/认可/资格中的至少一项
-❌ 缺少围观群众 → ✅ 可用侧面反应替代（不强制群像围观）
-❌ 铺垫篇幅明显不足 → ✅ 适当补压迫或信息差，提升爽点势能
-❌ 压扬比例失衡 → ✅ 根据题材调整比例
-❌ 未标注信息差 → ✅ 明确读者和角色的认知差异
+❌ Sudden reversal without setup → ✅ Plant an information gap 1-2 chapters early
+❌ One-hit victory without emotional potential → ✅ Add one or two meaningful exchanges or costs
+❌ Foolish villain → ✅ Make underestimation reasonable given known information
+❌ No gains after victory → ✅ Add at least one reward, recognition, or qualification
+❌ No onlookers → ✅ Indirect reactions can substitute; a crowd is not mandatory
+❌ Clearly insufficient setup → ✅ Add pressure or information gaps to build payoff potential
+❌ Unbalanced suppression/release → ✅ Adjust by genre
+❌ Unspecified information gap → ✅ Clarify reader vs character knowledge
 </errors>

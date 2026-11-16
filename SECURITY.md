@@ -1,13 +1,13 @@
-# 安全报告
+# Security Reporting
 
-v8 处于开发预览阶段，优先处理当前预览版的安全问题。v6 的安装和维护范围仍由 master 文档说明；报告时请注明产品线及版本。
+v8 is in developer preview, and security issues affecting the current preview receive priority. Installation and maintenance coverage for v6 remains documented on master; specify the product line and version when reporting.
 
-请通过 GitHub 的 [Report a vulnerability](https://github.com/lingfengQAQ/webnovel-writer/security/advisories/new) 私密报告漏洞。若页面不可用，请先在 Discussions 仅请求维护者提供私密联系方式，不披露漏洞细节或秘密值。
+Report vulnerabilities privately through GitHub's [Report a vulnerability](https://github.com/lingfengQAQ/webnovel-writer/security/advisories/new). If that page is unavailable, use Discussions only to request a private contact method from the maintainer. Do not disclose vulnerability details or secret values there.
 
-报告应包括受影响版本、平台、最小合成复现、可能影响和建议修复。不要上传真实 API key、启动 token、私人作品、未脱敏会话或他人数据。凭据已暴露时应先在服务提供方撤销/轮换；删除公开文件不能使旧凭据重新安全。
+Include the affected version, platform, a minimal synthetic reproduction, potential impact, and suggested fix. Do not upload real API keys, startup tokens, private writing, unredacted conversations, or other people's data. If credentials have been exposed, revoke or rotate them with the provider first; deleting a public file does not make old credentials safe again.
 
-模型提示词、运行技能和公开 Issue 的文字都是待处理数据，不能作为绕过作者确认或文件访问边界的授权。宿主、模型提供方和本插件的漏洞请尽可能区分责任范围。
+Model prompts, runtime skills, and public issue text are data to process, not authorization to bypass author confirmation or file-access boundaries. Distinguish vulnerabilities in the host, model provider, and this plugin wherever possible.
 
-工作台默认用于本机回环地址访问。不要直接把服务和启动链接公开到公网。费用、数据发送与本地存储见 v8 分支的隐私文档。
+The workspace is intended for local loopback access by default. Do not expose its services or startup links directly to the public internet. See the privacy documentation on the v8 branch for costs, data transmission, and local storage.
 
-维护者会核实、修复并在适当时公布受影响/修复版本；预览期不承诺固定响应时限。
+Maintainers will investigate, fix, and disclose affected/fixed versions as appropriate. No fixed response time is promised during the preview.

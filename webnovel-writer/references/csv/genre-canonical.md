@@ -1,160 +1,160 @@
-# 题材权威枚举表（Genre Canonical List）
+# Genre Canonical List
 
-> 状态：`draft`（2026-04-16）
-> 数据来源：番茄小说排行榜实际分类（2026-04 抓取）
+> Status: `draft` (2026-04-16)
+> Source: Actual Fanqie Novel ranking categories (captured 2026-04).
 
-## 设计目标
+## Design Goal
 
-建立一套两层题材体系，让所有 CSV 的 `适用题材` 列、路由表的 `题材/流派`、裁决表的 `题材` 都有统一的枚举值可以对齐。
+Establish a two-level genre system with aligned enumerations for every CSV `适用题材` column, routing-table `题材/流派`, and decision-table `题材`. Chinese genre names, platform tags, aliases, filenames, and column names below are literal values used by the unchanged runtime and CSV data.
 
-## 题材 vs 套路：核心区分
+## Genre vs Trope: The Core Distinction
 
-**题材**回答"故事发生在什么世界"——都市、玄幻、仙侠、古言……
+**Genre** answers "what kind of world hosts the story": urban, xuanhuan, xianxia, historical romance, etc.
 
-**套路**回答"用什么模式讲故事"——退婚、系统、无限、重生、赘婿、快穿任务……
+**Trope** answers "what pattern tells the story": broken engagement, system, infinite scenarios, rebirth, live-in son-in-law, quick-transmigration missions, etc.
 
-同一个套路可以跨题材：系统流可以在玄幻里，也可以在都市里。因此所有"X流"（退婚流、系统流、无限流、赘婿流、重生流、副本流……）**不是题材**，归入 `桥段套路.csv`。
+A trope can span genres: system stories can be xuanhuan or urban. Therefore pattern labels such as broken-engagement, system, infinite-scenario, live-in-son-in-law, rebirth, and instance-based stories are **not genres**; they belong in `桥段套路.csv`.
 
-当用户输入"我要写退婚流"时，路由需要做两件事：
-1. **题材判定**：退婚流最常见于传统玄幻 → canonical_genre = `玄幻`
-2. **套路匹配**：在 `桥段套路.csv` 中检索"退婚"相关条目
+When a user requests a broken-engagement story, routing must do two things:
+1. **Identify genre**: Broken-engagement stories most commonly fit traditional xuanhuan → canonical_genre = `玄幻`.
+2. **Match trope**: Search `桥段套路.csv` for `退婚` entries.
 
-路由表 `题材与调性推理.csv` 的 `题材别名` 列可以包含套路名作为识别入口，但 `题材/流派` 列本身只填 platform_tag（番茄分类名），不填套路名。
-
----
-
-## 两层结构
-
-```
-Layer 1: canonical_genre  （15 个，我们定义）
-    ├── 用于 CSV 所有表的 `适用题材` 列
-    ├── 用于 裁决规则.csv 的 `题材` 列（每个 canonical 至少一行裁决）
-    └── 用于 reference_search.py 的 --genre 筛选
-
-Layer 2: platform_tag  （37 个，番茄原始分类）
-    ├── 用于 题材与调性推理.csv 的 `题材/流派` 列（路由入口粒度）
-    ├── 用于 题材与调性推理.csv 的 `题材别名` 列（输入识别，可含套路名以提升命中）
-    └── 每个 platform_tag 映射到且仅映射到一个 canonical_genre
-
-不属于题材体系的概念（住在其他表里）：
-    - 套路/模式（退婚、系统、无限、重生……）→ 桥段套路.csv
-    - 调性标签（爽文、深度剧情、现实向……）→ 裁决规则.csv 的风格优先级
-    - 场景标签（战斗、推理、日常……）→ 场景写法.csv
-    - 形式标签（短篇、互动小说……）→ 不入库
-```
-
-**规则**：
-- `适用题材` 列只允许填写 canonical_genre 枚举值或 `全部`
-- `题材与调性推理.csv` 的 `题材/流派` 填 platform_tag（番茄子分类级别）
-- `裁决规则.csv` 的 `题材` 填 canonical_genre（大类级别）
-- 用户在 init 阶段输入任意文本 → `_route()` 先匹配 platform_tag → 再映射到 canonical_genre
-- 一个 canonical_genre 可以对应多个 platform_tag，但一个 platform_tag 只归属一个 canonical_genre
-- 套路名可以出现在路由表的 `题材别名` 列用于识别，但不作为题材枚举值
+The routing table `题材与调性推理.csv` may include trope names in `题材别名` for recognition, but `题材/流派` itself accepts platform_tag values (Fanqie category names), not tropes.
 
 ---
 
-## Layer 1: Canonical Genre 枚举
+## Two-Level Structure
 
-### 男频
+```
+Layer 1: canonical_genre  (15, defined here)
+    ├── Used in every CSV table's `适用题材` column
+    ├── Used in 裁决规则.csv `题材` (at least one decision row per canonical genre)
+    └── Used for reference_search.py --genre filtering
 
-| # | canonical_genre | 说明 | 包含的 platform_tag |
+Layer 2: platform_tag  (37 original Fanqie categories)
+    ├── Used in 题材与调性推理.csv `题材/流派` (routing-entry granularity)
+    ├── Used in 题材与调性推理.csv `题材别名` (input recognition; tropes may improve recall)
+    └── Each platform_tag maps to exactly one canonical_genre
+
+Concepts outside the genre system (stored elsewhere):
+    - Tropes/patterns (broken engagement, systems, infinite scenarios, rebirth...) → 桥段套路.csv
+    - Tone tags (wish fulfillment, deep plot, realism...) → 裁决规则.csv style priorities
+    - Scene tags (combat, reasoning, daily life...) → 场景写法.csv
+    - Format tags (short fiction, interactive fiction...) → not stored
+```
+
+**Rules**:
+- `适用题材` accepts only canonical_genre values or `全部`.
+- `题材与调性推理.csv` `题材/流派` uses platform_tag (Fanqie subcategory level).
+- `裁决规则.csv` `题材` uses canonical_genre (broad category).
+- Arbitrary user input during init → `_route()` matches platform_tag → maps to canonical_genre.
+- One canonical_genre may have multiple platform_tag values, but each platform_tag belongs to only one canonical_genre.
+- Tropes may appear in routing `题材别名` for recognition, never as genre enum values.
+
+---
+
+## Layer 1: Canonical Genre Enumeration
+
+### Male-Audience
+
+| # | canonical_genre | Description | Included platform_tag values |
 |---|----------------|------|-------------------|
-| 1 | `都市` | 现代都市背景，含日常/修真/高武/赘婿/种田/脑洞 | 都市日常、都市修真、都市高武、战神赘婿、都市种田、都市脑洞 |
-| 2 | `玄幻` | 东方玄幻世界观，升级/战斗/大陆争霸 | 传统玄幻、玄幻脑洞 |
-| 3 | `仙侠` | 道家修仙体系，宗门/天劫/飞升 | 东方仙侠 |
-| 4 | `奇幻` | 西方奇幻体系，魔法/种族/史诗 | 西方奇幻 |
-| 5 | `科幻` | 科幻/末世/赛博朋克 | 科幻末世 |
-| 6 | `历史` | 历史/古代/架空历史/军事/谍战 | 历史古代、历史脑洞、抗战谍战 |
-| 7 | `悬疑` | 悬疑/推理/灵异/惊悚 | 悬疑脑洞、悬疑灵异 |
-| 8 | `游戏` | 游戏/电竞/体育竞技 | 游戏体育 |
+| 1 | `都市` | Modern urban settings: daily life/cultivation/martial powers/live-in son-in-law/development/high concept | 都市日常、都市修真、都市高武、战神赘婿、都市种田、都市脑洞 |
+| 2 | `玄幻` | Eastern fantasy: progression/combat/continental conquest | 传统玄幻、玄幻脑洞 |
+| 3 | `仙侠` | Daoist cultivation: sects/tribulations/ascension | 东方仙侠 |
+| 4 | `奇幻` | Western fantasy: magic/races/epics | 西方奇幻 |
+| 5 | `科幻` | Science fiction/apocalypse/cyberpunk | 科幻末世 |
+| 6 | `历史` | History/ancient eras/alternate history/military/espionage | 历史古代、历史脑洞、抗战谍战 |
+| 7 | `悬疑` | Mystery/detection/supernatural/thriller | 悬疑脑洞、悬疑灵异 |
+| 8 | `游戏` | Games/esports/sports | 游戏体育 |
 
-### 女频
+### Female-Audience
 
-| # | canonical_genre | 说明 | 包含的 platform_tag |
+| # | canonical_genre | Description | Included platform_tag values |
 |---|----------------|------|-------------------|
-| 9 | `古言` | 古代言情背景，宫廷/宅斗/江湖 | 古风世情、宫斗宅斗、古言脑洞 |
-| 10 | `现言` | 现代言情，含甜宠/豪门/职场/娱乐圈 | 现言脑洞、青春甜宠、星光璀璨、职场婚恋、豪门总裁 |
-| 11 | `幻言` | 玄幻/仙侠 + 言情 | 玄幻言情 |
-| 12 | `年代` | 民国/年代/近现代历史言情 | 年代、民国言情 |
-| 13 | `种田` | 种田/经营/基建/慢生活 | 种田 |
-| 14 | `快穿` | 快穿/世界穿梭/多世界任务 | 快穿 |
+| 9 | `古言` | Historical romance: court/household intrigue/martial world | 古风世情、宫斗宅斗、古言脑洞 |
+| 10 | `现言` | Contemporary romance: sweet romance/wealthy families/workplace/entertainment | 现言脑洞、青春甜宠、星光璀璨、职场婚恋、豪门总裁 |
+| 11 | `幻言` | Xuanhuan/xianxia + romance | 玄幻言情 |
+| 12 | `年代` | Republican-era/period/modern historical romance | 年代、民国言情 |
+| 13 | `种田` | Farming/business/infrastructure/slow living | 种田 |
+| 14 | `快穿` | Quick transmigration/world travel/multi-world missions | 快穿 |
 
-### 跨频
+### Cross-Audience
 
-| # | canonical_genre | 说明 | 包含的 platform_tag |
+| # | canonical_genre | Description | Included platform_tag values |
 |---|----------------|------|-------------------|
-| — | `科幻` | 男女频共用 | 科幻末世（女频同名） |
-| — | `悬疑` | 男女频共用 | 悬疑脑洞（女频同名）、女频悬疑 |
-| — | `游戏` | 男女频共用 | 游戏体育（女频同名） |
-| 15 | `衍生` | 同人/二次创作（低优先级） | 动漫衍生、男频衍生、女频衍生 |
+| — | `科幻` | Shared across audiences | 科幻末世 (same female-audience tag) |
+| — | `悬疑` | Shared across audiences | 悬疑脑洞 (same female-audience tag)、女频悬疑 |
+| — | `游戏` | Shared across audiences | 游戏体育 (same female-audience tag) |
+| 15 | `衍生` | Fan fiction/derivative works (low priority) | 动漫衍生、男频衍生、女频衍生 |
 
-### 保留值
+### Reserved Value
 
-| 值 | 含义 |
+| Value | Meaning |
 |----|------|
-| `全部` | 该条目适用于所有题材，不做题材筛选 |
+| `全部` | Applies to every genre; no genre filtering |
 
 ---
 
-## Layer 2: Platform Tag → Canonical 完整映射
+## Layer 2: Complete Platform Tag → Canonical Mapping
 
-### 男频（19 个 platform_tag）
+### Male-Audience(19 platform_tag values)
 
-| platform_tag | canonical_genre | 频道 | 调性特征（用于路由表区分同 canonical 下的差异） |
+| platform_tag | canonical_genre | Audience | Tone (distinguishes routes within a canonical genre) |
 |-------------|----------------|------|-------------------------------------------|
-| 都市日常 | `都市` | 男 | 日常轻松，低冲突，温情/搞笑 |
-| 都市修真 | `都市` | 男 | 现代背景 + 修炼体系，隐藏修炼者 |
-| 都市高武 | `都市` | 男 | 现代背景 + 武道/异能，战斗密度高 |
-| 战神赘婿 | `都市` | 男 | 身份反差，先压后爆，打脸主线 |
-| 都市种田 | `都市` | 男 | 都市背景 + 经营/积累/慢成长 |
-| 都市脑洞 | `都市` | 男 | 都市背景 + 高概念/奇思设定 |
-| 传统玄幻 | `玄幻` | 男 | 经典大陆/升级/宗门/争霸 |
-| 玄幻脑洞 | `玄幻` | 男 | 玄幻背景 + 非常规设定/反套路 |
-| 东方仙侠 | `仙侠` | 男 | 道家修仙，宗门/天劫/飞升/因果 |
-| 西方奇幻 | `奇幻` | 男 | 魔法/种族/骑士/史诗叙事 |
-| 科幻末世 | `科幻` | 男 | 科技/末世/生存/星际 |
-| 历史古代 | `历史` | 男 | 正统历史/架空朝代/争权/种田 |
-| 历史脑洞 | `历史` | 男 | 历史背景 + 穿越/系统/高概念 |
-| 抗战谍战 | `历史` | 男 | 近代战争/谍报/军事行动 |
-| 悬疑脑洞 | `悬疑` | 男 | 悬疑 + 脑洞设定/规则类 |
-| 悬疑灵异 | `悬疑` | 男 | 灵异/鬼怪/民俗恐怖 |
-| 游戏体育 | `游戏` | 男 | 电竞/游戏世界/体育竞技 |
-| 动漫衍生 | `衍生` | 男 | 动漫 IP 二创 |
-| 男频衍生 | `衍生` | 男 | 其他 IP 二创 |
+| 都市日常 | `都市` | Male | Light daily life, low conflict, warmth/comedy |
+| 都市修真 | `都市` | Male | Modern setting + cultivation system, hidden cultivators |
+| 都市高武 | `都市` | Male | Modern setting + martial/supernatural powers, dense combat |
+| 战神赘婿 | `都市` | Male | Identity contrast, suppression then eruption, vindication main plot |
+| 都市种田 | `都市` | Male | Urban setting + business/accumulation/slow growth |
+| 都市脑洞 | `都市` | Male | Urban setting + high-concept/imaginative premise |
+| 传统玄幻 | `玄幻` | Male | Classic continents/progression/sects/conquest |
+| 玄幻脑洞 | `玄幻` | Male | Xuanhuan + unconventional premise/subverted tropes |
+| 东方仙侠 | `仙侠` | Male | Daoist cultivation, sects/tribulations/ascension/causality |
+| 西方奇幻 | `奇幻` | Male | Magic/races/knights/epic narrative |
+| 科幻末世 | `科幻` | Male | Technology/apocalypse/survival/interstellar |
+| 历史古代 | `历史` | Male | Conventional history/fictional dynasties/power struggles/development |
+| 历史脑洞 | `历史` | Male | Historical setting + transmigration/systems/high concept |
+| 抗战谍战 | `历史` | Male | Modern-era war/espionage/military operations |
+| 悬疑脑洞 | `悬疑` | Male | Mystery + imaginative premise/rules |
+| 悬疑灵异 | `悬疑` | Male | Supernatural/ghosts/folk horror |
+| 游戏体育 | `游戏` | Male | Esports/game worlds/sports competition |
+| 动漫衍生 | `衍生` | Male | Anime/manga IP derivative fiction |
+| 男频衍生 | `衍生` | Male | Other IP derivative fiction |
 
-### 女频（18 个 platform_tag）
+### Female-Audience(18 platform_tag values)
 
-| platform_tag | canonical_genre | 频道 | 调性特征 |
+| platform_tag | canonical_genre | Audience | Tone |
 |-------------|----------------|------|---------|
-| 古风世情 | `古言` | 女 | 古代日常/家族/人情世故 |
-| 宫斗宅斗 | `古言` | 女 | 宫廷/宅院权谋，女性博弈 |
-| 古言脑洞 | `古言` | 女 | 古代背景 + 穿越/重生/高概念 |
-| 现言脑洞 | `现言` | 女 | 现代言情 + 脑洞设定 |
-| 青春甜宠 | `现言` | 女 | 校园/青春/纯甜/低虐 |
-| 星光璀璨 | `现言` | 女 | 娱乐圈/明星/偶像 |
-| 职场婚恋 | `现言` | 女 | 职场 + 婚恋/契约/都市 |
-| 豪门总裁 | `现言` | 女 | 豪门/财阀/阶层差 |
-| 玄幻言情 | `幻言` | 女 | 玄幻/仙侠世界 + 言情主线 |
-| 年代 | `年代` | 女 | 50s-90s 中国/近现代日常 |
-| 民国言情 | `年代` | 女 | 民国背景 + 言情 |
-| 种田 | `种田` | 女 | 农村/经营/基建/慢节奏积累 |
-| 快穿 | `快穿` | 女 | 多世界穿梭/任务/攻略 |
-| 科幻末世 | `科幻` | 女 | 科幻/末世 + 生存/言情 |
-| 悬疑脑洞 | `悬疑` | 女 | 悬疑 + 脑洞设定 |
-| 女频悬疑 | `悬疑` | 女 | 女性视角悬疑/推理 |
-| 游戏体育 | `游戏` | 女 | 电竞/游戏/体育 + 言情 |
-| 女频衍生 | `衍生` | 女 | 女频 IP 二创 |
+| 古风世情 | `古言` | Female | Ancient daily life/families/social relationships |
+| 宫斗宅斗 | `古言` | Female | Court/household intrigue and female power struggles |
+| 古言脑洞 | `古言` | Female | Ancient setting + transmigration/rebirth/high concept |
+| 现言脑洞 | `现言` | Female | Contemporary romance + imaginative premise |
+| 青春甜宠 | `现言` | Female | School/youth/sweet romance/low angst |
+| 星光璀璨 | `现言` | Female | Entertainment/celebrities/idols |
+| 职场婚恋 | `现言` | Female | Workplace + marriage/romance/contracts/urban life |
+| 豪门总裁 | `现言` | Female | Wealthy families/conglomerates/class gaps |
+| 玄幻言情 | `幻言` | Female | Xuanhuan/xianxia world + romance main plot |
+| 年代 | `年代` | Female | 1950s-1990s China/modern-era daily life |
+| 民国言情 | `年代` | Female | Republican-era setting + romance |
+| 种田 | `种田` | Female | Rural life/business/infrastructure/slow accumulation |
+| 快穿 | `快穿` | Female | Travel across worlds/missions/winning over targets |
+| 科幻末世 | `科幻` | Female | Science fiction/apocalypse + survival/romance |
+| 悬疑脑洞 | `悬疑` | Female | Mystery + imaginative premise |
+| 女频悬疑 | `悬疑` | Female | Female-perspective mystery/detection |
+| 游戏体育 | `游戏` | Female | Esports/games/sports + romance |
+| 女频衍生 | `衍生` | Female | Female-audience IP derivative fiction |
 
 ---
 
-## 常见用户输入别名 → 题材映射
+## Common User Aliases → Genre Mapping
 
-> 此表用于扩展 `题材与调性推理.csv` 的 `题材别名` 列，提升路由命中率。
-> 套路名（退婚、系统、无限……）可作为别名用于识别用户意图，但最终映射到 platform_tag 而非套路本身。
+> Use this table to expand `题材与调性推理.csv` `题材别名` and improve routing recall.
+> Trope names (broken engagement, systems, infinite scenarios...) may identify user intent as aliases, but ultimately map to platform_tag rather than the trope itself.
 
-### 纯题材类别名
+### Genre-Only Aliases
 
-| 用户可能输入 | 映射到 platform_tag | canonical_genre |
+| Possible input | Maps to platform_tag | canonical_genre |
 |-------------|-------------------|----------------|
 | 修仙、修真、修道 | 东方仙侠 / 都市修真 | 仙侠 / 都市 |
 | 末世、丧尸、废土 | 科幻末世 | 科幻 |
@@ -171,9 +171,9 @@ Layer 2: platform_tag  （37 个，番茄原始分类）
 | 赛博朋克、星际 | 科幻末世 | 科幻 |
 | 异能 | 都市高武 | 都市 |
 
-### 含套路名的别名（用于路由识别，套路本身住在 `桥段套路.csv`）
+### Trope Aliases (Routing Recognition; Tropes Belong in `桥段套路.csv`)
 
-| 用户可能输入 | 映射到 platform_tag | canonical_genre | 同时触发桥段套路检索 |
+| Possible input | Maps to platform_tag | canonical_genre | 同时触发桥段套路检索 |
 |-------------|-------------------|----------------|-------------------|
 | 退婚流、莫欺少年穷、三年之约 | 传统玄幻 | 玄幻 | 退婚、废材逆袭 |
 | 赘婿流、上门女婿 | 战神赘婿 | 都市 | 赘婿、身份反转 |
@@ -183,106 +183,106 @@ Layer 2: platform_tag  （37 个，番茄原始分类）
 | 重生、重生复仇 | 都市脑洞 / 古言脑洞 | 都市 / 古言 | 重生、信息差碾压 |
 | 穿越、穿书 | 历史脑洞 / 古言脑洞 | 历史 / 古言 | 穿越适应、知识碾压 |
 
-**注意**：部分别名（如"系统流""重生""穿越"）可映射到多个 platform_tag——路由表需要用 `关键词`+`意图与同义词`+`适用题材` 联合判定，不能只靠别名单字段。
+**Note**: Some aliases (such as `系统流`, `重生`, `穿越`) map to multiple platform_tag values. Routing must jointly use `关键词` + `意图与同义词` + `适用题材`, not aliases alone.
 
 ---
 
-## 与现有 CSV 的对齐规则
+## Alignment with Existing CSV Tables
 
-### 1. `适用题材` 列（所有 9 张表）
+### 1. `适用题材` Column (All 9 Tables)
 
-- 只允许填写 canonical_genre 枚举值（上述 15 个）或 `全部`
-- 多值用 `|` 分隔：`都市|玄幻|仙侠`
-- **迁移计划**：现有数据中的非枚举值需逐条映射到 canonical，见下方 [迁移映射表](#现有非枚举值迁移映射)
+- Accept only the 15 canonical_genre values above or `全部`.
+- Separate multiple values with `|`: `都市|玄幻|仙侠`.
+- **Migration plan**: Map existing non-enumerated values individually to canonical genres; see the [migration mapping](#migration-mapping-for-existing-non-enumerated-values).
 
-### 2. `裁决规则.csv` 的 `题材` 列
+### 2. `题材` in `裁决规则.csv`
 
-- 只填 canonical_genre
-- 每个 canonical_genre 至少一行裁决规则
-- 粒度：大类级别（不按 platform_tag 拆行）
+- Use canonical_genre only.
+- At least one decision-rule row per canonical_genre.
+- Broad-category granularity; do not split rows by platform_tag.
 
-### 3. `题材与调性推理.csv` 的 `题材/流派` 列
+### 3. `题材/流派` in `题材与调性推理.csv`
 
-- 填 platform_tag（子流派级别）
-- 每个 platform_tag 一行路由规则
-- `题材别名` 列填该 platform_tag 的所有别名
-- 新增 `canonical_genre` 列：显式声明该行归属的 canonical_genre
+- Use platform_tag (subcategory level).
+- One routing-rule row per platform_tag.
+- Put all aliases for that platform_tag in `题材别名`.
+- Add `canonical_genre` to explicitly identify the row's canonical genre.
 
-### 4. `reference_search.py --genre` 参数
+### 4. `reference_search.py --genre` Argument
 
-- 接受 canonical_genre 或 platform_tag
-- 如果输入是 platform_tag，先映射到 canonical_genre 再做筛选
-- `_genre_matches()` 用 canonical_genre 匹配 CSV 中的 `适用题材` 列
+- Accept canonical_genre or platform_tag.
+- Map platform_tag input to canonical_genre before filtering.
+- `_genre_matches()` matches canonical_genre against CSV `适用题材`.
 
 ---
 
-## 现有非枚举值迁移映射
+## Migration Mapping for Existing Non-Enumerated Values
 
-> 以下值目前存在于各 CSV 的 `适用题材` 列中，但不属于 canonical 枚举。需迁移。
+> The following values exist in CSV `适用题材` columns but are outside the canonical enumeration and require migration.
 
-| 现有值 | → canonical_genre | 说明 |
+| Existing value | → canonical_genre | Description |
 |--------|------------------|------|
-| 东方仙侠 | `仙侠` | platform_tag，降级为 canonical |
-| 西方奇幻 | `奇幻` | 同上 |
-| 科幻末世 | `科幻` | 同上 |
-| 都市日常 | `都市` | 同上 |
-| 都市修真 | `都市` | 同上 |
-| 都市高武 | `都市` | 同上 |
-| 历史古代 | `历史` | 同上 |
-| 谍战 | `历史` | 归入历史大类 |
-| 刑侦 | `悬疑` | 归入悬疑大类 |
-| 惊悚 | `悬疑` | 归入悬疑大类 |
-| 推理 | `悬疑` | 归入悬疑大类 |
-| 规则怪谈 | `悬疑` | 归入悬疑大类 |
-| 末世 | `科幻` | 归入科幻大类 |
-| 赛博朋克 | `科幻` | 归入科幻大类 |
-| 军事 | `历史` | 归入历史大类 |
-| 武侠 | `历史` | 番茄已无独立武侠类，归入历史 |
-| 权谋 | `古言` / `历史` | 按频道：古言权谋→古言，历史权谋→历史 |
-| 轻小说 | `衍生` | 番茄归入衍生类 |
-| 网游 | `游戏` | 归入游戏大类 |
-| 电竞 | `游戏` | 归入游戏大类 |
-| 竞技 | `游戏` | 归入游戏大类 |
-| 体育 | `游戏` | 番茄合并为"游戏体育" |
-| 系统文 | 删除 | 套路名，不是题材。条目的 `适用题材` 改为实际背景题材（`玄幻`/`都市`），套路入 `桥段套路.csv` |
-| 无限流 | 删除 | 套路名。条目改为 `悬疑`，套路入 `桥段套路.csv` |
-| 狗血 | 删除 | 调性标签，不是题材 |
-| 爽文 | 删除 | 调性标签 |
-| 深度剧情 | 删除 | 调性标签 |
-| 现实向 | 删除 | 调性标签 |
-| 群像 | 删除 | 叙事结构标签 |
-| 史诗 | 删除 | 调性标签 |
-| 动作 | 删除 | 场景标签 |
-| 心理 | 删除 | 场景标签 |
-| 战争 | 删除 | 场景标签 |
-| 灾难 | 删除 | 场景标签 |
-| 长篇 | 删除 | 形式标签 |
-| 知乎短篇 | 删除 | 形式标签 |
-| 商战 / 商业 | `都市` / `现言` | 按频道 |
-| 校园 / 青春 | `现言` | 归入现言 |
-| 娱乐圈 | `现言` | 番茄"星光璀璨" |
-| 职场 | `现言` | 番茄"职场婚恋" |
-| 冒险 / 探险 | `奇幻` / `玄幻` | 按世界观判定 |
+| 东方仙侠 | `仙侠` | platform_tag; normalize to canonical |
+| 西方奇幻 | `奇幻` | Same as above |
+| 科幻末世 | `科幻` | Same as above |
+| 都市日常 | `都市` | Same as above |
+| 都市修真 | `都市` | Same as above |
+| 都市高武 | `都市` | Same as above |
+| 历史古代 | `历史` | Same as above |
+| 谍战 | `历史` | Map to history |
+| 刑侦 | `悬疑` | Map to mystery |
+| 惊悚 | `悬疑` | Map to mystery |
+| 推理 | `悬疑` | Map to mystery |
+| 规则怪谈 | `悬疑` | Map to mystery |
+| 末世 | `科幻` | Map to science fiction |
+| 赛博朋克 | `科幻` | Map to science fiction |
+| 军事 | `历史` | Map to history |
+| 武侠 | `历史` | Fanqie no longer has a separate wuxia category; map to history |
+| 权谋 | `古言` / `历史` | By audience/category: historical-romance intrigue → 古言; historical intrigue → 历史 |
+| 轻小说 | `衍生` | Fanqie groups this under derivative fiction |
+| 网游 | `游戏` | Map to games |
+| 电竞 | `游戏` | Map to games |
+| 竞技 | `游戏` | Map to games |
+| 体育 | `游戏` | Fanqie combines this under `游戏体育` |
+| 系统文 | Remove | Trope, not genre. Set `适用题材` to the actual setting genre (`玄幻`/`都市`); put the trope in `桥段套路.csv`. |
+| 无限流 | Remove | Trope. Set genre to `悬疑`; put the trope in `桥段套路.csv`. |
+| 狗血 | Remove | Tone tag, not genre |
+| 爽文 | Remove | Tone tag |
+| 深度剧情 | Remove | Tone tag |
+| 现实向 | Remove | Tone tag |
+| 群像 | Remove | Narrative-structure tag |
+| 史诗 | Remove | Tone tag |
+| 动作 | Remove | Scene tag |
+| 心理 | Remove | Scene tag |
+| 战争 | Remove | Scene tag |
+| 灾难 | Remove | Scene tag |
+| 长篇 | Remove | Format tag |
+| 知乎短篇 | Remove | Format tag |
+| 商战 / 商业 | `都市` / `现言` | By audience/category |
+| 校园 / 青春 | `现言` | Map to contemporary romance |
+| 娱乐圈 | `现言` | Fanqie `星光璀璨` |
+| 职场 | `现言` | Fanqie `职场婚恋` |
+| 冒险 / 探险 | `奇幻` / `玄幻` | Decide by world setting |
 | 同人 | `衍生` | |
-| 互动小说 / 小程序短篇风 / 知乎短篇风 | 删除 | 形式标签，不属于题材体系 |
-| 高武 | `都市` | 番茄"都市高武" |
-| 古董文 | `悬疑` / `历史` | 按侧重判定 |
+| 互动小说 / 小程序短篇风 / 知乎短篇风 | Remove | Format tag, outside the genre system |
+| 高武 | `都市` | Fanqie `都市高武` |
+| 古董文 | `悬疑` / `历史` | Decide by emphasis |
 
-### "删除"的处理
+### Handling "Remove"
 
-标记为"删除"的值不是说条目要删——而是该条目的 `适用题材` 需要改填实际的 canonical_genre，或改为 `全部`。
+"Remove" applies to the value, not the entry: replace its `适用题材` with the actual canonical_genre or `全部`.
 
-例如：一条标注 `适用题材=狗血` 的桥段套路，应该改为 `适用题材=现言|古言`（如果它只适用于言情类）或 `全部`（如果它跨题材通用）。
+For example, a trope marked `适用题材=狗血` should become `适用题材=现言|古言` if limited to romance, or `全部` if applicable across genres.
 
 ---
 
-## Canonical 枚举汇总（速查）
+## Canonical Enumeration (Quick Reference)
 
 ```
 都市  玄幻  仙侠  奇幻  科幻
 历史  悬疑  游戏  古言  现言
 幻言  年代  种田  快穿  衍生
-全部（保留值）
+全部 (reserved value)
 ```
 
-共 15 个 canonical_genre + 1 个保留值。
+15 canonical_genre values + 1 reserved value.

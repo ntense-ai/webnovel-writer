@@ -1,82 +1,84 @@
-# 题材配置档案 (Genre Profiles)
+# Genre Profiles
 
-> **状态：Fallback Only**
+> **Status: Fallback Only**
 >
-> 高频题材的主判定、主调性、主禁忌已迁移到 Story Contracts / CSV route seed。
-> 本文件只在合同缺失、项目未升级或显式 fallback 时提供补充提示。
+> Primary decisions, tone, and prohibitions for common genres have moved to Story Contracts / CSV route seeds.
+> This file supplies supplementary guidance only when contracts are missing, the project has not upgraded, or fallback is explicitly requested.
 >
-> **定位**：本文档定义各题材的追读力配置参数，供 Step 1.5 / Context Agent / Checkers 读取。
+> **Purpose**: Genre-specific reader-retention parameters for Step 1.5 / Context Agent / Checkers.
 >
-> **原则**：配置用于"调整权重和建议"，不做硬性裁决。
+> **Principle**: Profiles adjust weights and recommendations, not hard decisions.
 >
-> **说明**：基于 xslca.cc 热门榜实证数据扩展，新增 history-travel / game-lit，并更新 shuangwen / xianxia / urban-power 关键参数。
+> **Note**: Expanded from observed xslca.cc popularity rankings: added history-travel / game-lit and updated key shuangwen / xianxia / urban-power parameters.
 
 ---
 
-## 一、Profile 字段说明
+## I. Profile Fields
 
-### 1.1 核心字段
+### 1.1 Core Fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `id` | string | 题材唯一标识（英文小写） |
-| `name` | string | 题材中文名 |
-| `description` | string | 一句话描述核心卖点 |
-| `tags` | string[] | 可叠加的题材标签（预留多标签扩展） |
+| `id` | string | Unique genre identifier (lowercase English) |
+| `name` | string | Chinese genre name (retained runtime value) |
+| `description` | string | One-sentence core selling point |
+| `tags` | string[] | Stackable genre tags (reserved for multi-tag support) |
 
-### 1.2 钩子配置 (hook_config)
+### 1.2 Hook Configuration (hook_config)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `preferred_types` | string[] | 偏好钩子类型（按优先级排序） |
-| `strength_baseline` | string | 默认钩子强度：strong/medium/weak |
-| `chapter_end_required` | boolean | 章末钩子偏好（true=强偏好，不是逐章硬性） |
-| `transition_allowance` | number | 过渡章豁免上限（连续多少章可降级） |
+| `preferred_types` | string[] | Preferred hook types in priority order |
+| `strength_baseline` | string | Default hook intensity: strong/medium/weak |
+| `chapter_end_required` | boolean | Chapter-end hook preference (true = strong preference, not mandatory every chapter) |
+| `transition_allowance` | number | Transition allowance (consecutive chapters permitted reduced intensity) |
 
-### 1.3 爽点配置 (coolpoint_config)
+### 1.3 Payoff Configuration (coolpoint_config)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `preferred_patterns` | string[] | 偏好爽点模式（按优先级排序） |
-| `density_per_chapter` | string | 每章爽点密度：high(2+)/medium(1)/low(0-1) |
-| `combo_interval` | number | combo爽点建议间隔（每N章参考1个） |
-| `milestone_interval` | number | 阶段性胜利建议间隔（每N章参考1个） |
+| `preferred_patterns` | string[] | Preferred payoff patterns in priority order |
+| `density_per_chapter` | string | Payoff density per chapter: high(2+)/medium(1)/low(0-1) |
+| `combo_interval` | number | Suggested combined-payoff interval (roughly one every N chapters) |
+| `milestone_interval` | number | Suggested milestone-victory interval (roughly one every N chapters) |
 
-### 1.4 微兑现配置 (micropayoff_config)
+### 1.4 Micro-Payoff Configuration (micropayoff_config)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `preferred_types` | string[] | 偏好微兑现类型 |
-| `min_per_chapter` | number | 每章建议微兑现下限 |
-| `transition_min` | number | 过渡章建议微兑现下限 |
+| `preferred_types` | string[] | Preferred micro-payoff types |
+| `min_per_chapter` | number | Suggested minimum micro-payoffs per chapter |
+| `transition_min` | number | Suggested minimum micro-payoffs in transitional chapters |
 
-### 1.5 节奏红线 (pacing_config)
+### 1.5 Pacing Red Lines (pacing_config)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `stagnation_threshold` | number | 节奏停滞阈值（连续N章无推进=HARD-003） |
-| `strand_quest_max` | number | Quest主线最大连续章数 |
-| `strand_fire_gap_max` | number | Fire感情线最大断档章数 |
-| `transition_max_consecutive` | number | 过渡章最大连续数 |
+| `stagnation_threshold` | number | Stagnation threshold (N chapters without progress = HARD-003) |
+| `strand_quest_max` | number | Maximum consecutive Quest chapters |
+| `strand_fire_gap_max` | number | Maximum gap between Fire relationship chapters |
+| `transition_max_consecutive` | number | Maximum consecutive transitional chapters |
 
-### 1.6 约束豁免 (override_config)
+### 1.6 Constraint Overrides (override_config)
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |------|------|------|
-| `allowed_rationale_types` | string[] | 允许的Override理由类型 |
-| `debt_multiplier` | number | 债务倍率（>1表示该题材更严格） |
-| `payback_window_default` | number | 默认偿还窗口（章数） |
+| `allowed_rationale_types` | string[] | Allowed override rationale types |
+| `debt_multiplier` | number | Debt multiplier (>1 means stricter genre requirements) |
+| `payback_window_default` | number | Default repayment window (chapters) |
 
 ---
 
-## 二、内置题材 Profiles
+## II. Built-in Genre Profiles
 
-### 2.1 爽文/系统流 (shuangwen)
+Chinese `name`, hook, pattern, and micro-payoff values in YAML are retained runtime labels; explanations are in English.
+
+### 2.1 Wish Fulfillment / System Stories (shuangwen)
 
 ```yaml
 id: shuangwen
 name: 爽文/系统流
-description: 金手指开挂，快节奏升级，打脸装逼一条龙
+description: Special advantages, rapid progression, and repeated displays of strength and vindication
 tags: [shuangwen]
 
 hook_config:
@@ -108,21 +110,21 @@ override_config:
   payback_window_default: 3
 ```
 
-**题材特点**：
-- 追求高密度爽点，读者期待快节奏
-- 章末优先保留明确期待（要突破了/要打脸了/要发财了）
-- 过渡章容忍度低，建议不连续超过 2 章
-- 数值反馈建议可视化（战力50→战力180，前后对比）
-- 金手指建议设置上限/消耗/冷却，避免无限使用
+**Genre characteristics**:
+- Readers expect fast pacing and dense payoffs.
+- Preserve a clear expectation at chapter end (breakthrough/vindication/wealth approaching).
+- Low tolerance for transitions; prefer no more than two consecutively.
+- Visualize numerical feedback (combat power 50→180, before/after comparison).
+- Give special advantages caps/costs/cooldowns to prevent unlimited use.
 
 ---
 
-### 2.2 修仙/玄幻 (xianxia)
+### 2.2 Cultivation / Xuanhuan (xianxia)
 
 ```yaml
 id: xianxia
 name: 修仙/玄幻
-description: 逆天改命，残酷法则，机缘与争斗并存
+description: Defy fate amid harsh rules, opportunities, and conflict
 tags: [xianxia]
 
 hook_config:
@@ -154,20 +156,20 @@ override_config:
   payback_window_default: 5
 ```
 
-**题材特点**：
-- 需要世界观构建，允许更多铺垫章
-- 境界突破是核心期待，阶位制建议可视化（8-10级体系，前后对比数值）
-- 资源货币化体系（灵石/丹药/功法）是核心微兑现载体
-- 设定约束可作为合理Override理由
+**Genre characteristics**:
+- Worldbuilding requires room; more setup chapters are acceptable.
+- Realm breakthroughs are the core expectation. Visualize tiers (8-10 levels with before/after numbers).
+- Monetized resources (spirit stones/pills/techniques) carry core micro-payoffs.
+- Setting constraints can reasonably justify overrides.
 
 ---
 
-### 2.3 言情/甜宠 (romance)
+### 2.3 Romance / Sweet Romance (romance)
 
 ```yaml
 id: romance
 name: 言情/甜宠
-description: 情感互动，关系推进，心动与虐心交织
+description: Emotional interaction and relationship progress, mixing attraction with heartbreak
 tags: [romance]
 
 hook_config:
@@ -199,19 +201,19 @@ override_config:
   payback_window_default: 4
 ```
 
-**题材特点**：
-- 感情线是绝对核心，断档容忍度极低
-- 情绪钩是王牌（心疼/心动/吃醋）
-- 关系进展是最重要的微兑现
+**Genre characteristics**:
+- Relationships are the absolute core; very low tolerance for gaps.
+- Emotion hooks are the trump card (protectiveness/attraction/jealousy).
+- Relationship progress is the most important micro-payoff.
 
 ---
 
-### 2.4 悬疑/推理 (mystery)
+### 2.4 Mystery / Detection (mystery)
 
 ```yaml
 id: mystery
 name: 悬疑/推理
-description: 谜题驱动，逻辑推演，真相一步步揭示
+description: Puzzle-driven reasoning gradually reveals the truth
 tags: [mystery]
 
 hook_config:
@@ -243,19 +245,19 @@ override_config:
   payback_window_default: 5
 ```
 
-**题材特点**：
-- 逻辑完整性优先于爽点密度
-- 信息兑现是核心微兑现（建议保持持续线索推进）
-- LOGIC_INTEGRITY可作为降级钩子强度的合理理由
+**Genre characteristics**:
+- Logical integrity takes priority over payoff density.
+- Information is the core micro-payoff; keep clues progressing.
+- LOGIC_INTEGRITY reasonably justifies lower hook intensity.
 
 ---
 
-### 2.5 规则怪谈 (rules-mystery)
+### 2.5 Rules-Based Horror (rules-mystery)
 
 ```yaml
 id: rules-mystery
 name: 规则怪谈
-description: 诡异规则，生存推理，反杀怪谈
+description: Uncanny rules, survival reasoning, and turning the tables on horror
 tags: [rules-mystery, horror]
 
 hook_config:
@@ -287,19 +289,19 @@ override_config:
   payback_window_default: 2
 ```
 
-**题材特点**：
-- 紧张氛围要求高钩子强度
-- 过渡章容忍度极低（1章）
-- 规则约束是合理Override理由
+**Genre characteristics**:
+- Tense atmosphere requires strong hooks.
+- Extremely low transition tolerance (one chapter).
+- Rule constraints reasonably justify overrides.
 
 ---
 
-### 2.6 都市异能 (urban-power)
+### 2.6 Urban Supernatural (urban-power)
 
 ```yaml
 id: urban-power
 name: 都市异能
-description: 现代背景，隐藏超能，低调装逼，产业链博弈
+description: Modern settings, hidden powers, understated strength, and industry maneuvering
 tags: [urban, power, industry]
 
 hook_config:
@@ -331,21 +333,21 @@ override_config:
   payback_window_default: 3
 ```
 
-**题材特点**：
-- 装逼打脸系列是核心爽点
-- 现代背景要求身份隐藏→掉马的节奏控制
-- 社会地位变化是重要微兑现
-- 娱乐圈/产业链背景热门，感情线权重高（断档容忍度降至8章）
-- 3章一峰节奏：第1章困境，第2章能力初展，第3章小胜+新阻力
+**Genre characteristics**:
+- Repeated displays of strength and vindication are the core payoff.
+- Modern settings require controlled pacing from hidden identity to reveal.
+- Social-status changes are important micro-payoffs.
+- Entertainment/industry settings are popular; relationships carry higher weight (maximum gap reduced to eight chapters).
+- Three-chapter peak: chapter 1 predicament, chapter 2 initial ability display, chapter 3 small victory + new resistance.
 
 ---
 
-### 2.7 知乎短篇 (zhihu-short)
+### 2.7 Zhihu Short Fiction (zhihu-short)
 
 ```yaml
 id: zhihu-short
 name: 知乎短篇
-description: 短平快，强反转，情绪冲击
+description: Short and fast, strong reversals, emotional impact
 tags: [short, zhihu]
 
 hook_config:
@@ -377,19 +379,19 @@ override_config:
   payback_window_default: 1
 ```
 
-**题材特点**：
-- 过渡章窗口极窄，建议每章至少有一项可感知收获
-- 极高钩子强度要求
-- 债务倍率最高（短篇应避免长期欠债）
+**Genre characteristics**:
+- Extremely narrow transition window; give every chapter at least one perceptible gain.
+- Very high hook-intensity expectations.
+- Highest debt multiplier; short fiction should avoid long-term unpaid promises.
 
 ---
 
-### 2.8 替身文/虐文 (substitute)
+### 2.8 Substitute-Lover / Angsty Romance (substitute)
 
 ```yaml
 id: substitute
 name: 替身文/虐文
-description: 情感纠葛，误解与反转，追妻火葬场
+description: Emotional entanglement, misunderstandings, reversals, and painful attempts to win back a partner
 tags: [substitute, angst]
 
 hook_config:
@@ -421,19 +423,19 @@ override_config:
   payback_window_default: 4
 ```
 
-**题材特点**：
-- 情绪钩是绝对核心（虐心→心疼→期待）
-- 身份掉马是王牌爽点
-- 感情线断档容忍度极低
+**Genre characteristics**:
+- Emotion hooks are central (heartbreak → protectiveness → anticipation).
+- Identity reveal is the signature payoff.
+- Extremely low tolerance for relationship-strand gaps.
 
 ---
 
-### 2.9 电竞 (esports)
+### 2.9 Esports (esports)
 
 ```yaml
 id: esports
 name: 电竞
-description: 赛场博弈，团队磨合，逆风翻盘与冠军追逐
+description: Competitive strategy, team cohesion, comebacks, and championship pursuit
 tags: [esports, competition]
 
 hook_config:
@@ -465,19 +467,19 @@ override_config:
   payback_window_default: 2
 ```
 
-**题材特点**：
-- 比赛章节建议有可追踪的胜负目标与决策节点
-- 逆风局/翻盘局是核心爽点来源
-- 过渡章容忍度低，需保持实时反馈感（比分/舆论/状态）
+**Genre characteristics**:
+- Match chapters should have trackable victory goals and decision points.
+- Disadvantaged matches and comebacks are core payoff sources.
+- Low transition tolerance; preserve live feedback (scores/public opinion/status).
 
 ---
 
-### 2.10 直播文 (livestream)
+### 2.10 Livestreaming (livestream)
 
 ```yaml
 id: livestream
 name: 直播文
-description: 平台流量博弈，实时反馈驱动，舆论与商业双线并进
+description: Platform-traffic competition driven by live feedback, public opinion, and commerce
 tags: [livestream, urban]
 
 hook_config:
@@ -509,19 +511,19 @@ override_config:
   payback_window_default: 2
 ```
 
-**题材特点**：
-- 优先形成“外部反馈→主角反应→结果变化”闭环
-- 舆论反转与商业博弈需依赖证据链，不靠口号
-- 数据变化（在线/榜单/转化）可作为高频微兑现
+**Genre characteristics**:
+- Prioritize a closed loop of external feedback → protagonist reaction → changed outcome.
+- Public-opinion reversals and business maneuvering need evidence chains, not slogans.
+- Metric changes (viewers/rankings/conversions) provide frequent micro-payoffs.
 
 ---
 
-### 2.11 克苏鲁 (cosmic-horror)
+### 2.11 Cosmic Horror (cosmic-horror)
 
 ```yaml
 id: cosmic-horror
 name: 克苏鲁
-description: 规则污染与理性崩塌并行，真相越近代价越高
+description: Corrupted rules and collapsing reason; approaching truth raises the cost
 tags: [horror, mystery, cosmic]
 
 hook_config:
@@ -553,17 +555,17 @@ override_config:
   payback_window_default: 2
 ```
 
-**题材特点**：
-- 恐怖感来自规则和代价，而非纯氛围堆叠
-- 每次推进真相都应绑定明确损失（理智/关系/资源）
-- 高强度钩子优先“未闭合规则问题”而非单纯惊吓
+**Genre characteristics**:
+- Horror comes from rules and costs, not atmosphere alone.
+- Every advance toward truth should incur a clear loss (sanity/relationships/resources).
+- Strong hooks should favor unresolved rule questions over mere scares.
 
-### 2.12 历史穿越 (history-travel)
+### 2.12 Historical Transmigration (history-travel)
 
 ```yaml
 id: history-travel
 name: 历史穿越
-description: 现代灵魂穿越古代，知识优势改变历史，种田发家逆袭
+description: A modern soul in ancient times changes history through knowledge, development, and prosperity
 tags: [history, travel, knowledge]
 
 hook_config:
@@ -595,21 +597,21 @@ override_config:
   payback_window_default: 4
 ```
 
-**题材特点**：
-- 知识优势 > 武力优势，推导过程要展示（不能只说答案）
-- 3章一峰节奏：第1章困境/穿越，第2章知识初展，第3章小胜+新阻力
-- 反派有合理动机（利益冲突），权威人物不轻易被说服（需多次证明）
-- 历史有惯性，改变一件事会引发连锁反应（非线性结果）
-- 女性主角占比上升，种田/发家/行业改革标签热门
+**Genre characteristics**:
+- Knowledge advantage > force; show the reasoning, not just the answer.
+- Three-chapter peak: chapter 1 predicament/transmigration, chapter 2 initial knowledge display, chapter 3 small victory + new resistance.
+- Antagonists need reasonable motives (conflicting interests); authorities require repeated proof rather than easy persuasion.
+- History has inertia; one change triggers cascading, nonlinear consequences.
+- Female protagonists are increasingly common; development/prosperity/industry-reform tags are popular.
 
 ---
 
-### 2.13 游戏文 (game-lit)
+### 2.13 GameLit (game-lit)
 
 ```yaml
 id: game-lit
 name: 游戏文
-description: 游戏化世界观，系统金手指驱动，数值反馈爽感，极致反差起点
+description: Gamified worlds, system advantages, numerical feedback, and starkly contrasting starting conditions
 tags: [game, system, apocalypse]
 
 hook_config:
@@ -641,34 +643,34 @@ override_config:
   payback_window_default: 2
 ```
 
-**题材特点**：
-- 早期章节建议尽快亮出金手指（通常前 1-2 章）
-- 数值反馈建议可视化（战力50→战力180，前后对比）
-- 金手指建议设置上限/消耗/冷却，避免无限使用
-- 过渡章窗口很窄，建议保持“爽点或数值推进”至少一项
-- IP融合（LOL/宝可梦等）是差异化标签，末日生存系兴起
-- 前期（建议前 3 章）应出现明确对手（环境/规则/具体反派任选其一）
+**Genre characteristics**:
+- Reveal the special advantage early, usually within chapters 1-2.
+- Visualize numerical feedback (combat power 50→180, before/after comparison).
+- Give special advantages caps/costs/cooldowns to prevent unlimited use.
+- Very narrow transition window; retain either a payoff or numerical progress.
+- IP fusion (LOL/Pokémon, etc.) differentiates stories; apocalyptic survival is rising.
+- Introduce a clear opponent early, preferably within three chapters: environment, rules, or a specific antagonist.
 
 ---
 
-## 三、Profile 加载机制
+## III. Profile Loading
 
-### 3.1 加载时机
+### 3.1 When to Load
 
-1. **Step 1.5**：根据 `state.json → project.genre` 加载对应profile
-2. **Context Agent**：将profile相关字段注入创作任务书
-3. **Checkers**：根据profile调整检测阈值和建议权重
+1. **Step 1.5**: Load the profile matching `state.json → project.genre`.
+2. **Context Agent**: Inject relevant profile fields into the writing brief.
+3. **Checkers**: Adjust detection thresholds and recommendation weights by profile.
 
-### 3.2 多标签支持（预留）
+### 3.2 Multi-Tag Support (Reserved)
 
-当前为单标签模式。未来支持多标签时：
-- 使用 `tags` 字段叠加
-- 冲突字段取更严格的值
-- 例：`[romance, mystery]` → 感情线断档取 min(5, 20) = 5
+Currently single-tag. Future multi-tag support will:
+- Combine tags through `tags`.
+- Use the stricter value for conflicting fields.
+- Example: `[romance, mystery]` → relationship gap min(5, 20) = 5.
 
-### 3.3 自定义Profile
+### 3.3 Custom Profiles
 
-用户可在 `state.json` 中覆盖默认值：
+Users may override defaults in `state.json`:
 
 ```json
 {
@@ -685,12 +687,12 @@ override_config:
 
 ---
 
-## 四、与 Taxonomy 的关系
+## IV. Relationship to the Taxonomy
 
-| Taxonomy 定义 | Profile 配置 |
+| Taxonomy definition | Profile configuration |
 |--------------|-------------|
-| 钩子类型清单 | 哪些类型偏好 |
-| 爽点模式清单 | 哪些模式偏好 |
-| 微兑现类型清单 | 哪些类型偏好 |
-| Hard/Soft 标准 | 阈值调整 |
-| Override 理由类型 | 哪些理由允许 |
+| Hook-type list | Preferred types |
+| Payoff-pattern list | Preferred patterns |
+| Micro-payoff types | Preferred types |
+| Hard/Soft standards | Threshold adjustments |
+| Override rationale types | Allowed rationales |

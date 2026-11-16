@@ -1,70 +1,70 @@
-# Webnovel Writer（插件源目录）
+# Webnovel Writer (Plugin Source Directory)
 
-长篇网文创作插件的 Claude Code 安装包。完整介绍、安装方式与文档导航见仓库根目录的 [README](../README.md)。
+The Claude Code package for the long-form webnovel writing plugin. See the repository's main [README](../README.md) for the full introduction, installation instructions, and documentation index.
 
-> 本文件面向「拿到插件包」的使用者与维护者，列出包内组件与最小验证方式。
+> This file is for users and maintainers working with the plugin package itself. It lists packaged components and minimal verification steps.
 
-## 包内组件
+## Package Contents
 
-| 类型 | 数量 | 位置 |
+| Type | Count | Location |
 |------|------|------|
-| Skills（斜杠命令） | 7 | `skills/<name>/SKILL.md` |
-| Agents（子代理） | 4 | `agents/*.md` |
-| Python 工具 | 统一入口 | `scripts/webnovel.py` |
-| 题材/写法数据 | 9 CSV | `references/csv/*.csv` |
-| 题材模板 | 按题材 | `templates/genres/*.md` |
-| Dashboard 前端 | 预打包 | `dashboard/frontend/dist/`（随包发布，无需本地构建） |
+| Skills (slash commands) | 7 | `skills/<name>/SKILL.md` |
+| Agents (subagents) | 4 | `agents/*.md` |
+| Python tools | Unified entry point | `scripts/webnovel.py` |
+| Genre/writing technique data | 9 CSV files | `references/csv/*.csv` |
+| Genre templates | By genre | `templates/genres/*.md` |
+| Dashboard frontend | Prebuilt | `dashboard/frontend/dist/` (included in the package; no local build required) |
 
-### 7 个 Skill
+### 7 Skills
 
-| 命令 | 用途 |
+| Command | Purpose |
 |------|------|
-| `/webnovel-init` | 深度初始化项目骨架、设定集、总纲 |
-| `/webnovel-plan` | 拆卷纲、时间线、章纲，并写回新增设定 |
-| `/webnovel-write` | 一条龙写章：上下文 → 起草 → 审查 → 润色 → 提交 → 备份 |
-| `/webnovel-review` | 多维度审查章节并把指标落库 |
-| `/webnovel-query` | 查询设定、角色、伏笔、运行时信息（只读） |
-| `/webnovel-learn` | 把有效写法沉淀进项目长期记忆 |
-| `/webnovel-dashboard` | 启动只读可视化面板 |
+| `/webnovel-init` | Deep initialization of the project structure, setting bible, and master outline |
+| `/webnovel-plan` | Break down volume outlines, timelines, and chapter outlines; persist new settings |
+| `/webnovel-write` | End-to-end chapters: context → draft → review → polish → commit → backup |
+| `/webnovel-review` | Review chapters across multiple dimensions and store metrics |
+| `/webnovel-query` | Query settings, characters, foreshadowing, and runtime information (read-only) |
+| `/webnovel-learn` | Retain effective writing techniques in project long-term memory |
+| `/webnovel-dashboard` | Launch the read-only visual dashboard |
 
-### 4 个 Agent
+### 4 Agents
 
-| Agent | 职责 | 被谁调用 |
+| Agent | Responsibility | Called by |
 |-------|------|---------|
-| `context-agent` | 写前 research，输出写作任务书 | `/webnovel-write` Step 1 |
-| `reviewer` | 逐维度事实审查 | `/webnovel-write` Step 3、`/webnovel-review` |
-| `data-agent` | 从正文提取事实，生成 commit artifacts | `/webnovel-write` Step 5 |
-| `deconstruction-agent` | 参考书拆解，提炼可迁移写法 | `/webnovel-init` Step 1.5 |
+| `context-agent` | Pre-writing research and writing brief | `/webnovel-write` Step 1 |
+| `reviewer` | Dimension-by-dimension factual review | `/webnovel-write` Step 3, `/webnovel-review` |
+| `data-agent` | Extract facts from chapter text and generate commit artifacts | `/webnovel-write` Step 5 |
+| `deconstruction-agent` | Analyze reference books and extract transferable techniques | `/webnovel-init` Step 1.5 |
 
-## 依赖与安装
+## Dependencies and Installation
 
-通过 Claude Code Marketplace 安装（推荐）：
+Install through the Claude Code Marketplace (recommended):
 
 ```bash
 claude plugin marketplace add lingfengQAQ/webnovel-writer --scope user
 claude plugin install webnovel-writer@webnovel-writer-marketplace --scope user
 ```
 
-Python 依赖：
+Python dependencies:
 
 ```bash
 python -m pip install -r scripts/requirements.txt
 ```
 
-RAG 检索需在书项目根目录配置 `.env`（缺失时自动退回 BM25 关键词检索）。详见 [RAG 与配置](../docs/guides/rag-and-config.md)。
+Configure `.env` at the book project root for RAG retrieval. Without it, retrieval falls back to BM25 keyword search. See [RAG and configuration](../docs/guides/rag-and-config.md).
 
-## 最小验证
+## Minimal Verification
 
 ```bash
-# 路径 / 项目根 / Story System 健康预检
+# Preflight paths, project root, and Story System health
 python -X utf8 "<CLAUDE_PLUGIN_ROOT>/scripts/webnovel.py" --project-root "<PROJECT_ROOT>" preflight
 
-# 提示词与数据链测试
+# Prompt and data-pipeline tests
 python -m pytest -q --no-cov
 ```
 
-> clean-room 安装验证建议用 `git archive` 或干净克隆，避免把本地 `node_modules/`、`__pycache__/`、`.coverage` 等开发产物带进 `--plugin-dir` 测试。
+> For clean-room installation checks, use `git archive` or a clean clone so local development artifacts such as `node_modules/`, `__pycache__/`, and `.coverage` do not enter `--plugin-dir` tests.
 
-## 协议
+## License
 
-[GPL-3.0](LICENSE)。完整文档导航见根目录 [README](../README.md) 与 [docs/](../docs/README.md)。
+[GPL-3.0](LICENSE). See the main [README](../README.md) and [docs/](../docs/README.md) for the complete documentation index.

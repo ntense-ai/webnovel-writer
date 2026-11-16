@@ -1,111 +1,111 @@
 ---
 name: core-constraints
-purpose: 每次章节写作前加载，确保三大定律执行
+purpose: Load before writing each chapter to enforce the three core laws
 ---
 
-> **主服务 skill**: `webnovel-write` Step 2
-> **次服务 skill**: `webnovel-review` Step 2
-> **内容层级**: 缺陷补偿层（网文特定防幻觉协议）
+> **Primary skill**: `webnovel-write` Step 2
+> **Secondary skill**: `webnovel-review` Step 2
+> **Content layer**: Defect compensation (webnovel-specific anti-hallucination protocol)
 
 <context>
-此文件用于章节创作时的核心约束检查。Claude 已知一般写作规范，这里只补充网文特定的防幻觉协议。
-注意：此文件为 shared 单一事实源；禁止在各 Skill 的 references 下复制修改。若需更新，请修改本文件。
+This file checks core constraints during chapter creation. Claude already knows general writing conventions; this adds webnovel-specific anti-hallucination rules.
+Note: This shared file is the single source of truth. Do not copy and modify it under individual skills' references. Make updates here.
 </context>
 
 <instructions>
 
-## 三大定律（低自由度 - 必须精确执行）
+## Three Core Laws (Low Discretion - Follow Exactly)
 
-| 定律 | 规则 | 检查方式 |
+| Law | Rule | Check |
 |------|------|----------|
-| **大纲即法律** | 严格执行大纲，不得擅自发挥 | 审查时对照大纲 |
-| **设定即物理** | 实力/招式/物品 ≤ index.db 记录 | 写作前查询确认 |
-| **发明需识别** | 新实体由 Data Agent 自动提取 | 章节完成后处理 |
+| **The outline is law** | Follow the outline strictly; do not improvise beyond it | Compare against the outline in review |
+| **The setting is physics** | Power/techniques/items ≤ index.db records | Query and confirm before writing |
+| **Inventions must be identified** | Data Agent automatically extracts new entities | Process after completing the chapter |
 
-## 新实体处理流程
+## New Entity Workflow
 
-当前规则：正文不再要求 XML 标签：
+Current rule: Prose no longer requires XML tags:
 
-1. **写作时**: 直接写纯正文，新角色/地点/物品正常描写
-2. **完成后**: Data Agent 自动识别新实体并写入 index.db
-3. **不确定实体**: Data Agent 标记为 uncertain，由人工确认
+1. **While writing**: Write plain prose; describe new characters/places/items normally.
+2. **After completion**: Data Agent identifies new entities and writes them to index.db.
+3. **Uncertain entities**: Data Agent marks them uncertain for human confirmation.
 
-## 章节约束分层
+## Chapter Constraint Layers
 
-### Hard（必须）
+### Hard (Required)
 
-- 本章可读性达标：读者能回答“发生了什么 / 谁在做什么 / 为什么”。
-- 本章必须存在清晰推进：问题、目标、代价、关系变化、信息变化至少一项可被识别。
-- 若上章有明确承诺（钩子/未闭合问题），本章必须回应（允许部分兑现，不要求一次性结清）。
-- 禁止输出占位正文（如 `[待补充]`、`[TODO]`、`...（省略）...`）。
+- The chapter must be readable: readers can answer "what happened / who is doing what / why."
+- It must make clear progress: at least one identifiable problem, goal, cost, relationship change, or information change.
+- If the previous chapter made an explicit promise (hook/unresolved question), respond to it. Partial fulfillment is allowed; full settlement is not required.
+- Never output placeholder prose (such as `[待补充]`, `[TODO]`, or `...（省略）...`).
 
-### Soft（建议）
+### Soft (Recommended)
 
-- 开头尽早进入冲突/风险/强情绪（建议前 200-400 字，不再固定 120 字）。
-- 未闭合问题或下一章期待锚点建议放在章末或后段（不限定“后 80-150 字”）。
-- 局面变化建议保持节奏感（参考 800-1400 字一个脉冲，短章至少一次实质变化）。
-- 微兑现频率按题材 profile 建议执行，不要求机械等间距。
+- Introduce conflict/risk/strong emotion early, preferably within the first 200-400 Chinese characters rather than a fixed 120.
+- Put an unresolved question or next-chapter anticipation anchor near the end or in the later section, without requiring the final 80-150 characters.
+- Give changes in the situation a rhythm: roughly one pulse per 800-1400 characters; short chapters need at least one substantive change.
+- Follow genre-profile guidance for micro-payoff frequency rather than mechanical equal spacing.
 
-### Style（可选强化）
+### Style (Optional Reinforcement)
 
-- 对话尽量带意图（试探/回避/施压/诱导），减少纯说明句。
-- 避免连续大段纯解释；若必须解释，建议切分为”信息 + 行动/反应”。
-- 避免”回去休息了”式机械收尾；若使用平缓收尾，需同时保留未闭合期待。
+- Give dialogue intent (probing/avoidance/pressure/manipulation); reduce purely explanatory lines.
+- Avoid consecutive long passages of pure explanation. If explanation is necessary, split it into "information + action/reaction."
+- Avoid mechanical endings such as "they went back to rest." A quiet ending must retain unresolved anticipation.
 
-### Anti-AI（写作时预防）
+### Anti-AI (Prevent During Writing)
 
-- 禁止连续 3 段以上使用相同句式结构。
-- 情绪描写必须通过行为/生理暗示，禁止直接标签（”他感到X”）。
-- 每 500 字至少有一次节奏变化（短句爆发、对话插入、场景切换）。
-- 对话必须带意图冲突，禁止纯信息传递。
-- 章末禁止”安全着陆”——必须保留至少一个未解决的问题或不安感。
-- 删掉万能副词（缓缓/淡淡/微微），用具体动作替代。
+- Do not use the same sentence structure for more than 3 consecutive paragraphs.
+- Convey emotion through behavior/physiological cues, not direct labels ("he felt X").
+- Include at least one rhythm change every 500 characters (a burst of short sentences, dialogue insertion, scene switch).
+- Dialogue must contain conflicting intentions, not pure information transfer.
+- No "safe landing" at chapter end: preserve at least one unresolved question or sense of unease.
+- Remove generic adverbs (slowly/subtly/slightly) and replace them with concrete actions.
 
-## 爽点与节奏（按题材 profile 调整）
+## Payoffs and Pacing (Adjust by Genre Profile)
 
-- 爽点密度由题材与章型共同决定：过渡章允许低密度，但不允许“整章无收获”。
-- 组合爽点与里程碑爽点采用滚动窗口评估（5章/10-15章），用于预警而非逐章硬判。
-- 连续同类型爽点达到 3 章记为风险预警，优先通过类型变体或执行差异化修正。
+- Genre and chapter type jointly determine payoff density. Transitional chapters may have low density, but must not deliver "no gains for the entire chapter."
+- Assess combined and milestone payoffs over rolling windows (5 chapters / 10-15 chapters), as warnings rather than rigid per-chapter judgments.
+- Three consecutive chapters with the same payoff type trigger a risk warning. Prefer type variations or differentiated execution to correct it.
 
-## Strand 平衡警告
+## Strand Balance Warnings
 
-| 情节线 | 警告条件 |
+| Plot strand | Warning condition |
 |--------|----------|
-| Quest（主线） | 连续 5+ 章 |
-| Fire（感情线） | >10 章未出现 |
-| Constellation（世界观） | >15 章未出现 |
+| Quest (main plot) | 5+ consecutive chapters |
+| Fire (relationships) | Absent for >10 chapters |
+| Constellation (worldbuilding) | Absent for >15 chapters |
 
-## 禁止事项
+## Prohibitions
 
-- `[待补充]`、`[TODO]`、`...（省略）...` → 必须完整写出
-- 战斗后无善后描述（都市异能题材）
+- `[待补充]`, `[TODO]`, `...（省略）...` → Write the content in full.
+- Battles without aftermath descriptions (urban supernatural fiction).
 
 </instructions>
 
 <examples>
 
 <example>
-<input>主角需要使用"天雷掌"击败敌人</input>
+<input>The protagonist needs "Heavenly Thunder Palm" to defeat an enemy.</input>
 <output>
-1. 查询 index.db 中是否有"天雷掌"技能
-2. 若有：直接使用
-3. 若无：在正文中描写获得途径（如拜师/领悟/传承），Data Agent 会自动提取
+1. Query index.db for the "Heavenly Thunder Palm" skill.
+2. If present, use it directly.
+3. If absent, describe how it was acquired (mentorship/insight/inheritance) in the prose. Data Agent will extract it automatically.
 </output>
 </example>
 
 <example type="edge_case">
-<input>剧情需要主角展示筑基期实力，但 index.db 显示练气期</input>
+<input>The plot requires Foundation Establishment power, but index.db records the Qi Refining stage.</input>
 <output>
-❌ 直接写筑基期战力 → 违反"设定即物理"
-✅ 先安排突破场景，Data Agent 更新 index.db，再展示新实力
+❌ Write Foundation Establishment combat strength directly → Violates "the setting is physics."
+✅ First include a breakthrough scene, let Data Agent update index.db, then show the new power.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 新实体描写模糊（无法自动识别） → ✅ 确保新实体有明确名称和描写
-❌ 主角突然会新技能 → ✅ 先描写获得途径
-❌ 实力设定不一致 → ✅ 写作前查询 index.db 确认
-❌ 整章无推进点（无目标/无代价/无变化） → ✅ 补至少一项可识别推进
+❌ Vague new entities that cannot be identified automatically → ✅ Give new entities clear names and descriptions
+❌ The protagonist suddenly knows a new skill → ✅ Describe its acquisition first
+❌ Inconsistent power levels → ✅ Query index.db before writing
+❌ No progression in an entire chapter (no goal/cost/change) → ✅ Add at least one identifiable form of progress
 </errors>

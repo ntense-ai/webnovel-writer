@@ -1,38 +1,38 @@
-## 开头变体（优先选择其一，尽量错开最近3章）
-- A. 冲突开场：角色直接进入对抗
-- B. 悬疑开场：一个未解释的异常
-- C. 动作开场：从动作中间切入
-- D. 对话开场：信息量大的对话
-- E. 氛围开场：环境暗示危险/机会
+## Opening variants (prefer one; avoid those used in the last three chapters)
+- A. Conflict opening: characters enter confrontation immediately
+- B. Mystery opening: an unexplained anomaly
+- C. Action opening: enter in the middle of an action
+- D. Dialogue opening: information-rich dialogue
+- E. Atmospheric opening: surroundings hint at danger/opportunity
 
-## 钩子变体（优先选择其一，尽量错开最近3章）
-| 类型 | 强度建议 | 适用场景 |
+## Hook variants (prefer one; avoid those used in the last three chapters)
+| Type | Suggested strength | Suitable situation |
 |------|---------|---------|
-| A. 危机钩 | strong | 敌人出现/危险逼近 |
-| B. 悬念钩 | medium | 信息缺口/未解之谜 |
-| C. 反转钩 | strong | 刚才的事不是表面那样 |
-| D. 期待钩 | medium | 好事即将发生 |
-| E. 代价钩 | medium | 胜利的代价浮出水面 |
+| A. Crisis hook | strong | Enemy appears/danger approaches |
+| B. Suspense hook | medium | Information gap/unsolved mystery |
+| C. Reversal hook | strong | What just happened was not what it seemed |
+| D. Anticipation hook | medium | Something good is about to happen |
+| E. Cost hook | medium | The price of victory emerges |
 
-## 情绪节奏变体（新增维度）
-- 低→高：压抑开场，高潮结束（战斗章常用）
-- 高→低：激烈开场，平静收尾（过渡章常用）
-- 低→高→低：波浪形，有高潮有喘息（标准章）
-- 平稳：情绪变化小（铺垫章、日常章）
+## Emotional-pacing variants (new dimension)
+- Low→high: oppressive opening, climactic ending (common in combat chapters)
+- High→low: intense opening, calm ending (common in transition chapters)
+- Low→high→low: wave-shaped, with a climax and breathing room (standard chapter)
+- Steady: little emotional variation (setup/everyday-life chapters)
 
-## 信息量节奏变体（新增维度）
-- low：动作为主，少解释（战斗章）
-- medium：动作+信息穿插（标准章）
-- high：大量新信息揭示（世界观章、反转章）
+## Information-density variants (new dimension)
+- low: action-dominant, little explanation (combat chapter)
+- medium: alternating action and information (standard chapter)
+- high: many new revelations (worldbuilding/reversal chapter)
 
-## 爽点执行变体
-- 装逼打脸 / 扮猪吃虎 / 越级反杀 / 打脸权威 / 反派翻车 / 甜蜜超预期
+## Gratification execution variants
+- Show off and turn the tables / concealed strength / counter-kill above one's level / humiliate authority / antagonist's plan backfires / sweetness beyond expectations
 
-## 重复检测规则（风险分级）
-- 同一开头类型：连续 2 章为 `warning`，连续 3 章为 `risk`
-- 同一钩子类型：连续 2 章为 `warning`，连续 3 章为 `risk`
-- 同一情绪节奏：连续 2 章为 `warning`，连续 3 章为 `risk`
-- 组合重复（开头+钩子+情绪相同）：连续 3 次为 `risk`，连续 4 次为 `critical`
+## Repetition detection (risk levels)
+- Same opening type: two consecutive chapters = `warning`; three = `risk`
+- Same hook type: two consecutive chapters = `warning`; three = `risk`
+- Same emotional rhythm: two consecutive chapters = `warning`; three = `risk`
+- Repeated combination (same opening + hook + emotion): three consecutive times = `risk`; four = `critical`
 
-说明：
-- 允许为剧情连续性重复，但需在“对象/代价/结果/情绪”至少一维做出差异化。
+Note:
+- Repetition is allowed for plot continuity, but at least one dimension of target/cost/result/emotion must differ.

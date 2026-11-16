@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 把旧中枢正式降级为兼容/投影层，让写前默认输入统一到 Story Contracts，让写后默认事实统一到 accepted `CHAPTER_COMMIT`，并让 preflight / dashboard / skills / agents 都显式反映这条主链。
+**Goal:** Formally downgrade legacy hubs to compatibility/projection layers, unify default pre-writing inputs around Story Contracts and default post-writing facts around accepted `CHAPTER_COMMIT`, and make preflight / dashboard / skills / agents explicitly reflect this mainline.
 
-**Architecture:** 新增统一 runtime 来源解析层，集中回答“本章现在应该信什么”。`context_manager`、`memory_contract_adapter`、`extract_chapter_context`、skills 与 dashboard 都只认 `MASTER / VOLUME / CHAPTER / REVIEW + latest accepted CHAPTER_COMMIT`；`state.json / index.db / summaries / memory_scratchpad` 保留，但只作为 commit 投影和查询 read-model。旧 `genre-profiles.md`、旧散写命令、旧 state-first 心智模型继续存在时，必须只以 fallback / compatibility 明示暴露，不能再伪装成主链。
+**Architecture:** Add a unified runtime source resolver to answer centrally what the current chapter should trust. `context_manager`, `memory_contract_adapter`, `extract_chapter_context`, skills, and dashboard recognize only `MASTER / VOLUME / CHAPTER / REVIEW + latest accepted CHAPTER_COMMIT`. Retain `state.json / index.db / summaries / memory_scratchpad` solely as commit projections and query read-models. Any remaining `genre-profiles.md`, scattered legacy write commands, and state-first assumptions must be explicitly labeled fallback / compatibility, never presented as the mainline.
 
 **Tech Stack:** Python 3.13, pytest, Pydantic, SQLite (`index.db`), FastAPI dashboard, React frontend, Story System JSON artifacts under `.story-system/`
 
@@ -16,36 +16,36 @@
 
 ## Scope Split
 
-本计划只覆盖 Phase 5：
+This plan covers only Phase 5:
 
-1. 合同成为默认主输入
-2. accepted `CHAPTER_COMMIT` 成为默认写后事实入口
-3. `state / index / summary / memory` 显式降级为投影/read-model
-4. `genre-profiles.md` 与旧 reference 判断链显式退化为 fallback
-5. preflight / dashboard / query / write / review / context-agent / data-agent 全部切到新主链认知
+1. Contracts become the default primary input
+2. Accepted `CHAPTER_COMMIT` becomes the default post-writing factual entry point
+3. Explicitly downgrade `state / index / summary / memory` to projections/read-models
+4. Explicitly downgrade `genre-profiles.md` and legacy reference-based decisions to fallbacks
+5. Switch preflight / dashboard / query / write / review / context-agent / data-agent to the new mainline model
 
-明确不做：
+Explicit non-goals:
 
-- 不重写 `StateManager / IndexManager / ScratchpadManager` 的底层存储
-- 不删除 `.webnovel/state.json`、`.webnovel/index.db`、`.webnovel/memory_scratchpad.json`
-- 不重建历史全量 commit / event 数据
-- 不新增第二套 commit / projection 体系
-- 不做与 Phase 5 无关的 UI 大改版
+- Do not rewrite underlying storage in `StateManager / IndexManager / ScratchpadManager`
+- Do not delete `.webnovel/state.json`, `.webnovel/index.db`, or `.webnovel/memory_scratchpad.json`
+- Do not rebuild all historical commit / event data
+- Do not introduce a second commit / projection system
+- Do not undertake a major UI redesign unrelated to Phase 5
 
-退出标准：
+Exit criteria:
 
-1. `context_manager`、`memory_contract_adapter`、`extract_chapter_context` 默认读取合同与 latest accepted commit，而不是先读旧状态再拼判断
-2. `ChapterCommitService` 写出的 commit 元数据足以声明其为唯一写后事实来源，并能稳定定位 `MASTER / VOLUME / CHAPTER / REVIEW`
-3. `webnovel-write` / `webnovel-query` / `webnovel-review` / `webnovel-plan` 与 `context-agent` / `data-agent` 的默认指令已切到 contract-first + commit-first
-4. preflight 与 dashboard 能直接暴露“主链是否就绪、是否仍落入 legacy fallback、是否存在 rejected / projection backlog”
-5. `genre-profiles.md` 被明示为 fallback-only；合同存在时不再参与全局系统判断
-6. 文档、命令说明、运维手册都能准确描述 `.story-system` 主链和 `.webnovel/*` 投影链的关系
+1. `context_manager`, `memory_contract_adapter`, and `extract_chapter_context` read contracts and the latest accepted commit by default instead of starting with legacy state and assembling decisions
+2. Commit metadata from `ChapterCommitService` establishes it as the sole post-writing factual source and reliably locates `MASTER / VOLUME / CHAPTER / REVIEW`
+3. Default instructions for `webnovel-write` / `webnovel-query` / `webnovel-review` / `webnovel-plan` and `context-agent` / `data-agent` are contract-first + commit-first
+4. preflight and dashboard directly expose mainline readiness, legacy-fallback use, and rejected commits / projection backlog
+5. `genre-profiles.md` is explicitly fallback-only and does not participate in global decisions when contracts exist
+6. Documentation, command references, and operational guides accurately describe the relationship between the `.story-system` mainline and `.webnovel/*` projections
 
 ---
 
 ## File Structure
 
-### 要创建的文件
+### Files to Create
 
 - `webnovel-writer/scripts/data_modules/story_runtime_sources.py`
 - `webnovel-writer/scripts/data_modules/story_runtime_health.py`
@@ -53,7 +53,7 @@
 - `webnovel-writer/scripts/data_modules/tests/test_story_runtime_health.py`
 - `docs/architecture/story-system-phase5.md`
 
-### 要修改的文件
+### Files to Modify
 
 - `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - `webnovel-writer/scripts/data_modules/context_manager.py`
@@ -83,21 +83,21 @@
 - `docs/operations/operations.md`
 - `docs/superpowers/README.md`
 
-### 文件职责
+### File Responsibilities
 
-- `story_runtime_sources.py`：统一解析本章 contracts、latest commit、fallback 状态，避免各入口各自判断
-- `story_runtime_health.py`：把主链状态、legacy fallback、rejected/backlog 汇总为 preflight / dashboard 共用健康报告
-- `chapter_commit_service.py`：补齐 write-fact provenance，确保 commit 能明确引用 volume 合同与写后真理角色
-- `context_manager.py`：把 runtime pack 切成“合同主链 + commit 摘要 + legacy fallback hints”
-- `memory_contract_adapter.py`：让 `load_context` 和 `commit_chapter` 都服从 contract/commit 主链
-- `extract_chapter_context.py`：把导出文本从“旧状态摘要”升级为“主链状态 + fallback 显示”
-- `webnovel.py`：preflight 暴露 story runtime health，统一 CLI 对外语义
-- `dashboard/app.py` + `frontend/src/*`：提供可视化 runtime health / commit 状态 / legacy fallback 观测
-- `skills/*` + `agents/*`：把人机提示词中的默认工作流从旧散写链切到 commit 主链
+- `story_runtime_sources.py`: centrally resolve current-chapter contracts, latest commit, and fallback status instead of independent entry-point decisions
+- `story_runtime_health.py`: aggregate mainline status, legacy fallback, and rejected/backlog into a shared preflight/dashboard health report
+- `chapter_commit_service.py`: complete write-fact provenance so commits explicitly reference volume contracts and their post-writing truth role
+- `context_manager.py`: organize runtime packs as contract mainline + commit summary + legacy fallback hints
+- `memory_contract_adapter.py`: align both `load_context` and `commit_chapter` with the contract/commit mainline
+- `extract_chapter_context.py`: upgrade exported text from a legacy-state summary to mainline status + visible fallback information
+- `webnovel.py`: expose story runtime health in preflight and unify external CLI semantics
+- `dashboard/app.py` + `frontend/src/*`: visualize runtime health, commit status, and legacy fallback
+- `skills/*` + `agents/*`: switch default human/agent prompt workflows from scattered legacy writes to the commit mainline
 
 ---
 
-## Task 1: 建立统一 runtime 来源解析与 commit provenance
+## Task 1: Establish Unified Runtime Source Resolution and Commit Provenance
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/story_runtime_sources.py`
@@ -105,7 +105,7 @@
 - Modify: `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py`
 
-- [ ] **Step 1: 先写 runtime 来源与 commit provenance 的失败测试**
+- [ ] **Step 1: Write failing runtime-source and commit-provenance tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_story_runtime_sources.py
@@ -175,15 +175,15 @@ def test_commit_service_includes_volume_ref_and_write_fact_provenance(tmp_path):
     assert payload["provenance"]["projection_role"] == "derived_read_models"
 ```
 
-- [ ] **Step 2: 跑红灯，确认新测试确实失败**
+- [ ] **Step 2: Run tests and confirm that the new tests fail**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_runtime_sources.py webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py -q --no-cov`
 
 Expected:
 - `ModuleNotFoundError: No module named 'data_modules.story_runtime_sources'`
-- 或 `KeyError: 'volume' / 'provenance'`
+- or `KeyError: 'volume' / 'provenance'`
 
-- [ ] **Step 3: 实现统一 runtime 来源解析器**
+- [ ] **Step 3: Implement the unified runtime source resolver**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_runtime_sources.py
@@ -244,7 +244,7 @@ def load_runtime_sources(project_root: Path, chapter: int) -> RuntimeSourceSnaps
     )
 ```
 
-- [ ] **Step 4: 在 commit service 中补齐 provenance 字段和 volume 引用**
+- [ ] **Step 4: Complete provenance fields and volume references in the commit service**
 
 ```python
 # webnovel-writer/scripts/data_modules/chapter_commit_service.py
@@ -294,13 +294,13 @@ def build_commit(
     }
 ```
 
-- [ ] **Step 5: 重新跑聚焦测试**
+- [ ] **Step 5: Rerun focused tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_runtime_sources.py webnovel-writer/scripts/data_modules/tests/test_chapter_commit_service.py -q --no-cov`
 
 Expected: `2 passed`
 
-- [ ] **Step 6: 提交本任务**
+- [ ] **Step 6: Commit this task**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/story_runtime_sources.py \
@@ -312,7 +312,7 @@ git commit -m "feat: add story runtime source resolver"
 
 ---
 
-## Task 2: 把上下文入口切到 contract-first + commit-first
+## Task 2: Switch Context Entry Points to Contract-First + Commit-First
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/context_manager.py`
@@ -322,7 +322,7 @@ git commit -m "feat: add story runtime source resolver"
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_memory_contract_adapter.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py`
 
-- [ ] **Step 1: 先补三组失败测试，锁定新主链语义**
+- [ ] **Step 1: Add three groups of failing tests to lock in new-mainline semantics**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_context_manager.py
@@ -411,16 +411,16 @@ def test_render_text_contains_runtime_status_section(tmp_path):
     assert "- Legacy Fallback: missing_accepted_commit" in text
 ```
 
-- [ ] **Step 2: 跑红灯，确认当前入口仍然偏旧链路**
+- [ ] **Step 2: Run failing tests to confirm current entry points still favor the legacy pipeline**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_context_manager.py webnovel-writer/scripts/data_modules/tests/test_memory_contract_adapter.py webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py -q --no-cov`
 
 Expected:
 - `KeyError: 'runtime_status'`
-- `AssertionError`（`commit_chapter` 仍未生成 `.story-system/commits/chapter_003.commit.json`）
-- `_render_text` 中不存在 runtime status 段
+- `AssertionError`(`commit_chapter` still does not generate `.story-system/commits/chapter_003.commit.json`)
+- `_render_text` has no runtime-status section
 
-- [ ] **Step 3: 重写 ContextManager 的 pack 组装顺序**
+- [ ] **Step 3: Rewrite ContextManager pack assembly order**
 
 ```python
 # webnovel-writer/scripts/data_modules/context_manager.py
@@ -455,7 +455,7 @@ def _build_pack(self, chapter: int) -> Dict[str, Any]:
     }
 ```
 
-- [ ] **Step 4: 让 MemoryContractAdapter 同时切换读链与写链**
+- [ ] **Step 4: Switch both read and write pipelines in MemoryContractAdapter**
 
 ```python
 # webnovel-writer/scripts/data_modules/memory_contract_adapter.py
@@ -497,7 +497,7 @@ def commit_chapter(self, chapter: int, result: dict) -> CommitResult:
     )
 ```
 
-- [ ] **Step 5: 更新 `extract_chapter_context.py` 的文本输出，让 legacy fallback 显式可见**
+- [ ] **Step 5: Update `extract_chapter_context.py` text output to make legacy fallback explicit**
 
 ```python
 # webnovel-writer/scripts/extract_chapter_context.py
@@ -516,13 +516,13 @@ def _render_text(payload: Dict[str, Any]) -> str:
     return "\n".join(lines)
 ```
 
-- [ ] **Step 6: 重跑聚焦测试**
+- [ ] **Step 6: Rerun focused tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_context_manager.py webnovel-writer/scripts/data_modules/tests/test_memory_contract_adapter.py webnovel-writer/scripts/data_modules/tests/test_extract_chapter_context.py -q --no-cov`
 
-Expected: `3 passed` 或对应文件内全部通过
+Expected: `3 passed`, or all tests in the relevant files pass
 
-- [ ] **Step 7: 提交本任务**
+- [ ] **Step 7: Commit this task**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/context_manager.py \
@@ -536,7 +536,7 @@ git commit -m "feat: switch context loading to contract and commit chain"
 
 ---
 
-## Task 3: 把 skills / agents 的默认工作流切到 commit 主链
+## Task 3: Switch Default Skills / Agents Workflows to the Commit Mainline
 
 **Files:**
 - Modify: `webnovel-writer/skills/webnovel-write/SKILL.md`
@@ -548,7 +548,7 @@ git commit -m "feat: switch context loading to contract and commit chain"
 - Modify: `webnovel-writer/agents/data-agent.md`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`
 
-- [ ] **Step 1: 先写 prompt integrity 失败测试，锁住新主链叙述**
+- [ ] **Step 1: Write failing prompt-integrity tests to lock in the new-mainline description**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py
@@ -572,25 +572,25 @@ def test_webnovel_query_skill_prefers_story_system_and_memory_contract():
     assert 'cat "$PROJECT_ROOT/.webnovel/state.json"' not in text
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py -q --no-cov`
 
-Expected: 至少 1 个断言失败，说明提示词仍在使用旧散写心智模型
+Expected: At least one assertion fails, showing that prompts still use the legacy scattered-write model
 
-- [ ] **Step 3: 改写 `webnovel-write`，让 Step 5 以 commit 为成功判定**
+- [ ] **Step 3: Rewrite `webnovel-write` so Step 5 success is defined by the commit**
 
 ````md
 <!-- webnovel-writer/skills/webnovel-write/SKILL.md -->
-### Step 5：构建 extraction artifacts 并提交 `CHAPTER_COMMIT`
+### Step 5: Build Extraction Artifacts and Submit `CHAPTER_COMMIT`
 
-必须产出中间文件：
+Required intermediate files:
 - `${PROJECT_ROOT}/.webnovel/tmp/review_results.json`
 - `${PROJECT_ROOT}/.webnovel/tmp/fulfillment_result.json`
 - `${PROJECT_ROOT}/.webnovel/tmp/disambiguation_result.json`
 - `${PROJECT_ROOT}/.webnovel/tmp/extraction_result.json`
 
-主命令：
+Main command:
 
 ```bash
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" chapter-commit \
@@ -601,44 +601,44 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" cha
   --extraction-result "${PROJECT_ROOT}/.webnovel/tmp/extraction_result.json"
 ```
 
-成功标准：
-- `.story-system/commits/chapter_{chapter_num}.commit.json` 已存在
+Success criteria:
+- `.story-system/commits/chapter_{chapter_num}.commit.json` exists
 - `meta.status == accepted`
-- `projection_status` 中 `state/index/summary/memory` 均为 `done` 或明确 `skipped`
+- In `projection_status`, `state/index/summary/memory` are all `done` or explicitly `skipped`
 ````
 
-- [ ] **Step 4: 改写 query / review / plan / context-agent / data-agent 的默认读取与写入叙述**
+- [ ] **Step 4: Rewrite default read/write descriptions for query / review / plan / context-agent / data-agent**
 
 ```md
 <!-- webnovel-writer/agents/data-agent.md -->
-你负责生成 `extraction_result.json`，并为 `chapter-commit` 提供：
+You generate `extraction_result.json` and supply the following to `chapter-commit`:
 - `accepted_events`
 - `state_deltas`
 - `entity_deltas`
 - `summary_text`
 
-你不是写后真理源。
-`state.json / index.db / summaries / memory_scratchpad` 的最终写入由 accepted `CHAPTER_COMMIT` 的 projection writers 完成。
+You are not the post-writing source of truth.
+Final writes to `state.json / index.db / summaries / memory_scratchpad` are performed by projection writers for an accepted `CHAPTER_COMMIT`.
 ```
 
 ```md
 <!-- webnovel-writer/skills/webnovel-query/SKILL.md -->
-查询顺序固定为：
+The query order is fixed:
 1. `.story-system/MASTER_SETTING.json`
 2. `.story-system/volumes/*.json`
 3. `.story-system/chapters/*.json`
 4. latest accepted `.story-system/commits/chapter_XXX.commit.json`
 5. `memory-contract load-context`
-6. `.webnovel/state.json` / `index.db`（仅 fallback/read-model）
+6. `.webnovel/state.json` / `index.db`(fallback/read-model only)
 ```
 
-- [ ] **Step 5: 重新跑 prompt integrity**
+- [ ] **Step 5: Rerun prompt integrity tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py -q --no-cov`
 
 Expected: `passed`
 
-- [ ] **Step 6: 提交本任务**
+- [ ] **Step 6: Commit this task**
 
 ```bash
 git add webnovel-writer/skills/webnovel-write/SKILL.md \
@@ -654,7 +654,7 @@ git commit -m "docs: cut skills over to chapter commit mainline"
 
 ---
 
-## Task 4: 暴露 story runtime health，消灭“看起来切了，实际上没切”
+## Task 4: Expose Story Runtime Health to Eliminate Apparent but Incomplete Switchovers
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/story_runtime_health.py`
@@ -665,7 +665,7 @@ git commit -m "docs: cut skills over to chapter commit mainline"
 - Modify: `webnovel-writer/dashboard/frontend/src/api.js`
 - Modify: `webnovel-writer/dashboard/frontend/src/App.jsx`
 
-- [ ] **Step 1: 先写 health helper 与 preflight 的失败测试**
+- [ ] **Step 1: Write failing health-helper and preflight tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_story_runtime_health.py
@@ -697,15 +697,15 @@ def test_preflight_includes_story_runtime_health(monkeypatch, tmp_path, capsys):
     assert '"mainline_ready"' in captured.out
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_runtime_health.py webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py -q --no-cov`
 
 Expected:
 - `ModuleNotFoundError: No module named 'data_modules.story_runtime_health'`
-- preflight JSON 中不存在 `story_runtime`
+- preflight JSON does not contain `story_runtime`
 
-- [ ] **Step 3: 实现 health helper，并接到 preflight**
+- [ ] **Step 3: Implement the health helper and connect it to preflight**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_runtime_health.py
@@ -772,7 +772,7 @@ def _build_preflight_report(explicit_project_root: Optional[str]) -> dict:
     }
 ```
 
-- [ ] **Step 4: 在 dashboard 暴露 story runtime health 与 latest commit 状态**
+- [ ] **Step 4: Expose story runtime health and latest-commit status in the dashboard**
 
 ```python
 # webnovel-writer/dashboard/app.py
@@ -809,7 +809,7 @@ useEffect(() => {
 ) : null}
 ```
 
-- [ ] **Step 5: 跑后端测试和前端构建**
+- [ ] **Step 5: Run backend tests and the frontend build**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_runtime_health.py webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py -q --no-cov`
 
@@ -817,9 +817,9 @@ Expected: `passed`
 
 Run: `npm --prefix webnovel-writer/dashboard/frontend run build`
 
-Expected: Vite build success，无新增 lint/blocking error
+Expected: Vite build success, with no new lint/blocking errors
 
-- [ ] **Step 6: 提交本任务**
+- [ ] **Step 6: Commit this task**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/story_runtime_health.py \
@@ -834,7 +834,7 @@ git commit -m "feat: surface story runtime health in preflight and dashboard"
 
 ---
 
-## Task 5: 封板 legacy fallback 文档与运行说明
+## Task 5: Finalize Legacy Fallback Documentation and Operating Instructions
 
 **Files:**
 - Create: `docs/architecture/story-system-phase5.md`
@@ -845,24 +845,24 @@ git commit -m "feat: surface story runtime health in preflight and dashboard"
 - Modify: `docs/operations/operations.md`
 - Modify: `docs/superpowers/README.md`
 
-- [ ] **Step 1: 先补 architecture 文档骨架，明确主链已切换**
+- [ ] **Step 1: Add the architecture-document skeleton first, explicitly stating the mainline switchover**
 
 ````md
 <!-- docs/architecture/story-system-phase5.md -->
 # Story System Phase 5
 
-## 核心结论
+## Core Conclusions
 
-- 写前真源：`MASTER / VOLUME / CHAPTER / REVIEW`
-- 写后真源：accepted `CHAPTER_COMMIT`
-- `state / index / summary / memory`：投影/read-model
+- Pre-writing source of truth: `MASTER / VOLUME / CHAPTER / REVIEW`
+- Post-writing source of truth: accepted `CHAPTER_COMMIT`
+- `state / index / summary / memory`: projections/read-models
 - `genre-profiles.md`：fallback-only
 
-## 默认链路
+## Default Pipeline
 
 ```text
 story-system --persist/--emit-runtime-contracts
-    -> context / query / write / review 读取合同
+    -> context / query / write / review read contracts
 chapter-commit --chapter N
     -> accepted commit
     -> projection writers
@@ -870,38 +870,38 @@ chapter-commit --chapter N
 ```
 ````
 
-- [ ] **Step 2: 在 `genre-profiles.md` 文件头显式打上 fallback-only 标记**
+- [ ] **Step 2: Explicitly mark the `genre-profiles.md` header as fallback-only**
 
 ```md
 <!-- webnovel-writer/references/genre-profiles.md -->
 # genre-profiles
 
-> **状态：Fallback Only**
-> 高频题材的主判定、主调性、主禁忌已迁移到 Story Contract / CSV route seed。
-> 本文件只在合同缺失、项目未升级或显式 fallback 时提供补充提示。
+> **Status: Fallback Only**
+> Primary genre decisions, tone, and prohibitions for common genres have moved to Story Contract / CSV route seed.
+> This file provides supplementary guidance only when contracts are missing, the project has not been upgraded, or fallback is explicitly requested.
 ```
 
-- [ ] **Step 3: 更新 README / commands / operations，把主链写成可执行手册**
+- [ ] **Step 3: Update README / commands / operations with actionable mainline instructions**
 
 ```md
 <!-- docs/guides/commands.md -->
-## Story System 主链
+## Story System Mainline
 
-1. 生成合同：
+1. Generate contracts:
    `python -X utf8 "webnovel-writer/scripts/webnovel.py" --project-root "{WORKSPACE_ROOT}" story-system "{goal}" --chapter {N} --persist --emit-runtime-contracts --format both`
-2. 提交章节：
+2. Submit a chapter:
    `python -X utf8 "webnovel-writer/scripts/webnovel.py" --project-root "{PROJECT_ROOT}" chapter-commit --chapter {N} --review-result ".webnovel/tmp/review_results.json" --fulfillment-result ".webnovel/tmp/fulfillment_result.json" --disambiguation-result ".webnovel/tmp/disambiguation_result.json" --extraction-result ".webnovel/tmp/extraction_result.json"`
-3. 检查健康：
+3. Check health:
    `python -X utf8 "webnovel-writer/scripts/webnovel.py" --project-root "{PROJECT_ROOT}" preflight --format json`
 ```
 
-- [ ] **Step 4: 做一次最终回归**
+- [ ] **Step 4: Run final regression tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py webnovel-writer/scripts/data_modules/tests/test_webnovel_unified_cli.py webnovel-writer/scripts/data_modules/tests/test_context_manager.py webnovel-writer/scripts/data_modules/tests/test_memory_contract_adapter.py -q --no-cov`
 
-Expected: 全部通过
+Expected: All pass
 
-- [ ] **Step 5: 提交本任务**
+- [ ] **Step 5: Commit this task**
 
 ```bash
 git add docs/architecture/story-system-phase5.md \
@@ -920,31 +920,31 @@ git commit -m "docs: finalize phase5 legacy downgrade"
 
 ### Spec Coverage
 
-- `13.6 Phase 5：旧链路降级`
-  - Task 1 负责统一 runtime 来源与 commit provenance
-  - Task 2 负责默认主输入与默认写后事实切换
-  - Task 3 负责 skills / agents 提示词切链
-  - Task 4 负责 preflight / dashboard / health 观测
-  - Task 5 负责 fallback-only 文档封板与命令手册
+- `13.6 Phase 5: Legacy pipeline downgrade`
+  - Task 1 covers unified runtime sources and commit provenance
+  - Task 2 switches default primary inputs and post-writing facts
+  - Task 3 switches skills / agents prompts to the new pipeline
+  - Task 4 covers preflight / dashboard / health observability
+  - Task 5 finalizes fallback-only documentation and the command guide
 
-- `7.2 运行时优先级`
-  - Task 2 显式把 `story_contracts -> latest accepted commit -> legacy fallback` 固化到入口层
+- `7.2 Runtime priorities`
+  - Task 2 explicitly fixes `story_contracts -> latest accepted commit -> legacy fallback` at the entry-point layer
 
-- `7.3 写后真理源`
-  - Task 1 与 Task 2 让 `CHAPTER_COMMIT` 成为唯一写后事实入口
+- `7.3 Post-writing source of truth`
+  - Tasks 1 and 2 make `CHAPTER_COMMIT` the sole post-writing factual entry point
 
-- `17.1 文档更新要求`
-  - Task 5 覆盖架构文档、命令文档、运维手册与总览文档
+- `17.1 Documentation update requirements`
+  - Task 5 covers architecture, commands, operations, and overview documentation
 
 ### Placeholder Scan
 
-- 全文没有延后实现的占位表述
-- 每个任务都给了具体文件、测试、命令和提交信息
-- 没有用跨任务引用代替实际步骤
+- No placeholders defer implementation
+- Every task specifies files, tests, commands, and commit messages
+- Cross-task references do not replace actual steps
 
 ### Type Consistency
 
-本计划统一使用以下命名，不在后续任务中换名：
+Use the following names consistently throughout this plan; do not rename them in subsequent tasks:
 
 - `RuntimeSourceSnapshot`
 - `load_runtime_sources(project_root, chapter)`

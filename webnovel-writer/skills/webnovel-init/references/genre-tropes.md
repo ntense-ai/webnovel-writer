@@ -1,183 +1,183 @@
 ---
 name: genre-tropes
-purpose: 项目初始化和大纲规划时加载，选择合适的题材套路
+purpose: Load during project initialization and outline planning to select suitable genre tropes
 ---
 
 <context>
-此文件用于题材套路参考。Claude 已知一般叙事套路，这里只补充中文网文特定的题材公式和爽点模板。
+This file is a genre-trope reference. Claude already knows general narrative tropes; this adds only genre formulas and gratification templates specific to Chinese web fiction.
 </context>
 
 <instructions>
 
-## 修仙题材套路
+## Cultivation genre tropes
 
-### 经典金手指
+### Classic special abilities
 
-| 类型 | 核心机制 | 典型爽点 |
+| Type | Core mechanism | Typical payoff |
 |------|---------|---------|
-| 吞噬系统 | 吞噬敌人获得能力 | 越级击杀 → 实力暴涨 |
-| 签到系统 | 每日签到获得奖励 | 签到神器 → 秒杀同阶 |
-| 戒指老爷爷 | 强者灵魂指导 | 传授绝学 → 打脸天才 |
-| 重生流 | 带着前世记忆 | 先知先觉 → 夺取机缘 |
-| 特殊体质 | 天生修炼速度快 | 三天突破 → 震惊众人 |
+| Devouring system | Devour enemies to gain abilities | Kill above one's level → surge in power |
+| Check-in system | Receive rewards for daily check-ins | Check in for a divine artifact → instantly defeat peers |
+| Elder in a ring | Guidance from a powerful soul | Learn secret techniques → humiliate a genius |
+| Rebirth | Retain memories of a previous life | Foreknowledge → seize opportunities |
+| Special constitution | Naturally rapid cultivation | Break through in three days → astonish everyone |
 
-### 典型剧情套路
+### Typical plot patterns
 
-**退婚流**: 悔婚 → 主角崛起 → 打脸 → 对方后悔
-**打脸路人流**: 嘲讽 → 展示实力 → 震惊/下跪
-**秘境夺宝流**: 进入 → 遇险 → 争夺 → 获宝 → 实力暴涨
-**宗门大比流**: 报名被嘲 → 连胜 → 决赛逆转 → 震惊全场
+**Broken engagement**: Engagement repudiated → protagonist rises → turns the tables → former partner regrets it
+**Humiliating onlookers**: Mockery → display strength → shock/kneeling
+**Secret-realm treasure hunt**: Enter → encounter danger → compete → obtain treasure → power surge
+**Sect tournament**: Mocked at registration → winning streak → final-round reversal → astonish the crowd
 
-## 都市题材套路
+## Urban genre tropes
 
-### 经典金手指
+### Classic special abilities
 
-| 类型 | 核心机制 | 典型爽点 |
+| Type | Core mechanism | Typical payoff |
 |------|---------|---------|
-| 透视眼 | 看穿物品/人体 | 赌石暴富 |
-| 医术系统 | 治愈疑难杂症 | 治好权贵 → 获得资源 |
-| 武道传承 | 古武世家传承 | 击败外国高手 |
-| 超能力 | 念力/雷电/火焰 | 装逼打脸 |
+| X-ray vision | See through objects/bodies | Make a fortune gambling on jade stones |
+| Medical system | Cure difficult illnesses | Heal a powerful figure → gain resources |
+| Martial inheritance | Legacy of an ancient martial family | Defeat foreign masters |
+| Superpowers | Telekinesis/lightning/fire | Show off and turn the tables |
 
-### 典型剧情套路
+### Typical plot patterns
 
-**装逼打脸流**: 被看不起 → 展示身份 → 震惊后悔
-**扮猪吃虎流**: 隐藏身份 → 关键暴露 → 众人跪地
+**Status-reveal comeuppance**: Looked down upon → reveal identity → shock and regret
+**Hidden tiger**: Conceal identity → reveal it at the crucial moment → everyone bows
 
-## 替身文题材套路
+## Substitute-lover romance tropes
 
-### 核心情感线
+### Core emotional arc
 
-| 阶段 | 女主心理 | 男主心理 | 典型爽点 |
+| Stage | Heroine's mindset | Hero's mindset | Typical payoff |
 |------|---------|---------|---------|
-| 不自知期 | 沉浸在被宠爱中 | 把女主当白月光替身 | 甜宠日常 |
-| 察觉期 | 怀疑、内心动摇 | 混淆、对女主产生真实情感 | 情感拉扯 |
-| 确认期 | 情感崩溃、价值崩塌 | 确认爱上的是女主本人 | 虐心高峰 |
-| 决绝期 | 决定离开、找回自我 | 悔悟、想要弥补 | 女主觉醒 |
-| 放下期 | 真正释然、自我成长 | 追妻火葬场 | 反转爽点 |
+| Unaware | Immersed in being cherished | Treats heroine as a substitute for his idealized first love | Sweet everyday affection |
+| Suspicion | Doubt and inner instability | Confused; develops real feelings for heroine | Emotional push and pull |
+| Confirmation | Emotional collapse and shattered self-worth | Realizes he loves the heroine herself | Peak heartbreak |
+| Resolution | Decides to leave and reclaim herself | Remorse; wants to make amends | Heroine's awakening |
+| Letting go | Genuine release and personal growth | Desperate pursuit to win her back | Reversal payoff |
 
-### 典型剧情套路
+### Typical plot patterns
 
-**替身发现流**: 发现蛛丝马迹 → 确认替身身份 → 情感崩溃 → 离开
-**追妻火葬场流**: 男主悔悟 → 卑微挽回 → 女主拒绝 → 反复拉扯 → 和好/BE
-**身份反转流**: 女主才是真正的白月光 → 真相揭露 → 震撼反转
+**Discovering substitute status**: Find clues → confirm she is a substitute → emotional collapse → leave
+**Desperate reconciliation pursuit**: Hero repents → humbly tries to win her back → heroine refuses → repeated push and pull → reunion/bad ending
+**Identity reversal**: Heroine is the true idealized first love → truth revealed → stunning reversal
 
-### 金手指建议
-- 时空穿越（发现真相的契机）
-- 记忆觉醒（揭示隐藏身份）
-- 系统辅助（自我成长加速）
+### Special-ability suggestions
+- Time travel (an opportunity to discover the truth)
+- Awakened memories (reveal a hidden identity)
+- System assistance (accelerate personal growth)
 
-## 多子多福题材套路
+## Many children, many blessings tropes
 
-### 核心系统机制
+### Core system mechanics
 
-| 机制 | 功能 | 典型爽点 |
+| Mechanic | Function | Typical payoff |
 |------|------|---------|
-| 子嗣系统 | 生育、品质、能力继承 | 高品质子嗣出生 |
-| 后宫系统 | 好感度、收集、专属技能 | 攻略女主、后宫争宠 |
-| 升级系统 | 经验、等级、属性加点 | 子嗣数量暴涨升级 |
-| 奖励系统 | 抽奖、成就、里程碑 | 抽到神级奖励 |
+| Offspring system | Childbirth, quality, inherited abilities | Birth of a highly gifted child |
+| Harem system | Affection, collection, exclusive skills | Winning a heroine's heart, rivalry for affection |
+| Leveling system | Experience, levels, attribute points | Leveling up as offspring numbers soar |
+| Reward system | Draws, achievements, milestones | Drawing a divine-tier reward |
 
-### 典型剧情套路
+### Typical plot patterns
 
-**后宫收集流**: 相遇 → 好感度提升 → 攻略成功 → 收入后宫
-**子嗣成才流**: 子嗣出生 → 成长培养 → 能力觉醒 → 为父争光
-**系统升级流**: 任务完成 → 经验暴涨 → 升级 → 解锁新功能
+**Harem collection**: Meet → affection grows → romance succeeds → joins the harem
+**Successful offspring**: Child born → raised and trained → abilities awaken → brings honor to father
+**System leveling**: Complete quest → experience surges → level up → unlock features
 
-### 金手指建议
-- 多子多福系统（核心）
-- 好感度面板（辅助攻略）
-- 子嗣天赋系统（成长可视化）
+### Special-ability suggestions
+- Many-children-many-blessings system (core)
+- Affection panel (romance assistance)
+- Offspring talent system (visualize growth)
 
-## 黑暗题材套路
+## Dark fiction tropes
 
-### 核心吸引力
+### Core appeal
 
-| 类型 | 机制 | 典型爽点 |
+| Type | Mechanism | Typical payoff |
 |------|------|---------|
-| 支配爽 | 绝对控制他人 | 敌人臣服、恐惧 |
-| 征服爽 | 攻城略地、势力扩张 | 吞并势力、建立帝国 |
-| 吞噬爽 | 掠夺能力/基因 | 吞噬进化、实力暴涨 |
-| 碾压爽 | 实力差距展示 | 一招秒杀、绝望恐惧 |
+| Domination | Absolute control over others | Enemies submit in fear |
+| Conquest | Capture territory and expand influence | Annex factions and establish an empire |
+| Devouring | Steal abilities/genes | Evolve through devouring; power surges |
+| Crushing superiority | Display a gap in strength | One-strike kills, despair and terror |
 
-### 典型剧情套路
+### Typical plot patterns
 
-**黑暗觉醒流**: 被世界抛弃 → 觉醒黑暗力量 → 复仇/征服
-**势力建立流**: 收服第一批手下 → 建立基地 → 扩张势力 → 建立新秩序
-**吞噬进化流**: 吞噬低级 → 消化转化 → 进化突破 → 吞噬更强
+**Dark awakening**: Abandoned by the world → awaken dark power → revenge/conquest
+**Faction building**: Recruit first followers → establish base → expand influence → establish a new order
+**Devouring evolution**: Devour weaker beings → digest and transform → evolutionary breakthrough → devour stronger beings
 
-### 金手指建议
-- 基因吞噬系统（生物型）
-- 暗影支配系统（控制型）
-- 毁灭重生系统（破坏型）
-- 寄生渗透系统（潜伏型）
+### Special-ability suggestions
+- Gene-devouring system (biological)
+- Shadow domination system (control)
+- Destruction/rebirth system (destructive)
+- Parasitic infiltration system (infiltration)
 
-## 反派类型库
+## Antagonist type library
 
-| 类型 | 特征 | 打脸方式 | 适用阶段 |
-|------|------|---------|----------|
-| 纨绔少爷 | 嚣张跋扈 | 当众击败 | 前期 |
-| 伪君子长老 | 表面正派 | 当众揭露 | 中期 |
-| 同门师兄 | 嫉妒天赋 | 反杀 | 前期 |
-| 敌对宗门 | 宗门仇恨 | 歼灭小队 | 中后期 |
+| Type | Traits | Comeuppance | Suitable stage |
+|------|---------|---------|----------|
+| Spoiled young master | Arrogant and domineering | Public defeat | Early |
+| Hypocritical elder | Outwardly righteous | Public exposure | Middle |
+| Senior fellow disciple | Envious of talent | Counter-kill | Early |
+| Rival sect | Sect rivalry | Eliminate a squad | Middle/late |
 
-## 套路使用建议
+## Trope usage advice
 
-**70% 套路 + 30% 创新**:
-- 70% 套路：满足读者预期，提供爽感
-- 30% 创新：制造惊喜，避免无聊
+**70% familiar tropes + 30% innovation**:
+- 70% familiar tropes: meet reader expectations and deliver gratification
+- 30% innovation: surprise readers and prevent boredom
 
-**避免过度使用**:
-- 同一套路连续使用不超过 3 次
-- 反派台词不要完全一样
-- 插入意外元素（反派认怂/主角翻车）
+**Avoid overuse**:
+- Do not use the same trope more than three times consecutively
+- Do not give antagonists identical lines
+- Insert unexpected elements (antagonist backs down/protagonist fails)
 
 </instructions>
 
 <examples>
 
 <example>
-<input>设计退婚流剧情</input>
+<input>Design a broken-engagement plot</input>
 <output>
-**第 1-5 章**: 家族没落 → 未婚妻悔婚 → 主角获得金手指
-**第 6-10 章**: 主角低调修炼 → 小有成就
-**第 11-15 章**: 参加比武 → 击败未婚妻新欢 → 未婚妻震惊
-**第 16-20 章**: 未婚妻求复合 → 主角拒绝
+**Chapters 1–5**: Family declines → fiancée breaks engagement → protagonist gains special ability
+**Chapters 6–10**: Protagonist cultivates quietly → achieves modest success
+**Chapters 11–15**: Enters tournament → defeats fiancée's new lover → fiancée is stunned
+**Chapters 16–20**: Fiancée seeks reconciliation → protagonist refuses
 
-经典对白: "当年你对我爱答不理，今日我让你高攀不起"
+Classic line: “You once wouldn't spare me a glance. Now I'm beyond your reach.”
 </output>
 </example>
 
 <example>
-<input>设计打脸路人场景</input>
+<input>Design a scene that humiliates mocking onlookers</input>
 <output>
-**路人**: "就你这废物也配参加大比？"
-**主角**: （不语，一招秒杀）
-**路人**: "怎么可能！他明明是练气九层，怎么有筑基期的实力？"
-**旁观者**: "那是...天雷掌！只有亲传弟子才能学会的绝技！"
+**Onlooker**: “A loser like you thinks he's worthy of this tournament?”
+**Protagonist**: (Silent; wins in a single strike.)
+**Onlooker**: “Impossible! He's only at the ninth level of Qi Refinement. How can he have Foundation Establishment strength?”
+**Bystander**: “That's... Heavenly Thunder Palm! A secret art only direct disciples can learn!”
 
-使用频率: 每 3-5 章插入 1 次
+Frequency: once every 3–5 chapters
 </output>
 </example>
 
 <example>
-<input>设计秘境夺宝结构</input>
+<input>Design a secret-realm treasure-hunt structure</input>
 <output>
-**第 1 章**: 进入秘境 + 遇险（凶兽袭击）
-**第 2 章**: 发现宝物线索 + 遇到竞争对手
-**第 3-4 章**: 与竞争对手争夺 + 激战
-**第 5 章**: 主角获胜 + 夺得宝物
-**第 6 章**: 吸收宝物 + 实力暴涨 + 震惊同门
+**Chapter 1**: Enter secret realm + encounter danger (ferocious beast attack)
+**Chapter 2**: Discover treasure clues + meet a competitor
+**Chapters 3–4**: Compete for treasure + fierce battle
+**Chapter 5**: Protagonist wins + obtains treasure
+**Chapter 6**: Absorb treasure + power surge + astonish fellow disciples
 
-关键: 必须有竞争对手，宝物必须"千年难遇"
+Key: there must be a competitor, and the treasure must be a “once-in-a-millennium” find.
 </output>
 </example>
 
 </examples>
 
 <errors>
-❌ 同一套路连续 3 次以上 → ✅ 套路变体或插入意外
-❌ 反派台词完全一样 → ✅ 根据反派类型定制
-❌ 完全照搬不改 → ✅ 结合项目设定调整细节
-❌ 爽点公式不完整 → ✅ 确保"震惊"环节不省略
+❌ Same trope more than three times in a row → ✅ Vary it or add a surprise
+❌ Identical antagonist lines → ✅ Customize by antagonist type
+❌ Copy everything unchanged → ✅ Adapt details to project settings
+❌ Incomplete gratification formula → ✅ Do not omit the “astonishment” beat
 </errors>

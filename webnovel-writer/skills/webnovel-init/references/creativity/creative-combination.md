@@ -1,511 +1,511 @@
-# 创意组合创新参考指南
+# Creative Combination and Innovation Guide
 
-## 核心定位
+## Purpose
 
-通过系统化方法将多个创意元素（题材、卖点、人设等）进行深度融合，创造出具有独特吸引力和市场竞争力的小说概念。
-
----
-
-## 1. 成功组合的五大特征
-
-### 1.1 化学反应效果
-
-**定义**：不同元素结合后产生的"1+1>2"效果。
-
-**判断标准**：
-- ✅ **强化学反应**：两元素互相增强，创造新的吸引力
-  - 示例：都市重生 + 反派视角 → 重生成反派的逆袭文（反派身份强化重生优势）
-- ⚠️ **弱化学反应**：两元素共存但无增强效果
-  - 示例：玄幻修仙 + 日常种田 → 元素割裂，读者困惑
-- ❌ **负反应**：两元素相互冲突或削弱
-  - 示例：硬核科幻 + 玄幻仙侠 → 世界观逻辑冲突
-
-### 1.2 核心卖点清晰
-
-组合后必须能用**一句话**说清楚核心吸引力。
-
-**测试方法**：
-```
-如果你只有10秒向读者推荐这本书，你会怎么说？
-```
-
-**正面示例**：
-- "重生成反派，用前世记忆洗白逆袭" ✅
-- "都市修仙文" ❌（过于宽泛）
-
-### 1.3 逻辑自洽性
-
-**关键问题**：
-- 世界观规则是否统一？
-- 主角能力来源是否合理？
-- 不同元素是否有明确的交互规则？
-
-**自洽性检查清单**：
-- [ ] 金手指设定与世界观不矛盾
-- [ ] 主角行为符合人物设定
-- [ ] 不同题材元素有清晰的融合逻辑
-- [ ] 爽点设计不违背基础规则
-
-### 1.4 读者共鸣强
-
-**共鸣来源**：
-- **情感共鸣**：主角经历能引发读者代入感
-- **欲望满足**：组合后的故事满足读者核心欲望（复仇、逆袭、成长等）
-- **新鲜感**：提供足够的创新点，避免审美疲劳
-
-### 1.5 故事可持续性
-
-**长期发展潜力评估**：
-```
-这个组合能否支撑：
-- 30万字+ 的长篇连载？
-- 持续的冲突升级？
-- 角色成长空间？
-- 世界观扩展可能性？
-```
+Systematically integrate genres, selling points, characters, and other creative elements into a distinctive, appealing, commercially competitive novel concept.
 
 ---
 
-## 2. 元素多维分析与拆解
+## 1. Five Traits of Successful Combinations
 
-### 2.1 核心特征识别
+### 1.1 Synergy
 
-对每个待组合元素进行拆解：
+**Definition**: Combining elements produces a “1 + 1 > 2” effect.
 
-| 维度 | 分析要点 | 示例（都市重生） |
+**Criteria**:
+- ✅ **Strong synergy**: Elements reinforce each other and create new appeal.
+  - Example: Urban rebirth + antagonist viewpoint → a comeback story about being reborn as the villain; villain identity strengthens the rebirth premise.
+- ⚠️ **Weak synergy**: Elements coexist without reinforcement.
+  - Example: Fantasy cultivation + everyday farming → disconnected elements and confused readers.
+- ❌ **Negative interaction**: Elements conflict or weaken each other.
+  - Example: Hard science fiction + mystical cultivation → contradictory world logic.
+
+### 1.2 Clear Selling Point
+
+The combined appeal must be explainable in **one sentence**.
+
+**Test**:
+```
+If you had only ten seconds to recommend this book, what would you say?
+```
+
+**Examples**:
+- “Reborn as a villain, he uses past-life memories to redeem himself and rise.” ✅
+- “An urban cultivation novel.” ❌ Too broad.
+
+### 1.3 Internal Consistency
+
+**Questions**:
+- Are the world's rules unified?
+- Is the source of the protagonist's abilities plausible?
+- Do different elements have clear interaction rules?
+
+**Checklist**:
+- [ ] Special advantages do not contradict the world.
+- [ ] Actions fit characterization.
+- [ ] Genre elements have a clear integration logic.
+- [ ] Payoffs respect basic rules.
+
+### 1.4 Reader Resonance
+
+**Sources**:
+- **Emotion**: Readers identify with the protagonist's experiences.
+- **Desire fulfillment**: The combination satisfies revenge, comeback, growth, or other core desires.
+- **Novelty**: Enough innovation to prevent fatigue.
+
+### 1.5 Sustainability
+
+**Long-term potential**:
+```
+Can the combination support:
+- A serial of 300,000+ Chinese characters?
+- Continuing escalation of conflict?
+- Character growth?
+- World expansion?
+```
+
+---
+
+## 2. Analyze and Break Down Elements
+
+### 2.1 Core Features
+
+Analyze each candidate element:
+
+| Dimension | Focus | Urban-rebirth example |
 |------|---------|-----------------|
-| **核心机制** | 这个元素的运作方式 | 主角携带前世记忆回到过去 |
-| **情感内核** | 这个元素满足什么情感需求 | 弥补遗憾、改写命运 |
-| **市场表现** | 当前市场热度与饱和度 | 成熟期，竞争激烈 |
-| **典型爽点** | 读者期待的高潮设计 | 先知先觉、打脸反转 |
-| **常见套路** | 需要规避的俗套设计 | 无脑打脸、圣母主角 |
+| **Core mechanism** | How it works | Return to the past with past-life memories |
+| **Emotional core** | Need it satisfies | Repair regrets and rewrite fate |
+| **Market performance** | Popularity and saturation | Mature, highly competitive |
+| **Typical payoffs** | Expected climaxes | Foreknowledge, vindication, reversals |
+| **Common tropes** | Cliches to avoid | Mindless humiliation and indiscriminate mercy |
 
-### 2.2 互动关系评估
+### 2.2 Interactions
 
-**三种互动关系**：
+**Three types**:
 
-1. **互补型**：A元素的短板由B元素弥补
-   - 示例：系统流（缺少情节张力）+ 悬疑推理（强情节）
-   - 结果：系统提供升级框架，悬疑提供剧情张力
+1. **Complementary**: B compensates for A's weakness.
+   - Example: System fiction, lacking tension, + mystery, offering strong plot.
+   - Result: The system supplies progression; the mystery supplies tension.
 
-2. **增强型**：A元素与B元素相互放大优势
-   - 示例：重生（信息差优势）+ 商战（信息战核心）
-   - 结果：重生带来的先知先觉在商战中发挥最大价值
+2. **Reinforcing**: A and B amplify each other's strengths.
+   - Example: Rebirth's information advantage + business conflict's information warfare.
+   - Result: Foreknowledge achieves maximum value in business struggles.
 
-3. **冲突型**：两元素存在逻辑或风格冲突
-   - 示例：严肃现实题材 + 无厘头搞笑
-   - 结果：风格割裂，读者群体困惑
+3. **Conflicting**: Logical or stylistic incompatibility.
+   - Example: Serious realism + absurd comedy.
+   - Result: Tonal fragmentation and audience confusion.
 
 ---
 
-## 3. 组合方案生成与筛选
+## 3. Generate and Filter Combinations
 
-### 3.1 A+B 双元素组合法
+### 3.1 A+B
 
-**基础公式**：
+**Basic formula**:
 ```
-核心题材 + 差异化卖点 = 新创意
+Core genre + distinctive selling point = new idea
 ```
 
-**常见组合模式**：
+**Patterns**:
 
-| 题材元素 | 卖点元素 | 组合结果 | 化学反应评估 |
+| Genre | Selling point | Result | Synergy |
 |---------|---------|---------|-------------|
-| 都市重生 | 系统签到 | 重生都市签到流 | ⭐⭐⭐ 中等（常见组合） |
-| 玄幻修仙 | 反派视角 | 反派修仙文 | ⭐⭐⭐⭐ 强（视角创新） |
-| 科幻星际 | 规则怪谈 | 星际规则解谜 | ⭐⭐⭐⭐⭐ 极强（题材融合新颖） |
-| 古代宫斗 | 现代记忆 | 穿越宫斗文 | ⭐⭐ 弱（过度饱和） |
+| Urban rebirth | Check-in system | Urban rebirth check-in fiction | ⭐⭐⭐ Moderate; common |
+| Fantasy cultivation | Antagonist viewpoint | Villain cultivation story | ⭐⭐⭐⭐ Strong; viewpoint innovation |
+| Interstellar science fiction | Rule-based horror | Interstellar rule-solving | ⭐⭐⭐⭐⭐ Very strong; novel fusion |
+| Ancient palace intrigue | Modern memories | Transmigration palace story | ⭐⭐ Weak; oversaturated |
 
-**筛选标准**：
-- ✅ 化学反应 ≥ ⭐⭐⭐
-- ✅ 市场同质化程度 ≤ 中等
-- ✅ 逻辑自洽性 ≥ 高
+**Filter**:
+- ✅ Synergy at least ⭐⭐⭐.
+- ✅ Similarity to existing works no higher than moderate.
+- ✅ Internal consistency high or better.
 
-### 3.2 A+B+C 三元素组合法
+### 3.2 A+B+C
 
-**进阶公式**：
+**Advanced formula**:
 ```
-题材 + 核心卖点 + 人设/视角特色 = 差异化创意
-```
-
-**示例拆解**：
-```
-都市（题材）+ 重生（卖点）+ 反派洗白（人设特色）
-= 重生成反派的都市洗白逆袭文
-
-化学反应分析：
-- 都市 + 重生：常规组合（⭐⭐）
-- 重生 + 反派洗白：创新组合（⭐⭐⭐⭐）
-- 都市 + 反派洗白：新颖组合（⭐⭐⭐⭐）
-综合评分：⭐⭐⭐⭐（高潜力）
+Genre + core selling point + character/viewpoint distinction = differentiated idea
 ```
 
-**警告**：三元素组合需控制复杂度
-- ✅ 一主二辅（1个主导元素 + 2个辅助元素）
-- ❌ 三主并行（容易导致主线混乱）
+**Example**:
+```
+Urban (genre) + rebirth (selling point) + villain redemption (character)
+= Urban comeback through redemption after rebirth as a villain
 
-### 3.3 化学反应强度评估表
+Synergy:
+- Urban + rebirth: conventional (⭐⭐)
+- Rebirth + villain redemption: innovative (⭐⭐⭐⭐)
+- Urban + villain redemption: fresh (⭐⭐⭐⭐)
+Overall: ⭐⭐⭐⭐, high potential
+```
 
-| 反应强度 | 特征 | 示例 | 市场潜力 |
+**Complexity warning**:
+- ✅ One primary element and two supporting elements.
+- ❌ Three equally dominant elements that confuse the main plot.
+
+### 3.3 Synergy Scale
+
+| Strength | Features | Example | Market potential |
 |---------|------|------|---------|
-| ⭐⭐⭐⭐⭐ 极强 | 开创新品类，读者眼前一亮 | 规则怪谈 + 无限流 | 蓝海市场 |
-| ⭐⭐⭐⭐ 强 | 显著创新，有明确差异化 | 反派视角 + 玄幻修仙 | 竞争适中 |
-| ⭐⭐⭐ 中等 | 常见组合，需深耕细节 | 都市 + 重生 + 系统 | 红海市场 |
-| ⭐⭐ 弱 | 元素共存但无增强效果 | 玄幻 + 种田 | 需重新设计 |
-| ⭐ 负反应 | 逻辑冲突或风格割裂 | 硬核科幻 + 玄学修仙 | 不建议 |
+| ⭐⭐⭐⭐⭐ Very strong | Creates a category and surprises readers | Rule-based horror + infinite-flow | Uncrowded market |
+| ⭐⭐⭐⭐ Strong | Clear, significant innovation | Antagonist viewpoint + cultivation | Moderate competition |
+| ⭐⭐⭐ Moderate | Familiar combination needing detailed execution | Urban + rebirth + system | Crowded market |
+| ⭐⭐ Weak | Coexistence without reinforcement | Fantasy + farming | Redesign needed |
+| ⭐ Negative | Logical or tonal conflict | Hard science fiction + mystical cultivation | Not recommended |
 
 ---
 
-## 4. 融合机制设计与测试
+## 4. Design and Test Integration
 
-### 4.1 确定主导与辅助关系
+### 4.1 Primary and Supporting Roles
 
-**主导元素**（占比60-70%）：
-- 定义故事的核心框架与世界观
-- 决定主要叙事风格
-- 提供主线冲突
+**Primary element, 60–70%**:
+- Defines the core framework and world.
+- Sets the narrative style.
+- Supplies the main conflict.
 
-**辅助元素**（占比30-40%）：
-- 提供差异化卖点
-- 增强爽点设计
-- 补充次要故事线
+**Supporting elements, 30–40%**:
+- Supply distinction.
+- Strengthen payoffs.
+- Add secondary storylines.
 
-**示例**：
+**Example**:
 ```
-主导：都市重生（框架：现代都市背景 + 时间回溯）
-辅助：商战权谋（卖点：商业博弈 + 智商较量）
+Primary: Urban rebirth (modern setting + return through time)
+Supporting: Business intrigue (commercial strategy + intellectual contests)
 
-融合方式：
-- 主角重生后利用前世商业经验（信息差）进行商战布局
-- 都市背景提供真实感，商战提供剧情张力
-- 重生机制确保主角始终占据信息优势
-```
-
-### 4.2 融合机制六大维度
-
-**1. 情节交织**
-- 不同元素在情节中如何互动？
-- 是否有明确的触发机制？
-
-**示例**：
-```
-重生（主）+ 系统（辅）融合机制：
-- 重生后系统激活（触发机制）
-- 系统任务与重生目标一致（情节交织）
-- 系统奖励推动重生计划（功能互补）
+Integration:
+- Past-life business experience provides information for new plans
+- Urban life supplies realism; business conflict supplies tension
+- Rebirth maintains the protagonist's information advantage
 ```
 
-**2. 能力体现**
-- 主角能力如何体现元素融合？
-- 不同元素的能力是否有层次感？
+### 4.2 Six Integration Dimensions
 
-**3. 世界观融合**
-- 不同元素的世界观规则如何统一？
-- 是否存在逻辑漏洞？
+**1. Plot interweaving**
+- How do elements interact in events?
+- Is there a clear trigger?
 
-**4. 社会环境影响**
-- 组合后的设定如何影响社会结构？
-- 是否产生新的冲突源？
-
-**5. 爽点设计**
-- 元素组合后产生什么新爽点？
-- 爽点频率与强度是否合理？
-
-**6. 长期可持续性**
-- 组合后的设定能否支撑长篇？
-- 冲突升级路径是否清晰？
-
-### 4.3 主角设定与开篇故事测试
-
-**测试方法**：为组合方案构思开篇故事
-
-**必须包含**：
-- 主角核心身份（体现元素融合）
-- 主要能力（来自哪个元素）
-- 核心驱动目标（与元素相关）
-- 开篇冲突（展示化学反应）
-
-**示例开篇测试**：
+**Example**:
 ```
-组合方案：都市重生 + 反派洗白
+Rebirth (primary) + system (supporting):
+- Rebirth activates the system: trigger
+- Missions align with rebirth goals: plot interweaving
+- Rewards advance the protagonist's plans: complementary function
+```
 
-主角设定：
-- 身份：前世反派大佬，重生回高中时代
-- 能力：前世积累的人脉/商业经验/读人心的能力
-- 目标：改写命运，从反派洗白成正面人物
-- 性格：外表高冷，内心戏多（反差萌）
+**2. Abilities**
+- How do the protagonist's powers express the combination?
+- Do abilities from different elements form a meaningful hierarchy?
 
-开篇故事：
-第1章：主角重生，发现自己回到了成为反派的起点
-- 展示元素1（重生）：熟悉的教室，陌生的同学
-- 展示元素2（反派身份）：回忆前世作恶的关键选择
-- 展示化学反应：主角决定改变，但发现"洗白"比想象中困难
+**3. Worldbuilding**
+- How are different rule sets unified?
+- Are there logical gaps?
 
-测试结果：
-✅ 两元素在开篇都有体现
-✅ 化学反应清晰（反派 + 重生 = 洗白难题）
-✅ 读者期待明确（想看主角如何洗白）
+**4. Social effects**
+- How does the combination affect society?
+- Does it create new conflicts?
+
+**5. Payoffs**
+- What new satisfaction emerges?
+- Are frequency and intensity appropriate?
+
+**6. Sustainability**
+- Can the combined premise sustain long-form fiction?
+- Is the escalation path clear?
+
+### 4.3 Character and Opening Test
+
+**Method**: Develop an opening for the concept.
+
+**Required**:
+- Core identity expressing the combination.
+- Main abilities and their source elements.
+- Driving objective linked to the elements.
+- Opening conflict demonstrating synergy.
+
+**Example**:
+```
+Combination: Urban rebirth + villain redemption
+
+Protagonist:
+- Identity: Former villain leader, reborn in high school
+- Abilities: Past-life connections, business experience, and skill at reading people
+- Goal: Rewrite fate and become a good person
+- Personality: Outwardly cold, inwardly full of commentary; an appealing contrast
+
+Opening:
+Chapter 1: Rebirth returns him to the first step toward villainy
+- Rebirth element: Familiar classroom, unfamiliar classmates
+- Villain element: Memories of the key evil choice in the previous life
+- Synergy: He decides to change, but redemption proves harder than expected
+
+Results:
+✅ Both elements appear in the opening
+✅ Clear synergy: villain + rebirth = redemption problem
+✅ Clear anticipation: readers want to see how redemption happens
 ```
 
 ---
 
-## 5. 组合方案量化评分系统
+## 5. Quantitative Scoring
 
-### 5.1 综合评分公式
+### 5.1 Formula
 
 ```
-总分 = 创新度×3 + 市场潜力×2.5 + 逻辑自洽性×2 + 实施难度×(-1) + 化学反应强度×2.5
+Total = innovation×3 + market potential×2.5 + consistency×2 + execution difficulty×(-1) + synergy×2.5
 
-满分：50分
-及格线：30分
-高潜力：40分+
+Maximum stated by the source rubric: 50
+Passing: 30
+High potential: 40+
 ```
 
-### 5.2 评分参考表
+### 5.2 Scoring Reference
 
-| 评分维度 | 1分 | 3分 | 5分 |
+| Dimension | 1 point | 3 points | 5 points |
 |---------|-----|-----|-----|
-| **创新度** | 烂大街组合 | 微创新组合 | 开创新品类 |
-| **市场潜力** | 小众冷门 | 中等受众 | 大众热门 |
-| **逻辑自洽性** | 多处矛盾 | 基本合理 | 无懈可击 |
-| **实施难度** | 极难驾驭 | 中等难度 | 易于实现 |
-| **化学反应强度** | 负反应 | 弱反应 | 强反应 |
+| **Innovation** | Ubiquitous combination | Small innovation | New category |
+| **Market potential** | Obscure niche | Moderate audience | Broad popularity |
+| **Consistency** | Many contradictions | Mostly reasonable | Airtight |
+| **Execution difficulty** | Extremely difficult | Moderate | Easy to execute |
+| **Synergy** | Negative | Weak | Strong |
 
-### 5.3 示例评分
+### 5.3 Example
 
-**方案A：都市重生 + 反派洗白**
+**Concept A: Urban rebirth + villain redemption**
 
-| 维度 | 得分 | 理由 |
+| Dimension | Score | Reason |
 |------|------|------|
-| 创新度 | 4×3=12 | 反派视角创新，但重生常见 |
-| 市场潜力 | 4×2.5=10 | 都市文受众广，反派洗白有吸引力 |
-| 逻辑自洽性 | 5×2=10 | 重生+洗白逻辑通顺 |
-| 实施难度 | 3×(-1)=-3 | 需设计复杂人物弧线 |
-| 化学反应 | 4×2.5=10 | 两元素互相增强 |
-| **总分** | **39** | **高潜力方案** |
+| Innovation | 4×3=12 | Fresh villain viewpoint, familiar rebirth |
+| Market potential | 4×2.5=10 | Broad urban audience; appealing redemption |
+| Consistency | 5×2=10 | Rebirth and redemption fit logically |
+| Execution difficulty | 3×(-1)=-3 | Complex character arc required |
+| Synergy | 4×2.5=10 | Elements reinforce each other |
+| **Total** | **39** | **High-potential concept in the example** |
 
 ---
 
-## 6. 常见组合陷阱与规避策略
+## 6. Common Traps
 
-### 6.1 陷阱1：要素堆砌
+### 6.1 Element Pileup
 
-**表现**：A+B+C+D+E...无限叠加元素
+**Symptom**: Endless A+B+C+D+E combinations.
 
-**后果**：
-- 主线混乱，读者困惑
-- 每个元素都浅尝辄止，无深度
-- 后期难以控制，容易崩盘
+**Consequences**:
+- Confused main plot and readers.
+- Shallow treatment of every element.
+- Increasing loss of control and eventual collapse.
 
-**规避策略**：
-- 限制元素数量（建议2-3个）
-- 明确主导与辅助关系（1主+1-2辅）
-- 每个元素必须有明确功能
+**Avoidance**:
+- Limit to 2–3 elements.
+- Use one primary and one or two supporting elements.
+- Give each a clear function.
 
-### 6.2 陷阱2：逻辑冲突
+### 6.2 Logical Conflict
 
-**表现**：不同元素的世界观规则相互矛盾
+**Symptom**: Contradictory world rules.
 
-**示例**：
+**Example**:
 ```
-硬核科幻（强调科学逻辑）+ 玄幻修仙（强调玄学力量）
-→ 读者无法代入，沉浸感破裂
-```
-
-**规避策略**：
-- 组合前检查世界观兼容性
-- 设计统一的底层逻辑
-- 必要时选择软科幻等过渡类型
-
-### 6.3 陷阱3：风格割裂
-
-**表现**：不同元素的叙事风格差异过大
-
-**示例**：
-```
-严肃现实题材 + 无厘头搞笑
-→ 读者群体定位混乱
+Hard science fiction emphasizing scientific logic + cultivation emphasizing mysticism
+→ Readers cannot immerse themselves
 ```
 
-**规避策略**：
-- 确定统一的叙事基调
-- 辅助元素服从主导元素风格
-- 避免过度风格跳跃
+**Avoidance**:
+- Check compatibility before combining.
+- Create a unified underlying logic.
+- Use a bridge such as soft science fiction if necessary.
 
-### 6.4 陷阱4：爽点单一
+### 6.3 Tonal Fragmentation
 
-**表现**：组合后爽点类型反而减少
+**Symptom**: Narrative styles differ too much.
 
-**示例**：
+**Example**:
 ```
-都市重生 + 系统签到
-→ 两者都依赖"金手指碾压"，爽点同质化
+Serious realism + absurd comedy
+→ Confused audience positioning
 ```
 
-**规避策略**：
-- 选择爽点类型互补的元素
-- 一个提供"实力碾压"，另一个提供"智商博弈"
-- 确保爽点多样性
+**Avoidance**:
+- Establish one narrative tone.
+- Make supporting elements follow the primary style.
+- Avoid excessive tonal jumps.
+
+### 6.4 One-Dimensional Payoffs
+
+**Symptom**: The combination reduces rather than expands payoff variety.
+
+**Example**:
+```
+Urban rebirth + check-in system
+→ Both depend on overwhelming special advantages; payoffs become repetitive
+```
+
+**Avoidance**:
+- Choose complementary payoff types.
+- Let one offer raw power and another intellectual competition.
+- Preserve variety.
 
 ---
 
-## 7. 实战组合方案模板
+## 7. Practical Concept Template
 
-### 7.1 方案描述模板
+### 7.1 Description
 
 ```markdown
-## 组合方案：[方案名称]
+## Combination: [Concept name]
 
-### 核心元素
-- **主导元素**：[元素A]（占比70%）
-- **辅助元素**：[元素B]（占比30%）
+### Core Elements
+- **Primary**: [Element A] (70%)
+- **Supporting**: [Element B] (30%)
 
-### 核心吸引力
-- **一句话卖点**：[10秒电梯pitch]
-- **独特阅读快感**：[读者能获得什么情感满足]
-- **化学反应效果**：[两元素如何互相增强]
+### Core Appeal
+- **One-sentence pitch**: [10-second elevator pitch]
+- **Distinctive pleasure**: [Reader's emotional satisfaction]
+- **Synergy**: [How elements reinforce each other]
 
-### 主角核心设定
-- **身份**：[主角是谁]
-- **主要能力**：[来自哪个元素]
-- **性格特质**：[2-3个关键词]
-- **核心目标**：[驱动主线的目标]
+### Protagonist
+- **Identity**: [Who they are]
+- **Main ability**: [Source element]
+- **Personality**: [2–3 keywords]
+- **Core goal**: [Objective driving the main plot]
 
-### 开篇故事（3章大纲）
-**第1章**：[引入主角 + 展示核心设定]
-**第2章**：[第一次冲突 + 展示化学反应]
-**第3章**：[确立主线目标 + 爽点爆发]
+### Opening (Three-Chapter Outline)
+**Chapter 1**: [Introduce protagonist and core premise]
+**Chapter 2**: [First conflict and demonstration of synergy]
+**Chapter 3**: [Establish main goal and deliver a payoff]
 
-### 融合机制
-- **情节交织**：[元素在情节中如何互动]
-- **能力体现**：[主角能力如何体现融合]
-- **世界观融合**：[如何统一世界观规则]
+### Integration
+- **Plot**: [How elements interact]
+- **Abilities**: [How powers express integration]
+- **World**: [How rules are unified]
 
-### 发展潜力
-- **长期可持续性**：[能否支撑30万字+]
-- **冲突升级路径**：[冲突如何逐步升级]
-- **角色成长空间**：[主角成长路线]
-- **世界观扩展**：[后期如何拓展]
+### Potential
+- **Sustainability**: [Can it support 300,000+ Chinese characters?]
+- **Escalation**: [How conflicts intensify]
+- **Character growth**: [Protagonist's path]
+- **World expansion**: [Later expansion]
 
-### 优势与挑战
-**优势**：
-- [优势1]
-- [优势2]
+### Strengths and Challenges
+**Strengths**:
+- [Strength 1]
+- [Strength 2]
 
-**挑战**：
-- [挑战1 及应对策略]
-- [挑战2 及应对策略]
+**Challenges**:
+- [Challenge 1 and response]
+- [Challenge 2 and response]
 
-### 综合评分
-| 维度 | 得分 | 理由 |
+### Score
+| Dimension | Score | Reason |
 |------|------|------|
-| 创新度 | /5 | |
-| 市场潜力 | /5 | |
-| 逻辑自洽性 | /5 | |
-| 实施难度 | /5 | |
-| 化学反应 | /5 | |
-| **总分** | **/50** | |
+| Innovation | /5 | |
+| Market potential | /5 | |
+| Consistency | /5 | |
+| Execution difficulty | /5 | |
+| Synergy | /5 | |
+| **Total** | **/50** | |
 ```
 
-### 7.2 快速决策清单
+### 7.2 Quick Decision Checklist
 
-在提交方案前，逐项确认：
+Before submitting:
 
-- [ ] 能用一句话说清核心卖点？
-- [ ] 两个元素有明确的化学反应？
-- [ ] 主角设定体现了元素融合？
-- [ ] 开篇故事能吸引目标读者？
-- [ ] 世界观规则逻辑自洽？
-- [ ] 爽点设计多样化？
-- [ ] 能支撑30万字+连载？
-- [ ] 综合评分 ≥ 30分？
+- [ ] Selling point clear in one sentence?
+- [ ] Definite synergy between elements?
+- [ ] Character design expresses the combination?
+- [ ] Opening attracts target readers?
+- [ ] World rules consistent?
+- [ ] Diverse payoffs?
+- [ ] Supports 300,000+ Chinese characters?
+- [ ] Total score at least 30?
 
 ---
 
-## 8. 进阶技巧：从组合到创新
+## 8. Advanced Techniques
 
-### 8.1 反向组合法
+### 8.1 Reverse Combination
 
-**传统组合**：从现有元素出发
-**反向组合**：从读者需求出发
+**Traditional**: Start from existing elements.
+**Reverse**: Start from reader needs.
 
-**步骤**：
-1. 识别读者未被满足的需求
-2. 寻找能满足该需求的元素组合
-3. 验证组合的可行性
+**Steps**:
+1. Identify an unmet need.
+2. Find elements that satisfy it together.
+3. Verify feasibility.
 
-**示例**：
+**Example**:
 ```
-需求：想看智商在线的主角，但不要无脑碾压
+Need: An intelligent protagonist without effortless domination
 ↓
-寻找元素：
-- 悬疑推理（强调智商）
-- 平等对手（非碾压）
+Elements:
+- Mystery deduction: emphasizes intelligence
+- Equal opponent: prevents one-sided victory
 ↓
-组合方案：悬疑推理 + 势均力敌的对手 = 烧脑博弈文
+Mystery + evenly matched opponent = intricate strategic fiction
 ```
 
-### 8.2 颠覆性组合
+### 8.2 Disruptive Combination
 
-**方法**：刻意选择看似矛盾的元素
+**Method**: Deliberately select seemingly contradictory elements.
 
-**示例**：
+**Example**:
 ```
-传统：强者主角 + 升级流
-颠覆：弱者主角 + 降级流
+Traditional: Strong protagonist + progression
+Disruptive: Weak protagonist + regression
 
-化学反应：
-- 主角越来越弱，反而更有张力
-- 读者好奇：如何在实力下降中求生？
+Synergy:
+- Increasing weakness creates greater tension
+- Readers wonder how survival is possible as power declines
 ```
 
-**警告**：颠覆性组合风险高，需深思熟虑
+**Warning**: Disruptive combinations are risky and require careful thought.
 
-### 8.3 跨品类迁移
+### 8.3 Cross-Category Transfer
 
-**方法**：将A品类的成功元素迁移到B品类
+**Method**: Move a successful element from category A to category B.
 
-**示例**：
+**Example**:
 ```
-从"规则怪谈"迁移"规则破解"到"玄幻修仙"
-→ 修仙世界有严格规则，主角通过破解规则逆袭
+Transfer rule-solving from rule-based horror to cultivation
+→ A tightly ruled cultivation world where solving rules enables a comeback
 ```
 
 ---
 
-## 9. 组合方案对比与选择
+## 9. Compare and Select
 
-### 9.1 多方案对比表
+### 9.1 Comparison Table
 
-| 方案编号 | 核心组合 | 创新度 | 市场潜力 | 实施难度 | 总分 | 优先级 |
+| Concept | Combination | Innovation | Market potential | Difficulty | Total | Priority |
 |---------|---------|--------|---------|---------|------|--------|
-| 方案1 | 都市+重生+反派 | 4 | 4 | 3 | 39 | ⭐⭐⭐⭐ |
-| 方案2 | 玄幻+系统+群像 | 3 | 5 | 4 | 35 | ⭐⭐⭐ |
-| 方案3 | 科幻+规则怪谈 | 5 | 3 | 5 | 32 | ⭐⭐⭐ |
+| 1 | Urban + rebirth + villain | 4 | 4 | 3 | 39 | ⭐⭐⭐⭐ |
+| 2 | Fantasy + system + ensemble | 3 | 5 | 4 | 35 | ⭐⭐⭐ |
+| 3 | Science fiction + rule-based horror | 5 | 3 | 5 | 32 | ⭐⭐⭐ |
 
-### 9.2 最终选择建议
+### 9.2 Selection Advice
 
-**推荐顺序**：
-1. **方案1（39分）**：创新度与市场潜力均衡，实施难度适中
-2. **方案2（35分）**：市场潜力最高，但创新度略低
-3. **方案3（32分）**：创新度高但市场风险较大
+**Order**:
+1. **Concept 1, 39**: Balanced innovation and market potential; moderate difficulty.
+2. **Concept 2, 35**: Highest market potential, slightly less innovative.
+3. **Concept 3, 32**: Highly innovative but greater market risk.
 
-**选择原则**：
-- 新手作者：优先选择实施难度低、市场潜力高的方案
-- 成熟作者：可挑战高创新度、高难度的方案
-- 商业化导向：优先选择市场潜力最高的方案
-
----
-
-## 10. 关联参考文档
-
-本文档是「创意阶段」的核心方法论，完成后可参考：
-
-- **前置步骤**：`inspiration-collection.md`（提供待组合的元素）
-- **前置步骤**：`market-positioning.md`（提供市场导向的组合建议）
-- **下一步**：`selling-points.md`（从组合方案中提炼核心卖点）
-- **后续阶段**：设定阶段的世界观构建与角色设定（将组合方案具体化）
+**Principles**:
+- Beginners: Favor easier execution and strong market potential.
+- Experienced writers: Consider difficult, highly innovative concepts.
+- Commercial focus: Prioritize market potential.
 
 ---
 
-**使用建议**：组合创新是创意阶段的核心环节，建议先完成灵感收集与市场定位分析，再进行元素组合。每个组合方案都应经过开篇测试与评分验证，确保可行性后再进入后续阶段。
+## 10. Related References
+
+This is the core creative-stage methodology:
+
+- **Prerequisite**: `inspiration-collection.md`, supplying candidate elements.
+- **Prerequisite**: `market-positioning.md`, providing market-oriented suggestions.
+- **Next**: `selling-points.md`, extracting the concept's core selling point.
+- **Later**: Worldbuilding and character design turn the combination into concrete settings.
+
+---
+
+**Usage note**: Complete inspiration collection and market analysis first. Test every combination through an opening and quantitative evaluation before moving forward.

@@ -1,160 +1,160 @@
-# 力量体系设计指南 (Power Systems)
+# Power System Design Guide
 
-> **核心原则**: 力量体系不仅是升级的阶梯，更是控制剧情节奏的阀门。好的体系能让读者清晰地感知"变强"，同时避免后期数值崩坏。
+> **Core principle**: A power system is not just a ladder of upgrades; it regulates plot pacing. A good system makes growth tangible while preventing late-story numerical collapse.
 
 ---
 
-## 1. 三层构建法
+## 1. Three-Layer Construction
 
-### 基础规则层
-| 要素 | 说明 |
+### Foundational Rules
+| Element | Description |
 |------|------|
-| 力量体系 | 来源/等级/限制/代价 |
-| 物理法则 | 与现实的差异点 |
-| 核心矛盾 | 世界运转的底层冲突 |
-| 资源分布 | 稀缺资源及其影响 |
+| Power system | Source / levels / limits / costs |
+| Physical laws | Differences from reality |
+| Core contradiction | The underlying conflict driving the world |
+| Resource distribution | Scarce resources and their effects |
 
-### 社会结构层
-| 要素 | 说明 |
+### Social Structure
+| Element | Description |
 |------|------|
-| 势力格局 | 主要势力/关系/冲突 |
-| 阶层划分 | 上升通道/固化程度 |
-| 权力结构 | 谁掌权/如何运作 |
-| 经济体系 | 货币/贸易/资源 |
+| Faction landscape | Major powers / relationships / conflicts |
+| Social classes | Mobility / rigidity |
+| Power structure | Who rules / how it operates |
+| Economy | Currency / trade / resources |
 
-### 文化细节层
-| 要素 | 说明 |
+### Cultural Details
+| Element | Description |
 |------|------|
-| 语言习惯 | 称谓/口头禅/禁忌词 |
-| 风俗禁忌 | 节日/仪式/禁忌 |
-| 价值观念 | 推崇什么/鄙视什么 |
-| 日常生活 | 衣食住行细节 |
+| Speech habits | Forms of address / catchphrases / forbidden words |
+| Customs and taboos | Festivals / rituals / taboos |
+| Values | What is admired / despised |
+| Everyday life | Clothing, food, housing, and travel |
 
 ---
 
-## 2. 等级体系构建 (Leveling)
+## 2. Building Levels
 
-### 标准阶梯模型
-设定明确的等级，每级之间有显著的实力差距。
-- **大境界**: 质变（如：练气 → 筑基，凡人 → 修士）。
-  - **差距描述**: “筑基之下皆蝼蚁”，“金丹强者恐怖如斯”。
-- **小境界**: 量变（如：初期 → 中期 → 后期 → 圆满）。
-  - **差距描述**: “灵力更加深厚”，“能多放两个大招”。
+### Standard Ladder
+Define clear levels with meaningful differences in strength.
+- **Major realms**: Qualitative changes, such as Qi Refining → Foundation Establishment or mortal → cultivator.
+  - **Descriptions of the gap**: “All below Foundation Establishment are ants”; “Such terrifying Golden Core power.”
+- **Minor stages**: Quantitative growth, such as early → middle → late → peak.
+  - **Descriptions of the gap**: “Deeper spiritual reserves”; “Enough power for two more finishing moves.”
 
-### 命名规范
-- **修仙**: 练气、筑基、金丹、元婴、化神...
-- **异能**: F级、E级、D级... S级、SS级、SSS级。
-- **玄幻**: 斗者、斗师、大斗师... / 搬血、洞天、化灵...
-- **西幻**: 学徒、正式法师、大魔法师、魔导士、传奇、半神。
-
----
-
-## 2. 战力平衡与膨胀控制
-
-### 越级挑战原则 (The Underdog Rule)
-主角必须能越级，但不能无限越。
-- **合理越级**: 练气九层打败筑基初期（跨一个大境界门槛）。
-  - **理由**: 极品功法 + 绝世神兵 + 偷袭 + 对方轻敌。
-- **不合理越级**: 练气三层打败元婴老怪。
-  - **后果**: 战力体系瞬间崩塌，读者弃书。
-
-### 数值膨胀控制阀 (Inflation Control)
-- **换地图 (Map Reset)**: 在新手村称霸后，进入大地图发现自己只是底层。
-  - *示例*: “在天南城我是第一天才，到了中州圣地，我也就勉强算个内门弟子。”
-- **新维度 (New Dimension)**: 引入新的力量参数。
-  - *示例*: 前期拼灵力总量，后期拼法则感悟/灵魂强度/领域掌控。
+### Naming Conventions
+- **Cultivation**: Qi Refining, Foundation Establishment, Golden Core, Nascent Soul, Spirit Transformation...
+- **Superpowers**: F, E, D... S, SS, SSS.
+- **Chinese fantasy**: Fighter, Fight Master, Great Fight Master... / Blood Transformation, Cave Heaven, Spirit Transformation...
+- **Western fantasy**: Apprentice, Mage, Archmage, Magister, Legend, Demigod.
 
 ---
 
-## 3. 技能与功法体系
+## 2. Combat Balance and Power Inflation
 
-### 技能树设计
-- **基础技**: 平 A，冷却短，消耗低。
-- **爆发技**: 大招，冷却长，消耗大，也是“底牌”。
-- **被动技**: 常驻增益（如：回血速度+100%，对火属性免疫）。
-- **禁术**: 威力巨大但有严重副作用（如：燃烧寿命换取 10 倍战力）。
+### The Underdog Rule
+The protagonist must be able to defeat stronger opponents, but not without limits.
+- **Plausible leap**: Qi Refining level 9 defeats early Foundation Establishment, crossing one major-realm threshold.
+  - **Reasons**: Supreme technique + peerless weapon + ambush + an overconfident opponent.
+- **Implausible leap**: Qi Refining level 3 defeats a Nascent Soul elder.
+  - **Consequence**: The power hierarchy collapses instantly and readers leave.
 
-### 功法分级
-- **天地玄黄 / SABC**: 简单明了，读者认知成本低。
-- **唯一性**: 主角必须修练全书唯一的、或失传已久的顶级功法。
+### Inflation Controls
+- **Map reset**: After dominating the starting village, enter a larger region and discover you are near the bottom.
+  - *Example*: “I was Tiannan City's greatest talent. In the Central Continent's sacred land, I barely qualify as an inner disciple.”
+- **New dimension**: Introduce another parameter of strength.
+  - *Example*: Early battles depend on spiritual-energy reserves; later ones depend on understanding laws, soul strength, or domain control.
 
 ---
 
-## 4. 力量体系模板 (Reference)
+## 3. Skills and Cultivation Techniques
 
-### 模板 A: 传统修仙
+### Skill Trees
+- **Basic attacks**: Short cooldowns and low costs.
+- **Burst skills**: Long cooldowns, high costs, and trump-card status.
+- **Passive skills**: Persistent bonuses, such as +100% regeneration or fire immunity.
+- **Forbidden arts**: Immense power with severe side effects, such as burning lifespan for tenfold combat strength.
+
+### Technique Grades
+- **Heaven/Earth/Mystic/Yellow or S/A/B/C**: Simple and easy for readers to understand.
+- **Uniqueness**: The protagonist should train in a top-tier technique that is unique in the story or long lost.
+
+---
+
+## 4. Reference Templates
+
+### Template A: Traditional Cultivation
 ```
-练气 (1-9层): 引气入体，强身健体
-筑基 (初中后): 铸就道基，寿元两百
-金丹 (一至九转): 凝结金丹，御空飞行
-元婴: 碎丹成婴，肉身损毁可夺舍
-化神: 领悟天地法则，初步掌控空间
-炼虚: 遨游太虚
-合体: 身化万千
-大乘: 渡劫飞升
+Qi Refining (levels 1–9): Draw energy into the body and strengthen it
+Foundation Establishment (early/middle/late): Build the cultivation foundation; lifespan 200 years
+Golden Core (one to nine refinements): Form a golden core and fly
+Nascent Soul: Break the core into a nascent soul; possess another body if the flesh is destroyed
+Spirit Transformation: Understand cosmic laws and begin controlling space
+Void Refinement: Travel the great void
+Integration: Manifest countless forms
+Great Ascension: Survive tribulation and ascend
 ```
 
-### 模板 B: 高武/异能
+### Template B: High Martial Arts/Superpowers
 ```
-一品/二品/三品 (武徒): 淬炼皮肉骨
-四品/五品/六品 (武师): 练出内劲/罡气
-七品 (宗师): 精神力外放，宗师不可辱
-八品 (大宗师): 凝练金身
-九品 (武圣): 镇压国运
-绝巅: 人类守护神
+Ranks 1/2/3 (Martial Apprentice): Temper skin, flesh, and bones
+Ranks 4/5/6 (Martial Master): Develop internal force/protective energy
+Rank 7 (Grandmaster): Project mental power; a grandmaster must not be insulted
+Rank 8 (Great Grandmaster): Forge a golden body
+Rank 9 (Martial Saint): Anchor a nation's destiny
+Apex: Guardian deity of humanity
 ```
 
-### 模板 C: 诡秘/序列 (魔药体系)
+### Template C: Mysteries/Sequences (Potion System)
 ```
-序列 9 (起始): 获得微弱超凡能力
+Sequence 9 (beginning): Gain minor supernatural abilities
 ...
-序列 5 (质变): 获得神性
+Sequence 5 (qualitative change): Gain divinity
 ...
-序列 0 (真神): 掌握权柄
-*特点*: 晋升需要扮演法 + 魔药，有失控风险。
+Sequence 0 (true god): Wield authority
+*Features*: Advancement requires acting and potions, with a risk of losing control.
 ```
 
 ---
 
-## 7. 系统流设计 (System-based Power)
+## 7. System-Based Power
 
-### 系统面板设计
+### System Panel
 ```
-属性面板 + 技能树 + 任务系统 + 商城/抽奖
+Attribute panel + skill tree + mission system + shop/lottery
 ```
 
-### 属性设计
-| 属性 | 说明 |
+### Attributes
+| Attribute | Description |
 |------|------|
-| 基础属性 | 力量/敏捷/智力等 |
-| 战斗属性 | 攻击/防御/速度等 |
-| 特殊属性 | 幸运/魅力/悟性等 |
-| 隐藏属性 | 气运/因果等 |
+| Basic | Strength / agility / intelligence |
+| Combat | Attack / defense / speed |
+| Special | Luck / charisma / comprehension |
+| Hidden | Fortune / karma |
 
-### 技能树设计
-- **主动技能**：需要主动释放
-- **被动技能**：自动生效
-- **天赋技能**：独特能力
-- **进阶技能**：高级解锁
+### Skill Trees
+- **Active skills**: Must be deliberately activated.
+- **Passive skills**: Take effect automatically.
+- **Innate skills**: Unique abilities.
+- **Advanced skills**: Unlocked at higher levels.
 
-### 任务系统
-| 任务类型 | 说明 |
+### Mission System
+| Mission type | Purpose |
 |----------|------|
-| 主线任务 | 推动剧情 |
-| 支线任务 | 丰富内容 |
-| 日常任务 | 稳定收益 |
-| 隐藏任务 | 意外惊喜 |
+| Main | Advance the plot |
+| Side | Enrich content |
+| Daily | Provide reliable rewards |
+| Hidden | Deliver unexpected surprises |
 
-### 奖励机制
-- 经验值/属性点
-- 技能/装备
-- 金币/资源
-- 特殊道具
+### Rewards
+- Experience / attribute points
+- Skills / equipment
+- Gold / resources
+- Special items
 
 ---
 
-## 🛠️ 设计检查清单
+## 🛠️ Design Checklist
 
-- [ ] **可视化**: 读者能否通过面板/描述直观感受到主角变强了？（如：一拳打爆测试机）
-- [ ] **瓶颈**: 升级是否有难度？（需要丹药/机缘/心境突破，不能光靠挂机）
-- [ ] **天花板**: 世界最强者的实力设定好了吗？（作为主角的长期追赶目标）
+- [ ] **Visibility**: Can readers perceive growing strength through panels or descriptions, such as destroying a testing machine with one punch?
+- [ ] **Bottlenecks**: Is advancement difficult, requiring pills, opportunities, or mental breakthroughs rather than idle grinding alone?
+- [ ] **Ceiling**: Is the world's strongest person's power defined as the protagonist's long-term target?

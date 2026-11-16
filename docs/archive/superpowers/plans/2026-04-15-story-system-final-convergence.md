@@ -1,10 +1,10 @@
-# Story System 最终收束实施计划
+# Story System Final Convergence Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 把 Story System 从"半成品并存"收束到"六层主链 + 消费端同步"的最终可用状态，覆盖 CSV_CONFIG 注册、裁决表、engine 改造、context_manager 瘦身、旧散写清理、projection 收束、消费端同步和向量索引增强共 9 个 section。
+**Goal:** Converge Story System from coexisting partial implementations into a usable six-layer mainline with synchronized consumers, covering nine sections: CSV_CONFIG registration, reasoning table, engine changes, context_manager slimming, legacy scattered-write cleanup, projection consolidation, consumer synchronization, and vector-index enhancements.
 
-**Architecture:** 自底向上串行推进。先在 `reference_search.py` 引入 per-table `CSV_CONFIG`，然后统一 CSV 毒点列名、新建裁决表、改造 `story_system_engine.py` 接入裁决层，接着瘦身 `context_manager.py`、清理旧散写路径、收束 projection 层，最后同步所有消费端 prompt 并增强向量索引。
+**Architecture:** Proceed serially from the bottom up: introduce per-table `CSV_CONFIG` in `reference_search.py`; standardize CSV reader-turn-off columns; create a reasoning table; integrate reasoning in `story_system_engine.py`; slim down `context_manager.py`; remove scattered legacy writes; consolidate projections; then synchronize consumer prompts and enhance the vector index.
 
 **Tech Stack:** Python 3.11+, pytest, CSV (UTF-8 BOM), SQLite FTS5, RAG embedding
 
@@ -12,58 +12,58 @@
 
 ---
 
-## 文件结构总览
+## File Structure Overview
 
-### 新建文件
+### New Files
 
-| 文件 | 职责 |
+| File | Responsibility |
 |------|------|
-| `webnovel-writer/references/csv/裁决规则.csv` | reasoning 层，key=题材，裁决命中条目的优先级和注入位置 |
-| `webnovel-writer/scripts/data_modules/knowledge_query.py` | 时序查询接口，entity_state_at_chapter / relationships_at_chapter |
-| `webnovel-writer/scripts/data_modules/vector_projection_writer.py` | commit 后把事件/entity_delta 写入向量库 |
-| `webnovel-writer/scripts/data_modules/tests/test_csv_config.py` | CSV_CONFIG 与 CSV 表头对齐校验 |
-| `webnovel-writer/scripts/data_modules/tests/test_reasoning_engine.py` | 裁决层单元测试 |
-| `webnovel-writer/scripts/data_modules/tests/test_knowledge_query.py` | 时序查询单元测试 |
-| `webnovel-writer/scripts/data_modules/tests/test_vector_projection_writer.py` | 向量投影写入测试 |
+| `webnovel-writer/references/csv/裁决规则.csv` | Reasoning layer keyed by genre, determining match priority and injection location |
+| `webnovel-writer/scripts/data_modules/knowledge_query.py` | Temporal query interfaces: entity_state_at_chapter / relationships_at_chapter |
+| `webnovel-writer/scripts/data_modules/vector_projection_writer.py` | Write events/entity_delta to the vector store after commits |
+| `webnovel-writer/scripts/data_modules/tests/test_csv_config.py` | Validate CSV_CONFIG alignment with CSV headers |
+| `webnovel-writer/scripts/data_modules/tests/test_reasoning_engine.py` | Reasoning-layer unit tests |
+| `webnovel-writer/scripts/data_modules/tests/test_knowledge_query.py` | Temporal query unit tests |
+| `webnovel-writer/scripts/data_modules/tests/test_vector_projection_writer.py` | Vector projection write tests |
 
-### 主要修改文件
+### Main Modified Files
 
-| 文件 | 改动摘要 |
+| File | Change Summary |
 |------|---------|
-| `webnovel-writer/scripts/reference_search.py` | 引入 `CSV_CONFIG`，`search()` 按表使用不同 `search_cols` |
-| `webnovel-writer/scripts/data_modules/story_system_engine.py` | 接入裁决表，新增 `_load_reasoning` / `_apply_reasoning` / `_rank_anti_patterns` / `_assemble_contract` |
-| `webnovel-writer/scripts/data_modules/context_manager.py` | 删 snapshot 逻辑、删 `_compact_json_text` / text 渲染相关，压到 400 行以下 |
-| `webnovel-writer/scripts/extract_chapter_context.py` | `_render_text()` 改为纯 JSON 序列化，text 渲染不再由代码层负责（context-agent 按示例写任务书） |
-| `webnovel-writer/scripts/data_modules/event_projection_router.py` | 给 6 种事件加 `"vector"` 路由 |
-| `webnovel-writer/scripts/data_modules/chapter_commit_service.py` | `apply_projections` 接入 `VectorProjectionWriter` |
-| `webnovel-writer/scripts/data_modules/state_projection_writer.py` | 统一由 projection 推进 `chapter_status` |
-| `webnovel-writer/skills/webnovel-write/SKILL.md` | 删 Step 2/4 的 `set-chapter-status`、删 `core-constraints` / `anti-ai-guide` 直读 |
-| `webnovel-writer/agents/context-agent.md` | 确认工具段落、research 数据源路径与代码一致 |
-| `webnovel-writer/agents/data-agent.md` | 确认不直写 state/index/memory |
-| `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py` | 新增散写检测断言 |
-| `webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py` | 补 vector 路由测试 |
-| `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py` | 补裁决层测试 |
-| `webnovel-writer/scripts/tests/test_reference_search.py` | 补 per-table search_cols 测试 |
-| `webnovel-writer/references/csv/*.csv` | 毒点列统一 rename |
+| `webnovel-writer/scripts/reference_search.py` | Introduce `CSV_CONFIG`; `search()` uses per-table `search_cols` |
+| `webnovel-writer/scripts/data_modules/story_system_engine.py` | Integrate the reasoning table; add `_load_reasoning` / `_apply_reasoning` / `_rank_anti_patterns` / `_assemble_contract` |
+| `webnovel-writer/scripts/data_modules/context_manager.py` | Remove snapshot logic, `_compact_json_text`, and text rendering; reduce to fewer than 400 lines |
+| `webnovel-writer/scripts/extract_chapter_context.py` | Make `_render_text()` pure JSON serialization; context-agent writes the brief from examples instead of code rendering text |
+| `webnovel-writer/scripts/data_modules/event_projection_router.py` | Add `"vector"` routes for six event types |
+| `webnovel-writer/scripts/data_modules/chapter_commit_service.py` | Integrate `VectorProjectionWriter` into `apply_projections` |
+| `webnovel-writer/scripts/data_modules/state_projection_writer.py` | Advance `chapter_status` exclusively through projections |
+| `webnovel-writer/skills/webnovel-write/SKILL.md` | Remove Step 2/4 `set-chapter-status` and direct `core-constraints` / `anti-ai-guide` reads |
+| `webnovel-writer/agents/context-agent.md` | Align tool descriptions and research-source paths with code |
+| `webnovel-writer/agents/data-agent.md` | Ensure no direct state/index/memory writes |
+| `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py` | Add assertions detecting scattered writes |
+| `webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py` | Add vector-routing tests |
+| `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py` | Add reasoning-layer tests |
+| `webnovel-writer/scripts/tests/test_reference_search.py` | Add per-table search_cols tests |
+| `webnovel-writer/references/csv/*.csv` | Standardize reader-turn-off column names |
 
-### 删除文件
+### Deleted Files
 
-| 文件 | 理由 |
+| File | Reason |
 |------|------|
-| `webnovel-writer/scripts/data_modules/snapshot_manager.py` | snapshot 逻辑随 context_manager 瘦身一起删除 |
+| `webnovel-writer/scripts/data_modules/snapshot_manager.py` | Remove snapshot logic as part of context_manager slimming |
 
 ---
 
-## Task 1: CSV_CONFIG 注册层
+## Task 1: CSV_CONFIG Registry Layer
 
 **Files:**
 - Modify: `webnovel-writer/scripts/reference_search.py:90-191`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_csv_config.py`
 - Modify: `webnovel-writer/scripts/tests/test_reference_search.py`
 
-- [ ] **Step 1: 在 `reference_search.py` 新增 `CSV_CONFIG` dict**
+- [ ] **Step 1: Add `CSV_CONFIG` to `reference_search.py`**
 
-在 `_TOKEN_SPLIT_RE` 定义之前（约第 89 行），插入 `CSV_CONFIG`：
+Insert `CSV_CONFIG` before `_TOKEN_SPLIT_RE`, around line 89:
 
 ```python
 # ---------------------------------------------------------------------------
@@ -140,15 +140,15 @@ CSV_CONFIG: Dict[str, Dict[str, Any]] = {
 }
 ```
 
-- [ ] **Step 2: 改造 `_build_doc_terms()` 使用 per-table `search_cols`**
+- [ ] **Step 2: Make `_build_doc_terms()` Use Per-Table `search_cols`**
 
-把旧的 `_SEARCH_FIELD_WEIGHTS` 全局 dict 替换为 per-table 参数：
+Replace the global `_SEARCH_FIELD_WEIGHTS` dict with per-table parameters:
 
 ```python
-# 删除旧的全局常量
-# _SEARCH_FIELD_WEIGHTS = { ... }  # 删除
+# Delete the old global constant
+# _SEARCH_FIELD_WEIGHTS = { ... }  # delete
 
-# 保留作为默认 fallback
+# Retain as the default fallback
 _DEFAULT_SEARCH_WEIGHTS: Dict[str, int] = {
     "意图与同义词": 4,
     "关键词": 3,
@@ -169,9 +169,9 @@ def _build_doc_terms(row: Dict[str, str], search_weights: Dict[str, int] | None 
     return terms
 ```
 
-- [ ] **Step 3: 改造 `search()` 从 `CSV_CONFIG` 读取配置**
+- [ ] **Step 3: Make `search()` Read Configuration From `CSV_CONFIG`**
 
-在 `search()` 函数里，根据 `table` 参数查 `CSV_CONFIG`：
+In `search()`, look up `CSV_CONFIG` using the `table` argument:
 
 ```python
 def search(
@@ -182,13 +182,13 @@ def search(
     genre: Optional[str] = None,
     max_results: int = 5,
 ) -> Dict[str, Any]:
-    # ... (error check 不变)
+    # ... (error check unchanged)
 
     tables = load_tables(csv_dir, table=table)
     if not tables:
-        # ... (不变)
+        # ... (unchanged)
 
-    # 按表查 search_cols
+    # Look up search_cols by table
     table_config = CSV_CONFIG.get(table) if table else None
     search_weights = (
         dict(table_config["search_cols"]) if table_config else None
@@ -202,9 +202,9 @@ def search(
                 candidates.append((tbl_name, row))
 
     if not candidates:
-        # ... (不变)
+        # ... (unchanged)
 
-    # 2) Tokenize - 对每条用其所在表的 search_cols
+    # 2) Tokenize using each row’s table-specific search_cols
     query_terms = _tokenize(query)
     doc_terms_list = []
     for tbl_name, row in candidates:
@@ -212,14 +212,14 @@ def search(
         weights = dict(tbl_cfg["search_cols"]) if tbl_cfg else search_weights
         doc_terms_list.append(_build_doc_terms(row, weights))
 
-    # 3-4) 不变 ...
+    # 3-4) unchanged ...
 ```
 
-- [ ] **Step 4: 删除 `_SEARCH_FIELD_WEIGHTS` 和 `_CONTENT_COLUMNS`**
+- [ ] **Step 4: Delete `_SEARCH_FIELD_WEIGHTS` and `_CONTENT_COLUMNS`**
 
-删除第 90-95 行的 `_SEARCH_FIELD_WEIGHTS` 和第 180-190 行的 `_CONTENT_COLUMNS`。
+Delete `_SEARCH_FIELD_WEIGHTS` at lines 90–95 and `_CONTENT_COLUMNS` at lines 180–190.
 
-`_build_summary()` 改为：如果有 `CSV_CONFIG` 里的 `output_cols`，就按那个顺序取字段；否则用原来的 fallback 逻辑。
+Update `_build_summary()` to select fields in `CSV_CONFIG.output_cols` order when available, otherwise retain the existing fallback.
 
 ```python
 def _build_summary(row: Dict[str, str], table_name: str | None = None) -> str:
@@ -227,7 +227,7 @@ def _build_summary(row: Dict[str, str], table_name: str | None = None) -> str:
     if core_summary:
         return core_summary
 
-    # 优先用 CSV_CONFIG 的 output_cols
+    # Prefer output_cols from CSV_CONFIG
     if table_name and table_name in CSV_CONFIG:
         cols = CSV_CONFIG[table_name]["output_cols"]
     else:
@@ -246,19 +246,19 @@ def _build_summary(row: Dict[str, str], table_name: str | None = None) -> str:
     return row.get("详细展开", "").strip()
 ```
 
-- [ ] **Step 5: 创建 CSV_CONFIG 对齐校验测试**
+- [ ] **Step 5: Create CSV_CONFIG Alignment Tests**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_csv_config.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""CSV_CONFIG 与实际 CSV 表头对齐校验。"""
+"""Validate CSV_CONFIG alignment with actual CSV headers."""
 import csv
 from pathlib import Path
 
 import pytest
 
-# reference_search.py 在 scripts/ 下，需要加 sys.path
+# reference_search.py is under scripts/; add it to sys.path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
@@ -269,7 +269,7 @@ CSV_DIR = Path(__file__).resolve().parent.parent.parent.parent / "references" / 
 
 @pytest.mark.parametrize("table_name,config", list(CSV_CONFIG.items()))
 def test_csv_config_columns_exist_in_csv_header(table_name: str, config: dict):
-    """CSV_CONFIG 里声明的所有列名都必须在 CSV 文件头中找到。"""
+    """Every column declared in CSV_CONFIG must exist in the CSV header."""
     csv_path = CSV_DIR / config["file"]
     if not csv_path.exists():
         pytest.skip(f"{config['file']} not yet created")
@@ -292,28 +292,28 @@ def test_csv_config_columns_exist_in_csv_header(table_name: str, config: dict):
 
 
 def test_csv_config_file_field_matches_filename():
-    """CSV_CONFIG 的 file 字段必须与 key + '.csv' 对应。"""
+    """CSV_CONFIG file must equal key + '.csv'."""
     for name, config in CSV_CONFIG.items():
         assert config["file"] == f"{name}.csv", f"{name}: file 应为 '{name}.csv'，实际为 '{config['file']}'"
 ```
 
-- [ ] **Step 6: 运行测试验证**
+- [ ] **Step 6: Run Tests to Validate**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py -v`
 
-预期：`裁决规则` 那条会 skip（文件还没创建），其余表全 pass。
+Expected: `裁决规则` is skipped because its file does not exist yet; all other tables pass.
 
-- [ ] **Step 7: 补充 per-table 检索测试**
+- [ ] **Step 7: Add Per-Table Retrieval Tests**
 
-在 `webnovel-writer/scripts/tests/test_reference_search.py` 末尾新增：
+Append to `webnovel-writer/scripts/tests/test_reference_search.py`:
 
 ```python
 class TestPerTableSearchCols:
-    """CSV_CONFIG per-table search_cols 测试。"""
+    """Tests for CSV_CONFIG per-table search_cols."""
 
     def test_different_tables_use_different_search_weights(self):
-        """确认不同表用不同的 search_cols 做检索。"""
-        # 命名规则和场景写法都应返回结果，但用各自表的 search_cols
+        """Verify different tables retrieve using different search_cols."""
+        # Naming and scene tables both return results using their own search_cols
         out1 = run_search("--skill", "write", "--table", "命名规则", "--query", "角色命名")
         out2 = run_search("--skill", "write", "--table", "场景写法", "--query", "战斗描写")
         assert out1["status"] == "success"
@@ -322,11 +322,11 @@ class TestPerTableSearchCols:
         assert out2["data"]["total"] >= 1
 ```
 
-- [ ] **Step 8: 运行全量 reference_search 测试**
+- [ ] **Step 8: Run All reference_search Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/tests/test_reference_search.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 9: Commit**
 
@@ -337,7 +337,7 @@ git commit -m "feat: introduce per-table CSV_CONFIG in reference_search"
 
 ---
 
-## Task 2: CSV 毒点列统一
+## Task 2: Standardize CSV Reader-Turn-Off Columns
 
 **Files:**
 - Modify: `webnovel-writer/references/csv/场景写法.csv` (header rename)
@@ -348,24 +348,24 @@ git commit -m "feat: introduce per-table CSV_CONFIG in reference_search"
 - Modify: `webnovel-writer/references/csv/题材与调性推理.csv` (header rename)
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py:15-22`
 
-- [ ] **Step 1: 统计当前各表的毒点列名**
+- [ ] **Step 1: Inventory Current Reader-Turn-Off Column Names**
 
-当前列名映射：
+Current column mapping:
 - `场景写法.csv` → `反面写法`
 - `写作技法.csv` → `常见误区`
 - `爽点与节奏.csv` → `常见崩盘误区`
 - `人设与关系.csv` → `忌讳写法`
-- `桥段套路.csv` → 有 `忌讳写法` 列
+- `桥段套路.csv` → has an `忌讳写法` column
 - `题材与调性推理.csv` → `强制禁忌/毒点`
-- `命名规则.csv` → 无毒点列（header 里有 `反例`，保留不动，新增 `毒点` 列）
-- `金手指与设定.csv` → 无毒点列（新增 `毒点` 列）
+- `命名规则.csv` → no reader-turn-off column; retain existing `反例` and add `毒点`
+- `金手指与设定.csv` → no reader-turn-off column; add `毒点`
 
-- [ ] **Step 2: 批量 rename CSV 列头**
+- [ ] **Step 2: Batch-Rename CSV Headers**
 
-用脚本执行（一次性，不入库）：
+Run this one-off script without adding it to the repository:
 
 ```python
-# 在 bash 里直接执行
+# Execute directly in Bash
 python3 -c "
 import csv, sys
 from pathlib import Path
@@ -406,7 +406,7 @@ print('Done')
 "
 ```
 
-- [ ] **Step 3: 给 `命名规则.csv` 和 `金手指与设定.csv` 新增空 `毒点` 列**
+- [ ] **Step 3: Add Empty `毒点` Columns to `命名规则.csv` and `金手指与设定.csv`**
 
 ```python
 python3 -c "
@@ -436,9 +436,9 @@ print('Done')
 "
 ```
 
-- [ ] **Step 4: 更新 `story_system_engine.py` 的 `ANTI_PATTERN_SOURCE_FIELDS`**
+- [ ] **Step 4: Update `ANTI_PATTERN_SOURCE_FIELDS` in `story_system_engine.py`**
 
-把第 15-22 行的旧映射：
+Replace the old mapping at lines 15–22:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
@@ -451,7 +451,7 @@ ANTI_PATTERN_SOURCE_FIELDS = {
 }
 ```
 
-统一改为：
+With this unified mapping:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
@@ -466,35 +466,35 @@ ANTI_PATTERN_SOURCE_FIELDS = {
 }
 ```
 
-- [ ] **Step 5: 运行测试**
+- [ ] **Step 5: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py scripts/data_modules/tests/test_story_system_engine.py scripts/tests/test_reference_search.py -v`
 
-预期：test_story_system_engine 会因 fixture CSV 里用旧列名而失败。
+Expected: test_story_system_engine fails because fixture CSVs still use old column names.
 
-- [ ] **Step 6: 修复 `test_story_system_engine.py` fixture 列名**
+- [ ] **Step 6: Fix Fixture Column Names in `test_story_system_engine.py`**
 
-把 fixture CSV 里的 `忌讳写法` 和 `常见崩盘误区` 改为 `毒点`，`强制禁忌/毒点` 也改为 `毒点`。
+Rename fixture CSV columns `忌讳写法`, `常见崩盘误区`, and `强制禁忌/毒点` to `毒点`.
 
-fixture 第 53 行的 `桥段套路.csv` headers 改为：
+Change `桥段套路.csv` fixture headers at line 53 to:
 ```python
 ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "桥段名称", "毒点"],
 ```
-对应行数据 key `忌讳写法` 改为 `毒点`。
+Rename corresponding row keys from `忌讳写法` to `毒点`.
 
-fixture 第 71 行的 `爽点与节奏.csv` headers 改为：
+Change `爽点与节奏.csv` fixture headers at line 71 to:
 ```python
 ["编号", "适用技能", "分类", "层级", "关键词", "适用题材", "核心摘要", "毒点", "节奏类型"],
 ```
-对应行数据 key `常见崩盘误区` 改为 `毒点`。
+Rename corresponding row keys from `常见崩盘误区` to `毒点`.
 
-fixture 第 26 行的 `题材与调性推理.csv` headers 里 `强制禁忌/毒点` 改为 `毒点`，对应行数据 key 也改为 `毒点`。
+At fixture line 26, rename `强制禁忌/毒点` to `毒点` in both `题材与调性推理.csv` headers and row keys.
 
-- [ ] **Step 7: 运行测试确认全 PASS**
+- [ ] **Step 7: Run Tests and Confirm All Pass**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_story_system_engine.py scripts/data_modules/tests/test_csv_config.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 8: Commit**
 
@@ -505,12 +505,12 @@ git commit -m "refactor: unify poison column name to 毒点 across all CSV table
 
 ---
 
-## Task 3: 新建裁决规则表
+## Task 3: Create the Reasoning Rules Table
 
 **Files:**
 - Create: `webnovel-writer/references/csv/裁决规则.csv`
 
-- [ ] **Step 1: 创建裁决规则 CSV 文件**
+- [ ] **Step 1: Create the Reasoning Rules CSV File**
 
 ```csv
 编号,适用技能,分类,层级,关键词,意图与同义词,适用题材,大模型指令,核心摘要,详细展开,题材,风格优先级,爽点优先级,节奏默认策略,毒点权重,冲突裁决,contract注入层,反模式
@@ -523,11 +523,11 @@ RS-006,write|plan,裁决,推理层,都市高武|高武|都市异能,都市高武
 RS-007,write|plan,裁决,推理层,历史古代|历史|古代,历史古代怎么写,历史古代,按冲突裁决排序命中条目,历史古代裁决规则,,历史古代,沉稳厚重 > 权谋算计 > 家国情怀,权谋碾压 > 历史转折 > 身份反转,慢铺快收 权谋段拉长 战争段紧凑,现代价值观强加古人 > 逻辑断裂 > 历史常识错误,写作技法 > 人设与关系 > 场景写法,CHAPTER_BRIEF.writing_guidance,用现代口语写古代|权谋无逻辑|历史事件随意篡改
 ```
 
-- [ ] **Step 2: 运行 CSV_CONFIG 校验确认新表列头对齐**
+- [ ] **Step 2: Run CSV_CONFIG Validation to Confirm New Headers Align**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py -v`
 
-预期：`裁决规则` 现在有文件了，应该 PASS。
+Expected: `裁决规则` now exists and should PASS.
 
 - [ ] **Step 3: Commit**
 
@@ -538,20 +538,20 @@ git commit -m "feat: add 裁决规则.csv reasoning table for 7 genres"
 
 ---
 
-## Task 4: engine 接入裁决表
+## Task 4: Integrate the Reasoning Table Into the Engine
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/story_system_engine.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_reasoning_engine.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_story_system_engine.py`
 
-- [ ] **Step 1: 写裁决层测试**
+- [ ] **Step 1: Write Reasoning-Layer Tests**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_reasoning_engine.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""裁决层集成测试。"""
+"""Reasoning-layer integration tests."""
 import csv
 
 from data_modules.story_system_engine import StorySystemEngine
@@ -651,24 +651,24 @@ def test_reasoning_not_found_falls_back_gracefully(tmp_path):
     engine = StorySystemEngine(csv_dir=csv_dir)
     contract = engine.build(query="末日生存", genre="末日", chapter=1)
 
-    # 没有裁决规则也不应报错
+    # Missing reasoning rules must not cause an error
     assert "master_setting" in contract
     assert "anti_patterns" in contract
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_reasoning_engine.py -v`
 
-预期：FAIL，因为 `_load_reasoning` 等方法还不存在。
+Expected: FAIL because `_load_reasoning` and related methods do not exist yet.
 
-- [ ] **Step 3: 在 `story_system_engine.py` 新增裁决方法**
+- [ ] **Step 3: Add Reasoning Methods to `story_system_engine.py`**
 
-在 `StorySystemEngine` 类末尾新增：
+Append to `StorySystemEngine`:
 
 ```python
 def _load_reasoning(self, genre: str) -> Dict[str, Any]:
-    """从裁决表按题材查一行，返回裁决规则 dict。"""
+    """Look up a genre row in the reasoning table and return a rule dict."""
     rows = self._load_csv_rows("裁决规则")
     genre_text = self._normalize_text(genre)
     for row in rows:
@@ -686,7 +686,7 @@ def _apply_reasoning(
     base_context: List[Dict[str, Any]],
     dynamic_context: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    """用冲突裁决字段对命中条目做优先级排序。"""
+    """Rank matches using the conflict-adjudication field."""
     if not reasoning:
         return base_context + dynamic_context
 
@@ -709,7 +709,7 @@ def _rank_anti_patterns(
     reasoning: Dict[str, Any],
     anti_patterns: List[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
-    """用毒点权重字段对毒点排序。"""
+    """Rank reader turn-offs using their weight field."""
     if not reasoning:
         return anti_patterns
 
@@ -726,7 +726,7 @@ def _rank_anti_patterns(
 
     anti_patterns.sort(key=sort_key)
 
-    # 追加裁决表自带的反模式
+    # Append anti-patterns supplied by the reasoning table
     for text in self._split_multi_value(reasoning.get("反模式")):
         anti_patterns.append({
             "text": text,
@@ -737,9 +737,9 @@ def _rank_anti_patterns(
     return anti_patterns
 ```
 
-- [ ] **Step 4: 改造 `build()` 方法接入裁决层**
+- [ ] **Step 4: Integrate Reasoning Into `build()`**
 
-把 `build()` 方法（第 29-90 行）改为：
+Replace `build()` at lines 29–90 with:
 
 ```python
 def build(self, query: str, genre: Optional[str], chapter: Optional[int]) -> Dict[str, Any]:
@@ -758,7 +758,7 @@ def build(self, query: str, genre: Optional[str], chapter: Optional[int]) -> Dic
         top_k=2,
     )
 
-    # --- 裁决层 ---
+    # --- Reasoning layer ---
     primary_genre = str(
         route.get("meta", {}).get("primary_genre", "") or genre or ""
     ).strip()
@@ -823,7 +823,7 @@ def build(self, query: str, genre: Optional[str], chapter: Optional[int]) -> Dic
     }
 ```
 
-- [ ] **Step 5: 新增 `_build_source_trace_with_reasoning` 方法**
+- [ ] **Step 5: Add `_build_source_trace_with_reasoning`**
 
 ```python
 def _build_source_trace_with_reasoning(
@@ -843,17 +843,17 @@ def _build_source_trace_with_reasoning(
     return trace
 ```
 
-- [ ] **Step 6: 运行裁决层测试**
+- [ ] **Step 6: Run Reasoning-Layer Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_reasoning_engine.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
-- [ ] **Step 7: 运行现有 engine 测试确认不破坏**
+- [ ] **Step 7: Run Existing Engine Tests to Check for Regressions**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_story_system_engine.py -v`
 
-预期：全部 PASS（无裁决表时 graceful fallback）。
+Expected: All PASS, with graceful fallback when the reasoning table is absent.
 
 - [ ] **Step 8: Commit**
 
@@ -864,26 +864,26 @@ git commit -m "feat: integrate reasoning table into story_system_engine build pi
 
 ---
 
-## Task 5: context_manager 瘦身
+## Task 5: Slim Down context_manager
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/context_manager.py`
 - Delete: `webnovel-writer/scripts/data_modules/snapshot_manager.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_context_manager.py`
 
-- [ ] **Step 1: 从 `context_manager.py` 删除 snapshot 相关代码**
+- [ ] **Step 1: Remove Snapshot Code From `context_manager.py`**
 
-1. 删除 import：`from .snapshot_manager import SnapshotManager, SnapshotVersionMismatch`（第 33 行）
-2. 删除 `__init__` 中 `self.snapshot_manager` 赋值（第 101 行）
-3. 删除 `_is_snapshot_compatible` 方法（第 105-146 行）
-4. 删除 `build_context` 中 snapshot 加载和保存逻辑（第 162-169 行和第 176-181 行）
-5. 删除 `_story_contract_signature` 方法（第 794-817 行）
-6. 删除 `_payload_signature` 方法（第 819-823 行）
-7. 删除 `build_context` 的 `use_snapshot` 和 `save_snapshot` 参数
+1. Delete import: `from .snapshot_manager import SnapshotManager, SnapshotVersionMismatch`(line 33)
+2. Delete the `self.snapshot_manager` assignment in `__init__` (line 101)
+3. Delete `_is_snapshot_compatible` (lines 105–146)
+4. Remove snapshot load/save logic from `build_context` (lines 162–169 and 176–181)
+5. Delete `_story_contract_signature` (lines 794–817)
+6. Delete `_payload_signature` (lines 819–823)
+7. Remove `use_snapshot` and `save_snapshot` from `build_context`
 
-- [ ] **Step 2: 简化 `build_context` 为纯 JSON 返回**
+- [ ] **Step 2: Simplify `build_context` to Return Pure JSON**
 
-改造后的 `build_context`：
+Updated `build_context`:
 
 ```python
 def build_context(
@@ -905,9 +905,9 @@ def build_context(
     return self._assemble_json_payload(pack, template=template, max_chars=max_chars)
 ```
 
-- [ ] **Step 3: 把 `assemble_context` 重写为 `_assemble_json_payload`**
+- [ ] **Step 3: Rewrite `assemble_context` as `_assemble_json_payload`**
 
-直接返回 dict，不做 text 渲染：
+Return a dict directly without text rendering:
 
 ```python
 def _assemble_json_payload(
@@ -939,15 +939,15 @@ def _assemble_json_payload(
     return payload
 ```
 
-- [ ] **Step 4: 删除 `_compact_json_text` 方法**
+- [ ] **Step 4: Delete `_compact_json_text`**
 
-删除第 749-764 行。
+Delete lines 749–764.
 
-- [ ] **Step 5: 删除 `assemble_context` 旧方法**
+- [ ] **Step 5: Delete the Old `assemble_context` Method**
 
-删除第 185-217 行的 `assemble_context`。
+Delete `assemble_context` at lines 185–217.
 
-- [ ] **Step 6: 更新 `__init__` 签名**
+- [ ] **Step 6: Update the `__init__` Signature**
 
 ```python
 def __init__(self, config=None):
@@ -956,15 +956,15 @@ def __init__(self, config=None):
     self.context_ranker = ContextRanker(self.config)
 ```
 
-- [ ] **Step 7: 删除 `snapshot_manager.py`**
+- [ ] **Step 7: Delete `snapshot_manager.py`**
 
 ```bash
 git rm webnovel-writer/scripts/data_modules/snapshot_manager.py
 ```
 
-- [ ] **Step 8: 更新 `extract_chapter_context.py` 的 `_load_contract_context`**
+- [ ] **Step 8: Update `_load_contract_context` in `extract_chapter_context.py`**
 
-`_load_contract_context`（第 294-325 行）改为：
+Replace `_load_contract_context` at lines 294–325 with:
 
 ```python
 def _load_contract_context(project_root: Path, chapter_num: int) -> Dict[str, Any]:
@@ -994,42 +994,42 @@ def _load_contract_context(project_root: Path, chapter_num: int) -> Dict[str, An
     }
 ```
 
-- [ ] **Step 9: 把 `_render_text()` 改为纯 JSON 序列化**
+- [ ] **Step 9: Make `_render_text()` Pure JSON Serialization**
 
-当前 `_render_text()`（第 364-601 行）是一个 240 行的审计式文本渲染函数。按 spec 终局，text 渲染不再由代码层负责——context-agent 拿 JSON payload 按示例写任务书。
+Current `_render_text()` (lines 364–601) is a 240-line audit-style renderer. In the target specification, code no longer renders text; context-agent writes the brief from the JSON payload and examples.
 
-把整个 `_render_text()` 替换为：
+Replace all of `_render_text()` with:
 
 ```python
 def _render_text(payload: Dict[str, Any]) -> str:
-    """JSON 序列化输出，text 渲染由 context-agent 负责。"""
+    """Serialize JSON; context-agent handles text rendering."""
     return json.dumps(payload, ensure_ascii=False, indent=2)
 ```
 
-这意味着 `--format text` 和 `--format json` 现在输出相同内容。如果后续要区分，可以在 context-agent 侧处理，但代码层不再做 markdown 拼接。
+This makes `--format text` and `--format json` identical. Any later distinction can be handled by context-agent; code no longer concatenates Markdown.
 
-- [ ] **Step 10: 修复受影响的测试**
+- [ ] **Step 10: Fix Affected Tests**
 
-在 `test_context_manager.py` 中：
-- 删除所有 `snapshot_manager` 相关的 mock 和 fixture
-- 删除 snapshot 相关的测试用例
-- 更新 `build_context` 调用移除 `use_snapshot` / `save_snapshot` 参数
-- 更新断言适配新的 payload 结构（直接 `payload["story_contract"]` 而不是 `payload["sections"]["story_contract"]["content"]`）
+In `test_context_manager.py`:
+- Remove all `snapshot_manager` mocks and fixtures
+- Remove snapshot tests
+- Remove `use_snapshot` / `save_snapshot` from `build_context` calls
+- Adapt assertions to the new structure: `payload["story_contract"]` instead of `payload["sections"]["story_contract"]["content"]`
 
-在 `test_extract_chapter_context.py` 中：
-- 更新任何依赖旧 markdown 渲染输出的断言（如 `"## 本章大纲"` 等 markdown 标题检查改为 JSON key 检查）
+In `test_extract_chapter_context.py`:
+- Update assertions depending on legacy Markdown rendering, replacing heading checks such as `"## 本章大纲"` with JSON-key checks
 
-- [ ] **Step 11: 运行测试**
+- [ ] **Step 11: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_context_manager.py scripts/data_modules/tests/test_extract_chapter_context.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
-- [ ] **Step 12: 确认行数**
+- [ ] **Step 12: Check Line Count**
 
 Run: `wc -l webnovel-writer/scripts/data_modules/context_manager.py`
 
-预期：400 行以下。
+Expected: Fewer than 400 lines.
 
 - [ ] **Step 13: Commit**
 
@@ -1041,15 +1041,15 @@ git commit -m "refactor: slim context_manager to pure JSON assembler, remove sna
 
 ---
 
-## Task 6: 旧散写路径清理
+## Task 6: Remove Scattered Legacy Write Paths
 
 **Files:**
 - Modify: `webnovel-writer/skills/webnovel-write/SKILL.md:184,254,323`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`
 
-- [ ] **Step 1: 删除 SKILL.md 中 Step 2 的 `set-chapter-status`**
+- [ ] **Step 1: Remove Step 2 `set-chapter-status` From SKILL.md**
 
-删除第 182-184 行：
+Delete lines 182–184:
 
 ```markdown
 状态推进：
@@ -1059,53 +1059,53 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" sta
 ```
 ```
 
-- [ ] **Step 2: 删除 SKILL.md 中 Step 4 的 `set-chapter-status`**
+- [ ] **Step 2: Remove Step 4 `set-chapter-status` From SKILL.md**
 
-删除第 250-254 行的 `状态推进（--minimal 除外）：` 段和对应的 bash 块。
+Delete the state-advancement section at lines 250–254, labeled `状态推进（--minimal 除外）：`, and its Bash block.
 
-- [ ] **Step 3: 删除 SKILL.md 中 Step 5 末尾的 `set-chapter-status`**
+- [ ] **Step 3: Remove `set-chapter-status` at the End of Step 5 in SKILL.md**
 
-删除第 320-323 行的状态推进 bash 块。Step 5 的状态推进现在由 `state_projection_writer.py` 在 commit accepted 时自动完成。
+Delete the state-advancement Bash block at lines 320–323. `state_projection_writer.py` now advances Step 5 state automatically when a commit is accepted.
 
-在 Step 5.3 验证投影状态段落中补充说明：
-
-```markdown
-**chapter_status 推进**：
-- accepted commit → `state_projection_writer` 自动推进到 `chapter_committed`
-- rejected commit → `state_projection_writer` 自动推进到 `chapter_rejected`
-- 不再由 skill 手动调用 `set-chapter-status`
-```
-
-- [ ] **Step 4: 更新充分性闸门**
-
-把第 338-346 行的闸门条件中：
-- 删除 "2. `chapter_status` 已推进到 `chapter_drafted`（Step 2 完成）"
-- 把 "5. ... `chapter_status` 已推进到 `chapter_reviewed`" 中状态检查改为仅由投影确认
-- 把 "6. ... `chapter_status` 已推进到 `chapter_committed`" 改为 "6. ... projection_status 四项全部 done/skipped"
-
-改为：
+Add this explanation to Step 5.3 projection-status validation:
 
 ```markdown
-## 充分性闸门
-
-未满足以下条件前，不得结束流程：
-
-1. 章节正文文件存在且非空。
-2. Step 3 已产出审查结果并落库（`--minimal` 除外）。
-3. 若存在 `blocking=true` 的 issue，流程必须停在 Step 3。
-4. Step 4 的 `anti_ai_force_check=pass`（`--minimal` 除外）。
-5. Step 5 已生成 accepted `CHAPTER_COMMIT`，`projection_status` 四项全部为 `done` 或 `skipped`。
-6. `chapter_status` 为 `chapter_committed`（由 projection writer 自动推进，不手动写入）。
-7. 若启用观测，已读取最新 timing 记录并给出结论。
+**chapter_status advancement:**
+- accepted commit → `state_projection_writer` automatically advances to `chapter_committed`
+- rejected commit → `state_projection_writer` automatically advances to `chapter_rejected`
+- Skills no longer call `set-chapter-status` manually
 ```
 
-- [ ] **Step 5: 新增 prompt integrity 测试断言**
+- [ ] **Step 4: Update Sufficiency Gates**
 
-在 `test_prompt_integrity.py` 末尾新增：
+For gate conditions at lines 338–346:
+- Remove “2. `chapter_status` has advanced to `chapter_drafted` (Step 2 complete)”
+- Replace the state check in “5. ... `chapter_status` has advanced to `chapter_reviewed`” with projection-only confirmation
+- Replace “6. ... `chapter_status` has advanced to `chapter_committed`” with “6. ... all four projection_status entries are done/skipped”
+
+Replace with:
+
+```markdown
+## Sufficiency Gates
+
+Do not finish the workflow until all these conditions hold:
+
+1. The chapter prose file exists and is nonempty.
+2. Step 3 produced and persisted review results, except in `--minimal` mode.
+3. If any issue has `blocking=true`, the workflow must remain at Step 3.
+4. Step 4 has `anti_ai_force_check=pass`, except in `--minimal` mode.
+5. Step 5 generated an accepted `CHAPTER_COMMIT`, with all four `projection_status` entries `done` or `skipped`.
+6. `chapter_status` is `chapter_committed`, advanced automatically by the projection writer, not manually written.
+7. If observability is enabled, the latest timing record has been read and interpreted.
+```
+
+- [ ] **Step 5: Add Prompt-Integrity Assertions**
+
+Append to `test_prompt_integrity.py`:
 
 ```python
 def test_no_direct_state_writes_in_write_skill():
-    """webnovel-write SKILL.md 中不应有 set-chapter-status 调用（由 projection writer 统一推进）。"""
+    """webnovel-write SKILL.md must not call set-chapter-status; projection writers own transitions."""
     text = (SKILLS_DIR / "webnovel-write" / "SKILL.md").read_text(encoding="utf-8")
     assert "state set-chapter-status" not in text, (
         "webnovel-write 中不应直接调用 state set-chapter-status，"
@@ -1114,7 +1114,7 @@ def test_no_direct_state_writes_in_write_skill():
 
 
 def test_no_direct_state_writes_in_agents():
-    """agents 目录中不应有直接写 state/index 的指令。"""
+    """The agents directory must not instruct direct state/index writes."""
     for agent_file in AGENT_FILES:
         text = _read_text(agent_file)
         assert "state set-chapter-status" not in text, (
@@ -1122,11 +1122,11 @@ def test_no_direct_state_writes_in_agents():
         )
 ```
 
-- [ ] **Step 6: 运行测试**
+- [ ] **Step 6: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_prompt_integrity.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 7: Commit**
 
@@ -1137,7 +1137,7 @@ git commit -m "refactor: remove direct set-chapter-status calls from write skill
 
 ---
 
-## Task 7: projection 层收束
+## Task 7: Consolidate the Projection Layer
 
 **Files:**
 - Modify: `webnovel-writer/scripts/data_modules/event_projection_router.py`
@@ -1145,9 +1145,9 @@ git commit -m "refactor: remove direct set-chapter-status calls from write skill
 - Modify: `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py`
 
-- [ ] **Step 1: 写 router vector 路由测试**
+- [ ] **Step 1: Write Vector-Routing Tests**
 
-在 `test_event_projection_router.py` 末尾新增：
+Append to `test_event_projection_router.py`:
 
 ```python
 def test_router_maps_power_breakthrough_to_state_memory_vector():
@@ -1183,13 +1183,13 @@ def test_required_writers_includes_vector_for_key_events():
     assert "vector" in writers
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_event_projection_router.py -v`
 
-预期：新增的 3 个测试 FAIL。
+Expected: The three new tests FAIL.
 
-- [ ] **Step 3: 更新 `EventProjectionRouter.TABLE`**
+- [ ] **Step 3: Update `EventProjectionRouter.TABLE`**
 
 ```python
 class EventProjectionRouter:
@@ -1207,20 +1207,20 @@ class EventProjectionRouter:
     }
 ```
 
-- [ ] **Step 4: 确认 `state_projection_writer` 已处理 `chapter_status`**
+- [ ] **Step 4: Verify `state_projection_writer` Handles `chapter_status`**
 
-当前 `state_projection_writer.py:34-35` 已有：
+`state_projection_writer.py:34-35` already contains:
 
 ```python
 if chapter > 0:
     chapter_status[str(chapter)] = "chapter_committed"
 ```
 
-这已经满足 Section 6/7 的要求（accepted commit 时自动推进到 `chapter_committed`）。
+This satisfies Sections 6/7: accepted commits automatically advance to `chapter_committed`.
 
-确认 rejected commit 时不推进——当前第 15 行检查了 `status != "accepted"` 直接返回，不写状态。这是正确的。
+Confirm rejected commits do not advance: line 15 returns immediately when `status != "accepted"`, without writing state. This is correct.
 
-但 spec 要求 rejected 推进到 `chapter_rejected`。在 `apply` 方法开头加 rejected 处理：
+However, the specification requires rejected commits to advance to `chapter_rejected`. Add rejected handling at the start of `apply`:
 
 ```python
 def apply(self, commit_payload: dict) -> dict:
@@ -1240,9 +1240,9 @@ def apply(self, commit_payload: dict) -> dict:
     # ... rest of accepted logic
 ```
 
-- [ ] **Step 5: 确认 `chapter_commit_service.apply_projections` 的失败隔离**
+- [ ] **Step 5: Verify Failure Isolation in `chapter_commit_service.apply_projections`**
 
-当前第 115-119 行已有 try/except 隔离：
+Lines 115–119 already provide try/except isolation:
 
 ```python
 try:
@@ -1252,15 +1252,15 @@ except Exception as exc:
     payload["projection_status"][name] = f"failed:{exc}"
 ```
 
-并且第 120 行 `self.persist_commit(payload)` 在所有 writer 执行完后才写入——确保 `projection_status` 已更新。
+At line 120, `self.persist_commit(payload)` runs only after every writer, ensuring updated `projection_status`.
 
-这已满足 spec 要求。不需要额外改动。
+This satisfies the specification; no further change is needed.
 
-- [ ] **Step 6: 运行测试**
+- [ ] **Step 6: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_event_projection_router.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 7: Commit**
 
@@ -1271,7 +1271,7 @@ git commit -m "feat: add vector route to projection router, handle rejected stat
 
 ---
 
-## Task 8: 消费端同步
+## Task 8: Synchronize Consumers
 
 **Files:**
 - Modify: `webnovel-writer/agents/context-agent.md`
@@ -1279,29 +1279,29 @@ git commit -m "feat: add vector route to projection router, handle rejected stat
 - Modify: `webnovel-writer/skills/webnovel-write/SKILL.md`
 - Modify: `webnovel-writer/scripts/data_modules/tests/test_prompt_integrity.py`
 
-- [ ] **Step 1: 更新 `context-agent.md` 删除旧引用**
+- [ ] **Step 1: Update `context-agent.md` and Remove Legacy References**
 
-1. Section 2 工具段落中，确认 `extract-context` 命令标注为"备选"（已是，不动）
-2. 删除对 snapshot 的引用（grep 确认是否有）
-3. 确认 Section 8 的输出格式中有写作任务书示例（已在上一次改造中完成）
+1. In Section 2 tools, confirm `extract-context` is marked optional; it already is, so leave it
+2. Remove snapshot references, checking with grep whether any exist
+3. Confirm Section 8 output format includes a writing-brief example, completed in the previous refactor
 
-- [ ] **Step 2: 确认 `data-agent.md` 不直写**
+- [ ] **Step 2: Confirm `data-agent.md` Does Not Write Directly**
 
-当前 `data-agent.md` 已明确标注：
-- "你不直接写入这些文件" （第 111 行）
-- "不直接写入 `index.db` 和 `state.json`" （第 146 行）
+`data-agent.md` already explicitly states:
+- “You do not write these files directly” (line 111)
+- “Do not write directly to `index.db` and `state.json`” (line 146)
 
-确认不需要改动。
+Confirm no change is needed.
 
-- [ ] **Step 3: 更新 `SKILL.md` 中 Step 5 简化描述**
+- [ ] **Step 3: Simplify the Step 5 Description in `SKILL.md`**
 
-把 Step 5.4 的失败隔离表格中增加 vector 相关条目（如果还没有的话）。
+Add vector-related entries to the Step 5.4 failure-isolation table if absent.
 
-确认 Step 1 的写作任务书流程描述和当前代码对齐（已在上一次改造中完成）。
+Confirm the Step 1 writing-brief workflow matches current code, as completed in the previous refactor.
 
-- [ ] **Step 4: 在 `test_prompt_integrity.py` 中更新 `KNOWN_DELETED_FILES`**
+- [ ] **Step 4: Update `KNOWN_DELETED_FILES` in `test_prompt_integrity.py`**
 
-新增 `snapshot_manager.py` 到已删文件列表：
+Add `snapshot_manager.py` to the deleted-files list:
 
 ```python
 KNOWN_DELETED_FILES = [
@@ -1317,11 +1317,11 @@ KNOWN_DELETED_FILES = [
 ]
 ```
 
-- [ ] **Step 5: 运行全量 prompt integrity 测试**
+- [ ] **Step 5: Run All Prompt-Integrity Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_prompt_integrity.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 6: Commit**
 
@@ -1332,20 +1332,20 @@ git commit -m "refactor: sync consumer prompts with new mainline"
 
 ---
 
-## Task 9: 向量投影 Writer
+## Task 9: Vector Projection Writer
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/vector_projection_writer.py`
 - Modify: `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_vector_projection_writer.py`
 
-- [ ] **Step 1: 写测试**
+- [ ] **Step 1: Write Tests**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_vector_projection_writer.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""VectorProjectionWriter 单元测试。"""
+"""VectorProjectionWriter unit tests."""
 from data_modules.vector_projection_writer import VectorProjectionWriter
 
 
@@ -1412,13 +1412,13 @@ def test_rejected_commit_returns_not_applied():
     assert result["applied"] is False
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_vector_projection_writer.py -v`
 
-预期：FAIL（模块不存在）。
+Expected: FAIL because the module does not exist.
 
-- [ ] **Step 3: 实现 `vector_projection_writer.py`**
+- [ ] **Step 3: Implement `vector_projection_writer.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -1546,9 +1546,9 @@ class VectorProjectionWriter:
             return 0
 ```
 
-- [ ] **Step 4: 在 `chapter_commit_service.py` 注册 vector writer**
+- [ ] **Step 4: Register the Vector Writer in `chapter_commit_service.py`**
 
-在 `apply_projections` 方法中（第 104-109 行），加入 vector writer：
+Add the vector writer to `apply_projections` at lines 104–109:
 
 ```python
 from .vector_projection_writer import VectorProjectionWriter
@@ -1562,7 +1562,7 @@ writers = {
 }
 ```
 
-同时在 `build_commit` 的 `projection_status` 中加 `"vector": "pending"`：
+Also add `"vector": "pending"` to `projection_status` in `build_commit`:
 
 ```python
 "projection_status": {
@@ -1574,11 +1574,11 @@ writers = {
 },
 ```
 
-- [ ] **Step 5: 运行测试**
+- [ ] **Step 5: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_vector_projection_writer.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 6: Commit**
 
@@ -1589,20 +1589,20 @@ git commit -m "feat: add vector_projection_writer for event/entity embedding"
 
 ---
 
-## Task 10: 时序查询接口
+## Task 10: Temporal Query Interfaces
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/knowledge_query.py`
 - Create: `webnovel-writer/scripts/data_modules/tests/test_knowledge_query.py`
 - Modify: `webnovel-writer/scripts/data_modules/webnovel.py` (register CLI subcommand)
 
-- [ ] **Step 1: 写测试**
+- [ ] **Step 1: Write Tests**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_knowledge_query.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""KnowledgeQuery 时序查询测试。"""
+"""KnowledgeQuery temporal-query tests."""
 import json
 import sqlite3
 from pathlib import Path
@@ -1614,7 +1614,7 @@ from data_modules.knowledge_query import KnowledgeQuery
 
 @pytest.fixture
 def setup_db(tmp_path):
-    """创建带 state_changes 和 relationship_events 表的测试 DB。"""
+    """Create a test DB with state_changes and relationship_events tables."""
     db_path = tmp_path / ".webnovel" / "index.db"
     db_path.parent.mkdir(parents=True)
 
@@ -1652,7 +1652,7 @@ def setup_db(tmp_path):
         )
     """)
 
-    # 插入测试数据
+    # Insert test data
     conn.execute(
         "INSERT INTO entities (id, canonical_name, current_json) VALUES (?, ?, ?)",
         ("hanli", "韩立", json.dumps({"realm": "筑基中期", "location": "乱星海"})),
@@ -1682,7 +1682,7 @@ def setup_db(tmp_path):
 def test_entity_state_at_chapter_before_first_change(setup_db):
     kq = KnowledgeQuery(setup_db)
     result = kq.entity_state_at_chapter("hanli", 10)
-    # 第10章在第一次 state_change 之前，应返回空变更
+    # Chapter 10 precedes the first state_change, so return no changes
     assert result["entity_id"] == "hanli"
     assert result["state_at_chapter"] == {}
 
@@ -1721,13 +1721,13 @@ def test_relationships_at_chapter_after_update(setup_db):
     assert rels[0]["relationship_type"] == "合作"
 ```
 
-- [ ] **Step 2: 运行测试确认失败**
+- [ ] **Step 2: Run Tests and Confirm Failure**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_knowledge_query.py -v`
 
-预期：FAIL。
+Expected: FAIL.
 
-- [ ] **Step 3: 实现 `knowledge_query.py`**
+- [ ] **Step 3: Implement `knowledge_query.py`**
 
 ```python
 #!/usr/bin/env python3
@@ -1745,7 +1745,7 @@ class KnowledgeQuery:
         self._db_path = self.project_root / ".webnovel" / "index.db"
 
     def entity_state_at_chapter(self, entity_id: str, chapter: int) -> Dict[str, Any]:
-        """查询实体在指定章节时的状态（从 state_changes 反推）。"""
+        """Query entity state at a specified chapter, reconstructed from state_changes."""
         conn = sqlite3.connect(str(self._db_path))
         conn.row_factory = sqlite3.Row
         try:
@@ -1774,7 +1774,7 @@ class KnowledgeQuery:
             conn.close()
 
     def entity_relationships_at_chapter(self, entity_id: str, chapter: int) -> Dict[str, Any]:
-        """查询实体在指定章节时的所有关系（从 relationship_events 计算快照）。"""
+        """Query all entity relationships at a specified chapter using a relationship_events snapshot."""
         conn = sqlite3.connect(str(self._db_path))
         conn.row_factory = sqlite3.Row
         try:
@@ -1788,7 +1788,7 @@ class KnowledgeQuery:
                 (entity_id, entity_id, chapter),
             ).fetchall()
 
-            # 用最新的关系覆盖旧关系（按 pair 去重，保留最新）
+            # Replace old relationships with the latest ones; deduplicate by pair
             latest: Dict[str, Dict[str, Any]] = {}
             for row in rows:
                 from_e = str(row["from_entity"] or "").strip()
@@ -1811,18 +1811,18 @@ class KnowledgeQuery:
             conn.close()
 ```
 
-- [ ] **Step 4: 运行测试**
+- [ ] **Step 4: Run Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_knowledge_query.py -v`
 
-预期：全部 PASS。
+Expected: All PASS.
 
-- [ ] **Step 5: 注册 `knowledge` CLI 子命令**
+- [ ] **Step 5: Register the `knowledge` CLI Subcommand**
 
-在 `webnovel-writer/scripts/data_modules/webnovel.py` 中注册 `knowledge` 子命令。找到 subparser 注册区域（grep `add_parser`），新增：
+Register `knowledge` in `webnovel-writer/scripts/data_modules/webnovel.py`. Find subparser registration with grep `add_parser`, then add:
 
 ```python
-# knowledge 子命令
+# knowledge subcommand
 knowledge_parser = subparsers.add_parser("knowledge", help="时序知识查询")
 knowledge_sub = knowledge_parser.add_subparsers(dest="knowledge_action")
 
@@ -1835,7 +1835,7 @@ qr_parser.add_argument("--entity", required=True, help="实体 ID")
 qr_parser.add_argument("--at-chapter", type=int, required=True, help="目标章节号")
 ```
 
-在命令分发区域新增 handler：
+Add a handler in command dispatch:
 
 ```python
 if args.command == "knowledge":
@@ -1849,9 +1849,9 @@ if args.command == "knowledge":
         print_success(result, message="entity_relationships_at_chapter")
 ```
 
-- [ ] **Step 6: 同步 `REGISTERED_CLI_SUBCOMMANDS` 和 `context-agent.md`**
+- [ ] **Step 6: Synchronize `REGISTERED_CLI_SUBCOMMANDS` and `context-agent.md`**
 
-在 `test_prompt_integrity.py` 的 `REGISTERED_CLI_SUBCOMMANDS`（第 32-38 行）中新增 `"knowledge"`：
+Add `"knowledge"` to `REGISTERED_CLI_SUBCOMMANDS` in `test_prompt_integrity.py` at lines 32–38:
 
 ```python
 REGISTERED_CLI_SUBCOMMANDS = {
@@ -1864,19 +1864,19 @@ REGISTERED_CLI_SUBCOMMANDS = {
 }
 ```
 
-在 `context-agent.md` Section 2 的"补充命令"段落中新增：
+Add to the supplementary-commands section in `context-agent.md` Section 2:
 
 ```bash
-# 时序知识查询（查询某实体在指定章节时的状态和关系）
+# Temporal knowledge queries: entity state and relationships at a specified chapter
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" knowledge query-entity-state --entity "{entity_id}" --at-chapter {N}
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "{project_root}" knowledge query-relationships --entity "{entity_id}" --at-chapter {N}
 ```
 
-- [ ] **Step 7: 运行全量测试**
+- [ ] **Step 7: Run All Tests**
 
 Run: `cd webnovel-writer && python -m pytest scripts/data_modules/tests/ scripts/tests/ -v --timeout=60`
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 8: Commit**
 
@@ -1887,44 +1887,44 @@ git commit -m "feat: add knowledge_query temporal API with CLI and prompt sync"
 
 ---
 
-## Task 11: 最终集成验证
+## Task 11: Final Integration Validation
 
 **Files:** (read-only verification)
 
-- [ ] **Step 1: 运行全量测试套件**
+- [ ] **Step 1: Run the Full Test Suite**
 
 ```bash
 cd webnovel-writer && python -m pytest scripts/data_modules/tests/ scripts/tests/ -v --timeout=120
 ```
 
-预期：全部 PASS，0 FAIL。
+Expected: All PASS, 0 FAIL.
 
-- [ ] **Step 2: grep 确认无残留散写**
+- [ ] **Step 2: Use grep to Verify No Scattered Writes Remain**
 
 ```bash
 grep -rn "state set-chapter-status" webnovel-writer/skills/ webnovel-writer/agents/ || echo "CLEAN"
 grep -rn "index process-chapter" webnovel-writer/skills/ webnovel-writer/agents/ || echo "CLEAN"
 ```
 
-预期：两条都输出 `CLEAN`。
+Expected: Both output `CLEAN`.
 
-- [ ] **Step 3: 确认 context_manager.py 行数**
+- [ ] **Step 3: Check context_manager.py Line Count**
 
 ```bash
 wc -l webnovel-writer/scripts/data_modules/context_manager.py
 ```
 
-预期：< 400 行。
+Expected: < 400 lines.
 
-- [ ] **Step 4: 确认 snapshot_manager.py 已删除**
+- [ ] **Step 4: Confirm snapshot_manager.py Is Deleted**
 
 ```bash
 test -f webnovel-writer/scripts/data_modules/snapshot_manager.py && echo "STILL EXISTS" || echo "DELETED"
 ```
 
-预期：`DELETED`。
+Expected: `DELETED`.
 
-- [ ] **Step 5: 确认裁决表覆盖 7 个题材**
+- [ ] **Step 5: Confirm the Reasoning Table Covers Seven Genres**
 
 ```bash
 python3 -c "
@@ -1940,19 +1940,19 @@ assert len(genres) == 7
 "
 ```
 
-预期：输出 7 个题材。
+Expected: Seven genres.
 
-- [ ] **Step 6: 确认 CSV_CONFIG 对齐**
+- [ ] **Step 6: Confirm CSV_CONFIG Alignment**
 
 ```bash
 cd webnovel-writer && python -m pytest scripts/data_modules/tests/test_csv_config.py -v
 ```
 
-预期：全部 PASS。
+Expected: All PASS.
 
 - [ ] **Step 7: Commit final**
 
-如果有任何 fix，commit：
+If any fixes are needed, commit them:
 
 ```bash
 git add -A

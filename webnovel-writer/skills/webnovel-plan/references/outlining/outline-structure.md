@@ -1,133 +1,133 @@
-# 大纲结构设计指南 (Outline Structure)
+# Outline Structure Guide
 
-> 归档说明：本文件为历史方法论参考，不在 `/webnovel-plan` 主流程自动加载。
-> 如需接入，必须先在 `SKILL.md` 中补充明确的步骤触发条件与读取指令。
+> Archive note: this is a historical methodology reference, not automatically loaded by the `/webnovel-plan` main workflow.
+> To integrate it, first add explicit step triggers and reading instructions to `SKILL.md`.
 
-> **核心原则**: 大纲是地图，不是枷锁。好的大纲能指引方向，但也要留白，给灵感留空间。
+> **Core principle**: an outline is a map, not a shackle. A good outline guides direction while leaving room for inspiration.
 
 ---
 
-## 1. 大纲的三层架构
+## 1. Three-layer outline architecture
 
-### 第一层：骨架大纲（必需，30%）
-**目的**: 确保故事有清晰的起承转合。
+### Layer 1: Skeleton outline (required, 30%)
+**Purpose**: give the story a clear beginning, development, turn, and conclusion.
 
 ```markdown
-## 骨架大纲示例
-**开篇（1-50章）**: 废材少年林天被退婚，机缘下获得吞噬系统
-**前期（51-200章）**: 在宗门崛起，打脸曾经嘲笑他的人，发现妹妹被人掳走
-**中期（201-500章）**: 为救妹妹闯荡修仙界，与各大势力周旋，实力飞速提升
-**后期（501-800章）**: 揭开身世之谜，原来是上古大能转世，最终对决血神教主
-**结局（801-850章）**: 击败血神，救回妹妹，飞升仙界（留续集接口）
+## Skeleton example
+**Opening (Chapters 1–50)**: failed youth Lin Tian suffers a broken engagement and gains a devouring system by chance
+**Early (51–200)**: rises in his sect, humiliates former mockers, discovers his sister was abducted
+**Middle (201–500)**: travels the cultivation world to rescue her, navigates major factions, rapidly gains strength
+**Late (501–800)**: uncovers his origins as an ancient powerhouse's reincarnation; final confrontation with Blood God Cult leader
+**Ending (801–850)**: defeats Blood God, rescues sister, ascends to the immortal realm (sequel opening)
 ```
 
-**骨架大纲检查清单**：
-- [ ] **起点明确**: 主角的初始状态和核心矛盾是什么？
-- [ ] **转折点**: 至少3个重大剧情转折（如：获得金手指、加入宗门、师尊被杀）
-- [ ] **终点明确**: 故事的最终目标（打败魔王/飞升/称霸）
+**Skeleton checklist**:
+- [ ] **Clear starting point**: protagonist's initial state and core contradiction?
+- [ ] **Turning points**: at least three major turns (e.g. special ability gained, joins sect, master killed).
+- [ ] **Clear destination**: ultimate goal (defeat demon king/ascend/dominate).
 
 ---
 
-### 第二层：分卷大纲（建议，50%）
-**目的**: 将长篇切分为多个小高潮，避免读者疲劳。
+### Layer 2: Volume outlines (recommended, 50%)
+**Purpose**: divide a long novel into smaller climaxes to prevent reader fatigue.
 
-#### 分卷原则
-- **每卷一个小目标**: 如第一卷"新手村成长"，第二卷"宗门试炼"
-- **卷末必有高潮**: 打败小BOSS、获得神器、突破境界
-- **卷与卷之间有过渡**: 不要突然换地图，要有铺垫
+#### Principles
+- **One smaller goal per volume**: e.g. “growth in the starter village”, then “sect trials”.
+- **Every volume ends in a climax**: defeat minor boss, obtain divine artifact, break through a realm.
+- **Transition between volumes**: prepare map changes rather than switching abruptly.
 
-#### 分卷大纲模板
+#### Template
 ```markdown
-## 第一卷：崛起之路（1-150章）
-**核心目标**: 从废材到天才的逆袭
-**主要冲突**: 家族内斗、退婚风波、宗门选拔
-**高潮**: 宗门大比夺得第一，打脸叶良辰
-**伏笔**: 暗示主角身世不凡，埋下后续"上古血脉"线索
+## Volume 1: Road to Ascendance (Chapters 1–150)
+**Core goal**: rise from failure to genius
+**Main conflicts**: family infighting, broken engagement, sect selection
+**Climax**: win sect tournament, humiliate Ye Liangchen
+**Foreshadowing**: hint at unusual origins; plant ancient-bloodline clues
 
-## 第二卷：宗门风云（151-300章）
-**核心目标**: 在天剑宗站稳脚跟
-**主要冲突**: 内门弟子排挤、长老派系斗争、秘境夺宝
-**高潮**: 秘境中获得剑冢传承，实力暴涨
-**伏笔**: 发现妹妹被血神教掳走的线索
+## Volume 2: Sect Turmoil (151–300)
+**Core goal**: establish a foothold in Heavenly Sword Sect
+**Main conflicts**: exclusion by inner disciples, elder faction struggles, secret-realm treasure contest
+**Climax**: obtain Sword Tomb inheritance in secret realm; power surges
+**Foreshadowing**: discover clues that Blood God Cult abducted sister
 
-## 第三卷：救妹之旅（301-500章）
-**核心目标**: 追踪血神教，救回妹妹
-**主要冲突**: 与血神教的多次交锋、正邪两道的误会、力量不足的焦虑
-**高潮**: 孤身闯血神教总坛，与教主初次交手（战败但存活）
-**伏笔**: 得知妹妹身怀特殊体质，是血神复活的关键
+## Volume 3: Rescue Journey (301–500)
+**Core goal**: track Blood God Cult and rescue sister
+**Main conflicts**: repeated clashes with cult, misunderstandings between righteous and evil sides, anxiety about insufficient power
+**Climax**: enter cult headquarters alone; first clash with leader (defeated but survives)
+**Foreshadowing**: learn sister's special constitution is key to Blood God's resurrection
 ```
 
 ---
 
-### 第三层：章节大纲（可选，20%）
-**目的**: 细化到每一章的具体内容，适合新手或卡文时使用。
+### Layer 3: Chapter outlines (optional, 20%)
+**Purpose**: specify each chapter's content, useful for beginners or writer's block.
 
-#### 章节大纲模板
+#### Template
 ```markdown
-## 第1章：退婚之辱
-**字数**: 3000字
-**主线剧情**:
-  - 叶家少主叶良辰上门退婚
-  - 林天被羞辱，全家蒙羞
-  - 林天愤怒但无力反抗（展示废材状态）
-**副线剧情**:
-  - 父亲叹气，妹妹安慰
-  - 埋下伏笔：林天手中的玉佩微微发光
-**爽点**: 无（压抑章节，为后续打脸蓄力）
-**结尾钩子**: "就在这时，林天脑海中突然响起一个机械声音：'吞噬系统激活……'"
+## Chapter 1: The Humiliation of a Broken Engagement
+**Length**: 3,000 Chinese characters
+**Main plot**:
+  - Ye clan heir Ye Liangchen arrives to break the engagement
+  - Lin Tian is humiliated; the whole family loses face
+  - Lin Tian is angry but powerless to resist (establish failed status)
+**Subplot**:
+  - Father sighs; sister comforts him
+  - Foreshadowing: the jade pendant in Lin Tian's hand glows faintly
+**Gratification**: none (pressure-building chapter preparing later comeuppance)
+**Ending hook**: “At that moment, a mechanical voice sounded in Lin Tian's mind: ‘Devouring system activating...’”
 ```
 
-**章节大纲的灵活性**：
-- 只需写核心内容，具体对话和细节在写作时发挥
-- 如果灵感爆发，可以偏离大纲（但要记得回来修正大纲）
+**Flexibility**:
+- Outline only the core content; develop dialogue and details during writing.
+- Inspiration may justify departing from the outline, but remember to revise the outline afterward.
 
 ---
 
-## 2. 大纲的详细程度选择
+## 2. Choosing detail level
 
-### 粗纲流（适合老手）
-- **内容**: 只写骨架大纲 + 分卷大纲
-- **优点**: 写作自由度高，可以随时调整
-- **缺点**: 容易跑偏或卡文
+### Broad-outline approach (experienced writers)
+- **Content**: skeleton + volume outlines only.
+- **Strength**: freedom and easy adjustment.
+- **Weakness**: easier to drift or get stuck.
 
-### 细纲流（适合新手）
-- **内容**: 骨架 + 分卷 + 章节大纲（至少前50章）
-- **优点**: 写作时不迷茫，每天知道写什么
-- **缺点**: 前期准备时间长
+### Detailed-outline approach (beginners)
+- **Content**: skeleton + volumes + chapters (at least the first fifty).
+- **Strength**: no uncertainty about what to write each day.
+- **Weakness**: lengthy preparation.
 
-### 混合流（推荐）
-- **内容**: 骨架大纲（全书）+ 分卷大纲（全书）+ 章节大纲（未来10-20章）
-- **优点**: 既有方向感，又保留灵活性
-- **做法**: 每写完一卷，就补充下一卷的章节大纲
+### Hybrid approach (recommended)
+- **Content**: skeleton (whole book) + volumes (whole book) + chapters (next 10–20).
+- **Strength**: direction with flexibility.
+- **Method**: after each completed volume, add the next volume's chapter outlines.
 
 ---
 
-## 3. 大纲的动态调整
+## 3. Dynamic outline adjustment
 
-### 何时需要调整大纲？
-1. **读者反馈**: 如果某个角色/剧情特别受欢迎，可以增加戏份
-2. **灵感爆发**: 突然想到更好的剧情走向
-3. **数据异常**: 某章订阅/收藏暴跌，说明剧情有问题
+### When to adjust
+1. **Reader feedback**: increase attention to particularly popular characters/plots.
+2. **Inspiration**: a better plot direction occurs to you.
+3. **Abnormal metrics**: a sharp subscription/bookmark decline may indicate a plot problem.
 
-### 如何调整大纲？
+### How to adjust
 ```markdown
-## 大纲变更日志
-**日期**: 2025-01-03
-**变更内容**: 原计划第二卷就让妹妹死亡（刀子），但读者反馈妹妹人气太高
-**新方案**: 改为"妹妹被掳走"，延后到第三卷再揭晓生死（拉长悬念）
-**影响范围**: 第二卷高潮需重新设计，改为"获得剑冢传承"
+## Outline change log
+**Date**: 2025-01-03
+**Change**: sister was scheduled to die in Volume 2 (heartbreak), but readers find her very popular
+**New plan**: abduct her instead; delay revealing whether she survives until Volume 3 (extend suspense)
+**Impact**: redesign Volume 2 climax as obtaining Sword Tomb inheritance
 ```
 
-### 大纲调整的红线（不可触碰）
-- **主角人设**: 不能突然从好人变坏人（或反之），除非有充分铺垫
-- **力量体系**: 不能随意修改境界设定，否则前文战力对比全崩
-- **核心主线**: 可以调整支线，但"救妹妹"这种核心目标不能轻易放弃
+### Red lines
+- **Protagonist characterization**: no abrupt good-to-evil change (or reverse) without sufficient setup.
+- **Power system**: no arbitrary realm changes that invalidate earlier comparisons.
+- **Core plot**: subplots can change; core goals such as rescuing the sister should not be casually abandoned.
 
 ---
 
-## 4. 大纲工具推荐
+## 4. Outline tools
 
-### 工具 A: Markdown + Git
+### Tool A: Markdown + Git
 ```
 大纲/
 ├── 骨架大纲.md
@@ -140,74 +140,74 @@
 │   └── 051-100章.md
 └── 大纲变更日志.md
 ```
-**优点**: 纯文本，易于版本控制和搜索
+**Strength**: plain text, easy version control and search. The example retains established Chinese directory and filename conventions.
 
-### 工具 B: 思维导图（XMind/MindNode）
+### Tool B: Mind map (XMind/MindNode)
 ```
-主线：救妹妹
-├── 第一卷：新手村崛起
-│   ├── 1-10章：退婚事件
-│   ├── 11-30章：获得系统
-│   └── 31-50章：宗门选拔
-├── 第二卷：宗门风云
+Main plot: rescue sister
+├── Volume 1: rise in starter village
+│   ├── Chapters 1–10: broken engagement
+│   ├── 11–30: obtain system
+│   └── 31–50: sect selection
+├── Volume 2: sect turmoil
 │   └── ...
 ```
-**优点**: 可视化强，层级关系清晰
+**Strength**: strong visualization and clear hierarchy.
 
-### 工具 C: 表格（Excel/Notion）
-| 章节 | 主线剧情 | 副线剧情 | 爽点 | 伏笔 | 字数 |
+### Tool C: Spreadsheet (Excel/Notion)
+| Chapter | Main plot | Subplot | Gratification | Foreshadowing | Length |
 |------|---------|---------|------|------|------|
-| 1 | 退婚 | 妹妹安慰 | 无 | 玉佩发光 | 3000 |
-| 2 | 激活系统 | 测试能力 | 吞噬野兽 | 系统有隐藏功能 | 3000 |
-**优点**: 适合数据化管理，方便统计爽点密度
+| 1 | Broken engagement | Sister comforts him | None | Glowing pendant | 3,000 |
+| 2 | Activate system | Test abilities | Devour beast | System has hidden features | 3,000 |
+**Strength**: data-driven management and easy gratification-density tracking.
 
 ---
 
-## 5. 大纲与设定集的联动
+## 5. Linking outline and setting collection
 
-大纲不是孤立的，必须与设定集配合：
+An outline cannot stand alone; coordinate it with settings.
 
-### 检查清单
-- [ ] **人物卡**: 每个重要角色出场前，是否已在设定集中建立人物卡？
-- [ ] **势力关系**: 涉及势力冲突时，是否符合设定集中的势力关系网？
-- [ ] **力量体系**: 主角的境界提升是否按照力量体系设定的节奏？
-- [ ] **时间轴**: 每卷的时间跨度是否合理？（不要突然跳跃十年）
+### Checklist
+- [ ] **Character sheets**: is each important character's sheet established before introduction?
+- [ ] **Faction relationships**: do faction conflicts match the setting collection's relationship network?
+- [ ] **Power system**: does protagonist progression follow the specified pacing?
+- [ ] **Timeline**: is each volume's duration reasonable? (No sudden ten-year jump.)
 
-### 示例：大纲与设定集的冲突
+### Example conflict
 ```markdown
-## 问题
-大纲: 第50章主角突破到金丹期
-设定集: 主角16岁，正常修炼速度20年才能金丹
-冲突: 时间线不合理
+## Problem
+Outline: protagonist reaches Golden Core in Chapter 50
+Settings: protagonist is sixteen; normal cultivation takes twenty years to reach Golden Core
+Conflict: implausible timeline
 
-## 解决方案
-方案A: 调整大纲，改为筑基期
-方案B: 在设定集补充"吞噬系统可加速修炼100倍"
-方案C: 增加奇遇剧情（吃了万年灵果）
+## Solutions
+A: change the outline to Foundation Establishment
+B: add “devouring system accelerates cultivation 100-fold” to settings
+C: add a fortuitous encounter (eating a ten-thousand-year spirit fruit)
 ```
 
 ---
 
-## 🛠️ 大纲自检清单
+## 🛠️ Outline self-check
 
-在开始写作前，用此清单检查大纲是否合格：
-- [ ] **完整性**: 开头、中间、结尾是否都有？
-- [ ] **节奏**: 是否有明确的高潮和低谷交替？（不能一直高潮或一直平淡）
-- [ ] **逻辑**: 剧情推进是否合理？（不能靠角色突然变蠢）
-- [ ] **爽点**: 每10-20章是否至少有1个爽点？
-- [ ] **伏笔**: 挖的坑是否有填坑计划？（标注在哪一章填）
-- [ ] **字数**: 预估总字数是否符合平台要求？（起点至少100万字）
+Before writing, check:
+- [ ] **Completeness**: beginning, middle, and ending all present?
+- [ ] **Pacing**: clear alternation of highs and lows? (Not endless climaxes or flatness.)
+- [ ] **Logic**: reasonable progression, not characters suddenly becoming stupid?
+- [ ] **Gratification**: at least one payoff every 10–20 chapters?
+- [ ] **Foreshadowing**: planned resolution for every planted thread, with chapter marked?
+- [ ] **Length**: estimated total fits platform requirements? (Qidian: at least one million Chinese characters.)
 
 ---
 
-## 附录：经典大纲案例分析
+## Appendix: Classic outline case studies
 
-### 案例 1: 《凡人修仙传》大纲特点
-- **骨架**: 平凡少年修仙 → 成为仙界大能（超长线，800万字）
-- **分卷**: 以"地图"划分（人界→灵界→仙界），每换地图实力清零重来
-- **节奏**: 每个小境界都有独立的小高潮（获得法宝/打败敌人）
+### Case 1: A Record of a Mortal's Journey to Immortality
+- **Skeleton**: ordinary youth cultivates → becomes an immortal-realm powerhouse (very long arc, eight million Chinese characters).
+- **Volumes**: divided by map (mortal realm → spirit realm → immortal realm); strength positioning resets with each move.
+- **Pacing**: each sub-realm has its own smaller climax (treasure gained/enemy defeated).
 
-### 案例 2: 《斗破苍穹》大纲特点
-- **骨架**: 天才少年陨落 → 崛起复仇 → 成为斗帝
-- **分卷**: 以"实力等级"划分（斗者→斗王→斗圣），每个大境界一卷
-- **节奏**: "三年之约"这种明确的时间节点，制造紧迫感
+### Case 2: Battle Through the Heavens
+- **Skeleton**: genius youth falls → rises and takes revenge → becomes Dou Emperor.
+- **Volumes**: divided by power rank (Dou Practitioner → Dou King → Dou Saint), one volume per major realm.
+- **Pacing**: explicit deadlines such as the three-year agreement create urgency.

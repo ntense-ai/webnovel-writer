@@ -1,6 +1,6 @@
-# 初始化收集对象（内部数据模型）
+# Initialization collection object (internal data model)
 
-> `/webnovel-init` 在 Deep 采集阶段按本结构逐项收集信息；字段齐全并过「充分性闸门」后再执行 `webnovel.py init`。本文件是字段参考，不是执行脚本。
+> During Deep collection, `/webnovel-init` collects information field by field using this structure. Run `webnovel.py init` only after fields are complete and the sufficiency gate passes. This file is a field reference, not an executable script.
 
 ```json
 {
@@ -60,15 +60,15 @@
 }
 ```
 
-## 字段与采集步骤对应
+## Field-to-collection-step mapping
 
-| 字段组 | 对应 Step | 说明 |
+| Field group | Step | Description |
 |--------|-----------|------|
-| `project.*` | Step 2 | 故事核与商业定位（书名/题材/规模/一句话/核心冲突/读者/平台） |
-| `protagonist.*` | Step 3 | 主角骨架（姓名/欲望/缺陷/原型/结构） |
-| `relationship.*` | Step 3 | 感情线与反派分层、镜像对抗 |
-| `golden_finger.*` | Step 4 | 金手指类型、风格、可见度、不可逆代价、成长节奏 |
-| `world.*` | Step 5 | 世界规模、力量体系、势力、阶层、货币、境界链 |
-| `constraints.*` | Step 6 | 反套路、硬约束、核心卖点、开篇钩子 |
+| `project.*` | Step 2 | Story core and commercial positioning (title/genre/scale/one-liner/core conflict/readers/platform) |
+| `protagonist.*` | Step 3 | Protagonist skeleton (name/desire/flaw/archetype/structure) |
+| `relationship.*` | Step 3 | Romance, antagonist tiers, and mirror conflict |
+| `golden_finger.*` | Step 4 | Special-ability type, style, visibility, irreversible cost, and growth pacing |
+| `world.*` | Step 5 | World scale, power system, factions, social classes, currency, and realm chain |
+| `constraints.*` | Step 6 | Anti-trope, hard constraints, core selling points, and opening hook |
 
-必填项以 SKILL.md 的「充分性闸门」为准；可空字段允许留空或填「无」。
+Required fields are governed by the sufficiency gate in SKILL.md; optional fields may be left empty or set to “none”. The runtime value `单主角` means “single protagonist”.

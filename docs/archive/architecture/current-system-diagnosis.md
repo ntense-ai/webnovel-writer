@@ -1,74 +1,74 @@
-# 当前系统架构诊断报告 (Current System Diagnosis)
+# Current System Architecture Diagnosis
 
-> **文档状态**: 诊断报告 (未引入 Story Intelligence System Spec 前)
-> **诊断前提**: 假设大语言模型（如 Opus 4.6）的指令遵循能力完美，能够完美解析并执行所有 Bash 命令和格式要求。
-> **核心结论**: 系统的痛点不在于模型写不好或执行失误，而在于**系统提供给模型的信息结构、校验时机和数据流转机制存在根本性硬伤**。系统试图用一套松散的管道脚本（Pipeline）去管理极其复杂的网文世界状态机（State Machine），最终不可避免地导致长篇连载走向崩盘。
-> 同时需要补一层更准确的校准：当前系统并不是完全没有结构化能力，而是**已经具备多个半成品中枢，但仍缺少统一故事合同（SSOT）与统一章节提交主链**。
-
----
-
-## 一、 核心架构与真理源缺陷 (Architecture & Single Source of Truth)
-
-### 1. 多头真理（Multiple Sources of Truth）导致的认知撕裂
-
-* **现象**：系统的设定散落在 `state.json`（动态状态）、`genre-profiles.md`（静态调性）、`index.db`（碎片化实体）和 `memory`（长期事实）中。虽然 `context_manager`、`genre_*` 已经在尝试聚合这些信息，但它们本质上仍是运行时装配器和局部中枢，而不是统一的单一真理源（SSOT）。
-* **危害**：当剧情发生合理反转或设定升级时，系统无法做到全局同步。模型会同时接到冲突的指令（例如 md 要求主角废柴隐忍，而 state 显示已经天下无敌）。极度聪明的模型为了兼顾双方，反而会写出精神分裂般的割裂剧情。
-
-### 2. 设定演进账本仅有雏形，尚未覆盖核心世界设定（Override Ledger Gap）
-
-* **现象**：网文的核心规则是会随着剧情推进被打破的（如主角打破了某项世界限制）。当前系统已在 v5.3 引入了 `override_contracts` 表（见 `index_debt_mixin.py`），具备完整的 CRUD 操作（含 `constraint_type`、`rationale_type`、`rationale_text`、`payback_plan`、`due_chapter`、`status`）。但该机制目前**仅服务于追读力债务系统的软建议违背记录**，尚未扩展为核心世界设定（力量体系、角色命运、世界规则）的演进账本。对于这些核心设定的修改，系统本质上仍只有静默覆盖（Overwrite）或局部投影更新。
-* **危害**：没有机制明确告诉 AI 注意，卷五已经合法推翻了卷一的隐忍设定，现在的最高准则是无敌爽文。系统把所有的旧规则和新状态一锅端地喂给 AI，造成严重的上下文污染和逻辑死锁。Override Contract 的基础设施已经存在，但其应用范围的局限性使得它无法解决这个核心问题。
+> **Document status**: Diagnostic report (before introducing the Story Intelligence System Spec)
+> **Assumption**: Large language models such as Opus 4.6 follow instructions perfectly and can correctly parse and execute every Bash command and formatting requirement.
+> **Core conclusion**: The problem is not poor model writing or execution mistakes, but **fundamental flaws in the information structure, validation timing, and data-flow mechanisms supplied to the model**. The system tries to manage an extremely complex webnovel world state machine through a loose script pipeline, inevitably destabilizing long-running serials.
+> A further qualification is important: the system is not entirely unstructured. It **already has several partially developed hubs, but lacks a unified Story Contract (SSOT) and a unified chapter commit mainline**.
 
 ---
 
-## 二、 上下文装配与知识供给痛点 (Context & Knowledge Assembly)
+## I. Architecture and Single Source of Truth Defects
 
-### 3. 机械截断导致的信息黑洞（The Blind Spot of Context Truncation）
+### 1. Multiple Sources of Truth Create Conflicting Understanding
 
-* **现象**：`context_manager.py` 确实已经在做上下文聚合，且 `context_ranker.py` 已经对 alerts 等信息做了优先级排序与筛选（说明系统并非完全无脑塞上下文）。但最终输出仍采用按权重（`TEMPLATE_WEIGHTS`）和字数预算，强行截断字符串（`_compact_json_text`）的方式来组装上下文。
-* **危害**：模型再聪明，也无法遵守它没看到的规则。关键毒点、核心力量限制或重要伏笔，极容易因为刚好超出字符串预算而被底层脚本静默丢弃。导致模型不得不靠幻觉（Hallucination）填补空白，引发设定崩塌。问题不在“没有聚合”，而在于**聚合后的输入仍可能被预算逻辑打成信息黑洞**。
+* **Observation**: Settings are scattered across `state.json` (dynamic state), `genre-profiles.md` (static tone), `index.db` (fragmented entities), and `memory` (long-term facts). Although `context_manager` and `genre_*` already attempt aggregation, they remain runtime assemblers and local hubs rather than a unified single source of truth (SSOT).
+* **Impact**: A legitimate plot reversal or setting upgrade cannot be synchronized globally. The model receives conflicting instructions, such as Markdown requiring a weak protagonist who conceals their ability while state data says they are already invincible. Even a highly capable model, trying to honor both, produces incoherent characterization and plot.
 
-### 4. 知识延迟绑定（Late-Binding）与泛化割裂
+### 2. The Setting-Evolution Ledger Is Only a Prototype and Does Not Cover Core World Settings
 
-* **现象**：系统并不只是中途临时查 CSV，它其实已经有 `md 必读 + CSV 检索 + genre_profile` 的双轨资料体系。但在写作中，系统仍要求大模型在具体阶段按需调用 `reference_search.py` 查通用条目（如如何写战斗）。
-* **危害**：查出来的大多是通用网文技巧，而不是本书专属设定。系统缺乏一个前置的聚合层把通用套路和本书主角特质、题材调性、系统边界揉合在一起，导致写出的剧情虽然套路标准，但千篇一律，缺乏本书的灵魂与特色。
-
----
-
-## 三、 流程编排与校验机制漏洞 (Workflow & Verification)
-
-### 5. 事后验尸而非事前避坑的防线设计
-
-* **现象**：系统高度依赖 Step 3 的 Reviewer Agent 去审查**已经写完的正文**，发现 Blocking 毒点后再打回 Step 4（润色）修复。
-* **危害**：防线设得太晚。如果模型在起草时犯了方向性或结构性错误（如写死了不该死的核心角色，或触碰了严重毒点），依靠润色（改表达不改事实）是根本救不回来的。这会导致无解的死循环，或只能产出打补丁式的劣质文本。
-
-### 6. 缺乏大纲履约的强制校验（No Fulfillment Verification）
-
-* **现象**：系统已经能读取 `chapter outline`、`plot_structure`、`mandatory_nodes`、`prohibitions` 这类计划信息，但在写后提交阶段，只会提取记录实际写了什么（What is），不会严谨地进行结构化 Diff，对比大纲要求写什么（What was planned vs. achieved，如 CBN/CEN 节点）。
-* **危害**：如果模型因为篇幅原因漏写了一个关键的暗杀伏笔，系统只会完美地提取已写的内容，而不会报错大纲要求未履约。这会悄无声息地引发后续章节大纲的连锁崩盘。
+* **Observation**: Core webnovel rules evolve and may be broken as the plot advances, for example when the protagonist breaks a world limitation. Version 5.3 introduced the `override_contracts` table (see `index_debt_mixin.py`) with full CRUD operations, including `constraint_type`, `rationale_type`, `rationale_text`, `payback_plan`, `due_chapter`, and `status`. However, it currently **only records violations of soft recommendations in the reader-retention debt system**. It has not become an evolution ledger for core world settings such as power systems, character destinies, and world rules. Changes to these still rely mainly on silent overwrites or local projection updates.
+* **Impact**: Nothing explicitly tells the AI that volume five has legitimately overturned volume one's restraint-focused characterization and that invincible-protagonist wish fulfillment is now the governing principle. Feeding old rules and new states together causes context contamination and logical deadlocks. Override Contract infrastructure exists, but its limited scope prevents it from resolving this core problem.
 
 ---
 
-## 四、 数据回写与后置处理隐患 (Data Write-back & Disambiguation)
+## II. Context and Knowledge Assembly Problems
 
-### 7. 事务割裂与幽灵状态（Fragmented DB Transactions）
+### 3. Mechanical Truncation Creates Information Blind Spots
 
-* **现象**：Step 5 要求将结果分别写入 `state.json`、`index.db`、`summaries` 和 `memory` 四个不同的地方。需要校准的是：当前 `state_manager` 对自身写盘已经有局部原子写和 pending 快照保护，但这仍然不是跨存储的章节级事务一致性（ACID）。此外，`StateManager` 内部还维护了 `state.json` + SQLite（`index.db`）的**双写同步逻辑**（`_sync_to_sqlite`、`_sync_pending_patches_to_sqlite`），包含 pending 快照恢复机制，这在单个模块内部就已经引入了额外的一致性复杂度。
-* **危害**：风险存在于两个层面。**内层**：`StateManager` 的 JSON + SQLite 双写如果部分失败，虽然有快照恢复，但恢复逻辑本身也可能在极端情况下不完整。**外层**：四个存储的跨库写操作一旦中途发生中断，仍然会导致 DB 记录角色已死，而 `state.json` 里角色还活着，或摘要和长期记忆没有同步更新。这种幽灵状态会在生成下一章时把模型彻底搞疯。
+* **Observation**: `context_manager.py` already aggregates context, and `context_ranker.py` prioritizes and filters information such as alerts. The system is therefore not simply stuffing context indiscriminately. However, final assembly still forcibly truncates strings with `_compact_json_text` according to `TEMPLATE_WEIGHTS` and character budgets.
+* **Impact**: No model can obey rules it never sees. Critical reader turn-offs, power limitations, and foreshadowing can be silently dropped merely because they fall beyond the string budget. The model then fills gaps through hallucination, destabilizing the setting. The issue is not missing aggregation, but that **budget logic can turn the aggregated input into an information blind spot**.
 
-### 8. 幻觉错误被后置消歧放大为索引污染风险（Index Pollution via Disambiguation）
+### 4. Late-Bound Knowledge and Disconnected Generalization
 
-* **现象**：如果在 Step 2 模型产生了幻觉，把主角林辰错写成了张辰，后置消歧未必会直接报错打回。需要校准的是：当前系统对消歧有置信度分层，不是无脑把所有错误都写死；但它确实存在一个风险窗口，**一旦错误命中“可采用”区间，后置消歧就可能把错误实体归并写入后续索引链路。**
-* **危害**：这意味着纯粹的写作幻觉，不一定会被当场拦截，反而可能以“低置信但被采用”的形式被沉淀为别名、出场记录、关系记录或状态更新。长期来看，这仍会污染数据库，使后续消歧越来越乱。
+* **Observation**: The system does not merely look up CSV midway through writing. It already has a dual-track reference system combining mandatory Markdown reading, CSV retrieval, and `genre_profile`. Nevertheless, during writing it still requires the model to call `reference_search.py` at particular stages for generic entries, such as combat-writing guidance.
+* **Impact**: Most retrieved results are generic webnovel techniques rather than book-specific settings. No upstream aggregation layer blends general patterns with this protagonist's traits, the genre's tone, and system boundaries. The resulting plot follows standard formulas but feels interchangeable and lacks the book's distinctive identity.
 
-### 9. 消歧警告的向后传染（Context Leaking）
+---
 
-* **现象**：如果 Step 5 发现模棱两可的名字且无法自动消歧，会将其记入 `state.json` 的 `disambiguation_pending`，高于阈值但仍不稳的则进入 `disambiguation_warnings`，并在写**下一章**时通过上下文装配链被继续读取。
-* **危害**：上一章的消歧烂账，变成了下一章起草时的噪音。这极大地分散了模型写新剧情的注意力，甚至诱导模型在新章节中强行加戏去解释上一章的名字问题，破坏行文流畅度。
+## III. Workflow and Verification Gaps
 
-### 10. 状态投影主导，语义事件只有痕迹没有主链（State Overwrite vs. Delta Events）
+### 5. Defenses Diagnose Failures Afterward Instead of Preventing Them
 
-* **现象**：Data Agent 和数据链并不是完全没有 Delta 事件，实际上已经存在：
+* **Observation**: The system relies heavily on the Step 3 Reviewer Agent to inspect **already completed prose**, then sends blocking problems to Step 4 (polishing) for repair.
+* **Impact**: Validation comes too late. Directional or structural drafting errors, such as killing a protected core character or triggering a serious reader turn-off, cannot be repaired by polishing that changes expression but not facts. This creates unresolvable loops or low-quality patched prose.
+
+### 6. No Mandatory Outline Fulfillment Verification
+
+* **Observation**: The system already reads planning information such as `chapter outline`, `plot_structure`, `mandatory_nodes`, and `prohibitions`. At post-writing submission, however, it only extracts what actually happened. It does not perform a rigorous structured diff between planned and achieved content, such as CBN/CEN nodes.
+* **Impact**: If the model omits a key assassination setup because of length limits, the system accurately extracts what was written without reporting the unfulfilled outline requirement. Later chapter outlines can silently fail in a chain reaction.
+
+---
+
+## IV. Data Write-back and Disambiguation Risks
+
+### 7. Fragmented Transactions and Ghost State
+
+* **Observation**: Step 5 writes separately to `state.json`, `index.db`, `summaries`, and `memory`. To be precise, `state_manager` already provides local atomic writes and pending-snapshot protection, but not cross-storage chapter-level ACID consistency. `StateManager` also maintains **dual-write synchronization** between `state.json` and SQLite (`index.db`) through `_sync_to_sqlite` and `_sync_pending_patches_to_sqlite`, including pending-snapshot recovery. This introduces additional consistency complexity within a single module.
+* **Impact**: There are two risk layers. **Internally**, a partial failure in JSON + SQLite dual writes may not be fully recovered in extreme cases, despite snapshot recovery. **Externally**, interruption during writes across four stores may leave the database saying a character is dead while `state.json` says they are alive, or leave summaries and long-term memory out of sync. Such ghost state severely confuses next-chapter generation.
+
+### 8. Post-processing Disambiguation Can Amplify Hallucinations Into Index Pollution
+
+* **Observation**: If Step 2 mistakenly calls protagonist Lin Chen “Zhang Chen,” post-processing disambiguation may not reject the draft immediately. The current system does use confidence tiers rather than blindly persisting every mistake. Nevertheless, a risk window remains: **once an error falls within an acceptable confidence range, disambiguation may merge the wrong entity into subsequent indexing**.
+* **Impact**: A pure writing hallucination may be persisted as an alias, appearance, relationship, or state update because it was accepted despite low confidence. Over time this pollutes the database and makes subsequent disambiguation increasingly unreliable.
+
+### 9. Disambiguation Warnings Leak Into Later Context
+
+* **Observation**: If Step 5 encounters an ambiguous name that cannot be resolved automatically, it records it in `state.json` under `disambiguation_pending`. Unstable resolutions above the threshold enter `disambiguation_warnings`. Both are read again through context assembly when writing **the next chapter**.
+* **Impact**: Unresolved disambiguation from the previous chapter becomes noise during the next draft. It distracts the model from new plot development and can even encourage forced explanations of the previous chapter's naming issue, disrupting narrative flow.
+
+### 10. State Projections Dominate; Semantic Events Exist Without a Mainline
+
+* **Observation**: The Data Agent and data pipeline do have delta events, including:
   - `state_changes`
   - `relationship_events`
   - `timeline_events`
@@ -76,32 +76,32 @@
   - `open_loops`
   - `reader_promises`
 
-  其中关系事件层面，代码里已经有比 `relationships_new` 更完整的 `relationship_events` 表，具备较强的结构化能力；但这些事件整体仍分散在 `state`、`index`、`memory` 等不同层里，没有统一的 canonical event log。系统主链仍然更偏向“状态投影更新”，而不是“事件驱动更新”。
-* **危害**：结果就是系统能记录“已经变成金丹”，却很难以统一方式表达“如何突破、消耗了什么资源、引发了什么异象、这次突破应如何修改上层世界规则”。这使得系统无法自动感知并触发设定升级或力量体系阈值扩展，模型仍然需要像瞎子摸象一样去猜目前的战力天花板。
+  For relationships, the code already has a `relationship_events` table more complete than `relationships_new`, with strong structural capabilities. But events remain scattered across `state`, `index`, and `memory`, without a unified canonical event log. The mainline still favors state-projection updates over event-driven updates.
+* **Impact**: The system can record “has reached Golden Core,” but struggles to express consistently how the breakthrough happened, what resources it consumed, what phenomena it caused, and how it should change higher-level world rules. It cannot automatically detect and trigger setting upgrades or expanded power-system thresholds. The model still has to infer the current power ceiling from incomplete evidence.
 
 ---
 
-## 总结
+## Summary
 
-在没有引入 `Story Intelligence System Spec` 的前置契约约束之前，系统并不是完全靠大模型“裸奔”，而是已经靠多个半成品中枢在**缝缝补补**：
+Before introducing the advance contractual constraints of the `Story Intelligence System Spec`, the system is not relying on an entirely unsupported language model. Several partially developed hubs already provide **piecemeal support**:
 
-- `context_manager` + `context_ranker` 在做上下文聚合与优先级排序
-- `genre_*` 在做题材归一化与画像构建
-- `state_manager` 在做结构化状态回写（含 JSON + SQLite 双写同步）
-- `memory writer / orchestrator` 在做长期事实沉淀
-- `override_contracts` 在做追读力债务的违背记录（Override Ledger 雏形）
+- `context_manager` + `context_ranker` aggregate and prioritize context.
+- `genre_*` normalizes genres and builds profiles.
+- `state_manager` writes structured state, including JSON + SQLite dual-write synchronization.
+- `memory writer / orchestrator` persists long-term facts.
+- `override_contracts` records reader-retention debt violations, forming an early Override Ledger.
 
-但这些能力还没有被收束成一个统一的故事事实系统。
+These capabilities have not yet converged into a unified story-fact system.
 
-因此，当前系统最根本的问题不是“模型不够强”，而是：
+The fundamental problem is therefore not insufficient model capability:
 
-**系统已经有多个局部结构层（包括 Override Contract 雏形和 Delta 事件底座），但还没有统一故事合同（Story Contract）、统一章节提交主链（Commit Chain）和覆盖全局世界设定的统一演进账本（Override Ledger）。**
+**The system already has several local structural layers, including an Override Contract prototype and delta-event foundations, but lacks a unified Story Contract, a unified chapter Commit Chain, and a unified Override Ledger covering global world settings.**
 
-这也正是新架构的核心价值所在：
+This is precisely the value of the new architecture:
 
-- 生成强约束的 `Master / Volume / Chapter` JSON 合同
-- 建立显式的 Override 账本
-- 事前给足绝对红线、系统边界和消歧域
-- 把 `state / index / summary / memory / RAG` 从“散落真理源”降级为“合同提交后的投影层”
+- Generate strongly constrained `Master / Volume / Chapter` JSON contracts.
+- Establish an explicit Override ledger.
+- Supply absolute red lines, system boundaries, and disambiguation scopes before writing.
+- Downgrade `state / index / summary / memory / RAG` from scattered sources of truth to projections after contract submission.
 
-只有提供完美、无歧义、可追溯且前后一致的输入，大模型才能持续、稳定地输出高质量的长篇连载。
+Only complete, unambiguous, traceable, and internally consistent input lets a language model reliably sustain high-quality long-form serial fiction.

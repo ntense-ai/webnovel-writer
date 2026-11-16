@@ -1,200 +1,202 @@
-# Reference CSV 数据规范
+# Reference CSV Data Specification
 
-本目录存放供 `reference_search.py` 检索的结构化知识条目。
+This directory contains structured knowledge entries searched by `reference_search.py`.
 
-核心目标：
+Core goals:
 
-- 提升中文网文场景下的 BM25 字面召回率
-- 给大模型返回可直接执行的结构化上下文
-- 把适合条目化的知识沉淀到 CSV，保留方法论型 md 文件
+- Improve BM25 lexical recall for Chinese webnovel scenarios.
+- Return directly executable structured context to language models.
+- Store itemizable knowledge in CSV while retaining methodological Markdown files.
 
-硬边界：
+Hard boundaries:
 
-- `AI味`、去 AI 腔、润色替换类内容 **不进入 CSV**
-- 这类内容继续保留在独立 md reference 中
-- CSV 内容迁移 **只允许人工手动修改**
-- 禁止编写或使用任何自动迁移脚本、批量转换脚本、自动抽取脚本
+- **Do not put** AI-flavor reduction, AI-style removal, or polishing/replacement guidance in CSV.
+- Keep that material in separate Markdown references.
+- CSV content migration is **manual editing only**.
+- Do not write or use automated migration, batch conversion, or automatic extraction scripts.
 
-所有 CSV 文件使用 **UTF-8 with BOM** 编码。
+All CSV files use **UTF-8 with BOM**.
 
-## 通用列（所有表共享）
+Chinese column names, enum values, filenames, and retrieval queries below are literal runtime identifiers retained for compatibility with unchanged CSV data and scripts.
 
-| 列名 | 必填 | 说明 | 示例 |
+## Shared Columns (All Tables)
+
+| Column | Required | Description | Example |
 |------|------|------|------|
-| `编号` | 是 | 唯一 ID，带表前缀 | `NR-001`、`SP-002`、`WT-003` |
-| `适用技能` | 是 | 多值字段，统一使用 `|` | `write|init|plan` |
-| `分类` | 是 | 主题分类 | `角色`、`战斗`、`情感` |
-| `层级` | 是 | `提醒` / `缺陷补偿` / `知识补充` | `缺陷补偿` |
-| `关键词` | 是 | 高权重触发词，多值字段，统一使用 `|` | `角色命名|人名|玄幻命名` |
-| `意图与同义词` | 否 | 用户自然语言问法、黑话、俗语，多值字段，统一使用 `|` | `名字怎么取|起名|主角叫什么` |
-| `适用题材` | 是 | `全部` 或多值题材名，统一使用 `|` | `玄幻|仙侠` |
-| `大模型指令` | 否 | 检索命中后直接拼给模型的执行指令 | `优先检查命名是否与题材语汇一致，避免现代感。` |
-| `核心摘要` | 是 | 供高权重召回与结果展示使用的简明摘要 | `玄幻角色命名要保留修仙感与古风意象，避免现代姓名直接套入。` |
-| `详细展开` | 否 | 作为补充说明参与低权重召回 | `姓氏宜偏古风，名字建议带世界观意象字，同时避免和核心角色重名。` |
+| `编号` | Yes | Unique ID with table prefix | `NR-001`, `SP-002`, `WT-003` |
+| `适用技能` | Yes | Multi-value field using `|` | `write|init|plan` |
+| `分类` | Yes | Topic category | `角色`, `战斗`, `情感` |
+| `层级` | Yes | Reminder / defect compensation / supplementary knowledge | `提醒` / `缺陷补偿` / `知识补充` |
+| `关键词` | Yes | High-weight trigger terms; separate with `|` | `角色命名|人名|玄幻命名` |
+| `意图与同义词` | No | Natural-language questions, jargon, idioms; separate with `|` | `名字怎么取|起名|主角叫什么` |
+| `适用题材` | Yes | `全部` or multiple genre names separated with `|` | `玄幻|仙侠` |
+| `大模型指令` | No | Execution instruction passed directly to the model after retrieval | Prioritize genre-appropriate naming vocabulary; avoid modern associations. |
+| `核心摘要` | Yes | Concise summary for high-weight recall and display | Fantasy names should evoke cultivation and classical imagery rather than copied modern names. |
+| `详细展开` | No | Supplementary explanation used for low-weight recall | Prefer classical surnames and setting-related imagery; avoid duplicate core-character names. |
 
-## 通用规则
+## General Rules
 
-### 1. 分隔符规范
+### 1. Separators
 
-- 所有列表型字段统一使用 `|`
-- 本规范覆盖：
+- Use `|` in every list-type field.
+- This applies to:
   - `适用技能`
   - `关键词`
   - `意图与同义词`
   - `适用题材`
-- 旧数据中的 `,` / `，` 只作为迁移兼容格式，由代码侧兼容解析
-- 新增或修改条目时，不允许继续写逗号分隔
+- Legacy `,` / `，` separators remain parseable only for migration compatibility.
+- Do not use comma separation in new or edited entries.
 
-### 2. 长文本拆分
+### 2. Long Text
 
-- 单字段建议不超过 200 字
-- 超出时必须拆为：
+- Prefer no more than 200 Chinese characters per field.
+- Split longer material into:
   - `核心摘要`
   - `详细展开`
-- `核心摘要` 负责高权重召回与结果展示
-- `详细展开` 只承担补充说明，不应堆放主要触发词
+- `核心摘要` supports high-weight recall and display.
+- `详细展开` supplies additional explanation only; do not bury primary trigger terms there.
 
-### 3. 指令写法
+### 3. Instructions
 
-- `大模型指令` 使用直接、可执行的中文祈使句
-- 优先写“要检查什么、避免什么、如何裁决”
-- 避免空泛表达，如“写得更好一点”“注意文笔”
+- Write `大模型指令` as direct, actionable Chinese imperatives.
+- Prioritize what to check, what to avoid, and how to adjudicate.
+- Avoid vague wording such as "write better" or "pay attention to prose quality."
 
-### 4. 手动迁移规则
+### 4. Manual Migration
 
-- 允许：人工逐条编辑、人工复制后再整理、人工补摘要与同义词
-- 禁止：脚本批量转换、正则批量生成内容、程序自动抽取 md 到 CSV
-- 历史批量迁移脚本已移除；如需补条目，请人工编辑后运行 `scripts/validate_csv.py`
-- 原因：CSV 条目质量优先于迁移速度
+- Allowed: Manual entry-by-entry edits, manual copying followed by cleanup, manually adding summaries and synonyms.
+- Prohibited: Scripted batch conversion, regex-generated bulk content, programmatic Markdown-to-CSV extraction.
+- Historical bulk-migration scripts were removed. Edit entries manually, then run `scripts/validate_csv.py`.
+- Rationale: Entry quality matters more than migration speed.
 
-## 编号前缀
+## ID Prefixes
 
-| 前缀 | 表 |
+| Prefix | Table |
 |------|------|
-| `NR-` | 命名规则 |
-| `SP-` | 场景写法 |
-| `WT-` | 写作技法 |
-| `TR-` | 桥段套路 |
-| `CH-` | 人设与关系 |
-| `PA-` | 爽点与节奏 |
-| `SY-` | 金手指与设定 |
-| `GR-` | 题材与调性推理 |
-| `RS-` | 裁决规则 |
+| `NR-` | Naming rules |
+| `SP-` | Scene writing |
+| `WT-` | Writing techniques |
+| `TR-` | Plot tropes |
+| `CH-` | Characterization and relationships |
+| `PA-` | Payoffs and pacing |
+| `SY-` | Special advantages and settings |
+| `GR-` | Genre and tone reasoning |
+| `RS-` | Decision rules |
 
-## 表专属列
+## Table-Specific Columns
 
 ### 命名规则.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `命名对象` | 角色、书名、地点、势力、功法、道具等 |
-| `规则` | 命名规则主体 |
-| `正例` | 正向示例 |
-| `反例` | 反向示例 |
+| `命名对象` | Characters, book titles, places, factions, techniques, items, etc. |
+| `规则` | Naming rule |
+| `正例` | Positive example |
+| `反例` | Negative example |
 
 ### 场景写法.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `场景类型` | 战斗、对话、叙事结构、桥段场景等 |
-| `模式名称` | 场景写法模式名 |
-| `说明` | 场景写法补充说明 |
-| `示例片段` | 正面示例 |
-| `反面写法` | 常见崩坏写法 |
+| `场景类型` | Combat, dialogue, narrative structure, plot scenes, etc. |
+| `模式名称` | Scene-writing pattern name |
+| `说明` | Additional scene-writing explanation |
+| `示例片段` | Positive example |
+| `反面写法` | Common failure pattern |
 
 ### 写作技法.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `技法类型` | 对话、情感、场景、节奏等 |
-| `技法名称` | 技法名称 |
-| `适用场景` | 适用写作场景 |
-| `常见误区` | 高频误区 |
-| `正例` | 正向示例 |
-| `反例` | 反向示例 |
+| `技法类型` | Dialogue, emotion, scene, pacing, etc. |
+| `技法名称` | Technique name |
+| `适用场景` | Applicable writing scenario |
+| `常见误区` | Frequent pitfalls |
+| `正例` | Positive example |
+| `反例` | Negative example |
 
 ### 桥段套路.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `桥段名称` | 套路名 |
-| `前置铺垫` | 触发前必须具备的铺垫 |
-| `核心爽点` | 本桥段的主要爽点 |
-| `转折设计` | 关键反转点 |
-| `反套路变种` | 变体写法 |
+| `桥段名称` | Trope name |
+| `前置铺垫` | Setup required before triggering |
+| `核心爽点` | Primary payoff |
+| `转折设计` | Key reversal |
+| `反套路变种` | Subversive variation |
 
 ### 人设与关系.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `人设类型` | 人设模板名 |
-| `核心动机` | 驱动行为的核心目标 |
-| `行为逻辑` | 行为规律 |
-| `互动模式` | 与其他角色的典型互动 |
-| `忌讳写法` | 容易降智或模板化的写法 |
+| `人设类型` | Character-template name |
+| `核心动机` | Core goal driving behavior |
+| `行为逻辑` | Behavioral logic |
+| `互动模式` | Typical interactions with others |
+| `忌讳写法` | Patterns that make characters foolish or formulaic |
 
 ### 爽点与节奏.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `节奏类型` | 压抑期、爆发期、兑现期等 |
-| `情绪调动手法` | 读者情绪调度方式 |
-| `常见崩盘误区` | 节奏常见问题 |
+| `节奏类型` | Suppression, eruption, payoff, etc. |
+| `情绪调动手法` | Methods of steering reader emotion |
+| `常见崩盘误区` | Common pacing failures |
 
 ### 金手指与设定.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `设定类型` | 系统、传承、血脉、世界规则等 |
-| `数值控制边界` | 上限、冷却、代价、限制 |
-| `与剧情交互方式` | 如何和剧情推进、冲突、成长相互作用 |
+| `设定类型` | System, inheritance, bloodline, world rules, etc. |
+| `数值控制边界` | Caps, cooldowns, costs, limits |
+| `与剧情交互方式` | Interaction with plot progression, conflict, and growth |
 
 ### 题材与调性推理.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `题材/流派` | 路由入口名，可用 platform_tag 或高频用户叫法 |
-| `canonical_genre` | 归属的 15 个 canonical genre 之一，或通用路由的 `全部` |
-| `题材别名` | 用户可能输入的别名与黑话 |
-| `核心调性` | MASTER_SETTING 的调性参考 |
-| `节奏策略` | MASTER_SETTING 的节奏参考 |
-| `推荐基础检索表` | story-system 构建 base_context 时检索的表 |
-| `推荐动态检索表` | story-system 构建 chapter dynamic_context 时检索的表 |
-| `默认查询词` | 路由命中后扩展给 BM25 的查询词 |
+| `题材/流派` | Routing entry; platform_tag or common user wording |
+| `canonical_genre` | One of the 15 canonical genres, or `全部` for general routing |
+| `题材别名` | User aliases and jargon |
+| `核心调性` | Tone reference for MASTER_SETTING |
+| `节奏策略` | Pacing reference for MASTER_SETTING |
+| `推荐基础检索表` | Tables searched when story-system builds base_context |
+| `推荐动态检索表` | Tables searched when story-system builds chapter dynamic_context |
+| `默认查询词` | BM25 expansion queries after a route match |
 
 ### 裁决规则.csv
 
-| 列名 | 说明 |
+| Column | Description |
 |------|------|
-| `题材` | 15 个 canonical genre 之一 |
-| `风格优先级` | 同题材内风格裁决顺序 |
-| `爽点优先级` | 同题材内爽点裁决顺序 |
-| `节奏默认策略` | 写入 CHAPTER_BRIEF reasoning 的默认节奏 |
-| `毒点权重` | anti-pattern 排序依据 |
-| `冲突裁决` | 多表命中结果排序依据 |
-| `contract注入层` | 裁决结果进入 Story Contract 的目标位置 |
-| `反模式` | 题材级禁止模式，合并到 anti_patterns |
+| `题材` | One of the 15 canonical genres |
+| `风格优先级` | Style decision order within a genre |
+| `爽点优先级` | Payoff decision order within a genre |
+| `节奏默认策略` | Default pacing written to CHAPTER_BRIEF reasoning |
+| `毒点权重` | Basis for anti-pattern ranking |
+| `冲突裁决` | Ranking basis for matches from multiple tables |
+| `contract注入层` | Target location in Story Contracts for decisions |
+| `反模式` | Genre-level forbidden patterns merged into anti_patterns |
 
-## 适合迁入 CSV 的 md 类型
+## Markdown Suitable for CSV Migration
 
-适合人工提炼为 CSV 条目的 md：
+Suitable for manual extraction into CSV entries:
 
-- 条目库
-- 模板库
-- 规则清单
-- 高频误区与正反例集合
+- Entry libraries
+- Template libraries
+- Rule lists
+- Collections of common pitfalls and positive/negative examples
 
-不适合替代为 CSV 的 md：
+Not suitable for replacement by CSV:
 
-- 流程规范
-- 方法论总纲
-- 审查 schema
-- 项目硬约束
-- `AI味` 润色指导
+- Workflow specifications
+- Methodological overviews
+- Review schemas
+- Project hard constraints
+- AI-flavor polishing guidance
 
-## 适用题材枚举
+## Applicable Genre Enumeration
 
-`适用题材` 列只允许填写以下 15 个 canonical 值或 `全部`：
+`适用题材` accepts only these 15 canonical values or `全部`:
 
 ```
 都市  玄幻  仙侠  奇幻  科幻
@@ -202,17 +204,17 @@
 幻言  年代  种田  快穿  衍生
 ```
 
-完整的两层题材体系（canonical + 番茄 `platform_tag` 映射）见 `genre-canonical.md`。
+See `genre-canonical.md` for the full two-level genre system (canonical + Fanqie `platform_tag` mapping).
 
-**禁止**在 `适用题材` 列中填写：
+**Do not put** the following in `适用题材`:
 
-- 番茄子分类名（如 `都市日常`、`战神赘婿`）: 这些是 `platform_tag`，只用于路由表
-- 套路名（如 `退婚流`、`系统流`）: 这些住在 `桥段套路.csv`
-- 调性 / 场景 / 形式标签（如 `爽文`、`动作`、`短篇`）: 不属于题材体系
+- Fanqie subcategory names (e.g. `都市日常`, `战神赘婿`): these are `platform_tag` values used only in routing tables.
+- Trope names (e.g. `退婚流`, `系统流`): these belong in `桥段套路.csv`.
+- Tone / scene / format labels (e.g. `爽文`, `动作`, `短篇`): these are outside the genre system.
 
-## 检索方式
+## Retrieval
 
-使用 `reference_search.py` 脚本进行检索：
+Search with `reference_search.py`:
 
 ```bash
 python reference_search.py --skill write --query "角色命名" --genre 玄幻

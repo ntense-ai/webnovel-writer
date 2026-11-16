@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 建立 canonical event log、事件到投影的稳定映射、事件到 `amend proposal` 的触发规则，并把现有 `override_contracts` 演进成统一 override ledger 的底座。
+**Goal:** Establish a canonical event log, stable event-to-projection mappings, and event-triggered `amend proposal` rules, while evolving existing `override_contracts` into the foundation of a unified override ledger.
 
-**Architecture:** 在 Phase 3 的 `CHAPTER_COMMIT.accepted_events` 基础上，新增 `.story-system/events/` 持久化与 `index.db` 审计镜像，让事件成为正式输入而不是散落在 `state_changes / relationship_events / memory_facts` 的局部痕迹。同时把 `override_contracts` 从追读力债务专用扩展成包含 `soft_deviation / contract_override / amend_proposal` 的统一账本，但默认 runtime 只消费当前章相关摘要，不整包注入 prompt。
+**Architecture:** Build on Phase 3 `CHAPTER_COMMIT.accepted_events` with persistence in `.story-system/events/` and an `index.db` audit mirror, making events official inputs rather than scattered traces in `state_changes / relationship_events / memory_facts`. Expand `override_contracts` from a reader-retention debt mechanism into a unified ledger containing `soft_deviation / contract_override / amend_proposal`. By default, runtime consumes only summaries relevant to the current chapter, not the entire ledger in the prompt.
 
 **Tech Stack:** Python 3.13, Pydantic, pytest, SQLite (`index.db`), JSON event artifacts, dashboard / observability hooks
 
@@ -16,34 +16,34 @@
 
 ## Scope Split
 
-本计划只覆盖 Phase 4：
+This plan covers only Phase 4:
 
 1. canonical event log
-2. 事件到投影的稳定映射
-3. 事件到 `amend proposal` 的触发规则
-4. override ledger 扩展
+2. Stable event-to-projection mappings
+3. Event-triggered `amend proposal` rules
+4. Override ledger expansion
 
-明确不做：
+Explicit non-goals:
 
-- 不做 Phase 5 的旧链路降级
-- 不清理 `genre-profiles.md` 回退链
-- 不把所有历史 override 直接注入 runtime prompt
+- Do not perform Phase 5 legacy-pipeline downgrades
+- Do not clean up the `genre-profiles.md` fallback pipeline
+- Do not inject all historical overrides directly into runtime prompts
 
-退出标准：
+Exit criteria:
 
-1. accepted commit 会稳定产出事件文件，并同步写入 `.webnovel/index.db.story_events`
-2. 投影层优先消费事件而不是最终覆盖值
-3. 需要上提的设定变更会生成 `amend proposal`
-4. `override_contracts` 可承载三类记录，并保留兼容旧追读力债务数据
-5. dashboard / preflight / health / backup 至少具备最小接入说明和只读检查入口
+1. Accepted commits reliably produce event files and synchronously write `.webnovel/index.db.story_events`
+2. The projection layer prioritizes events over final overwrite values
+3. Setting changes requiring promotion generate an `amend proposal`
+4. `override_contracts` supports all three record types while retaining compatibility with legacy reader-retention debt data
+5. dashboard / preflight / health / backup have at least minimal integration instructions and read-only inspection entry points
 
-文档更新继续追加到已有 `Story System` 段落，不重写 README 总体结构。
+Append documentation updates to existing `Story System` sections without restructuring the README.
 
 ---
 
 ## File Structure
 
-### 要创建的文件
+### Files to Create
 
 - `webnovel-writer/scripts/story_events.py`
 - `webnovel-writer/scripts/data_modules/story_event_schema.py`
@@ -57,7 +57,7 @@
 - `webnovel-writer/scripts/data_modules/tests/test_override_ledger_service.py`
 - `docs/architecture/story-system-phase4.md`
 
-### 要修改的文件
+### Files to Modify
 
 - `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 - `webnovel-writer/scripts/data_modules/index_manager.py`
@@ -74,7 +74,7 @@
 
 ---
 
-## Task 1: 定义事件 schema 与 canonical event 持久化
+## Task 1: Define the event schema and canonical event persistence
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/story_event_schema.py`
@@ -83,7 +83,7 @@
 - Create: `webnovel-writer/scripts/data_modules/tests/test_event_log_store.py`
 - Modify: `webnovel-writer/scripts/data_modules/chapter_commit_service.py`
 
-- [ ] **Step 1: 先写事件 schema / store 测试**
+- [ ] **Step 1: Write event schema / store tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_story_event_schema.py
@@ -123,13 +123,13 @@ def test_event_log_store_writes_per_chapter_file_and_sqlite_mirror(tmp_path):
     assert row == ("evt-001", 3, "open_loop_created")
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_event_schema.py webnovel-writer/scripts/data_modules/tests/test_event_log_store.py -q --no-cov`
 
 Expected: `ModuleNotFoundError`
 
-- [ ] **Step 3: 实现 schema 与 store**
+- [ ] **Step 3: Implement schema and store**
 
 ```python
 # webnovel-writer/scripts/data_modules/story_event_schema.py
@@ -213,20 +213,20 @@ class EventLogStore:
             conn.close()
 ```
 
-- [ ] **Step 4: 让 `chapter_commit_service` 在 accepted commit 后写事件文件**
+- [ ] **Step 4: Have `chapter_commit_service` write event files after an accepted commit**
 
 ```python
 if payload["meta"]["status"] == "accepted":
     EventLogStore(self.project_root).write_events(chapter, payload["accepted_events"])
 ```
 
-- [ ] **Step 5: 回跑测试**
+- [ ] **Step 5: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_story_event_schema.py webnovel-writer/scripts/data_modules/tests/test_event_log_store.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 6: 提交**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/story_event_schema.py \
@@ -239,7 +239,7 @@ git commit -m "feat: add canonical event schema and per-chapter event store"
 
 ---
 
-## Task 2: 建立事件到投影的稳定映射
+## Task 2: Establish Stable Event-to-Projection Mappings
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/event_projection_router.py`
@@ -248,7 +248,7 @@ git commit -m "feat: add canonical event schema and per-chapter event store"
 - Modify: `webnovel-writer/scripts/data_modules/index_projection_writer.py`
 - Modify: `webnovel-writer/scripts/data_modules/memory_projection_writer.py`
 
-- [ ] **Step 1: 先写事件路由测试**
+- [ ] **Step 1: Write event-routing tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py
@@ -267,13 +267,13 @@ def test_router_maps_relationship_changed_to_index():
     assert "index" in targets
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py -q --no-cov`
 
 Expected: `ModuleNotFoundError`
 
-- [ ] **Step 3: 实现路由器并让 writer 消费事件**
+- [ ] **Step 3: Implement the router and make writers consume events**
 
 ```python
 # webnovel-writer/scripts/data_modules/event_projection_router.py
@@ -295,20 +295,20 @@ class EventProjectionRouter:
         return list(self.TABLE.get(event.get("event_type"), []))
 ```
 
-这里把 P3 / P4 的关系写死，避免实现时出现双重投影：
+Fix the P3 / P4 relationship explicitly here to prevent duplicate projection during implementation:
 
-- `EventProjectionRouter` 是**声明式激活表**
-- 真正的执行入口仍是 `ChapterCommitService.apply_projections()`
-- `apply_projections()` 先汇总 `accepted_events` 命中的 writer 集合，再只调需要的 writer
-- Phase 4 **不新增第二套独立投影循环**
+- `EventProjectionRouter` is a **declarative activation table**
+- The actual execution entry point remains `ChapterCommitService.apply_projections()`
+- `apply_projections()` first collects the writers matched by `accepted_events`, then calls only the required writers
+- Phase 4 **does not introduce a second independent projection loop**
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_event_projection_router.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/event_projection_router.py \
@@ -321,7 +321,7 @@ git commit -m "feat: route accepted events into projection writers"
 
 ---
 
-## Task 3: 把 `override_contracts` 扩展为统一 override ledger
+## Task 3: Expand `override_contracts` Into a Unified Override Ledger
 
 **Files:**
 - Create: `webnovel-writer/scripts/data_modules/amend_proposal_schema.py`
@@ -331,7 +331,7 @@ git commit -m "feat: route accepted events into projection writers"
 - Modify: `webnovel-writer/scripts/data_modules/index_debt_mixin.py`
 - Modify: `webnovel-writer/scripts/data_modules/index_observability_mixin.py`
 
-- [ ] **Step 1: 先写 ledger / amend proposal 测试**
+- [ ] **Step 1: Write ledger / amend proposal tests first**
 
 ```python
 # webnovel-writer/scripts/data_modules/tests/test_override_ledger_service.py
@@ -379,13 +379,13 @@ def test_world_rule_broken_generates_amend_proposal():
     assert proposals[0]["field"] == "world_rule"
 ```
 
-- [ ] **Step 2: 跑红灯**
+- [ ] **Step 2: Run and confirm failing tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_override_ledger_service.py -q --no-cov`
 
 Expected: `ModuleNotFoundError`
 
-- [ ] **Step 3: 实现 ledger 标准化与增量迁移**
+- [ ] **Step 3: Implement ledger normalization and incremental migration**
 
 ```python
 # webnovel-writer/scripts/data_modules/amend_proposal_schema.py
@@ -483,7 +483,7 @@ def persist_amend_proposals(conn, chapter: int, proposals: list[dict]) -> int:
     return inserted
 ```
 
-在 `index_manager.py` 对 `override_contracts` 做兼容式扩列：
+Add backward-compatible columns to `override_contracts` in `index_manager.py`:
 
 ```python
 def ensure_override_ledger_columns(conn) -> None:
@@ -501,7 +501,7 @@ def ensure_override_ledger_columns(conn) -> None:
             conn.execute(f"ALTER TABLE override_contracts ADD COLUMN {name} {ddl}")
 ```
 
-同时在 `chapter_commit_service.py` 的 accepted 分支里补一条完整调用：
+Also add a complete invocation in the accepted branch of `chapter_commit_service.py`:
 
 ```python
 if payload["meta"]["status"] == "accepted":
@@ -513,15 +513,15 @@ if payload["meta"]["status"] == "accepted":
             conn.commit()
 ```
 
-这样 Phase 4 才算真正实现了“事件 -> amend proposal -> 人工确认后上提合同”的中间主链。
+This completes the intermediate Phase 4 mainline: event → amend proposal → contract promotion after human confirmation.
 
-- [ ] **Step 4: 回跑测试**
+- [ ] **Step 4: Rerun tests**
 
 Run: `python -m pytest webnovel-writer/scripts/data_modules/tests/test_override_ledger_service.py webnovel-writer/scripts/data_modules/tests/test_data_modules.py -q --no-cov`
 
-Expected: 通过
+Expected: Pass
 
-- [ ] **Step 5: 提交**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add webnovel-writer/scripts/data_modules/amend_proposal_schema.py \
@@ -535,7 +535,7 @@ git commit -m "feat: extend override contracts into story override ledger"
 
 ---
 
-## Task 4: CLI / Dashboard / 文档与验证
+## Task 4: CLI / Dashboard / Documentation and Validation
 
 **Files:**
 - Create: `webnovel-writer/scripts/story_events.py`
@@ -550,7 +550,7 @@ git commit -m "feat: extend override contracts into story override ledger"
 - Modify: `docs/operations/operations.md`
 - Modify: `docs/superpowers/README.md`
 
-- [ ] **Step 1: 增加 CLI 转发与读取测试**
+- [ ] **Step 1: Add CLI forwarding and read tests**
 
 ```python
 def test_webnovel_story_events_forwards(monkeypatch, tmp_path):
@@ -571,7 +571,7 @@ def test_webnovel_story_events_forwards(monkeypatch, tmp_path):
     assert called["script_name"] == "story_events.py"
 ```
 
-在 `test_event_log_store.py` 追加一个直接读取测试：
+Append a direct-read test to `test_event_log_store.py`:
 
 ```python
 def test_story_events_cli_reads_chapter_file(tmp_path, monkeypatch, capsys):
@@ -591,9 +591,9 @@ def test_story_events_cli_reads_chapter_file(tmp_path, monkeypatch, capsys):
     assert "open_loop_created" in out
 ```
 
-- [ ] **Step 2: 暴露查询入口并更新 dashboard**
+- [ ] **Step 2: Expose the query entry point and update the dashboard**
 
-在 `webnovel.py` 增加：
+Add to `webnovel.py`:
 
 ```python
 # webnovel-writer/scripts/story_events.py
@@ -650,7 +650,7 @@ p_story_events = sub.add_parser("story-events", help="转发到 story_events.py"
 p_story_events.add_argument("args", nargs=argparse.REMAINDER)
 ```
 
-在 `dashboard/app.py` 按现有 `_get_db()` + `_fetchall_safe()` 模式增加只读接口：
+Add read-only endpoints to `dashboard/app.py` following the existing `_get_db()` + `_fetchall_safe()` pattern:
 
 ```python
 @app.get("/api/story-events")
@@ -683,13 +683,13 @@ def story_event_health():
         }
 ```
 
-`docs/operations/operations.md` 这一轮必须补三段最小运维内容：
+Add three minimal operational sections to `docs/operations/operations.md` in this round:
 
-- `preflight`：检查 `.story-system/events/` 是否存在、`story_events` 表是否可查
-- `health`：执行 `webnovel story-events --health`
-- `backup`：备份 `.story-system/` 与 `.webnovel/index.db`
+- `preflight`: check whether `.story-system/events/` exists and the `story_events` table can be queried
+- `health`: run `webnovel story-events --health`
+- `backup`: back up `.story-system/` and `.webnovel/index.db`
 
-- [ ] **Step 3: 新建文档并跑 Phase 4 回归**
+- [ ] **Step 3: Create documentation and run Phase 4 regression tests**
 
 Run:
 
@@ -703,9 +703,9 @@ python -m pytest \
   -q --no-cov
 ```
 
-Expected: 全部通过
+Expected: All pass
 
-- [ ] **Step 4: 最终提交**
+- [ ] **Step 4: Final commit**
 
 ```bash
 git add webnovel-writer/scripts/story_events.py \
@@ -726,32 +726,32 @@ git commit -m "docs: document story system phase4 event log and override ledger"
 
 ## Spec Coverage Check
 
-- `13.5 Phase 4：统一事件主链`
+- `13.5 Phase 4: Unified event mainline`
   - canonical event log：Task 1
-  - 事件到投影稳定映射：Task 2
-  - 事件到 amend proposal 触发规则：Task 3
+  - Stable event-to-projection mapping: Task 2
+  - Event-to-amend-proposal trigger rules: Task 3
 
-- `8.5 override ledger 的新定位`
+- `8.5 New role of the override ledger`
   - `soft_deviation / contract_override / amend_proposal`：Task 3
 
 - `10.2 / 10.4`
-  - accepted events 持久化与 amend proposal：Task 1 / Task 3
+  - Accepted-event persistence and amend proposals: Task 1 / Task 3
 
 - `17.2 / 17.3`
-  - dashboard / health / ops 接入：Task 4
+  - dashboard / health / ops integration: Task 4
 
 ---
 
 ## Placeholder Scan
 
-- 没有使用 `TODO / TBD`
-- 没有把 override ledger 写成“以后再扩”
-- 没有提前进入 Phase 5 的旧链路降级
+- No `TODO / TBD` placeholders
+- The override ledger is not deferred to a future expansion
+- No premature Phase 5 legacy-pipeline downgrade
 
 ---
 
 ## Next Plan
 
-Phase 4 之后才进入：
+Only after Phase 4, proceed to:
 
 1. `Phase 5 Legacy Downgrade`

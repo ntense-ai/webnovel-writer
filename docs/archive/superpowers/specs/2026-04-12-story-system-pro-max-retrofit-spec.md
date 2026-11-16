@@ -1,141 +1,141 @@
-# Webnovel Writer Story System Pro Max 架构改造 Spec
+# Webnovel Writer Story System Pro Max Architecture Retrofit Specification
 
-> 日期：2026-04-12
-> 状态：草案 v1
-> 目标：在不破坏现有 `reference_search.py` 与 CSV 检索契约的前提下，为 Webnovel Writer 增加“题材推理 + 多表聚合 + Master/Chapter 持久化覆盖”能力。
+> Date: 2026-04-12
+> Status: Draft v1
+> Goal: Add genre reasoning, multi-table aggregation, and persistent Master/Chapter overrides without breaking existing `reference_search.py` and CSV retrieval contracts.
 
 ---
 
-## 1. 文档定位
+## 1. Document Purpose
 
-### 1.1 与既有 spec 的关系
+### 1.1 Relationship to Existing Specifications
 
-本 spec 是以下文档的补充，不替代它们：
+This specification supplements, rather than replaces:
 
 - `2026-04-02-harness-v6-design.md`
 - `2026-04-09-skills-restructure-and-reference-gaps.md`
 
-其中：
+Their responsibilities are:
 
-- `2026-04-02-harness-v6-design.md` 负责主流程与 harness 架构。
-- `2026-04-09-skills-restructure-and-reference-gaps.md` 负责 `skills / references / scripts` 的职责边界与 reference 设计原则。
-- **本 spec** 负责在现有 CSV 知识库之上，补出一个新的系统层：`Story System`。
+- `2026-04-02-harness-v6-design.md`: main workflow and harness architecture.
+- `2026-04-09-skills-restructure-and-reference-gaps.md`: boundaries between `skills / references / scripts` and reference-design principles.
+- **This specification**: a new `Story System` layer above the existing CSV knowledge base.
 
-### 1.2 本 spec 要解决的问题
+### 1.2 Problems to Solve
 
-当前系统已经能做离散检索，但仍存在三个结构性问题：
+The system already supports discrete retrieval, but has three structural problems:
 
-1. 检索结果是“散条目”，不是“系统设定”。
-2. 大模型看完单次搜索结果后，容易遗忘全局约束与毒点。
-3. 不同章节缺少稳定的“局部覆盖全局”的持久化承载方式。
+1. Results are isolated entries, not a coherent system setting.
+2. After reading individual results, the model easily forgets global constraints and reader turn-offs.
+3. Chapters lack a stable persistence mechanism for local overrides of global defaults.
 
-因此需要引入一个新的上层能力：
+Introduce a higher-level capability:
 
-- 先做题材/流派层面的全局路由
-- 再做多表聚合
-- 最后持久化为 `MASTER + Chapter Overrides`
-
----
-
-## 2. 目标与非目标
-
-### 2.1 目标
-
-本轮改造目标只有五个：
-
-1. 新增一张“题材与调性推理”路由表，用来把模糊题材输入转成结构化写作方向。
-2. 新增 `story_system.py`，作为现有 CSV 检索之上的聚合器。
-3. 定义 `StorySystemDict` 的稳定数据契约。
-4. 建立 `.story-system/` 的持久化规范，并明确 `Master + Overrides` 的覆盖规则。
-5. 为后续 skills / prompt 集成预留稳定挂点。
-
-### 2.2 非目标
-
-本轮**不做**以下事情：
-
-1. 不替换或改写现有 `reference_search.py` 的职责。
-2. 不把所有 md reference 全量迁入 CSV。
-3. 不强制把所有现有 CSV 表的毒点字段改成同一个列名。
-4. 不在本 spec 中假定某个具体 `SKILL.md` 文件一定存在于当前仓库。
-5. 不要求重型测试矩阵，也不要求对每个知识点逐条写测试。
+- Global genre/subgenre routing first
+- Multi-table aggregation next
+- Persistence as `MASTER + Chapter Overrides` last
 
 ---
 
-## 3. 设计原则
+## 2. Goals and Non-Goals
 
-### 3.1 保留底层检索 primitive
+### 2.1 Goals
 
-[`reference_search.py`](D:/wk/novel%20skill/webnovel-writer/webnovel-writer/scripts/reference_search.py) 当前已经稳定承担以下职责：
+This retrofit has exactly five goals:
 
-- 读取 CSV
-- 按 `skill / table / query / genre` 过滤
-- 做 BM25-lite 评分
-- 返回稳定 JSON envelope
+1. Add a genre-and-tone reasoning table to turn vague genre input into structured writing direction.
+2. Add `story_system.py` as an aggregator above existing CSV retrieval.
+3. Define a stable `StorySystemDict` data contract.
+4. Establish `.story-system/` persistence conventions and explicit `Master + Overrides` rules.
+5. Provide stable integration points for future skills and prompts.
 
-该脚本已有回归测试保护，见：
+### 2.2 Non-Goals
+
+This effort does **not**:
+
+1. Replace or redefine `reference_search.py` responsibilities.
+2. Migrate all Markdown references into CSV.
+3. Require identical reader-turn-off column names across every existing CSV.
+4. Assume a particular `SKILL.md` exists in the current repository.
+5. Require a heavyweight test matrix or individual tests for every knowledge entry.
+
+---
+
+## 3. Design Principles
+
+### 3.1 Preserve the Retrieval Primitive
+
+[`reference_search.py`](D:/wk/novel%20skill/webnovel-writer/webnovel-writer/scripts/reference_search.py) already reliably:
+
+- Reads CSV
+- Filters by `skill / table / query / genre`
+- Scores using BM25-lite
+- Returns a stable JSON envelope
+
+It is protected by regression tests:
 
 - [`test_reference_search.py`](D:/wk/novel%20skill/webnovel-writer/webnovel-writer/scripts/tests/test_reference_search.py)
 
-因此本轮不应把它改造成系统级聚合器。正确分层应为：
+Do not turn it into a system-level aggregator. The correct layers are:
 
-- `reference_search.py`：底层单次搜索 primitive
-- `story_system.py`：系统级 orchestration 与持久化入口
+- `reference_search.py`: low-level single-search primitive
+- `story_system.py`: system-level orchestration and persistence entry point
 
-### 3.2 不强推现有表结构大改
+### 3.2 Do Not Force Major Existing-Schema Changes
 
-现有 CSV 契约已在 [`README.md`](D:/wk/novel%20skill/webnovel-writer/webnovel-writer/references/csv/README.md) 中明确，当前内容量也已经较大。
+The existing CSV contract is documented in [`README.md`](D:/wk/novel%20skill/webnovel-writer/webnovel-writer/references/csv/README.md), and the content volume is already substantial.
 
-本轮应坚持：
+Follow these principles:
 
-- **新增优于重写**
-- **映射优于大规模改列名**
-- **只对真正缺失的能力加新结构**
+- **Add rather than rewrite.**
+- **Map rather than rename columns en masse.**
+- **Add structures only for genuinely missing capabilities.**
 
-### 3.3 Master 与 Chapter 必须可机读
+### 3.3 Master and Chapter Must Be Machine-Readable
 
-如果 `.story-system/` 只保存“给人看的 markdown”，后续 agent 仍需要再次解析半结构化文本，容易变脆。
+If `.story-system/` stores only human-readable Markdown, later agents must reparse semistructured text, making the system brittle.
 
-因此本轮持久化必须采用**双产物**：
+Persistence therefore requires **dual artifacts**:
 
-- Markdown：给人读
-- JSON：给脚本和 agent 读
+- Markdown for people
+- JSON for scripts and agents
 
-### 3.4 覆盖规则必须显式，不允许模糊覆盖
+### 3.4 Explicit Override Rules
 
-不能只写“chapter 覆盖 master”。
+Saying only “chapter overrides master” is insufficient.
 
-必须把字段分成三类：
+Divide fields into three classes:
 
-1. `locked`：禁止局部覆盖
-2. `append_only`：局部只能补充
-3. `override_allowed`：局部允许覆盖
+1. `locked`: no local override
+2. `append_only`: local additions only
+3. `override_allowed`: local overrides permitted
 
-否则局部设定会轻易冲掉全局设定与全局红线。
+Otherwise local settings can erase global settings and red lines.
 
-### 3.5 Anti-Patterns 只做归一化聚合，不做强行同名
+### 3.5 Normalize Anti-Patterns Without Forcing Identical Names
 
-现有各表的“毒点/误区”字段不统一，例如：
+Existing reader-turn-off/pitfall fields differ, for example:
 
-- `场景写法.csv`：`反面写法`
-- `写作技法.csv`：`常见误区`
-- `爽点与节奏.csv`：`常见崩盘误区`
-- `人设与关系.csv`：`忌讳写法`
+- `场景写法.csv`: `反面写法`
+- `写作技法.csv`: `常见误区`
+- `爽点与节奏.csv`: `常见崩盘误区`
+- `人设与关系.csv`: `忌讳写法`
 
-这本身没有问题。
+This is not inherently a problem.
 
-本轮正确做法是：
+The correct approach here is:
 
-- 在 `story_system.py` 内建立 anti-pattern source field 映射
-- 在渲染阶段统一归一化为 `Anti-Patterns`
-- 只对真正缺失毒点承载的表，新增专门字段
+- Define an anti-pattern source-field mapping inside `story_system.py`.
+- Normalize results to `Anti-Patterns` when rendering.
+- Add dedicated fields only to tables that genuinely lack a place for reader turn-offs.
 
 ---
 
-## 4. 当前基线
+## 4. Current Baseline
 
-### 4.1 当前可用 CSV 表
+### 4.1 Available CSV Tables
 
-当前 `references/csv` 中已存在：
+`references/csv` currently contains:
 
 - `命名规则.csv`
 - `场景写法.csv`
@@ -145,9 +145,9 @@
 - `爽点与节奏.csv`
 - `金手指与设定.csv`
 
-### 4.2 当前 CSV 通用契约
+### 4.2 Common CSV Contract
 
-现有通用列已稳定：
+These shared columns are stable:
 
 - `编号`
 - `适用技能`
@@ -160,83 +160,78 @@
 - `核心摘要`
 - `详细展开`
 
-因此新增表应继续遵守这个契约，而不是重新发明一套列体系。
+New tables should follow this contract, not invent another column system.
 
-### 4.3 当前缺失能力
+### 4.3 Missing Capabilities
 
-当前系统缺失的不是“知识量”，而是以下能力：
+The gap is not knowledge volume, but:
 
-1. 对模糊题材输入做全局路由的能力
-2. 在多张表之间做分层聚合的能力
-3. 把聚合结果稳定落地为章节级覆盖文档的能力
+1. Global routing for vague genre input
+2. Layered aggregation across multiple tables
+3. Reliable persistence of aggregated results as chapter-level override documents
 
 ---
 
-## 5. 新增数据结构：题材与调性推理.csv
+## 5. New Data Structure: 题材与调性推理.csv
 
-### 5.1 文件位置
+### 5.1 Location
 
-新增文件：
+Add:
 
 - `webnovel-writer/references/csv/题材与调性推理.csv`
 
-建议前缀：
+Suggested prefix:
 
 - `GR-`
 
-### 5.2 文件职责
+### 5.2 Responsibility
 
-这不是普通知识条目表，而是**路由表**。
+This is a **routing table**, not an ordinary knowledge-entry table.
 
-它的职责不是提供某一个桥段/某一种技法，而是回答：
+Rather than supplying one plot beat or technique, it answers:
 
-- 这个题材的大基调是什么
-- 这个题材的节奏应该怎么起
-- 这个题材优先查哪些基础表
-- 这个题材优先查哪些动态表
-- 这个题材绝对不能碰哪些毒点
+- What is the genre's overall tone?
+- How should its pacing begin?
+- Which base tables should be searched first?
+- Which dynamic tables should be searched first?
+- Which genre-level reader turn-offs must never be crossed?
 
-### 5.3 列设计
+### 5.3 Columns
 
-除通用列外，新增以下专属列：
+Add these dedicated columns alongside the shared columns:
 
-| 列名 | 必填 | 说明 |
-|------|------|------|
-| `题材/流派` | 是 | 主标签，如“赘婿流”“赛博朋克黑客流”“规则动物园” |
-| `题材别名` | 是 | 同义词、平台黑话、俗称，使用 `|` |
-| `核心调性` | 是 | 全局情绪与气质 |
-| `节奏策略` | 是 | 开局节奏、兑现节奏、章节节拍 |
-| `主冲突模板` | 否 | 默认冲突骨架 |
-| `必选爽点` | 否 | 该题材高频必备交付 |
-| `强制禁忌/毒点` | 是 | 题材级全局红线 |
-| `推荐基础检索表` | 是 | 如 `命名规则|人设与关系|金手指与设定` |
-| `推荐动态检索表` | 是 | 如 `桥段套路|爽点与节奏|场景写法` |
-| `基础检索权重` | 否 | 对基础表的排序提示 |
-| `动态检索权重` | 否 | 对动态表的排序提示 |
-| `默认查询词` | 否 | 当用户输入过于模糊时的默认扩展检索词 |
+| Column | Required | Description |
+|--------|----------|-------------|
+| `题材/流派` | Yes | Primary label, e.g. live-in-son-in-law stories, cyberpunk hackers, or a rules-based zoo |
+| `题材别名` | Yes | Synonyms, platform slang, and common names, separated by `|` |
+| `核心调性` | Yes | Global mood and atmosphere |
+| `节奏策略` | Yes | Opening pace, payoff cadence, and chapter beats |
+| `主冲突模板` | No | Default conflict skeleton |
+| `必选爽点` | No | Frequently required genre payoffs |
+| `强制禁忌/毒点` | Yes | Genre-level global red lines |
+| `推荐基础检索表` | Yes | E.g. `命名规则|人设与关系|金手指与设定` |
+| `推荐动态检索表` | Yes | E.g. `桥段套路|爽点与节奏|场景写法` |
+| `基础检索权重` | No | Base-table ranking hints |
+| `动态检索权重` | No | Dynamic-table ranking hints |
+| `默认查询词` | No | Default query expansions when user input is too vague |
 
-### 5.4 设计说明
+### 5.4 Design Notes
 
-这张表必须能同时服务三类输入：
+The table must serve three input types:
 
-1. 明确题材输入
-   例如：`赘婿流`
+1. Explicit genre input, e.g. `赘婿流` (live-in-son-in-law stories)
+2. Combined genre input, e.g. `赛博朋克黑客流` (cyberpunk hacker stories)
+3. Vague style input, e.g. `压抑一点，后面爆` (more restrained initially, explosive later)
 
-2. 组合题材输入
-   例如：`赛博朋克黑客流`
-
-3. 模糊风格输入
-   例如：`压抑一点，后面爆`
-
-因此 `题材别名` 和 `默认查询词` 是必要字段，不是可有可无。
+Thus `题材别名` and `默认查询词` are necessary, not dispensable.
 
 ---
 
-## 6. Anti-Patterns 归一化规则
+## 6. Anti-Pattern Normalization
 
-### 6.1 现有表的归一化映射
+### 6.1 Existing-Table Mapping
 
-本轮不强制全表改名，采用映射层：
+Use a mapping layer rather than forcing every table to rename fields:
 
 ```python
 ANTI_PATTERN_SOURCE_FIELDS = {
@@ -249,9 +244,9 @@ ANTI_PATTERN_SOURCE_FIELDS = {
 }
 ```
 
-### 6.2 桥段套路.csv 的处理
+### 6.2 Handling 桥段套路.csv
 
-当前 `桥段套路.csv` 只有：
+Currently `桥段套路.csv` has only:
 
 - `桥段名称`
 - `前置铺垫`
@@ -259,58 +254,58 @@ ANTI_PATTERN_SOURCE_FIELDS = {
 - `转折设计`
 - `反套路变种`
 
-其中 `反套路变种` 不是 anti-pattern 字段，不能直接拿来当“毒点”。
+`反套路变种` describes trope subversions, not anti-patterns, and must not be treated as reader-turn-off data.
 
-因此本轮建议：
+Recommended change:
 
-- 为 `桥段套路.csv` **新增** `忌讳写法` 列
-- 新录入条目逐步补齐
-- 老条目允许暂时为空
+- **Add** `忌讳写法` to `桥段套路.csv`.
+- Fill it progressively for new entries.
+- Allow existing entries to remain empty temporarily.
 
-### 6.3 最终聚合规则
+### 6.3 Final Aggregation
 
-系统渲染时的 `Anti-Patterns` 为以下内容的并集：
+Rendered `Anti-Patterns` is the union of:
 
-1. `题材与调性推理.csv` 的全局毒点
-2. 动态检索命中的条目级毒点
-3. Chapter 局部追加毒点
+1. Global turn-offs in `题材与调性推理.csv`
+2. Entry-level turn-offs from dynamic retrieval matches
+3. Chapter-local additions
 
-注意：
+Remember:
 
-- Chapter 可以**新增**局部毒点
-- Chapter 不能删除 Master 的全局毒点
+- Chapter may **add** local turn-offs.
+- Chapter cannot remove Master global turn-offs.
 
 ---
 
-## 7. 新增脚本：story_system.py
+## 7. New Script: story_system.py
 
-### 7.1 文件位置
+### 7.1 Location
 
-新增：
+Add:
 
 - `webnovel-writer/scripts/story_system.py`
 
-### 7.2 角色定位
+### 7.2 Role
 
-`story_system.py` 是系统聚合层，不是底层检索层。
+`story_system.py` is the system aggregation layer, not the low-level retrieval layer.
 
-它负责：
+It handles:
 
-1. 题材路由
-2. 多表查询编排
-3. 结果聚合
-4. Markdown / JSON 双格式输出
-5. `.story-system/` 持久化
+1. Genre routing
+2. Multi-table query orchestration
+3. Result aggregation
+4. Markdown / JSON output
+5. `.story-system/` persistence
 
-它不负责：
+It does not:
 
-1. 替代 `reference_search.py`
-2. 直接生成正文
-3. 解析或执行具体 skill 主流程
+1. Replace `reference_search.py`
+2. Generate prose directly
+3. Parse or execute a particular skill's main workflow
 
-### 7.3 CLI 设计
+### 7.3 CLI Design
 
-建议 CLI：
+Suggested CLI:
 
 ```bash
 python story_system.py "玄幻退婚流"
@@ -320,81 +315,81 @@ python story_system.py "压抑一点，后面爆" --genre 现言 --persist
 python story_system.py "规则动物园" --format json
 ```
 
-建议参数：
+Suggested arguments:
 
-| 参数 | 必填 | 说明 |
-|------|------|------|
-| 位置参数 `query` | 是 | 用户当前意图或题材描述 |
-| `--genre` | 否 | 手动指定题材 |
-| `--chapter` | 否 | 章节 override 名，如 `chapter_015` |
-| `--persist` | 否 | 是否写入 `PROJECT_ROOT/.story-system/` |
-| `--format` | 否 | `markdown` / `json` / `both` |
-| `--csv-dir` | 否 | 兼容测试与自定义目录 |
-| `--story-root` | 否 | 指定显式 `.story-system/` 目录；仅开发/测试场景使用，主链运行时默认基于 `PROJECT_ROOT` 解析 |
+| Argument | Required | Description |
+|----------|----------|-------------|
+| Positional `query` | Yes | Current user intent or genre description |
+| `--genre` | No | Explicit genre |
+| `--chapter` | No | Chapter override name, e.g. `chapter_015` |
+| `--persist` | No | Write to `PROJECT_ROOT/.story-system/` |
+| `--format` | No | `markdown` / `json` / `both` |
+| `--csv-dir` | No | Testing and custom-directory support |
+| `--story-root` | No | Explicit `.story-system/` directory for development/testing only; mainline runtime resolves it from `PROJECT_ROOT` by default |
 
-### 7.4 主流程
+### 7.4 Main Workflow
 
-`story_system.py` 的执行顺序应固定为：
+Fix the `story_system.py` execution order as follows.
 
-#### Step 1：题材推理
+#### Step 1: Genre Reasoning
 
-输入 `query` 后，优先查 `题材与调性推理.csv`：
+Search `题材与调性推理.csv` first using `query`:
 
-- 若命中明确题材 → 使用题材路由结果
-- 若命中多个题材 → 做加权排序并返回主路由 + 候选路由
-- 若未命中 → 进入 fallback
+- Clear genre match → use the genre-routing result
+- Multiple matches → weighted ranking with a primary route and candidates
+- No match → fallback
 
-#### Step 2：fallback 路由
+#### Step 2: Fallback Routing
 
-未命中时，按以下顺序降级：
+With no match, fall back in this order:
 
-1. 用户手动传入 `--genre` 时，以 `--genre` 为主
-2. 从 `query` 中抽取与现有各表高频关键词最接近的题材名
-3. 若仍失败，进入“通用写作路由”：
-   - 基础表默认查：`命名规则|人设与关系|金手指与设定`
-   - 动态表默认查：`桥段套路|爽点与节奏|场景写法`
+1. Use explicitly supplied `--genre` as the primary genre.
+2. Extract from `query` the genre closest to frequent keywords in existing tables.
+3. If still unsuccessful, use general-writing routing:
+   - Default base tables: `命名规则|人设与关系|金手指与设定`
+   - Default dynamic tables: `桥段套路|爽点与节奏|场景写法`
 
-#### Step 3：基础表检索
+#### Step 3: Base-Table Retrieval
 
-根据题材路由表给出的 `推荐基础检索表`：
+Use `推荐基础检索表` from the genre-routing table:
 
-- 对每张基础表取 Top 1
-- 基础表默认包括：
+- Take Top 1 from each base table.
+- Defaults:
   - `命名规则`
   - `人设与关系`
   - `金手指与设定`
-  - 未来可扩展：`题材与调性推理`
+  - Future extension: `题材与调性推理`
 
-#### Step 4：动态表检索
+#### Step 4: Dynamic-Table Retrieval
 
-根据题材路由表给出的 `推荐动态检索表`：
+Use `推荐动态检索表` from the genre-routing table:
 
-- 对每张动态表取 Top 2
-- 动态表默认包括：
+- Take Top 2 from each dynamic table.
+- Defaults:
   - `桥段套路`
   - `爽点与节奏`
   - `场景写法`
-  - 可选补充：`写作技法`
+  - Optional addition: `写作技法`
 
-#### Step 5：Anti-Patterns 聚合
+#### Step 5: Aggregate Anti-Patterns
 
-把题材级毒点和条目级误区字段做统一归并。
+Merge genre-level turn-offs and entry-level pitfall fields into one normalized collection.
 
-#### Step 6：渲染与持久化
+#### Step 6: Render and Persist
 
-输出：
+Output:
 
 - `StorySystemDict`
-- Markdown 视图
-- 可选写入 `.story-system/`
+- Markdown view
+- Optional writes to `.story-system/`
 
 ---
 
-## 8. StorySystemDict 数据契约
+## 8. StorySystemDict Data Contract
 
-### 8.1 顶层结构
+### 8.1 Top-Level Structure
 
-建议数据结构：
+Suggested structure:
 
 ```json
 {
@@ -409,51 +404,51 @@ python story_system.py "规则动物园" --format json
 }
 ```
 
-### 8.2 详细字段
+### 8.2 Detailed Fields
 
 #### `meta`
 
-记录：
+Record:
 
-- 查询词
-- 显式题材
-- 推理命中题材
-- 是否 chapter 模式
-- 生成时间
+- Query
+- Explicit genre
+- Inferred matched genre
+- Whether chapter mode is active
+- Generation time
 
 #### `route`
 
-记录：
+Record:
 
-- 主路由题材
-- 候选题材
-- 路由命中依据
-- 推荐基础表
-- 推荐动态表
+- Primary genre route
+- Candidate genres
+- Routing-match rationale
+- Recommended base tables
+- Recommended dynamic tables
 
 #### `master_constraints`
 
-记录全局不可轻易改动的内容：
+Record global information that should not change casually:
 
-- 核心调性
-- 节奏策略
-- 主冲突模板
-- 金手指硬限制
-- 主角硬约束
-- 全局毒点
+- Core tone
+- Pacing strategy
+- Main-conflict template
+- Hard limits on the protagonist's special advantage
+- Hard protagonist constraints
+- Global reader turn-offs
 
 #### `base_context`
 
-保存基础表检索结果：
+Store base-table results:
 
 - `命名规则`
 - `人设与关系`
 - `金手指与设定`
-- 可选 `写作技法`
+- Optional `写作技法`
 
 #### `dynamic_context`
 
-保存动态表检索结果：
+Store dynamic-table results:
 
 - `桥段套路`
 - `爽点与节奏`
@@ -461,7 +456,7 @@ python story_system.py "规则动物园" --format json
 
 #### `anti_patterns`
 
-统一格式：
+Unified format:
 
 ```json
 [
@@ -475,7 +470,7 @@ python story_system.py "规则动物园" --format json
 
 #### `override_policy`
 
-显式写出：
+Explicitly declare:
 
 - `locked`
 - `append_only`
@@ -483,33 +478,31 @@ python story_system.py "规则动物园" --format json
 
 #### `source_trace`
 
-记录本次命中的来源：
+Record matched sources:
 
-- 表名
-- 编号
-- 摘要
-- 指令
+- Table name
+- Entry ID
+- Summary
+- Instruction
 
-这部分主要用于调试和回溯。
+This is primarily for debugging and traceability.
 
 ---
 
-## 9. Markdown Formatter 规范
+## 9. Markdown Formatter Specification
 
-### 9.1 输出目标
+### 9.1 Output Goal
 
-Markdown 不是原始数据，而是人类和 agent 的可读视图。
+Markdown is a readable view for humans and agents, not raw data.
 
-它必须做到：
+It must provide:
 
-1. 有明显层次
-2. 一眼能看见全局基调
-3. 一眼能看见本章覆盖项
-4. 一眼能看见绝对毒点
+1. Clear hierarchy
+2. Immediately visible global tone
+3. Immediately visible chapter overrides
+4. Immediately visible absolute turn-offs
 
-### 9.2 建议结构
-
-建议 Markdown 输出结构：
+### 9.2 Suggested Structure
 
 ```markdown
 # Story System
@@ -529,65 +522,65 @@ Markdown 不是原始数据，而是人类和 agent 的可读视图。
 ## Source Trace
 ```
 
-### 9.3 Anti-Patterns 章节要求
+### 9.3 Anti-Patterns Section Requirements
 
-必须保留一个显著章节：
-
-```markdown
-## Anti-Patterns（绝对毒点，切勿触碰）
-```
-
-展示规则：
-
-- 每条红线单独成条
-- 用反引号包裹短句
-- 标明来源表与编号
-
-例如：
+Retain a prominent section:
 
 ```markdown
-- `严禁配角连续抢戏超过 300 字`（来源：GR-003）
-- `打脸节奏不能缺最后一拍补刀`（来源：PA-054）
+## Anti-Patterns (Absolute Red Lines: Never Cross)
 ```
 
-### 9.4 JSON 与 Markdown 的关系
+Display rules:
 
-规则必须明确：
+- Give each red line its own item.
+- Wrap short statements in backticks.
+- Identify the source table and ID.
 
-- JSON 是真实源数据
-- Markdown 是 JSON 的投影视图
-- 任何覆盖合并逻辑以 JSON 为准，不以 Markdown 反向解析为准
+For example:
+
+```markdown
+- `Supporting characters must not monopolize the spotlight for more than 300 Chinese characters consecutively` (source: GR-003)
+- `A face-slapping payoff must include the final finishing beat` (source: PA-054)
+```
+
+### 9.4 JSON–Markdown Relationship
+
+Make these rules explicit:
+
+- JSON is the source data.
+- Markdown is a projection of JSON.
+- All override/merge logic uses JSON, not reverse-parsed Markdown.
 
 ---
 
-## 10. 持久化架构：.story-system
+## 10. Persistence Architecture: .story-system
 
-### 10.1 目录结构
+### 10.1 Directory Structure
 
-这里必须遵守项目现有运行时目录术语，而不是使用当前源码仓库目录做推断：
+Follow existing runtime-directory terminology rather than inferring locations from the source checkout:
 
 1. `CLAUDE_PLUGIN_ROOT`
-   - 插件安装目录
-   - 存放 `skills / scripts / references`
-   - 不写入书项目数据
+   - Plugin installation directory
+   - Contains `skills / scripts / references`
+   - Never receives book-project data
 2. `WORKSPACE_ROOT`
-   - Claude 工作区根目录
-   - 通过 `.claude/.webnovel-current-project` 指针解析当前书项目
+   - Claude workspace root
+   - Resolves the current book project through `.claude/.webnovel-current-project`
 3. `PROJECT_ROOT`
-   - 真实书项目根目录
-   - 定义为：包含 `.webnovel/state.json` 的目录
+   - Actual book-project root
+   - Defined as the directory containing `.webnovel/state.json`
 
-因此 `.story-system/` 的默认落盘位置必须是：
+Therefore the default persistence location must be:
 
 - `PROJECT_ROOT/.story-system/`
 
-而不是：
+Not:
 
-- 当前源码仓库目录
+- The current source checkout
 - `CLAUDE_PLUGIN_ROOT`
 - `WORKSPACE_ROOT`
 
-建议目录：
+Suggested layout:
 
 ```text
 PROJECT_ROOT/
@@ -605,274 +598,269 @@ PROJECT_ROOT/
       chapter_015.json
 ```
 
-运行时约束补充：
+Additional runtime constraints:
 
-1. skills 默认从 `WORKSPACE_ROOT` 出发
-2. 统一经 `webnovel.py --project-root "${WORKSPACE_ROOT}" where` 解析到真实 `PROJECT_ROOT`
-3. `story_system` 若进入主链，应只认解析后的 `PROJECT_ROOT`
-4. `--story-root` 只作为开发期 override，不应成为 skills 的默认输入
+1. Skills start from `WORKSPACE_ROOT` by default.
+2. Resolve the actual `PROJECT_ROOT` through `webnovel.py --project-root "${WORKSPACE_ROOT}" where`.
+3. When part of the mainline, `story_system` recognizes only the resolved `PROJECT_ROOT`.
+4. `--story-root` is a development override, not a default skill input.
 
-### 10.2 MASTER 的职责
+### 10.2 MASTER Responsibilities
 
-`MASTER_SETTING.*` 负责保存：
+`MASTER_SETTING.*` stores:
 
-- 题材主路由
-- 全局调性
-- 主角硬约束
-- 金手指硬约束
-- 世界级约束
-- 长线节奏策略
-- 全局 anti-patterns
+- Primary genre route
+- Global tone
+- Hard protagonist constraints
+- Hard limits on the protagonist's special advantage
+- World-level constraints
+- Long-range pacing strategy
+- Global anti-patterns
 
-### 10.3 Chapter 的职责
+### 10.3 Chapter Responsibilities
 
-`chapters/chapter_xxx.*` 负责保存：
+`chapters/chapter_xxx.*` stores:
 
-- 本章桥段
-- 本章场景
-- 本章局部节奏
-- 本章局部额外毒点
-- 本章特殊强调项
+- Chapter plot beats
+- Chapter scenes
+- Local pacing
+- Additional local turn-offs
+- Special chapter emphases
 
-### 10.4 覆盖分类
+### 10.4 Override Classes
 
 #### 10.4.1 `locked`
 
-以下内容只能从 Master 读取，chapter 不允许覆盖：
+Read these only from Master; Chapter cannot override them:
 
-- 主路由题材
-- 核心调性
-- 主角底层人设
-- 金手指硬限制
-- 世界规则闭环
-- 全局 anti-patterns
+- Primary genre route
+- Core tone
+- Foundational protagonist characterization
+- Hard limits on the protagonist's special advantage
+- World-rule consistency
+- Global anti-patterns
 
 #### 10.4.2 `append_only`
 
-以下内容 chapter 只能补充，不可删除 master 已有内容：
+Chapter may add to these but cannot delete Master content:
 
-- 命名语系
-- 长线伏笔
-- 长线关系提醒
-- 全局禁区补充
-- 重要 source trace
+- Naming language families
+- Long-range foreshadowing
+- Long-range relationship reminders
+- Additional global prohibitions
+- Important source traces
 
-合并方式：
+Merge through:
 
-- 并集
-- 去重
+- Union
+- Deduplication
 
 #### 10.4.3 `override_allowed`
 
-以下内容 chapter 可覆盖 master 默认值：
+Chapter may override Master defaults for:
 
-- 本章桥段
-- 本章场景
-- 本章节奏目标
-- 本章局部情绪侧重
-- 本章输出重点
+- Chapter plot beats
+- Chapter scenes
+- Chapter pacing goals
+- Local emotional emphasis
+- Chapter output priorities
 
-### 10.5 Anti-Patterns 合并规则
+### 10.5 Anti-Pattern Merge Rules
 
-最终写作时生效的红线为：
+The effective writing red lines are:
 
 ```text
-生效红线 = Master 全局红线 ∪ Chapter 局部红线
+Effective red lines = Master global red lines ∪ Chapter local red lines
 ```
 
-注意：
+Remember:
 
-- Chapter 可以加新红线
-- Chapter 不能移除 Master 红线
+- Chapter may add new red lines.
+- Chapter cannot remove Master red lines.
 
-### 10.6 文件更新策略
+### 10.6 File-Update Strategy
 
-为避免覆盖人工修改，本轮建议采用以下策略：
+To avoid overwriting manual edits:
 
-1. JSON 文件由脚本完全管理
-2. Markdown 文件可带人工备注区
-3. 脚本只更新带 marker 的自动生成区块
+1. Scripts fully manage JSON files.
+2. Markdown files may contain manual-notes sections.
+3. Scripts update only marked autogenerated blocks.
 
-建议 marker：
+Suggested markers:
 
 ```markdown
 <!-- STORY-SYSTEM:BEGIN -->
-... 自动生成内容 ...
+... autogenerated content ...
 <!-- STORY-SYSTEM:END -->
 ```
 
-marker 外的手写内容，脚本不得改动。
+Scripts must not modify handwritten content outside the markers.
 
 ---
 
-## 11. Prompt / Skill 集成契约
+## 11. Prompt / Skill Integration Contract
 
-### 11.1 本轮只定义契约，不假定具体挂点
+### 11.1 Define the Contract Without Assuming Specific Hooks
 
-当前仓库中未直接暴露可改的 `webnovel-plan` / `webnovel-write` 的 `SKILL.md` 文件落点。
+Editable `SKILL.md` locations for `webnovel-plan` / `webnovel-write` are not directly exposed in the current repository.
 
-因此本 spec 不假定：
+This specification therefore does not assume:
 
-- prompt 一定在本仓库
-- skill 一定在本仓库
-- 运行时一定从哪个路径自动读取
+- Prompts reside in this repository.
+- Skills reside in this repository.
+- Runtime automatically reads a particular path.
 
-本轮只定义**接入契约**。
+Define only the **integration contract** here.
 
-### 11.2 标准读取逻辑
+### 11.2 Standard Read Logic
 
-未来接入层必须满足：
+Future integration must:
 
-1. 如果存在 `chapters/[当前章节].json`，优先读取它。
-2. 对于 `override_allowed` 字段，chapter 优先。
-3. 对于 `append_only` 字段，chapter 与 master 合并。
-4. 对于 `locked` 字段，只能读取 master。
-5. 最终始终附带全局与局部合并后的 `Anti-Patterns`。
+1. Prefer `chapters/[当前章节].json` if it exists.
+2. Prefer Chapter for `override_allowed` fields.
+3. Merge Chapter and Master for `append_only` fields.
+4. Read only Master for `locked` fields.
+5. Always include the union of global and local `Anti-Patterns`.
 
-### 11.3 标准提示词片段
+### 11.3 Standard Prompt Fragment
 
-接入层建议使用如下约束：
+Suggested integration constraints:
 
 ```markdown
-【核心状态读取逻辑】
-1. 若存在 `.story-system/chapters/[当前章节].json`，先读 chapter。
-2. `override_allowed` 字段以 chapter 为准。
-3. `append_only` 字段按并集合并。
-4. `locked` 字段只能服从 `.story-system/MASTER_SETTING.json`。
-5. `Anti-Patterns` 为全局与局部的并集，任何一条都不可违反。
+[Core State Read Logic]
+1. If `.story-system/chapters/[当前章节].json` exists, read Chapter first.
+2. Chapter governs `override_allowed` fields.
+3. Merge `append_only` fields by union.
+4. `locked` fields obey only `.story-system/MASTER_SETTING.json`.
+5. `Anti-Patterns` is the union of global and local rules; none may be violated.
 ```
 
 ---
 
-## 12. 实施阶段
+## 12. Implementation Phases
 
-### Phase 1：数据层
+### Phase 1: Data Layer
 
-交付：
+Deliver:
 
-1. 新增 `题材与调性推理.csv`
-2. 为 `桥段套路.csv` 新增 `忌讳写法`
-3. 更新 `references/csv/README.md`
+1. New `题材与调性推理.csv`
+2. New `忌讳写法` column in `桥段套路.csv`
+3. Updated `references/csv/README.md`
 
-本阶段不要求批量改写既有表内容。
+This phase does not require bulk rewriting of existing table content.
 
-### Phase 2：聚合脚本
+### Phase 2: Aggregation Script
 
-交付：
+Deliver:
 
-1. 新增 `story_system.py`
-2. 保持 `reference_search.py` 不改职责
-3. 实现 `StorySystemDict`
-4. 实现 Markdown / JSON 输出
+1. New `story_system.py`
+2. Unchanged responsibilities for `reference_search.py`
+3. `StorySystemDict` implementation
+4. Markdown / JSON output
 
-### Phase 3：持久化
+### Phase 3: Persistence
 
-交付：
+Deliver:
 
-1. `.story-system/` 自动创建
-2. `MASTER_SETTING.*` 持久化
-3. `chapter_xxx.*` 持久化
-4. marker 区块更新逻辑
+1. Automatic creation of `.story-system/`
+2. `MASTER_SETTING.*` persistence
+3. `chapter_xxx.*` persistence
+4. Marked-block update logic
 
-### Phase 4：接入层
+### Phase 4: Integration Layer
 
-交付：
+Deliver:
 
-1. 定位真实的 skill / prompt 挂点
-2. 按本 spec 的读取优先级接入
-3. 验证 chapter override 能正确覆盖局部字段
-
----
-
-## 13. 测试策略
-
-### 13.1 测试原则
-
-本项目不需要把每个知识点都写成测试。
-
-本轮测试只保护系统契约，不保护内容细节。
-
-### 13.2 必要测试
-
-至少新增以下轻量测试：
-
-1. **题材路由测试**
-   - 输入明确题材时能命中 `题材与调性推理.csv`
-   - 输入模糊 query 时能走 fallback
-
-2. **聚合结构测试**
-   - `StorySystemDict` 顶层字段完整
-   - 基础表与动态表结果落在正确 section
-
-3. **anti-pattern 聚合测试**
-   - 不同表的误区字段能被统一提取
-   - Master 与 Chapter 的红线会做并集
-
-4. **覆盖规则测试**
-   - `locked` 不会被 chapter 覆盖
-   - `append_only` 正确并集
-   - `override_allowed` chapter 优先
-
-5. **持久化测试**
-   - `--persist` 会写出 md + json
-   - marker 外的人工内容不会被覆盖
-
-6. **底层搜索回归**
-   - 现有 `reference_search.py` 测试继续通过
-
-### 13.3 不要求的测试
-
-本轮不要求：
-
-1. 每条 CSV 知识点逐条断言
-2. Markdown 渲染的视觉细节快照测试
-3. 复杂端到端 agent 测试
+1. Locate the actual skill / prompt integration points.
+2. Integrate using this specification's read priorities.
+3. Verify Chapter overrides correctly replace local fields.
 
 ---
 
-## 14. 风险与约束
+## 13. Testing Strategy
 
-### 14.1 最大风险
+### 13.1 Principles
 
-最大风险不是代码复杂度，而是职责混淆。
+This project does not need a test for every knowledge item.
 
-必须避免：
+Protect system contracts, not content details.
 
-1. 把 `reference_search.py` 改坏
-2. 把 Markdown 当源数据
-3. 让 Chapter 冲掉 Master 硬限制
-4. 把 `反套路变种` 错当成毒点字段
+### 13.2 Required Tests
 
-### 14.2 数据录入约束
+Add at least these lightweight tests:
 
-本轮仍遵守当前 CSV 原则：
+1. **Genre routing**
+   - Explicit genres match `题材与调性推理.csv`.
+   - Vague queries use fallback.
+2. **Aggregation structure**
+   - All top-level `StorySystemDict` fields exist.
+   - Base/dynamic results enter the correct sections.
+3. **Anti-pattern aggregation**
+   - Pitfall fields from different tables are extracted uniformly.
+   - Master and Chapter red lines form a union.
+4. **Override rules**
+   - Chapter cannot override `locked` fields.
+   - `append_only` uses the correct union.
+   - Chapter takes priority for `override_allowed`.
+5. **Persistence**
+   - `--persist` writes Markdown and JSON.
+   - Manual content outside markers is not overwritten.
+6. **Retrieval regression**
+   - Existing `reference_search.py` tests continue to pass.
 
-- 新内容以人工整理为主
-- 不做 md 全量自动迁移
-- 不要求一次性补全所有题材
+### 13.3 Tests Not Required
 
-### 14.3 上线顺序约束
+This effort does not require:
 
-正确上线顺序必须是：
-
-1. 先补路由表
-2. 再写聚合器
-3. 再做持久化
-4. 最后才接入 prompt / skill
-
-不能跳过中间层，直接让 prompt 去拼 CSV 检索结果。
+1. Assertions for every CSV knowledge entry
+2. Visual-detail snapshots of Markdown rendering
+3. Complex end-to-end agent tests
 
 ---
 
-## 15. 最终结论
+## 14. Risks and Constraints
 
-本轮架构升级的核心不是“把检索做得更大”，而是：
+### 14.1 Greatest Risk
 
-1. **保留现有检索 primitive 的稳定性**
-2. **新增一层 Story System 聚合器**
-3. **把全局约束与局部覆盖持久化**
-4. **让大模型服从结构化系统，而不是每次重新理解散乱结果**
+The greatest risk is confused responsibilities, not code complexity.
 
-最终目标不是“搜索更花”，而是：
+Avoid:
 
-**开书有 Master，写章有 Override，任何时刻都有可追溯、可持久、可服从的系统级上下文。**
+1. Breaking `reference_search.py`
+2. Treating Markdown as source data
+3. Letting Chapter erase Master hard limits
+4. Mistaking `反套路变种` for a reader-turn-off field
+
+### 14.2 Data-Entry Constraints
+
+Continue following existing CSV principles:
+
+- Primarily curate new content manually.
+- Do not automatically migrate all Markdown.
+- Do not require every genre to be completed at once.
+
+### 14.3 Rollout Order
+
+The correct order is:
+
+1. Add the routing table.
+2. Write the aggregator.
+3. Implement persistence.
+4. Integrate prompts / skills last.
+
+Do not skip intermediate layers and have prompts directly assemble CSV results.
+
+---
+
+## 15. Final Conclusion
+
+The core upgrade is not a bigger search system, but:
+
+1. **Preserving the stable retrieval primitive**
+2. **Adding a Story System aggregator**
+3. **Persisting global constraints and local overrides**
+4. **Having the model follow a structured system instead of repeatedly reinterpreting scattered results**
+
+The goal is not more elaborate search:
+
+**Start a book with a Master, write chapters with Overrides, and always have traceable, persistent, authoritative system-level context.**

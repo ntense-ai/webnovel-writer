@@ -1,319 +1,317 @@
-# STORYTELLER 论文总结
+# STORYTELLER Paper Summary
 
-## 文档目标
+## Purpose
 
-本文档基于原论文 `STORYTELLER: An Enhanced Plot-Planning Framework for Coherent and Cohesive Story Generation` 进行整理，重点回答以下问题：
+This document summarizes `STORYTELLER: An Enhanced Plot-Planning Framework for Coherent and Cohesive Story Generation`, focusing on:
 
-- 这篇工作到底解决了什么问题
-- 它的核心方法由哪些模块组成
-- 三阶段生成流程是如何运作的
-- 论文实验结果说明了什么
-- 对当前 `webnovel-writer` 有哪些直接可借鉴之处
+- The problem the work addresses
+- The modules in its core method
+- How its three-stage generation process works
+- What the experiments demonstrate
+- Direct lessons for `webnovel-writer`
 
-说明：
+Notes:
 
-- 本文优先依据 ACL Anthology 上的论文原文整理
-- 内容偏工程视角，不做逐节逐句翻译
-- 截止本次整理时间，未检索到论文官方公开代码仓库
+- Primarily based on the original paper in ACL Anthology
+- An engineering-oriented summary, not a line-by-line translation
+- No official public code repository was found at the time of this summary
 
-## 一句话结论
+## In One Sentence
 
-`STORYTELLER` 的核心价值，不是换了一个更大的模型，而是把长篇故事生成改造成了一个 `结构化剧情规划 + 实体关系图维护 + 逐章节审查修正` 的闭环系统。
+The value of `STORYTELLER` is not a larger model, but a closed-loop system combining **structured plot planning + entity-relationship graph maintenance + chapter-by-chapter review and revision**.
 
-它通过 `SVO` 事件节点、`STORYLINE` 时间线和 `NEKG` 叙事实体知识图谱，把“故事状态”从隐式上下文记忆转成显式可维护结构，因此显著提升了长篇叙事的一致性、连贯性与可控性。
+Through `SVO` event nodes, a `STORYLINE` timeline, and the `NEKG` narrative entity knowledge graph, it turns story state from implicit contextual memory into explicit, maintainable structures, substantially improving consistency, coherence, and controllability in long narratives.
 
-## 论文信息
+## Paper Details
 
-- 标题：`STORYTELLER: An Enhanced Plot-Planning Framework for Coherent and Cohesive Story Generation`
-- 会议：`Findings of the Association for Computational Linguistics: ACL 2025`
-- 作者：Jiaming Li, Yukun Chen, Ziqiang Liu 等
-- 论文链接：<https://aclanthology.org/2025.findings-acl.1071/>
-- PDF：<https://aclanthology.org/2025.findings-acl.1071.pdf>
-- arXiv：<https://arxiv.org/abs/2506.02347>
+- Title: `STORYTELLER: An Enhanced Plot-Planning Framework for Coherent and Cohesive Story Generation`
+- Venue: `Findings of the Association for Computational Linguistics: ACL 2025`
+- Authors: Jiaming Li, Yukun Chen, Ziqiang Liu, et al.
+- Paper: <https://aclanthology.org/2025.findings-acl.1071/>
+- PDF: <https://aclanthology.org/2025.findings-acl.1071.pdf>
+- arXiv: <https://arxiv.org/abs/2506.02347>
 
-## 论文要解决的问题
+## Problem Addressed
 
-论文开篇指出，现有自动故事生成方法虽然能写出流畅文本，但在长篇叙事里经常出现以下问题：
+The paper observes that existing automatic story-generation methods can produce fluent text but often suffer from:
 
-- 风格前后不一致
-- 情节逻辑断裂
-- 角色动机突然变化
-- 章节之间衔接松散
-- 重复、冗长、创造性不足
+- Inconsistent style
+- Broken plot logic
+- Abrupt changes in character motivation
+- Weak transitions between chapters
+- Repetition, verbosity, and limited creativity
 
-论文认为，问题的根源在于：
+It attributes these problems to:
 
-- 既有方法往往只提供高层 outline
-- 后续章节或事件生成彼此相对独立
-- 模型对先前剧情、角色关系和事件因果缺乏持续追踪
+- Methods that supply only high-level outlines
+- Relatively independent generation of later chapters or events
+- Insufficient ongoing tracking of earlier plots, relationships, and causal connections
 
-因此，单纯“先列大纲再扩写”还不够，还需要一个在生成过程中持续参与的动态结构层。
+Simply outlining and then expanding is therefore insufficient. Generation needs a dynamic structural layer that remains involved throughout.
 
-## 核心思想
+## Core Idea
 
-作者借鉴人类写作者的认知循环，将故事写作抽象为三类持续交互的行为：
+Drawing on human writers' cognitive cycle, the authors model writing as three interacting activities:
 
-- Retrieval：回看已有剧情与实体关系
-- Evaluation：判断新情节是否合理
-- Generation：在当前状态约束下生成新内容
+- Retrieval: revisit existing plot and entity relationships
+- Evaluation: assess whether new plot developments make sense
+- Generation: produce new content under current-state constraints
 
-围绕这个思路，`STORYTELLER` 做了三件关键事：
+`STORYTELLER` implements this through:
 
-1. 用 `SVO` 三元组把剧情抽象成情节节点
-2. 用 `STORYLINE` 维护按时间推进的事件链
-3. 用 `NEKG` 维护人物、地点、物品与事件关系图
+1. `SVO` triples representing plot nodes
+2. `STORYLINE` maintaining a chronological event chain
+3. `NEKG` maintaining relationships among people, places, objects, and events
 
-这意味着它不是让模型直接从 prompt 一路写到底，而是先维护一个不断更新的“剧情状态空间”，再在该状态空间内生成文本。
+Rather than writing straight from a prompt to the ending, it maintains an evolving plot-state space and generates text within that space.
 
-## 核心模块
+## Core Modules
 
-### 1. NODES：基于 SVO 的情节节点
+### 1. NODES: SVO-Based Plot Nodes
 
-论文把故事中的关键事件表示为 `Subject-Verb-Object` 三元组，也就是：
+Key story events are `Subject-Verb-Object` triples:
 
-- 谁
-- 做了什么
-- 作用到谁 / 什么
+- Who
+- Did what
+- To whom / what
 
-这个设计的意义是：
+This:
 
-- 把复杂叙事压缩成可比较、可检索、可审查的事件单元
-- 让剧情推进具有明确的结构锚点
-- 降低长文本生成时的漂移风险
+- Compresses complex narrative into comparable, retrievable, reviewable event units
+- Provides explicit structural anchors for plot progression
+- Reduces drift during long-form generation
 
-论文进一步把章节内节点分成三类：
+Nodes within a chapter are further divided into:
 
-- `CBN`：Chapter Begin Node，章节起始节点
-- `CPN`：Chapter Plot Node，章节推进节点
-- `CEN`：Chapter End Node，章节结束节点
+- `CBN`: Chapter Begin Node
+- `CPN`: Chapter Plot Node
+- `CEN`: Chapter End Node
 
-可以把它理解成：每一章都被拆成“进入状态、推进事件、收束结果”三个层次。
+Each chapter thus has an entry state, advancing events, and a closing result.
 
-### 2. STORYLINE：时间序列化剧情主线
+### 2. STORYLINE: Chronological Plot Sequence
 
-`STORYLINE` 用来保存生成过程中出现的所有 `NODE`。
+`STORYLINE` stores all generated `NODE`s.
 
-它的关键特征是：
+Key characteristics:
 
-- 每个节点都带有 `time_stamp`
-- 所有节点按时间顺序组织
-- 能形成故事全局事件时间线
+- Every node has a `time_stamp`
+- Nodes are chronologically ordered
+- Together they form a global story timeline
 
-论文强调，`STORYLINE` 的作用是：
+Its purposes are to:
 
-- 保证事件顺序正确
-- 追踪剧情如何逐步演化
-- 为后续节点生成提供最近事件上下文
+- Maintain correct event order
+- Track incremental plot evolution
+- Supply recent-event context for subsequent node generation
 
-从工程角度看，`STORYLINE` 相当于一个面向剧情推进的时序状态表。
+In engineering terms, it is a time-ordered state table for plot progression.
 
-### 3. NEKG：叙事实体知识图谱
+### 3. NEKG: Narrative Entity Knowledge Graph
 
-`NEKG` 全称是 `Narrative Entity Knowledge Graph`。
+`NEKG` stands for `Narrative Entity Knowledge Graph`.
 
-论文中，它负责用图结构维护叙事中的实体与关系：
+It uses a graph to maintain narrative entities and relationships:
 
-- 人物
-- 地点
-- 物品
-- 概念
-- 它们之间的互动与关联
+- Characters
+- Locations
+- Objects
+- Concepts
+- Their interactions and associations
 
-论文明确提到，`NEKG` 使用 `Neo4j` 实现，并且每个生成故事都有自己的图实例。
+The paper explicitly states that `NEKG` uses `Neo4j`, with a separate graph instance for each generated story.
 
-`NEKG` 的主要作用有三点：
+Its three main roles are to:
 
-- 记录角色互动和对象变化
-- 提供与当前候选剧情有关的关联节点
-- 支持后续剧情扩展与基于关系的推理
+- Record character interactions and object changes
+- Retrieve associated nodes relevant to a candidate plot development
+- Support plot expansion and relationship-based reasoning
 
-如果说 `STORYLINE` 解决的是“发生了什么，先后顺序如何”，那么 `NEKG` 解决的是“谁和谁有关、关系怎么影响后续剧情”。
+`STORYLINE` answers what happened and in what order; `NEKG` answers who is connected to whom and how those relationships affect later developments.
 
-## 三阶段生成流程
+## Three-Stage Generation Process
 
-论文把整个系统分成三个阶段。
+The system has three stages.
 
-## Stage 1：高层故事生成
+## Stage 1: High-Level Story Generation
 
-这一阶段先把用户输入压缩成高层叙事框架。
+First, user input becomes a high-level narrative framework in two steps.
 
-具体包含两步：
+### 1. Premise and Synopsis Generation
 
-### 1. Premise 和 Synopsis 生成
+Core information is extracted from the user prompt to generate:
 
-系统先从用户 prompt 中抽取核心信息，生成：
+- `Premise`: setting, era, environment, and social context
+- `Synopsis`: main plot, relationships, and major turning points
 
-- `Premise`：故事设定、时代背景、环境与社会语境
-- `Synopsis`：主线剧情、人物关系、主要转折
+This turns an inspirational prompt into a blueprint with a world and main storyline.
 
-这一步的作用是先把“灵感提示词”变成“具备世界观和主线的故事蓝图”。
+### 2. Chapter Titles and Abstracts
 
-### 2. Chapter Titles 和 Abstracts 生成
+The story is divided into chapters, each with:
 
-系统进一步把长篇故事拆成章节，并为每章生成：
+- A title
+- An abstract
 
-- 章节标题
-- 章节摘要
+These abstracts organize the story and constrain later mid-level node generation.
 
-这些摘要不仅用于组织结构，也作为后续中层情节节点生成的输入约束。
+In short:
 
-简化理解：
+- Stage 1 determines what the whole story is broadly about
+- It prevents the process from immediately becoming unconstrained full-text expansion
 
-- Stage 1 决定整本故事大致写什么
-- 让后续生成不至于一开始就陷入全文自由扩写
+## Stage 2: Mid-Level Plot Structure Generation
 
-## Stage 2：中层情节结构生成
+This is the paper's central contribution.
 
-这是整篇论文最关键的部分。
+Rather than drafting prose immediately, the system generates a node structure for each chapter.
 
-在这一阶段，系统并不直接写正文，而是先为每一章生成节点结构。
+### 1. Generate CBN and CEN First
 
-### 1. 先生成 CBN 和 CEN
+For each chapter, determine:
 
-对于每一章，系统会先生成：
+- Its starting state
+- Its closing state
 
-- 本章从什么状态开始
-- 本章在什么状态收束
+The paper notes that this considers adjacent chapters as well as the current one, making chapter boundaries and transitions more natural.
 
-论文指出，这一步不仅参考当前章节，还会考虑前后相邻章节，从而保证章节切分和过渡更自然。
+### 2. Generate CPNs One at a Time
 
-### 2. 再逐个生成 CPN
+With the start and endpoint established, fill the middle with `CPN`s.
 
-有了章节起点和终点之后，系统开始填充中间的推进节点 `CPN`。
+Instead of generating all nodes at once, repeat:
 
-这里不是直接一次性生成全部节点，而是循环执行：
+1. Generate a `Pseudo CPN` from the existing `CBN / CEN / generated CPNs`
+2. Use its `S'` and `O'` to retrieve relevant nodes from `NEKG`
+3. Retrieve recent events from `STORYLINE`
+4. Have the LLM review the candidate's plausibility
+5. Accept it if valid, or revise it into a new `CPN`
+6. Continue until the chapter's node chain naturally reaches `CEN`
 
-1. 先根据已有 `CBN / CEN / 已生成 CPN` 生成一个 `Pseudo CPN`
-2. 以该候选节点中的 `S'` 和 `O'` 为线索，从 `NEKG` 检索相关节点
-3. 同时从 `STORYLINE` 提取最近事件
-4. 让 LLM 审查这个 `Pseudo CPN` 是否合理
-5. 合理则接受，不合理则改写成新的 `CPN`
-6. 重复直到当前章节节点链能够自然走向 `CEN`
+This captures the actual innovation:
 
-这个设计很重要，因为它体现了论文真正的创新点：
+- Review while planning, rather than finish planning before writing
+- Continuously consult existing plot state, not just the local chapter abstract
+- Use the graph as evidence for node review, not as a static accessory
 
-- 不是先规划完再写，而是边规划边审查
-- 不是只看局部章节摘要，而是持续引用已有剧情状态
-- 不是把图谱当静态附属物，而是把它作为节点审查依据
+### Why Generate a Pseudo CPN Before Reviewing It?
 
-### 为什么要先生成 Pseudo CPN 再审查
+The paper gives practical reasons:
 
-论文给出的原因很现实：
+- Data in `STORYLINE` and `NEKG` continually grows
+- Context-length and cost limits prevent feeding the entire history to the LLM every time
 
-- `STORYLINE` 和 `NEKG` 中数据会不断增长
-- 长上下文和成本限制不允许每次把全部历史都喂给 LLM
+Generating a candidate first enables targeted retrieval and validation around that candidate, keeping context costs manageable.
 
-所以它先生成候选节点，再围绕该节点做有目标的检索与校验，从而把上下文使用控制在一个较低成本范围内。
+In engineering terms:
 
-从工程角度看，这一步本质上是：
+`Generate candidate event → retrieve relevant evidence → review consistency → confirm event`
 
-`候选事件生成 -> 相关证据召回 -> 一致性评审 -> 事件确认`
+## Stage 3: Fine-Grained Prose Generation
 
-## Stage 3：细粒度正文写作
+Only after the chapter-node structure is complete does the system generate natural-language text blocks.
 
-在完成章节节点结构之后，系统才开始生成自然语言文本块。
+It uses:
 
-正文生成会综合使用：
+- The current chapter title and abstract
+- Its `CBN / CPNs / CEN`
+- The previous text block
 
-- 当前章节标题与摘要
-- 当前章节的 `CBN / CPNs / CEN`
-- 上一个文本块
+Generated blocks are collected in a list and concatenated into the complete story.
 
-各个文本块生成后被加入列表，最后拼接成完整故事。
+Prose generation is therefore not unconstrained creation. It is constrained by:
 
-这说明 `STORYTELLER` 的正文生成并不是自由创作模式，而是：
+- Chapter structure
+- The node chain
+- Continuity with preceding text blocks
 
-- 被章节结构约束
-- 被节点链约束
-- 被前文文本块衔接约束
+It behaves more like a stateful prose expander.
 
-因此它更像一个“有状态的扩写器”。
+## Strengths
 
-## 方法优势
+My interpretation of the design highlights four advantages.
 
-结合论文设计，我认为它的主要优势有以下几点：
+### 1. Explicit Long-Term Consistency
 
-### 1. 把长期一致性显式化
+Traditional methods rely on contextual model memory. `STORYTELLER` divides consistency into explicit structures:
 
-传统方法把一致性寄托在模型上下文记忆里。`STORYTELLER` 把一致性拆成两个显式结构：
+- Temporal consistency: `STORYLINE`
+- Entity-relationship consistency: `NEKG`
 
-- 时间上的一致性：交给 `STORYLINE`
-- 实体关系上的一致性：交给 `NEKG`
+Implicit, difficult-to-control narrative state becomes inspectable, updatable, and retrievable.
 
-这样就把原本隐式、不可控的叙事状态转成了可检查、可更新、可检索的结构。
+### 2. Chapters as State Transitions
 
-### 2. 把章节写作变成状态转移
+A chapter is no longer just a text block. It:
 
-每章不再只是一个文本块，而是：
+- Enters through `CBN`
+- Advances through several `CPN`s
+- Ends at `CEN`
 
-- 从 `CBN` 进入
-- 经由若干 `CPN` 推进
-- 到 `CEN` 收束
+This naturally supports chapter-level control in long stories.
 
-这让长篇故事天然更适合做章节级控制。
+### 3. Dynamic Planning
 
-### 3. 把“规划”变成动态过程
+Many approaches use only a static outline. `STORYTELLER` consults existing state each time it generates a mid-level node. Planning is an active participant in generation, not a one-time artifact.
 
-不少方案只有静态 outline。`STORYTELLER` 则在每次生成中层节点时都重新参考已有状态，因此规划不是一次性产物，而是生成流程中的动态参与者。
+### 4. Extensible Reasoning
 
-### 4. 有利于后续扩展推理
+A graph-based `NEKG` could theoretically support:
 
-由于 `NEKG` 是图结构，它理论上可以支持：
+- Tracking relationship evolution
+- Analyzing causal chains involving key objects
+- Growing subplots
+- Integrating multiple character perspectives
 
-- 人物关系演化追踪
-- 关键物品因果链分析
-- 支线剧情生长
-- 多角色视角整合
+This structure is better suited to a novel system than vector retrieval alone.
 
-这比纯向量检索更适合小说系统。
+## Limitations and Risks
 
-## 局限与风险
+Despite strong reported results, implementation has clear costs.
 
-论文结果不错，但从工程落地看，这套方案也有明显成本。
+### 1. Heavy Workflow
 
-### 1. 流程较重
+This is not one generation call but a pipeline of:
 
-它不是一次生成，而是多阶段流水线：
+- High-level planning
+- Mid-level node planning
+- Candidate-node review
+- Prose-block generation
 
-- 高层规划
-- 中层节点规划
-- 候选节点审查
-- 正文块生成
+It increases:
 
-这会带来更高的：
+- Token cost
+- Latency
+- Retry complexity
 
-- token 成本
-- 延迟
-- 失败重试复杂度
+### 2. Dependence on Structured Abstraction Quality
 
-### 2. 对结构化抽象质量依赖高
+Unstable node design can produce:
 
-如果节点设计不稳定，就会出现：
+- Overly coarse plot abstractions with weak constraints
+- Overly fine abstractions with long generation chains
+- Inaccurate node semantics that add retrieval noise
 
-- 情节抽象过粗，约束力不够
-- 情节抽象过细，生成链路过长
-- 节点语义不准确，导致后续检索噪声
+### 3. Difficult Entity Normalization
 
-### 3. 实体归一化难度高
+One character can be referred to by:
 
-小说里同一个角色可能有：
+- Name
+- Title
+- Pronoun
+- Nickname
 
-- 姓名
-- 称谓
-- 代词
-- 外号
+Without stable normalization and aliases, `NEKG` can quickly fragment.
 
-如果 `NEKG` 没有稳定的实体归一化与别名机制，图谱会迅速碎裂。
+### 4. Noisy Graph Retrieval
 
-### 4. 图谱检索可能引入噪声
+As entities and relationships grow, retrieving only information genuinely relevant to the current candidate becomes a key limit on system quality.
 
-当实体越来越多、关系越来越密时，如何只召回“对当前候选节点真正相关”的信息，会成为系统效果上限的关键因素。
+## Experimental Results
 
-## 实验结果
+The paper reports an average human-preference win rate of `84.33%`.
 
-论文报告显示，`STORYTELLER` 在人工偏好评测中平均胜率达到 `84.33%`。
-
-对比对象包括：
+Baselines include:
 
 - `GPT-4o`
 - `Qwen2-72B-Instruct`
@@ -322,16 +320,16 @@
 - `LongWriter-llama3.1-8b`
 - `DOC v2`
 
-论文还给出人工偏好评测的代表结果：
+Reported human-preference results include:
 
-- 对 `GPT-4o` 胜率 `91%`
-- 对 `Qwen2-72B-Instruct` 胜率 `86%`
-- 对 `Meta-Llama-3.1-70B-Instruct` 胜率 `85%`
-- 对 `LongWriter-glm4-9b` 胜率 `83%`
-- 对 `LongWriter-llama3.1-8b` 胜率 `79%`
-- 对 `DOC v2` 胜率 `82%`
+- `91%` against `GPT-4o`
+- `86%` against `Qwen2-72B-Instruct`
+- `85%` against `Meta-Llama-3.1-70B-Instruct`
+- `83%` against `LongWriter-glm4-9b`
+- `79%` against `LongWriter-llama3.1-8b`
+- `82%` against `DOC v2`
 
-在细分指标上，论文也报告其在以下维度领先：
+The paper also reports leading results on:
 
 - Creativity
 - Coherence
@@ -339,100 +337,100 @@
 - Relevance
 - Overall Performance
 
-其中 Overall 分数为 `89.4`，明显高于论文中的其他对比方法。
+Its Overall score is `89.4`, clearly above the comparison methods reported in the paper.
 
-## 对 `webnovel-writer` 的启发
+## Lessons for `webnovel-writer`
 
-这篇论文对当前项目最有价值的，并不是“必须上 Neo4j”，而是它的系统拆法。
+The most valuable lesson is the decomposition of the system, not a requirement to adopt Neo4j.
 
-### 最值得吸收的三个能力
+### Three Capabilities Worth Adopting
 
-#### 1. 章节级剧情状态机
+#### 1. Chapter-Level Plot State Machine
 
-当前项目如果想增强长篇稳定性，可以考虑引入类似：
+To improve long-form stability, consider:
 
-- 章节起点
-- 若干关键推进点
-- 章节终点
+- A chapter starting point
+- Several key advancing points
+- A chapter endpoint
 
-不用一开始就完全复制论文里的 `CBN / CPN / CEN` 细节，但这个抽象非常适合作为章节规划层。
+There is no need to copy every `CBN / CPN / CEN` detail immediately, but the abstraction fits a chapter-planning layer well.
 
-#### 2. 角色与事件的显式状态维护
+#### 2. Explicit Character and Event State
 
-论文说明，仅靠 prompt 历史无法稳定维持长篇人物一致性。
+The paper shows that prompt history alone cannot reliably maintain character consistency over long narratives.
 
-对我们项目而言，更现实的做法是先实现一个轻量版 `NEKG`：
+A practical first step is a lightweight `NEKG` with:
 
-- 人物卡
-- 关系边
-- 关键道具状态
-- 势力关系
-- 最近事件链
+- Character profiles
+- Relationship edges
+- Key prop states
+- Faction relationships
+- Recent event chains
 
-第一阶段未必需要图数据库，`JSON + 索引 + 检索` 就能先跑起来。
+A graph database is not essential initially; `JSON + indexes + retrieval` can provide a working first version.
 
-#### 3. 候选剧情审查器
+#### 3. Candidate Plot Reviewer
 
-`Pseudo CPN Review` 的思路非常值得借鉴。
+`Pseudo CPN Review` is especially useful.
 
-可落地成一个“候选剧情检查器”，专门检查：
+A candidate-plot checker could test:
 
-- 是否和角色设定冲突
-- 是否和上一章结尾冲突
-- 是否违背世界规则
-- 是否重复已有桥段
-- 是否能顺利过渡到本章目标
+- Conflicts with characterization
+- Conflicts with the previous chapter's ending
+- Violations of world rules
+- Repetition of existing plot devices
+- Ability to transition naturally to the chapter goal
 
-这比单纯让模型“继续写下一章”更稳定。
+This is more stable than simply asking a model to continue with the next chapter.
 
-## 建议的落地顺序
+## Suggested Implementation Order
 
-如果将论文思想引入当前项目，我建议按以下顺序做简化实现：
+For a simplified implementation in this project:
 
-1. 先加章节级结构化节点
-2. 再加角色与关系状态存储
-3. 再加候选事件审查与修正
-4. 最后再考虑是否需要真正的图数据库
+1. Add structured chapter-level nodes
+2. Add character and relationship state storage
+3. Add candidate-event review and revision
+4. Only then decide whether a real graph database is needed
 
-原因很简单：
+Reasons:
 
-- 论文的思想比它的具体技术栈更重要
-- 先把“结构化剧情状态”做起来，收益最大
-- 过早引入 Neo4j 可能增加工程负担
+- The paper's ideas matter more than its specific technology stack
+- Explicit structured plot state offers the largest initial benefit
+- Introducing Neo4j too early may increase engineering burden
 
-## 我的判断
+## Assessment
 
-从研究价值看，`STORYTELLER` 很像是“长篇故事生成的状态化框架”。
+As research, `STORYTELLER` resembles a stateful framework for long-form story generation.
 
-它真正证明的是：
+It demonstrates that:
 
-- 大纲不够，需要中层情节节点
-- 检索不够，需要时序剧情状态和实体关系状态
-- 生成不够，需要生成中的审查修正闭环
+- Outlines alone are insufficient; mid-level plot nodes are needed
+- Retrieval alone is insufficient; temporal plot state and entity-relationship state are needed
+- Generation alone is insufficient; review and revision must form a loop within generation
 
-对小说系统来说，这个方向是对的，而且比纯提示词优化更有长期价值。
+For novel systems, this is a sound direction with more lasting value than prompt optimization alone.
 
-## 结论
+## Conclusion
 
-`STORYTELLER` 不是一个靠单次 prompt 取胜的技巧，而是一套完整的叙事编排机制。
+`STORYTELLER` is not a single-prompt trick but a complete narrative-orchestration mechanism.
 
-它把长篇故事生成重构为：
+It restructures long-form story generation into:
 
-- 高层故事规划
-- 中层情节节点生成
-- 基于时间线与实体图谱的动态校验
-- 受结构约束的正文扩写
+- High-level story planning
+- Mid-level plot-node generation
+- Dynamic validation against timelines and entity graphs
+- Structurally constrained prose expansion
 
-对于 `webnovel-writer`，这篇论文最值得借鉴的不是照搬论文系统，而是吸收它背后的三个原则：
+For `webnovel-writer`, the three most useful principles are:
 
-- 故事状态要显式维护
-- 章节推进要结构化建模
-- 正文生成前要先过一致性审查
+- Maintain story state explicitly
+- Model chapter progression structurally
+- Check consistency before generating prose
 
-如果后续要继续落地，我建议下一步直接把这篇论文转成一份“项目改造设计文档”，将 `STORYLINE / NEKG / CPN 审查器` 映射到当前仓库的模块边界。
+For further implementation, the recommended next step is a project-refactoring design that maps `STORYLINE / NEKG / CPN review` onto the repository's current module boundaries.
 
-## 参考链接
+## References
 
-- ACL Anthology：<https://aclanthology.org/2025.findings-acl.1071/>
-- PDF：<https://aclanthology.org/2025.findings-acl.1071.pdf>
-- arXiv：<https://arxiv.org/abs/2506.02347>
+- ACL Anthology: <https://aclanthology.org/2025.findings-acl.1071/>
+- PDF: <https://aclanthology.org/2025.findings-acl.1071.pdf>
+- arXiv: <https://arxiv.org/abs/2506.02347>
