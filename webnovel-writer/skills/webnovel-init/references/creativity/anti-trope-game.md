@@ -156,7 +156,7 @@ Differentiation: Not “I found the pattern, so I win,” but “The pattern its
 - ✅ **Make numerical feedback visible**, such as combat power 50 → 180.
 - ✅ **Cap the advantage**: time-limited trial cards, resource-consuming abilities.
 - ✅ **At least one small payoff per chapter**; do not leave a chapter without satisfaction.
-- ❌ System dialogue over 1,000 Chinese characters; readers will skip it.
+- ❌ System dialogue over 1,000 English words; readers will skip it.
 - ❌ Excessive world explanation in the first 5 chapters.
 - ❌ Abilities with no ceiling or cost.
 

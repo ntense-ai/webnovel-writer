@@ -2,7 +2,7 @@
 
 > Actual reference-consumption relationships in the current `skills/*/SKILL.md` files.
 > Scope: Markdown/templates explicitly required for direct reading, and CSV explicitly consumed through `reference_search.py` or `story-system`.
-> Ordinary project-data reads are excluded, such as `.webnovel/state.json`, `设定集/*.md`, `大纲/*.md`, and `index.db`.
+> Ordinary project-data reads are excluded, such as `.webnovel/state.json`, `settings/*.md`, `outlines/*.md`, and `index.db`.
 
 ---
 

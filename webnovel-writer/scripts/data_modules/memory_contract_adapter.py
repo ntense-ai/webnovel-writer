@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 import logging
 from pathlib import Path
+
+from project_paths import project_path
 from typing import Any, Dict, List, Optional
 
 from .chapter_commit_service import ChapterCommitService
@@ -305,7 +307,7 @@ class MemoryContractAdapter:
         try:
             data = json.loads(memory_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
-            logger.warning("project_memory.json 解析失败，跳过: %s", e)
+            logger.warning("Could not parse project_memory.json; skipping: %s", e)
             return []
         patterns = data.get("patterns") if isinstance(data, dict) else None
         if not isinstance(patterns, list):
@@ -324,7 +326,7 @@ class MemoryContractAdapter:
         return result
 
     def _load_style_contract(self) -> str:
-        path = self.config.settings_dir / "风格契约.md"
+        path = project_path(self.config.project_root, "settings/风格契约.md")
         if not path.exists():
             matches = sorted(self.config.settings_dir.glob("*风格契约*.md")) if self.config.settings_dir.exists() else []
             if not matches:

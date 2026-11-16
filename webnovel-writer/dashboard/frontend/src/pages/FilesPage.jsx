@@ -103,7 +103,7 @@ export default function FilesPage() {
             })
             .catch(() => {
                 if (!cancelled) {
-                    setContent('[读取失败]')
+                    setContent('[Read failed]')
                 }
             })
             .finally(() => {
@@ -125,8 +125,8 @@ export default function FilesPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>文档浏览</h2>
-                <Badge tone="blue">{totalFiles} 个文件</Badge>
+                <h2>Files</h2>
+                <Badge tone="blue">{totalFiles} files</Badge>
             </header>
 
             <div className="content-grid files-layout">
@@ -134,9 +134,9 @@ export default function FilesPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">FILE TREE</div>
-                            <div className="card-title">目录树</div>
+                            <div className="card-title">Directory Tree</div>
                         </div>
-                        <Badge tone="cyan">正文 / 大纲 / 设定集</Badge>
+                        <Badge tone="cyan">chapters / outlines / settings / reviews</Badge>
                     </div>
 
                     <div className="folder-group-list">
@@ -168,12 +168,12 @@ export default function FilesPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">FILE PREVIEW</div>
-                            <div className="card-title">内容预览</div>
+                            <div className="card-title">Content Preview</div>
                         </div>
                         {selectedPath ? (
                             <div className="header-badges">
-                                <Badge tone="amber">{lineCount} 行</Badge>
-                                <Badge tone="green">{content.length} 字符</Badge>
+                                <Badge tone="amber">{lineCount} lines</Badge>
+                                <Badge tone="green">{content.length} characters</Badge>
                             </div>
                         ) : null}
                     </div>
@@ -182,12 +182,12 @@ export default function FilesPage() {
                         <>
                             <div className="selected-path">{selectedPath}</div>
                             <pre className={`file-preview ${loadingContent ? 'loading' : ''}`.trim()}>
-                                {loadingContent ? '读取中…' : content}
+                                {loadingContent ? 'Loading…' : content}
                             </pre>
                         </>
                     ) : (
                         <div className="empty-state">
-                            <p>选择左侧文件以预览内容</p>
+                            <p>Select a file on the left to preview it</p>
                         </div>
                     )}
                 </article>

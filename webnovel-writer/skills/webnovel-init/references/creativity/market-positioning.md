@@ -25,7 +25,7 @@ Identify target platforms and readers precisely, develop differentiated competit
 - ✅ Gaming/competition, supported by esports growth.
 
 **Platform features**:
-- Paid subscriptions, RMB 0.05 per 1,000 Chinese characters.
+- Paid subscriptions, RMB 0.05 per 1,000 English words.
 - Fierce competition for new-book and genre rankings.
 - Active chapter comments and reviews.
 
@@ -51,10 +51,10 @@ Identify target platforms and readers precisely, develop differentiated competit
 **Platform features**:
 - Algorithmic recommendations driven by click-through rate.
 - Free model; the historical example associates more content with more revenue.
-- Short-work friendly, with completed works of 50,000–200,000 Chinese characters.
+- Short-work friendly, with completed works of 50,000–200,000 English words.
 
 **Historical 2025 trend examples**:
-- 🔥 Zhihu-style shorts of 20,000–30,000 Chinese characters.
+- 🔥 Zhihu-style shorts of 20,000–30,000 English words.
 - 🔥 Genre fusion, such as urban + fantasy.
 - 🔥 Reversals of conventional payoff fiction.
 - ❌ Dated: lengthy setup, slow openings, complicated worldbuilding.
@@ -328,21 +328,21 @@ Existing paying readership?
 
 **Historical frequency examples**:
 
-| Platform | Frequency | Chapter length (Chinese characters) | Reason |
+| Platform | Frequency | Chapter length (English words) | Reason |
 |------|---------|---------|------|
 | Qidian | Daily | 3,000–4,000 | Rankings require consistency |
 | Fanqie | 2–3 chapters daily | 2,000–2,500 | Algorithms favor frequent updates |
 | Jinjiang | Daily or alternate days | 3,000–5,000 | Readers accept this cadence |
 
 **Historical free-chapter examples**:
-- Qidian: 10–15 chapters, approximately 30,000–50,000 Chinese characters.
+- Qidian: 10–15 chapters, approximately 30,000–50,000 English words.
 - Fanqie: first 20–30 chapters free to attract traffic.
 - Jinjiang: 5–10 chapters, moving quickly to VIP.
 
 ### 6.4 Monetization
 
 **Historical VIP timing benchmarks**:
-- Length: 30,000–50,000 Chinese characters.
+- Length: 30,000–50,000 English words.
 - Chapters: 10–20.
 - Metrics: at least 500 saves and 200 recommendation votes.
 

@@ -40,7 +40,7 @@ LOCAL_CORS_ORIGINS = [
 
 def _get_project_root() -> Path:
     if _project_root is None:
-        raise HTTPException(status_code=500, detail="项目根目录未配置")
+        raise HTTPException(status_code=500, detail="Project root is not configured")
     return _project_root
 
 
@@ -69,13 +69,13 @@ def _load_state_payload(*, required: bool = False) -> dict:
     state_path = _webnovel_dir() / "state.json"
     if not state_path.is_file():
         if required:
-            raise HTTPException(404, "state.json 不存在")
+            raise HTTPException(404, "state.json not found")
         return {}
 
     try:
         payload = json.loads(state_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise HTTPException(status_code=500, detail=f"state.json 读取失败: {exc}") from exc
+        raise HTTPException(status_code=500, detail=f"Cannot read state.json: {exc}") from exc
 
     return payload if isinstance(payload, dict) else {}
 
@@ -305,7 +305,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
     def _get_db() -> sqlite3.Connection:
         db_path = _webnovel_dir() / "index.db"
         if not db_path.is_file():
-            raise HTTPException(404, "index.db 不存在")
+            raise HTTPException(404, "index.db not found")
         conn = sqlite3.connect(str(db_path))
         conn.row_factory = sqlite3.Row
         return conn
@@ -318,7 +318,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         except sqlite3.OperationalError as exc:
             if "no such table" in str(exc).lower() or "no such column" in str(exc).lower():
                 return []
-            raise HTTPException(status_code=500, detail=f"数据库查询失败: {exc}") from exc
+            raise HTTPException(status_code=500, detail=f"Database query failed: {exc}") from exc
 
     @app.get("/api/entities")
     def list_entities(
@@ -346,7 +346,7 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         with closing(_get_db()) as conn:
             row = conn.execute("SELECT * FROM entities WHERE id = ?", (entity_id,)).fetchone()
             if not row:
-                raise HTTPException(404, "实体不存在")
+                raise HTTPException(404, "Entity not found")
             return dict(row)
 
     @app.get("/api/relationships")
@@ -603,12 +603,12 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
             {
                 "name": "embed_api_key",
                 "ok": bool(status["embed"]["api_key_present"]),
-                "detail": "已配置" if status["embed"]["api_key_present"] else "未配置",
+                "detail": "Configured" if status["embed"]["api_key_present"] else "Not configured",
             },
             {
                 "name": "rerank_api_key",
                 "ok": bool(status["rerank"]["api_key_present"]),
-                "detail": "已配置" if status["rerank"]["api_key_present"] else "未配置",
+                "detail": "Configured" if status["rerank"]["api_key_present"] else "Not configured",
             },
             {
                 "name": "vector_db",
@@ -820,16 +820,16 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         }
 
     # ===========================================================
-    # API：文档浏览（正文/大纲/设定集 —— 只读）
+    # API: read-only browsing of current and legacy project directories
     # ===========================================================
 
     @app.get("/api/files/tree")
     def file_tree():
-        """列出 正文/、大纲/、设定集/ 三个目录的树结构。"""
+        """List document trees without hiding files in legacy directories."""
         root = _get_project_root()
         result = {}
-        for folder_name in ("正文", "大纲", "设定集"):
-            folder = root / folder_name
+        for folder in _document_folders(root):
+            folder_name = folder.name
             if not folder.is_dir():
                 result[folder_name] = []
                 continue
@@ -838,27 +838,27 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
 
     @app.get("/api/files/read")
     def file_read(path: str):
-        """只读读取一个文件内容（限 正文/大纲/设定集 目录）。"""
+        """Read only chapter, outline, setting, and review documents."""
         root = _get_project_root()
         resolved = safe_resolve(root, path)
 
-        # 二次限制：只允许三大目录
-        allowed_parents = [root / n for n in ("正文", "大纲", "设定集")]
+        # Retain the directory allowlist after the traversal guard.
+        allowed_parents = _document_folders(root)
         if not any(_is_child(resolved, p) for p in allowed_parents):
-            raise HTTPException(403, "仅允许读取 正文/大纲/设定集 目录下的文件")
+            raise HTTPException(403, "Only chapters, outlines, settings, and reviews (including legacy directories) can be read")
 
         if not resolved.is_file():
-            raise HTTPException(404, "文件不存在")
+            raise HTTPException(404, "File not found")
 
         max_bytes = 2 * 1024 * 1024
         if resolved.stat().st_size > max_bytes:
-            raise HTTPException(413, "文件过大，无法预览")
+            raise HTTPException(413, "File is too large to preview")
 
         # 文本文件直接读；其他情况返回占位信息
         try:
             content = resolved.read_text(encoding="utf-8")
         except UnicodeDecodeError:
-            content = "[二进制文件，无法预览]"
+            content = "[Binary file cannot be previewed]"
 
         return {"path": path, "content": content}
 
@@ -894,18 +894,18 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
         def serve_spa(full_path: str):
             """SPA fallback：任何非 /api 路径都返回 index.html。"""
             if full_path.startswith("api/"):
-                raise HTTPException(404, "API 路径不存在")
+                raise HTTPException(404, "API route not found")
             index = STATIC_DIR / "index.html"
             if index.is_file():
                 return FileResponse(str(index))
-            raise HTTPException(404, "前端尚未构建")
+            raise HTTPException(404, "Frontend has not been built")
     else:
         @app.get("/")
         def no_frontend():
             return HTMLResponse(
                 "<h2>Webnovel Dashboard API is running</h2>"
-                "<p>前端尚未构建。请先在 <code>dashboard/frontend</code> 目录执行 <code>npm run build</code>。</p>"
-                '<p>API 文档：<a href="/docs">/docs</a></p>'
+                "<p>Frontend has not been built. Run <code>npm run build</code> in <code>dashboard/frontend</code> first.</p>"
+                '<p>API documentation: <a href="/docs">/docs</a></p>'
             )
 
     return app
@@ -914,6 +914,25 @@ def create_app(project_root: str | Path | None = None) -> FastAPI:
 # ---------------------------------------------------------------------------
 # 辅助函数
 # ---------------------------------------------------------------------------
+
+def _document_folders(root: Path) -> list[Path]:
+    from project_paths import project_dir
+
+    folders = []
+    for canonical, legacy in (
+        ("chapters", "正文"), ("outlines", "大纲"),
+        ("settings", "设定集"), ("reviews", "审查报告"),
+    ):
+        selected = project_dir(root, canonical)
+        folders.append(selected)
+        # A mixed layout can contain both; expose actual paths, never rename or
+        # merge them, and don't conceal legacy documents behind an empty folder.
+        for name in (canonical, legacy):
+            candidate = root / name
+            if candidate != selected and candidate.is_dir():
+                folders.append(candidate)
+    return folders
+
 
 def _walk_tree(folder: Path, root: Path) -> list[dict]:
     items = []

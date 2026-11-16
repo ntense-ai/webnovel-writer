@@ -65,7 +65,7 @@
 #### Template
 ```markdown
 ## Chapter 1: The Humiliation of a Broken Engagement
-**Length**: 3,000 Chinese characters
+**Length**: 3,000 English words
 **Main plot**:
   - Ye clan heir Ye Liangchen arrives to break the engagement
   - Lin Tian is humiliated; the whole family loses face
@@ -129,18 +129,15 @@
 
 ### Tool A: Markdown + Git
 ```
-大纲/
-├── 骨架大纲.md
-├── 分卷大纲/
-│   ├── 第一卷.md
-│   ├── 第二卷.md
-│   └── 第三卷.md
-├── 章节大纲/
-│   ├── 001-050章.md
-│   └── 051-100章.md
-└── 大纲变更日志.md
+outlines/
+├── master-outline.md
+├── volume-1-outline.md
+├── volume-1-timeline.md
+├── volume-1-beats.md
+├── volume-2-outline.md
+└── outline-change-log.md   # Optional manual change log
 ```
-**Strength**: plain text, easy version control and search. The example retains established Chinese directory and filename conventions.
+**Strength**: plain text, easy version control and search. New projects use English paths. For existing projects, resolve the actual paths before reading or writing; retain legacy filenames.
 
 ### Tool B: Mind map (XMind/MindNode)
 ```
@@ -196,14 +193,14 @@ Before writing, check:
 - [ ] **Logic**: reasonable progression, not characters suddenly becoming stupid?
 - [ ] **Gratification**: at least one payoff every 10–20 chapters?
 - [ ] **Foreshadowing**: planned resolution for every planted thread, with chapter marked?
-- [ ] **Length**: estimated total fits platform requirements? (Qidian: at least one million Chinese characters.)
+- [ ] **Length**: estimated total fits platform requirements? (Qidian: at least one million English words.)
 
 ---
 
 ## Appendix: Classic outline case studies
 
 ### Case 1: A Record of a Mortal's Journey to Immortality
-- **Skeleton**: ordinary youth cultivates → becomes an immortal-realm powerhouse (very long arc, eight million Chinese characters).
+- **Skeleton**: ordinary youth cultivates → becomes an immortal-realm powerhouse (very long arc, eight million English words).
 - **Volumes**: divided by map (mortal realm → spirit realm → immortal realm); strength positioning resets with each move.
 - **Pacing**: each sub-realm has its own smaller climax (treasure gained/enemy defeated).
 

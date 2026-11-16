@@ -7,6 +7,12 @@ argument-hint: "[search term, e.g. character name/foreshadowing/cultivation real
 
 # Information Query Skill
 
+## Project paths and output language
+
+Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+
 ## Use when
 
 Trigger when the user asks about project-specific story settings, characters, power systems, factions, foreshadowing, special abilities, pacing, or related information.

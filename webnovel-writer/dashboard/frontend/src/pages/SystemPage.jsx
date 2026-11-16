@@ -21,8 +21,8 @@ function statusTone(status) {
 
 function projectionSummary(projectionStatus) {
     const values = Object.values(projectionStatus || {})
-    if (!values.length) return '无投影'
-    if (values.every(value => value === 'done')) return '5 路 projection OK'
+    if (!values.length) return 'No projections'
+    if (values.every(value => value === 'done')) return 'All 5 projections OK'
     return values.join(' / ')
 }
 
@@ -74,27 +74,27 @@ export default function SystemPage() {
             {
                 type: 'MASTER_SETTING',
                 count: contractsSummary.master?.exists ? 1 : 0,
-                desc: [contractsSummary.master?.primary_genre, contractsSummary.master?.core_tone].filter(Boolean).join(' · ') || '未检测到主合同',
+                desc: [contractsSummary.master?.primary_genre, contractsSummary.master?.core_tone].filter(Boolean).join(' · ') || 'No master contract found',
             },
             {
                 type: 'VOLUME_BRIEF',
                 count: contractsSummary.counts?.volumes || 0,
-                desc: `当前卷 ${contractsSummary.current_volume || '—'} · ${contractsSummary.current_contracts?.volume ? '存在' : '缺失'}`,
+                desc: `Current volume ${contractsSummary.current_volume || '—'} · ${contractsSummary.current_contracts?.volume ? 'Present' : 'Missing'}`,
             },
             {
                 type: 'CHAPTER_BRIEF',
                 count: contractsSummary.counts?.chapters || 0,
-                desc: `${formatChapterLabel(contractsSummary.chapter)} · ${contractsSummary.current_contracts?.chapter ? '存在' : '缺失'}`,
+                desc: `${formatChapterLabel(contractsSummary.chapter)} · ${contractsSummary.current_contracts?.chapter ? 'Present' : 'Missing'}`,
             },
             {
                 type: 'REVIEW_CONTRACT',
                 count: contractsSummary.counts?.reviews || 0,
-                desc: `${contractsSummary.current_contracts?.review ? '当前章已生成审查合同' : '当前章缺少审查合同'}`,
+                desc: `${contractsSummary.current_contracts?.review ? 'Review contract available' : 'Review contract missing'}`,
             },
             {
                 type: 'COMMIT',
                 count: contractsSummary.counts?.commits || 0,
-                desc: `${contractsSummary.current_contracts?.commit ? '当前章已有 commit' : '当前章无 commit'}`,
+                desc: `${contractsSummary.current_contracts?.commit ? 'Chapter commit available' : 'No chapter commit'}`,
             },
         ]
     }, [contractsSummary])
@@ -136,7 +136,7 @@ export default function SystemPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>系统状态</h2>
+                <h2>System</h2>
             </header>
 
             <div className="stat-grid">
@@ -148,7 +148,7 @@ export default function SystemPage() {
                 <StatCard
                     label="Latest Commit"
                     value={latestCommit?.status || runtimeHealth?.latest_commit_status || 'missing'}
-                    sub={latestCommit ? `${formatChapterLabel(latestCommit.chapter)} · ${projectionSummary(latestCommit.projection_status)}` : '暂无 commit 数据'}
+                    sub={latestCommit ? `${formatChapterLabel(latestCommit.chapter)} · ${projectionSummary(latestCommit.projection_status)}` : 'No commit data'}
                 />
                 <StatCard
                     label="RAG Mode"
@@ -166,24 +166,24 @@ export default function SystemPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">CONTRACT TREE</div>
-                        <div className="card-title">合同树概览</div>
+                        <div className="card-title">Contract Tree</div>
                     </div>
                     {contractsSummary ? <Badge tone="purple">{formatChapterLabel(contractsSummary.chapter)}</Badge> : null}
                 </div>
                 <DataTable
                     columns={[
-                        { key: 'type', label: '类型' },
+                        { key: 'type', label: 'Type' },
                         {
                             key: 'count',
-                            label: '数量',
+                            label: 'Count',
                             render: row => <Badge tone={row.count > 0 ? 'green' : 'red'}>{row.count}</Badge>,
                         },
-                        { key: 'desc', label: '说明' },
+                        { key: 'desc', label: 'Description' },
                     ]}
                     rows={contractRows}
                     rowKey="type"
                     pageSize={6}
-                    emptyText="暂无合同树数据"
+                    emptyText="No contract tree data"
                     minWidth={680}
                 />
             </article>
@@ -192,20 +192,20 @@ export default function SystemPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">RECENT COMMITS</div>
-                        <div className="card-title">最近 Commit 历史</div>
+                        <div className="card-title">Recent Commit History</div>
                     </div>
-                    <Badge tone="amber">{commits.length} 条</Badge>
+                    <Badge tone="amber">{commits.length} records</Badge>
                 </div>
                 <DataTable
                     columns={[
                         {
                             key: 'chapter',
-                            label: '章节',
+                            label: 'Chapter',
                             render: row => formatChapterLabel(row.chapter),
                         },
                         {
                             key: 'status',
-                            label: '状态',
+                            label: 'Status',
                             render: row => <Badge tone={statusTone(row.status)}>{row.status}</Badge>,
                         },
                         {
@@ -235,14 +235,14 @@ export default function SystemPage() {
                         },
                         {
                             key: 'updated_at',
-                            label: '更新时间',
+                            label: 'Updated',
                             render: row => formatDateTime(row.updated_at),
                         },
                     ]}
                     rows={commits}
                     rowKey={(row, index) => `${row.chapter || 0}-${index}`}
                     pageSize={8}
-                    emptyText="暂无 commit 记录"
+                    emptyText="No commits"
                     minWidth={980}
                 />
             </article>
@@ -251,7 +251,7 @@ export default function SystemPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">RAG DIAGNOSIS</div>
-                        <div className="card-title">RAG 环境</div>
+                        <div className="card-title">RAG Environment</div>
                     </div>
                     <button
                         type="button"
@@ -264,28 +264,28 @@ export default function SystemPage() {
                                 .finally(() => setProbing(false))
                         }}
                     >
-                        {probing ? '诊断中…' : '运行诊断'}
+                        {probing ? 'Diagnosing…' : 'Run diagnostics'}
                     </button>
                 </div>
                 {probeResult?.checked_at ? (
                     <div className="diagnosis-meta">
-                        上次诊断：{formatDateTime(probeResult.checked_at)} · {probeResult.ok ? '全部通过' : '存在缺项'}
+                        Last diagnostic: {formatDateTime(probeResult.checked_at)} · {probeResult.ok ? 'All checks passed' : 'Missing components'}
                     </div>
                 ) : null}
                 <DataTable
                     columns={[
-                        { key: 'name', label: '组件' },
+                        { key: 'name', label: 'Component' },
                         {
                             key: 'ok',
-                            label: '状态',
-                            render: row => <Badge tone={row.ok ? 'green' : 'red'}>{row.ok ? 'OK' : '缺失'}</Badge>,
+                            label: 'Status',
+                            render: row => <Badge tone={row.ok ? 'green' : 'red'}>{row.ok ? 'OK' : 'Missing'}</Badge>,
                         },
-                        { key: 'detail', label: '详情' },
+                        { key: 'detail', label: 'Details' },
                     ]}
                     rows={envRows}
                     rowKey="name"
                     pageSize={6}
-                    emptyText="暂无环境信息"
+                    emptyText="No environment information"
                     minWidth={680}
                 />
             </article>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-quality_trend_report.py - 生成章节质量趋势报告（离线）
+quality_trend_report.py - 生成章节Quality trend report（离线）
 
 数据来源：
 - index.db.review_metrics
@@ -101,26 +101,26 @@ def _build_risk_flags(
 
     overall_avg = _to_float(review_trend.get("overall_avg"))
     if overall_avg < 75 and review_trend.get("count", 0) > 0:
-        flags.append(f"审查均分偏低（{overall_avg:.1f}），建议优先回看低分区间。")
+        flags.append(f"Low average review score ({overall_avg:.1f}); revisit low-scoring ranges first.")
 
     severity_totals = review_trend.get("severity_totals") or {}
     critical_total = _to_int(severity_totals.get("critical"))
     high_total = _to_int(severity_totals.get("high"))
     if critical_total > 0:
-        flags.append(f"存在 {critical_total} 个 critical 问题，建议设为最高修复优先级。")
+        flags.append(f"Found {critical_total} critical issues; prioritize these fixes.")
     elif high_total >= 5:
-        flags.append(f"high 问题累计 {high_total} 个，建议做批量修复专项。")
+        flags.append(f"Found {high_total} high-severity issues; plan a focused repair pass.")
 
     score_avg = _to_float(checklist_trend.get("score_avg"))
     if checklist_trend.get("count", 0) > 0 and score_avg < 80:
-        flags.append(f"写作清单平均分偏低（{score_avg:.1f}），建议加强执行清单落地。")
+        flags.append(f"Low average checklist score ({score_avg:.1f}); improve checklist execution.")
 
     completion_avg = _to_float(checklist_trend.get("completion_avg"))
     if checklist_trend.get("count", 0) > 0 and completion_avg < 0.7:
-        flags.append(f"写作清单完成率仅 {_percent(completion_avg)}，建议减少每章可选项数量。")
+        flags.append(f"Checklist completion is only {_percent(completion_avg)}; reduce optional items per chapter.")
 
     if not flags:
-        flags.append("近期质量指标整体稳定，暂无高优先级风险。")
+        flags.append("Recent quality metrics are stable; no high-priority risks detected.")
 
     return flags
 
@@ -148,31 +148,31 @@ def build_quality_report(
     risk_flags = _build_risk_flags(review_trend, checklist_trend)
 
     lines: List[str] = []
-    lines.append("# 质量趋势报告")
+    lines.append("# Quality trend report")
     lines.append("")
-    lines.append(f"- 生成时间: {now_text}")
-    lines.append(f"- 项目路径: `{project_root}`")
-    lines.append(f"- 统计窗口: 最近 {limit} 条记录")
+    lines.append(f"- Generated at: {now_text}")
+    lines.append(f"- Project path: `{project_root}`")
+    lines.append(f"- Window: latest {limit} records")
     lines.append("")
-    lines.append("## 总览")
+    lines.append("## Overview")
     lines.append("")
-    lines.append(f"- 审查记录数: {review_count}")
-    lines.append(f"- 审查均分: {overall_avg:.1f}")
-    lines.append(f"- 清单评分记录数: {checklist_count}")
-    lines.append(f"- 清单平均分: {checklist_score_avg:.1f}")
-    lines.append(f"- 清单平均完成率: {_percent(checklist_completion_avg)}")
+    lines.append(f"- Review records: {review_count}")
+    lines.append(f"- Average review score: {overall_avg:.1f}")
+    lines.append(f"- Checklist score records: {checklist_count}")
+    lines.append(f"- Average checklist score: {checklist_score_avg:.1f}")
+    lines.append(f"- Average checklist completion: {_percent(checklist_completion_avg)}")
     lines.append("")
 
-    lines.append("## 审查区间趋势")
+    lines.append("## Review range trends")
     lines.append("")
-    lines.append("| 区间 | 总分 | Critical | High | Medium | Low |")
+    lines.append("| Range | Score | Critical | High | Medium | Low |")
     lines.append("|---|---:|---:|---:|---:|---:|")
     lines.extend(_build_review_rows(review_records))
     lines.append("")
 
-    lines.append("## 维度均分")
+    lines.append("## Average dimension scores")
     lines.append("")
-    lines.append("| 维度 | 平均分 |")
+    lines.append("| Dimension | Average score |")
     lines.append("|---|---:|")
     if dimension_avg:
         for key in sorted(dimension_avg.keys()):
@@ -181,22 +181,22 @@ def build_quality_report(
         lines.append("| - | - |")
     lines.append("")
 
-    lines.append("## 严重级别汇总")
+    lines.append("## Severity summary")
     lines.append("")
-    lines.append("| 等级 | 数量 |")
+    lines.append("| Severity | Count |")
     lines.append("|---|---:|")
     for level in ("critical", "high", "medium", "low"):
         lines.append(f"| {level} | {_to_int(severity_totals.get(level))} |")
     lines.append("")
 
-    lines.append("## 写作清单趋势")
+    lines.append("## Writing checklist trends")
     lines.append("")
-    lines.append("| 章节 | 分数 | 完成率 | 必做完成率 |")
+    lines.append("| Chapter | Score | Completion | Required completion |")
     lines.append("|---:|---:|---:|---:|")
     lines.extend(_build_checklist_rows(checklist_records))
     lines.append("")
 
-    lines.append("## 风险提示")
+    lines.append("## Risk notes")
     lines.append("")
     for item in risk_flags:
         lines.append(f"- {item}")
@@ -206,10 +206,10 @@ def build_quality_report(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="生成离线质量趋势报告（基于 index.db）")
-    parser.add_argument("--project-root", type=str, help="项目根目录（可选，不传则自动探测）")
-    parser.add_argument("--limit", type=int, default=20, help="统计最近 N 条记录（默认 20）")
-    parser.add_argument("--output", type=str, help="输出文件路径（默认 .webnovel/reports/quality-trend.md）")
+    parser = argparse.ArgumentParser(description="Generate an offline quality trend report from index.db")
+    parser.add_argument("--project-root", type=str, help="Optional project root; auto-detected when omitted")
+    parser.add_argument("--limit", type=int, default=20, help="Summarize the latest N records (default: 20)")
+    parser.add_argument("--output", type=str, help="Output path (default: .webnovel/reports/quality-trend.md)")
     args = parser.parse_args()
 
     if args.project_root:
@@ -231,7 +231,7 @@ def main() -> None:
 
     report = build_quality_report(project_root, manager, limit=limit)
     output_path.write_text(report, encoding="utf-8")
-    print(f"✅ 已生成质量趋势报告: {output_path}")
+    print(f"✅ Quality trend report generated: {output_path}")
 
 
 if __name__ == "__main__":

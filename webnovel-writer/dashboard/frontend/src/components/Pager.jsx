@@ -14,17 +14,17 @@ export default function Pager({
     return (
         <div className="pager">
             <button className="page-btn" type="button" onClick={onPrevious} disabled={page <= 1}>
-                ← 前 {stepLabel}
+                ← Previous {stepLabel}
             </button>
             <span className="page-info">
-                第 {currentStart}-{currentEnd} 章 · 第 {page}/{totalPages} 页
+                Chapters {currentStart}-{currentEnd} · Page {page}/{totalPages}
             </span>
             <div className="pager-actions">
                 <button className="page-btn" type="button" onClick={onNext} disabled={page >= totalPages}>
-                    下一页 →
+                    Next →
                 </button>
                 <button className="page-btn" type="button" onClick={onLatest} disabled={page >= totalPages}>
-                    跳到最新 →
+                    Latest →
                 </button>
             </div>
         </div>

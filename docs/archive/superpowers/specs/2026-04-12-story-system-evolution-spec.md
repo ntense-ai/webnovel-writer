@@ -1,5 +1,7 @@
 # Webnovel Writer Story System Incremental Evolution Spec
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > **Date**: 2026-04-12
 > **Status**: Draft v1
 > **Purpose**: A superpowers architecture-convergence spec grounded in the actual system

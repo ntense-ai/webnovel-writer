@@ -15,7 +15,7 @@ Step 4 style-adaptation reference: rewrite chapter prose in web-fiction style an
 - Rewrite log (record major adjustments)
 
 Default length target:
-- Standard chapters default to 2,000–2,500 Chinese characters unless the outline or user specifies otherwise.
+- Standard chapters default to 2,000–2,500 English words unless the outline or user specifies otherwise.
 
 ## Forbidden changes (red lines)
 - ❌ Plot direction
@@ -25,7 +25,7 @@ Default length target:
 - ❌ Foreshadowing content
 
 ## Hard constraints (mandatory)
-- ✅ Split long sentences (>40 Chinese characters); avoid consecutive long sentences that burden reading
+- ✅ Split long sentences (>40 English words); avoid consecutive long sentences that burden reading
 - ✅ Abstract judgments → actions/reactions/costs
 - ✅ Remove summarizing narration and large blocks of pure explanation
 - ✅ At least one clear advancement per chapter (information/action/relationship/situation)

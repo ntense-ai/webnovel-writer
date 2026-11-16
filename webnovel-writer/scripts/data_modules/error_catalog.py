@@ -58,10 +58,10 @@ def _coerce_error(raw: dict[str, Any], *, matched: bool = True) -> AuthorError:
     return AuthorError(
         code=str(raw.get("code") or "unknown"),
         severity=severity,
-        title=str(raw.get("title") or "遇到问题"),
-        reason=str(raw.get("reason") or "系统没有提供具体原因。"),
-        impact=str(raw.get("impact") or "当前结果需要确认。"),
-        next_action=str(raw.get("next_action") or "运行 `/webnovel-doctor` 查看详情。"),
+        title=str(raw.get("title") or "Problem encountered"),
+        reason=str(raw.get("reason") or "The system did not provide a specific reason."),
+        impact=str(raw.get("impact") or "The current result needs verification."),
+        next_action=str(raw.get("next_action") or "Run `/webnovel-doctor` for details."),
         command=str(raw.get("command") or ""),
         auto_handle=bool(raw.get("auto_handle")),
         matched=matched,
@@ -142,10 +142,10 @@ def classify_issue(
 def format_author_error(error: AuthorError) -> str:
     lines = [
         f"{error.title}",
-        f"- 原因：{error.reason}",
-        f"- 影响：{error.impact}",
-        f"- 下一步：{error.next_action}",
+        f"- Reason: {error.reason}",
+        f"- Impact: {error.impact}",
+        f"- Next step: {error.next_action}",
     ]
     if error.command:
-        lines.append(f"- 可用命令：{error.command}")
+        lines.append(f"- Available command: {error.command}")
     return "\n".join(lines)

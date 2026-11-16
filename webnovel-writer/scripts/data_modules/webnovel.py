@@ -115,7 +115,7 @@ def _run_data_module(module: str, argv: list[str]) -> int:
     mod = importlib.import_module(f"data_modules.{module}")
     main = getattr(mod, "main", None)
     if not callable(main):
-        raise RuntimeError(f"data_modules.{module} 缺少可调用的 main()")
+        raise RuntimeError(f"data_modules.{module} has no callable main()")
 
     old_argv = sys.argv
     try:
@@ -137,7 +137,7 @@ def _run_script(script_name: str, argv: list[str]) -> int:
     """
     script_path = _scripts_dir() / script_name
     if not script_path.is_file():
-        raise FileNotFoundError(f"未找到脚本: {script_path}")
+        raise FileNotFoundError(f"Script not found: {script_path}")
     proc = subprocess.run([sys.executable, str(script_path), *argv])
     return int(proc.returncode or 0)
 
@@ -157,13 +157,13 @@ def _project_root_diagnostic(
 ) -> str:
     if explicit_project_root:
         return (
-            "未找到有效书项目根目录（需要包含 .webnovel/state.json）: "
+            "Valid book project root not found (requires .webnovel/state.json): "
             f"{explicit_project_root}\n"
             f"detail: {exc}"
         )
     return (
-        "当前工作区还没有激活的书项目（未找到 .webnovel/state.json）。\n"
-        "请先运行 webnovel init 创建项目，或运行 webnovel use <project_root> 绑定已有书项目。\n"
+        "No active book project in this workspace (.webnovel/state.json not found).\n"
+        "Run webnovel init to create a project, or webnovel use <project_root> to select an existing project.\n"
         f"detail: {exc}"
     )
 
@@ -318,13 +318,13 @@ def cmd_run_ledger(args: argparse.Namespace) -> int:
             problems = json.loads(args.problems_json)
             auto_handled = json.loads(args.auto_handled_json)
         except json.JSONDecodeError as exc:
-            print(f"ledger JSON 参数不合法: {exc}", file=sys.stderr)
+            print(f"Invalid ledger JSON argument: {exc}", file=sys.stderr)
             return 2
         if not isinstance(inputs, dict) or not isinstance(outputs, dict):
-            print("inputs-json / outputs-json 必须是 JSON object", file=sys.stderr)
+            print("inputs-json / outputs-json must be a JSON object", file=sys.stderr)
             return 2
         if not isinstance(problems, list) or not isinstance(auto_handled, list):
-            print("problems-json / auto-handled-json 必须是 JSON list", file=sys.stderr)
+            print("problems-json / auto-handled-json must be a JSON list", file=sys.stderr)
             return 2
         entry = record_write_step(
             root,
@@ -368,10 +368,10 @@ def cmd_run_log(args: argparse.Namespace) -> int:
     try:
         payload = json.loads(args.payload_json)
     except json.JSONDecodeError as exc:
-        print(f"payload-json 不是合法 JSON: {exc}", file=sys.stderr)
+        print(f"payload-json is not valid JSON: {exc}", file=sys.stderr)
         return 2
     if not isinstance(payload, dict):
-        print("payload-json 必须是 JSON object", file=sys.stderr)
+        print("payload-json must be a JSON object", file=sys.stderr)
         return 2
     result = write_run_log(root, event=args.event, payload=payload, append=args.append)
     if args.format == "json":
@@ -387,7 +387,7 @@ def cmd_use(args: argparse.Namespace) -> int:
         project_root = project_root.resolve()
     except Exception as exc:
         import sys
-        print(f"⚠️ path.resolve() 失败 ({project_root}): {exc}", file=sys.stderr)
+        print(f"⚠️ path.resolve() failed ({project_root}): {exc}", file=sys.stderr)
         project_root = project_root
 
     workspace_root: Optional[Path] = None
@@ -397,7 +397,7 @@ def cmd_use(args: argparse.Namespace) -> int:
             workspace_root = workspace_root.resolve()
         except Exception as exc:
             import sys
-            print(f"⚠️ path.resolve() 失败 ({workspace_root}): {exc}", file=sys.stderr)
+            print(f"⚠️ path.resolve() failed ({workspace_root}): {exc}", file=sys.stderr)
             workspace_root = workspace_root
 
     # 1) 写入工作区指针（若工作区内存在 `.claude/`）
@@ -419,57 +419,57 @@ def cmd_use(args: argparse.Namespace) -> int:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="webnovel unified CLI")
-    parser.add_argument("--project-root", help="书项目根目录或工作区根目录（可选，默认自动检测）")
+    parser.add_argument("--project-root", help="Book or workspace root (optional; auto-detected by default)")
 
     sub = parser.add_subparsers(dest="tool", required=True)
 
-    p_where = sub.add_parser("where", help="打印解析出的 project_root")
+    p_where = sub.add_parser("where", help="Print the resolved project_root")
     p_where.set_defaults(func=cmd_where)
 
-    p_preflight = sub.add_parser("preflight", help="校验统一 CLI 运行环境与 project_root")
-    p_preflight.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+    p_preflight = sub.add_parser("preflight", help="Validate the unified CLI environment and project_root")
+    p_preflight.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
     p_preflight.set_defaults(func=cmd_preflight)
 
-    p_project_status = sub.add_parser("project-status", help="输出机器可读的项目短状态")
-    p_project_status.add_argument("--chapter", type=int, default=None, help="目标章节号")
-    p_project_status.add_argument("--format", choices=["summary", "json"], default="summary", help="输出格式")
+    p_project_status = sub.add_parser("project-status", help="Print a compact machine-readable project status")
+    p_project_status.add_argument("--chapter", type=int, default=None, help="Target chapter number")
+    p_project_status.add_argument("--format", choices=["summary", "json"], default="summary", help="Output format")
     p_project_status.set_defaults(func=cmd_project_status)
 
-    p_doctor = sub.add_parser("doctor", help="阶段感知的只读项目体检")
-    p_doctor.add_argument("--chapter", type=int, default=None, help="目标章节号")
-    p_doctor.add_argument("--deep", action="store_true", help="包含 dashboard 等较深检查")
-    p_doctor.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+    p_doctor = sub.add_parser("doctor", help="Stage-aware read-only project health check")
+    p_doctor.add_argument("--chapter", type=int, default=None, help="Target chapter number")
+    p_doctor.add_argument("--deep", action="store_true", help="Include deeper checks such as the dashboard")
+    p_doctor.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
     p_doctor.set_defaults(func=cmd_doctor)
 
-    p_write_gate = sub.add_parser("write-gate", help="写章自然边界校验")
-    p_write_gate.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_write_gate.add_argument("--stage", choices=["prewrite", "precommit", "postcommit"], required=True, help="校验阶段")
-    p_write_gate.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_write_gate = sub.add_parser("write-gate", help="Validate chapter-writing boundaries")
+    p_write_gate.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_write_gate.add_argument("--stage", choices=["prewrite", "precommit", "postcommit"], required=True, help="Validation stage")
+    p_write_gate.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_write_gate.set_defaults(func=cmd_write_gate)
 
-    p_projections = sub.add_parser("projections", help="从已有 commit 补跑或重放 projection")
+    p_projections = sub.add_parser("projections", help="Retry or replay projections from existing commits")
     projections_sub = p_projections.add_subparsers(dest="projection_action", required=True)
-    p_projection_retry = projections_sub.add_parser("retry", help="补跑单章 projection")
-    p_projection_retry.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_projection_retry.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_projection_retry = projections_sub.add_parser("retry", help="Retry a single chapter projection")
+    p_projection_retry.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_projection_retry.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_projection_retry.set_defaults(func=cmd_projections)
-    p_projection_replay = projections_sub.add_parser("replay", help="按章节范围重放 projection")
-    p_projection_replay.add_argument("--from-chapter", type=int, required=True, help="起始章节号")
-    p_projection_replay.add_argument("--to-chapter", type=int, required=True, help="结束章节号")
-    p_projection_replay.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_projection_replay = projections_sub.add_parser("replay", help="Replay projections over a chapter range")
+    p_projection_replay.add_argument("--from-chapter", type=int, required=True, help="Starting chapter number")
+    p_projection_replay.add_argument("--to-chapter", type=int, required=True, help="Ending chapter number")
+    p_projection_replay.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_projection_replay.set_defaults(func=cmd_projections)
 
-    p_user_report = sub.add_parser("user-report", help="渲染作者友好的最终报告")
-    p_user_report.add_argument("--stage", choices=["init", "plan", "write", "review"], required=True, help="报告阶段")
-    p_user_report.add_argument("--chapter", type=int, default=None, help="目标章节号")
-    p_user_report.add_argument("--volume", type=int, default=None, help="目标卷号")
-    p_user_report.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+    p_user_report = sub.add_parser("user-report", help="Render an author-friendly final report")
+    p_user_report.add_argument("--stage", choices=["init", "plan", "write", "review"], required=True, help="Report stage")
+    p_user_report.add_argument("--chapter", type=int, default=None, help="Target chapter number")
+    p_user_report.add_argument("--volume", type=int, default=None, help="Target volume number")
+    p_user_report.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
     p_user_report.set_defaults(func=cmd_user_report)
 
-    p_run_ledger = sub.add_parser("run-ledger", help="记录或查询写章断点续跑状态")
+    p_run_ledger = sub.add_parser("run-ledger", help="Record or query chapter-writing resume state")
     run_ledger_sub = p_run_ledger.add_subparsers(dest="ledger_action", required=True)
-    p_record_write_step = run_ledger_sub.add_parser("record-write-step", help="记录写章步骤状态")
-    p_record_write_step.add_argument("--chapter", type=int, required=True, help="目标章节号")
+    p_record_write_step = run_ledger_sub.add_parser("record-write-step", help="Record chapter-writing step status")
+    p_record_write_step.add_argument("--chapter", type=int, required=True, help="Target chapter number")
     p_record_write_step.add_argument("--step", choices=["draft", "review", "data", "commit", "projection", "backup"], required=True)
     p_record_write_step.add_argument("--status", required=True)
     p_record_write_step.add_argument("--mode", default="default")
@@ -478,117 +478,117 @@ def main() -> None:
     p_record_write_step.add_argument("--problems-json", default="[]")
     p_record_write_step.add_argument("--auto-handled-json", default="[]")
     p_record_write_step.add_argument("--duration-ms", type=int, default=0)
-    p_record_write_step.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_record_write_step.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_record_write_step.set_defaults(func=cmd_run_ledger)
-    p_write_resume = run_ledger_sub.add_parser("write-resume", help="输出写章断点续跑建议")
-    p_write_resume.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_write_resume.add_argument("--mode", default="default", help="写章模式")
-    p_write_resume.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_write_resume = run_ledger_sub.add_parser("write-resume", help="Print chapter-writing resume guidance")
+    p_write_resume.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_write_resume.add_argument("--mode", default="default", help="Writing mode")
+    p_write_resume.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_write_resume.set_defaults(func=cmd_run_ledger)
 
-    p_run_log = sub.add_parser("run-log", help="写入脱敏运行日志")
-    p_run_log.add_argument("--event", required=True, help="事件名")
-    p_run_log.add_argument("--payload-json", default="{}", help="要写入日志的 JSON 对象")
-    p_run_log.add_argument("--append", action="store_true", help="追加而不是覆盖 run_last.log")
-    p_run_log.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_run_log = sub.add_parser("run-log", help="Write a redacted run log")
+    p_run_log.add_argument("--event", required=True, help="Event name")
+    p_run_log.add_argument("--payload-json", default="{}", help="JSON object to write to the log")
+    p_run_log.add_argument("--append", action="store_true", help="Append to run_last.log instead of replacing it")
+    p_run_log.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     p_run_log.set_defaults(func=cmd_run_log)
 
-    p_use = sub.add_parser("use", help="绑定当前工作区使用的书项目（写入指针/registry）")
-    p_use.add_argument("project_root", help="书项目根目录（必须包含 .webnovel/state.json）")
-    p_use.add_argument("--workspace-root", help="工作区根目录（可选；默认由运行环境推断）")
+    p_use = sub.add_parser("use", help="Bind this workspace to a book project (write pointer/registry)")
+    p_use.add_argument("project_root", help="Book root (must contain .webnovel/state.json)")
+    p_use.add_argument("--workspace-root", help="Workspace root (optional; inferred from the environment)")
     p_use.set_defaults(func=cmd_use)
 
     # Pass-through to data modules
-    p_index = sub.add_parser("index", help="转发到 index_manager")
+    p_index = sub.add_parser("index", help="Forward to index_manager")
     p_index.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_state = sub.add_parser("state", help="转发到 state_manager")
+    p_state = sub.add_parser("state", help="Forward to state_manager")
     p_state.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_rag = sub.add_parser("rag", help="转发到 rag_adapter")
+    p_rag = sub.add_parser("rag", help="Forward to rag_adapter")
     p_rag.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_style = sub.add_parser("style", help="转发到 style_sampler")
+    p_style = sub.add_parser("style", help="Forward to style_sampler")
     p_style.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_entity = sub.add_parser("entity", help="转发到 entity_linker")
+    p_entity = sub.add_parser("entity", help="Forward to entity_linker")
     p_entity.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_context = sub.add_parser("context", help="转发到 context_manager")
+    p_context = sub.add_parser("context", help="Forward to context_manager")
     p_context.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_memory = sub.add_parser("memory", help="转发到 memory.store")
+    p_memory = sub.add_parser("memory", help="Forward to memory.store")
     p_memory.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_migrate = sub.add_parser("migrate", help="转发到 migrate_state_to_sqlite")
+    p_migrate = sub.add_parser("migrate", help="Forward to migrate_state_to_sqlite")
     p_migrate.add_argument("args", nargs=argparse.REMAINDER)
 
     # Pass-through to scripts
-    p_status = sub.add_parser("status", help="转发到 status_reporter.py")
+    p_status = sub.add_parser("status", help="Forward to status_reporter.py")
     p_status.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_update_state = sub.add_parser("update-state", help="转发到 update_state.py")
+    p_update_state = sub.add_parser("update-state", help="Forward to update_state.py")
     p_update_state.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_backup = sub.add_parser("backup", help="转发到 backup_manager.py")
+    p_backup = sub.add_parser("backup", help="Forward to backup_manager.py")
     p_backup.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_archive = sub.add_parser("archive", help="转发到 archive_manager.py")
+    p_archive = sub.add_parser("archive", help="Forward to archive_manager.py")
     p_archive.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_init = sub.add_parser("init", help="转发到 init_project.py（初始化项目）")
+    p_init = sub.add_parser("init", help="Forward to init_project.py (initialize project)")
     p_init.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_extract_context = sub.add_parser("extract-context", help="转发到 extract_chapter_context.py")
-    p_extract_context.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_extract_context.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+    p_extract_context = sub.add_parser("extract-context", help="Forward to extract_chapter_context.py")
+    p_extract_context.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_extract_context.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
 
-    p_story_system = sub.add_parser("story-system", help="转发到 story_system.py")
+    p_story_system = sub.add_parser("story-system", help="Forward to story_system.py")
     p_story_system.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_story_events = sub.add_parser("story-events", help="转发到 story_events.py")
-    p_story_events.add_argument("--chapter", type=int, default=0, help="目标章节号")
-    p_story_events.add_argument("--limit", type=int, default=200, help="查询条数")
-    p_story_events.add_argument("--health", action="store_true", help="输出事件链健康信息")
+    p_story_events = sub.add_parser("story-events", help="Forward to story_events.py")
+    p_story_events.add_argument("--chapter", type=int, default=0, help="Target chapter number")
+    p_story_events.add_argument("--limit", type=int, default=200, help="Result limit")
+    p_story_events.add_argument("--health", action="store_true", help="Print event-chain health information")
 
-    p_commit = sub.add_parser("chapter-commit", help="转发到 chapter_commit.py")
-    p_commit.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_commit.add_argument("--review-result", default="", help="review_result JSON 文件")
-    p_commit.add_argument("--fulfillment-result", default="", help="fulfillment_result JSON 文件")
-    p_commit.add_argument("--disambiguation-result", default="", help="disambiguation_result JSON 文件")
-    p_commit.add_argument("--extraction-result", default="", help="extraction_result JSON 文件")
+    p_commit = sub.add_parser("chapter-commit", help="Forward to chapter_commit.py")
+    p_commit.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_commit.add_argument("--review-result", default="", help="review_result JSON file")
+    p_commit.add_argument("--fulfillment-result", default="", help="fulfillment_result JSON file")
+    p_commit.add_argument("--disambiguation-result", default="", help="disambiguation_result JSON file")
+    p_commit.add_argument("--extraction-result", default="", help="extraction_result JSON file")
 
-    p_memory_contract = sub.add_parser("memory-contract", help="转发到 memory_cli.py")
+    p_memory_contract = sub.add_parser("memory-contract", help="Forward to memory_cli.py")
     p_memory_contract.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_project_memory = sub.add_parser("project-memory", help="转发到 project_memory.py")
+    p_project_memory = sub.add_parser("project-memory", help="Forward to project_memory.py")
     p_project_memory.add_argument("args", nargs=argparse.REMAINDER)
 
-    p_review_pipeline = sub.add_parser("review-pipeline", help="转发到 review_pipeline.py")
-    p_review_pipeline.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    p_review_pipeline.add_argument("--review-results", required=True, help="reviewer 原始结果 JSON 文件")
-    p_review_pipeline.add_argument("--metrics-out", default="", help="metrics 输出文件")
-    p_review_pipeline.add_argument("--report-file", default="", help="审查报告路径")
-    p_review_pipeline.add_argument("--save-metrics", action="store_true", help="直接写入 index.db")
+    p_review_pipeline = sub.add_parser("review-pipeline", help="Forward to review_pipeline.py")
+    p_review_pipeline.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    p_review_pipeline.add_argument("--review-results", required=True, help="Raw reviewer results JSON file")
+    p_review_pipeline.add_argument("--metrics-out", default="", help="Metrics output file")
+    p_review_pipeline.add_argument("--report-file", default="", help="Review report path")
+    p_review_pipeline.add_argument("--save-metrics", action="store_true", help="Write directly to index.db")
 
-    p_placeholder_scan = sub.add_parser("placeholder-scan", help="扫描大纲/设定集未补齐占位")
-    p_placeholder_scan.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_placeholder_scan = sub.add_parser("placeholder-scan", help="Scan outlines/settings for unfilled placeholders")
+    p_placeholder_scan.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
 
-    p_master_outline_sync = sub.add_parser("master-outline-sync", help="当前卷规划完成后写回 V+1 最小总纲锚点")
-    p_master_outline_sync.add_argument("--volume", type=int, required=True, help="当前已完成规划的卷号")
-    p_master_outline_sync.add_argument("--writeback-file", default="", help="显式结构化写回 JSON")
-    p_master_outline_sync.add_argument("--format", choices=["json", "text"], default="json", help="输出格式")
+    p_master_outline_sync = sub.add_parser("master-outline-sync", help="Write minimal next-volume master-outline anchors after planning this volume")
+    p_master_outline_sync.add_argument("--volume", type=int, required=True, help="Volume number whose planning is complete")
+    p_master_outline_sync.add_argument("--writeback-file", default="", help="Explicit structured writeback JSON")
+    p_master_outline_sync.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
 
-    knowledge_parser = sub.add_parser("knowledge", help="时序知识查询")
+    knowledge_parser = sub.add_parser("knowledge", help="Temporal knowledge queries")
     knowledge_sub = knowledge_parser.add_subparsers(dest="knowledge_action")
 
-    qs_parser = knowledge_sub.add_parser("query-entity-state", help="查询实体在指定章节的状态")
-    qs_parser.add_argument("--entity", required=True, help="实体 ID")
-    qs_parser.add_argument("--at-chapter", type=int, required=True, help="目标章节号")
+    qs_parser = knowledge_sub.add_parser("query-entity-state", help="Query entity state at a chapter")
+    qs_parser.add_argument("--entity", required=True, help="Entity ID")
+    qs_parser.add_argument("--at-chapter", type=int, required=True, help="Target chapter number")
 
-    qr_parser = knowledge_sub.add_parser("query-relationships", help="查询实体在指定章节的关系")
-    qr_parser.add_argument("--entity", required=True, help="实体 ID")
-    qr_parser.add_argument("--at-chapter", type=int, required=True, help="目标章节号")
+    qr_parser = knowledge_sub.add_parser("query-relationships", help="Query entity relationships at a chapter")
+    qr_parser.add_argument("--entity", required=True, help="Entity ID")
+    qr_parser.add_argument("--at-chapter", type=int, required=True, help="Target chapter number")
 
     # 兼容：允许 `--project-root` 出现在任意位置（减少 agents/skills 拼命令的出错率）
     from .cli_args import normalize_global_project_root

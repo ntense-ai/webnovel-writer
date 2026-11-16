@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from runtime_compat import enable_windows_utf8_stdio
+from project_paths import project_dir, project_path
 
 
 SCHEMA_VERSION = "webnovel-behavior-eval-report/v1"
@@ -160,24 +161,24 @@ def _eval_artifact_ownership(root: Path, case: dict[str, Any]) -> dict[str, Any]
     data_tools = _frontmatter(_read(plugin_root / "agents" / "data-agent.md")).get("tools", "")
     missing: list[str] = []
     if "Write" in reviewer_tools:
-        missing.append("reviewer 不应持 Write（review_results.json 由主流程落盘）")
+        missing.append("reviewer must not have Write (the main workflow persists review_results.json)")
     if "Write" not in data_tools:
-        missing.append("data-agent 应持 Write（它是 tmp artifact 的唯一写入者）")
+        missing.append("data-agent must have Write (it is the sole writer of temporary artifacts)")
     for text, owner in ((write_text, "webnovel-write"), (review_text, "webnovel-review")):
         if not re.search(r"main (?:workflow|flow)", text) or ".webnovel/tmp/review_results.json" not in text:
-            missing.append(f"{owner}: 缺 reviewer→主流程落盘 review_results.json 的所有权说明")
+            missing.append(f"{owner}: missing ownership instructions for reviewer results persisted as review_results.json by the main workflow")
     for item in (
         "sole writer",
         "The main workflow checks only file existence and schema",
         "do not write directly to state/index/summaries/memory/vectors/projection",
     ):
         if item not in write_text:
-            missing.append(f"webnovel-write 缺写入所有权红线：{item}")
+            missing.append(f"webnovel-write is missing a write-ownership boundary: {item}")
     return _result(
         case,
         passed=not missing,
         reason="artifact ownership matches tools and prompts" if not missing else "artifact ownership drifted",
-        evidence=missing or ["reviewer→主流程 review_results.json；data-agent→tmp artifacts"],
+        evidence=missing or ["reviewer → main workflow review_results.json; data-agent → temporary artifacts"],
     )
 
 
@@ -240,13 +241,13 @@ def _make_report_project(project_root: Path) -> None:
         ".webnovel/tmp",
         ".webnovel/backups",
         ".story-system/commits",
-        "正文",
-        "审查报告",
+        "chapters",
+        "reviews",
     ):
         (project_root / rel).mkdir(parents=True, exist_ok=True)
     _write_json(
         project_root / ".webnovel" / "state.json",
-        {"project_info": {"title": "测试书", "genre": "玄幻"}, "progress": {"current_chapter": 0}},
+        {"project_info": {"title": "Test Book", "genre": "xuanhuan"}, "progress": {"current_chapter": 0}},
     )
 
 
@@ -257,9 +258,9 @@ def _write_report_artifacts(project_root: Path, *, chapter: int = 1, review_skip
             {
                 "severity": "critical",
                 "category": "timeline",
-                "location": "第2段",
-                "description": "时间线断裂",
-                "fix_hint": "补过渡",
+                "location": "Paragraph 2",
+                "description": "Timeline discontinuity",
+                "fix_hint": "Add a transition",
                 "blocking": True,
             }
         )
@@ -282,10 +283,10 @@ def _write_report_artifacts(project_root: Path, *, chapter: int = 1, review_skip
             "end_chapter": chapter,
             "issues_count": len(issues),
             "blocking_count": 1 if blocking else 0,
-            "report_file": f"审查报告/第{chapter}章审查报告.md",
+            "report_file": str(project_path(project_root, f"reviews/chapter-{chapter}-review.md").relative_to(project_root)),
         },
     )
-    (project_root / "审查报告" / f"第{chapter}章审查报告.md").write_text("# 审查报告\n", encoding="utf-8")
+    project_path(project_root, f"reviews/chapter-{chapter}-review.md").write_text("# Review Report\n", encoding="utf-8")
     _write_json(
         project_root / ".webnovel" / "tmp" / "fulfillment_result.json",
         {"planned_nodes": [], "covered_nodes": [], "missed_nodes": [], "extra_nodes": []},
@@ -293,7 +294,7 @@ def _write_report_artifacts(project_root: Path, *, chapter: int = 1, review_skip
     _write_json(project_root / ".webnovel" / "tmp" / "disambiguation_result.json", {"pending": []})
     _write_json(
         project_root / ".webnovel" / "tmp" / "extraction_result.json",
-        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "Summary"},
     )
 
 
@@ -309,7 +310,7 @@ def _commit_payload(
         "review_result": review_result or {"blocking_count": 0},
         "fulfillment_result": {"planned_nodes": [], "covered_nodes": [], "missed_nodes": [], "extra_nodes": []},
         "disambiguation_result": {"pending": []},
-        "extraction_result": {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "摘要"},
+        "extraction_result": {"accepted_events": [], "state_deltas": [], "entity_deltas": [], "summary_text": "Summary"},
         "projection_status": projection_status
         or {"state": "done", "index": "skipped", "summary": "skipped", "memory": "skipped", "vector": "skipped"},
     }
@@ -326,8 +327,8 @@ def _eval_user_report_probe(root: Path, case: dict[str, Any]) -> dict[str, Any]:
     with tempfile.TemporaryDirectory() as tmp:
         project_root = Path(tmp)
         _make_report_project(project_root)
-        chapter_file = project_root / "正文" / "第0001章.md"
-        chapter_file.write_text("正文\n", encoding="utf-8")
+        chapter_file = project_dir(project_root, "chapters") / "chapter-0001.md"
+        chapter_file.write_text("Chapter prose\n", encoding="utf-8")
         _write_report_artifacts(project_root, chapter=1)
         commit_path = project_root / ".story-system" / "commits" / "chapter_001.commit.json"
 
@@ -450,7 +451,7 @@ def main() -> int:
     if sys.platform == "win32":
         enable_windows_utf8_stdio()
     parser = argparse.ArgumentParser(description="Run deterministic webnovel-writer behavior evals")
-    parser.add_argument("--root", default="", help="仓库根目录，默认自动推断")
+    parser.add_argument("--root", default="", help="Repository root; inferred automatically by default")
     parser.add_argument("--suite", default="fast", choices=["fast"])
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()

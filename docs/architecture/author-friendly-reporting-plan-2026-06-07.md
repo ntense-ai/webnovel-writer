@@ -1,5 +1,7 @@
 # Author-Friendly Reporting and Exception Visibility Plan
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Date: 2026-06-07
 > Status: Draft v2 · aligned with `docs/superpowers/specs/2026-06-07-author-friendly-experience-design.md`
 > Scope: Implement the specification's seven Author Shell / Author Layer components, standardizing final reports, subagent return protocols, error catalog, author-facing review view, next steps, exception categories, timing, and terminology for init / plan / write / review; remove token statistics for now

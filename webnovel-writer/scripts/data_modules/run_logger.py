@@ -75,19 +75,19 @@ def write_run_log(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write a redacted webnovel run log entry")
-    parser.add_argument("--project-root", required=True, help="书项目根目录")
-    parser.add_argument("--event", required=True, help="事件名")
-    parser.add_argument("--payload-json", default="{}", help="要写入日志的 JSON 对象")
-    parser.add_argument("--append", action="store_true", help="追加而不是覆盖 run_last.log")
+    parser.add_argument("--project-root", required=True, help="Book project root")
+    parser.add_argument("--event", required=True, help="Event name")
+    parser.add_argument("--payload-json", default="{}", help="JSON object to write to the log")
+    parser.add_argument("--append", action="store_true", help="Append to run_last.log instead of replacing it")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     args = parser.parse_args()
 
     try:
         payload = json.loads(args.payload_json)
     except json.JSONDecodeError as exc:
-        raise SystemExit(f"payload-json 不是合法 JSON: {exc}")
+        raise SystemExit(f"payload-json is not valid JSON: {exc}")
     if not isinstance(payload, dict):
-        raise SystemExit("payload-json 必须是 JSON object")
+        raise SystemExit("payload-json must be a JSON object")
     result = write_run_log(args.project_root, event=args.event, payload=payload, append=args.append)
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))

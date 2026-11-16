@@ -123,3 +123,29 @@ def test_validate_release_notes_requires_previous_tag_in_current_changelog_secti
 
     assert report["ok"] is False
     assert any(item["code"] == "changelog.range" for item in report["issues"])
+
+
+def test_english_release_notes_need_no_compatibility_markers(tmp_path):
+    from validate_release_notes import REQUIRED_RELEASE_HEADINGS
+    _write_release_files(tmp_path)
+    path = tmp_path / 'releases/v1.2.3.md'
+    path.write_text(
+        '# v1.2.3 - Clearer chapter results\n\n'
+        + '\n\n'.join(f'{heading}\n\nAuthors can write chapters more reliably. Previous tag: v1.2.2.'
+                        for heading in REQUIRED_RELEASE_HEADINGS), encoding='utf-8')
+    report = validate_release_notes(tmp_path, version='1.2.3', previous_tag='v1.2.2')
+    assert report['ok'] is True
+    path.write_text(path.read_text().replace('## Verification', '## Checks'))
+    report = validate_release_notes(tmp_path, version='1.2.3', previous_tag='v1.2.2')
+    assert report['ok'] is False
+    issue = next(item for item in report['issues'] if item['code'] == 'release_note.heading')
+    assert issue['message'] == 'missing heading: ## Verification'
+    assert issue['repair'] == 'Use the standard template in releases/README.md.'
+
+
+def test_missing_release_repair_guidance_is_english(tmp_path):
+    _write_release_files(tmp_path)
+    (tmp_path / 'releases/v1.2.3.md').unlink()
+    report = validate_release_notes(tmp_path, version='1.2.3', previous_tag='v1.2.2')
+    issue = next(item for item in report['issues'] if item['code'] == 'release_note.missing')
+    assert issue['repair'].startswith('Add releases/vX.Y.Z.md')

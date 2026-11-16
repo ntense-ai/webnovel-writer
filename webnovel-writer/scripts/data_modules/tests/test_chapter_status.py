@@ -47,7 +47,7 @@ def test_set_chapter_status_monotonic(state_project):
     sm = _make_manager(state_project)
     sm._load_state()
     sm.set_chapter_status(5, "chapter_reviewed")
-    with pytest.raises(ValueError, match="不可回退"):
+    with pytest.raises(ValueError, match="cannot move backward"):
         sm.set_chapter_status(5, "chapter_drafted")
 
 
@@ -101,7 +101,7 @@ def test_set_chapter_status_persists_without_direct_save(state_project, monkeypa
 def test_set_chapter_status_invalid(state_project):
     sm = _make_manager(state_project)
     sm._load_state()
-    with pytest.raises(ValueError, match="无效状态"):
+    with pytest.raises(ValueError, match="Invalid status"):
         sm.set_chapter_status(5, "invalid_status")
 
 

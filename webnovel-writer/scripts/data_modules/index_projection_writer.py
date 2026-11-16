@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from text_metrics import count_words
 from pathlib import Path
 from typing import Any
 
@@ -294,7 +295,7 @@ class IndexProjectionWriter:
         if path is None:
             return ""
         stem = path.stem
-        match = re.match(r"第0*\d+章[-_ ]+(.+)$", stem)
+        match = re.match(r"(?:第0*\d+章|chapter-0*\d+)[-_ ]+(.+)$", stem, re.IGNORECASE)
         return match.group(1).strip() if match else ""
 
     def _chapter_word_count(self, chapter: int) -> int:
@@ -308,7 +309,7 @@ class IndexProjectionWriter:
         text = re.sub(r"```[\s\S]*?```", "", text)
         text = re.sub(r"^#+ .*$", "", text, flags=re.MULTILINE)
         text = re.sub(r"---", "", text)
-        return len(text.strip())
+        return count_words(text)
 
     def _stringify(self, value: Any) -> str:
         if value is None:

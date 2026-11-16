@@ -662,9 +662,9 @@ def test_context_manager_genre_alias_guidance_and_heading_extraction(temp_projec
     guidance = payload["writing_guidance"]
     items = guidance.get("guidance_items") or []
 
-    assert any("战术决策点" in str(text) for text in items)
-    assert any("网文节奏基线" in str(text) for text in items)
-    assert any("兑现密度基线" in str(text) for text in items)
+    assert any("tactical decision" in str(text) for text in items)
+    assert any("Serial pacing baseline" in str(text) for text in items)
+    assert any("Payoff baseline" in str(text) for text in items)
 
 
 def test_context_manager_genre_aliases_normalized_for_profile_lookup(temp_project):

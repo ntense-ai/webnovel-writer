@@ -524,7 +524,7 @@ def main():
     from .index_manager import IndexManager
 
     parser = argparse.ArgumentParser(description="SQL State Manager CLI (v5.4)")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -546,7 +546,7 @@ def main():
     # 处理章节数据
     process_parser = subparsers.add_parser("process-chapter")
     process_parser.add_argument("--chapter", type=int, required=True)
-    process_parser.add_argument("--data", required=True, help="JSON 格式的章节数据")
+    process_parser.add_argument("--data", required=True, help="Chapter data as JSON")
 
     argv = normalize_global_project_root(sys.argv[1:])
     args = parser.parse_args(argv)
@@ -588,7 +588,7 @@ def main():
         if protagonist:
             emit_success(protagonist, message="protagonist")
         else:
-            emit_error("NOT_FOUND", "未设置主角")
+            emit_error("NOT_FOUND", "No protagonist configured")
 
     elif args.command == "get-core-entities":
         entities = manager.get_core_entities()
@@ -614,7 +614,7 @@ def main():
         emit_success(stats, message="chapter_processed")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

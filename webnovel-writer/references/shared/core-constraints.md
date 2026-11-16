@@ -41,7 +41,7 @@ Current rule: Prose no longer requires XML tags:
 
 ### Soft (Recommended)
 
-- Introduce conflict/risk/strong emotion early, preferably within the first 200-400 Chinese characters rather than a fixed 120.
+- Introduce conflict/risk/strong emotion early, preferably within the first 200-400 English words rather than a fixed 120.
 - Put an unresolved question or next-chapter anticipation anchor near the end or in the later section, without requiring the final 80-150 characters.
 - Give changes in the situation a rhythm: roughly one pulse per 800-1400 characters; short chapters need at least one substantive change.
 - Follow genre-profile guidance for micro-payoff frequency rather than mechanical equal spacing.

@@ -144,13 +144,13 @@ def test_render_write_report_success(tmp_path: Path) -> None:
     assert report["schema_version"] == "webnovel-user-report/v1"
     assert report["overall_status"] == "completed"
     assert report["stage"] == "write"
-    assert any(item["label"] == "正文" and item["status"] == "completed" for item in report["files"])
+    assert any(item["label"] == "Chapter draft" and item["status"] == "completed" for item in report["files"])
     assert not report["issues"]["must_handle"]
     assert "/webnovel-write 2" in text
-    assert "总状态：已完成。" in text
-    assert "一、产生的文件与完成情况" in text
-    assert "二、过程中遇到的问题与异常耗时" in text
-    assert "三、下一步建议" in text
+    assert "Overall status: Completed." in text
+    assert "1. Files and completion status" in text
+    assert "2. Issues and unusual duration" in text
+    assert "3. Suggested next steps" in text
 
 
 def test_render_write_report_uses_commit_snapshots_when_tmp_artifacts_are_cleaned(tmp_path: Path) -> None:
@@ -180,7 +180,7 @@ def test_render_write_report_commit_rejected(tmp_path: Path) -> None:
 
     assert report["overall_status"] == "needs_user"
     titles = [item["title"] for item in report["issues"]["must_handle"]]
-    assert "本章事实没有通过提交" in titles
+    assert "Chapter fact commit rejected" in titles
 
 
 def test_render_write_report_projection_failed(tmp_path: Path) -> None:
@@ -196,7 +196,7 @@ def test_render_write_report_projection_failed(tmp_path: Path) -> None:
     report = build_user_report(tmp_path, stage="write", chapter=1)
 
     assert report["overall_status"] == "needs_user"
-    assert any(item["title"] == "故事资料更新失败" for item in report["issues"]["must_handle"])
+    assert any(item["title"] == "Story data update failed" for item in report["issues"]["must_handle"])
 
 
 def test_render_write_report_projection_retry_success_is_auto_handled(tmp_path: Path) -> None:
@@ -252,7 +252,7 @@ def test_missing_artifact_does_not_crash_and_is_not_completed(tmp_path: Path) ->
 
     assert report["overall_status"] in {"needs_user", "failed"}
     assert report["issues"]["must_handle"]
-    assert "总状态：已完成。" not in text
+    assert "Overall status: Completed." not in text
 
 
 def test_user_report_includes_log_path_only_on_failure(tmp_path: Path) -> None:

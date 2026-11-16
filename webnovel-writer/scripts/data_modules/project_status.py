@@ -83,8 +83,8 @@ def format_project_status(report: dict[str, Any], output_format: str = "summary"
     if output_format == "json":
         return json.dumps(report, ensure_ascii=False, indent=2)
 
-    project = report.get("project") or "(未命名项目)"
-    root = report.get("project_root") or "(未解析)"
+    project = report.get("project") or "(Untitled project)"
+    root = report.get("project_root") or "(Unresolved)"
     lines = [
         f"project: {project}",
         f"root: {root}",
@@ -106,8 +106,8 @@ def format_project_status(report: dict[str, Any], output_format: str = "summary"
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build short machine-readable webnovel project status")
-    parser.add_argument("--project-root", default="", help="书项目根目录")
-    parser.add_argument("--chapter", type=int, default=None, help="目标章节号")
+    parser.add_argument("--project-root", default="", help="Book project root")
+    parser.add_argument("--chapter", type=int, default=None, help="Target chapter number")
     parser.add_argument("--format", choices=["summary", "json"], default="summary")
     args = parser.parse_args()
 

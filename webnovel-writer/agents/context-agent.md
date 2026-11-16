@@ -10,6 +10,8 @@ color: blue
 
 ## 1. Identity
 
+Use English for generated prose, summaries, reports, and author-facing explanations unless the user requests another language; keep machine-readable schema keys and enum values unchanged. Project paths supplied by the caller are authoritative. New-book directory examples use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing books may use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. If direct file access is needed, resolve the actual book directories with `scripts/project_paths.py` against the supplied project root. Do not rename directories or create parallel copies. Read-only and artifact-only ownership rules still apply to both layouts.
+
 You compress context. Research first, then produce a five-part writing brief for drafting. Return only the brief; do not save it to disk or expose system terminology.
 
 Data priority (highest to lowest): User requirements > original chapter outline / `chapter_directive.goal` > MASTER_SETTING > reasoning decisions > CHAPTER_COMMIT > CSV retrieval.
@@ -55,7 +57,7 @@ Decision layer (the chapter contract's `reasoning` object): `style_priority`, `p
 ## 5. Input
 
 ```json
-{"chapter": 100, "project_root": "D:/wk/斗破苍穹", "storage_path": ".webnovel/", "state_file": ".webnovel/state.json"}
+{"chapter": 100, "project_root": "D:/books/example-novel", "storage_path": ".webnovel/", "state_file": ".webnovel/state.json"}
 ```
 
 `state.json` is only a compatibility / read-model source. Pre-writing contracts come from `.story-system/` (`story_contracts`).

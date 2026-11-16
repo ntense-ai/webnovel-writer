@@ -26,7 +26,7 @@ def test_error_catalog_classifies_schema_error_by_code():
     assert result.code == "artifact.schema_error"
     assert result.severity == "must_handle"
     assert result.auto_handle is False
-    assert "中间结果格式不完整" in format_author_error(result)
+    assert "Incomplete intermediate result format" in format_author_error(result)
 
 
 def test_error_catalog_distinguishes_projection_pending_from_failed():

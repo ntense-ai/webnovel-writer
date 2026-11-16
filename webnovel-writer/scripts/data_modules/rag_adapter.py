@@ -18,6 +18,8 @@ import logging
 import shutil
 from pathlib import Path
 
+from project_paths import project_path
+
 from runtime_compat import enable_windows_utf8_stdio
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
@@ -99,15 +101,15 @@ class RAGAdapter:
                     self._rebuild_vectors_table(cursor, existing_cols)
                     conn.commit()
                 logger.warning(
-                    "vectors 表结构已迁移（备份: %s）",
+                    "vectors table schema migrated (backup: %s)",
                     str(backup_path),
                 )
             except Exception:
                 try:
                     self._restore_vector_db_from_backup(backup_path)
-                    logger.error("vectors 表迁移失败，已从备份恢复: %s", str(backup_path))
+                    logger.error("vectors table migration failed; restored from backup: %s", str(backup_path))
                 except Exception as restore_exc:
-                    logger.exception("vectors 表迁移失败，且恢复备份失败: %s", restore_exc)
+                    logger.exception("vectors table migration and backup restore failed: %s", restore_exc)
                 raise
 
         with self._get_conn() as conn:
@@ -139,7 +141,7 @@ class RAGAdapter:
     def _backup_vector_db(self, reason: str) -> Path:
         db_path = Path(self.config.vector_db)
         if not db_path.exists():
-            raise FileNotFoundError(f"vectors.db 不存在: {db_path}")
+            raise FileNotFoundError(f"vectors.db not found: {db_path}")
         backup_dir = self.config.webnovel_dir / "backups"
         backup_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1395,7 +1397,7 @@ def main():
     from .cli_args import normalize_global_project_root, load_json_arg
 
     parser = argparse.ArgumentParser(description="RAG Adapter CLI")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -1405,8 +1407,8 @@ def main():
     # 写入索引
     index_parser = subparsers.add_parser("index-chapter")
     index_parser.add_argument("--chapter", type=int, required=True)
-    index_parser.add_argument("--scenes", required=True, help="JSON 格式的场景列表")
-    index_parser.add_argument("--summary", required=False, help="章节摘要文本")
+    index_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
+    index_parser.add_argument("--summary", required=False, help="Chapter summary text")
 
     # 搜索
     search_parser = subparsers.add_parser("search")
@@ -1421,7 +1423,7 @@ def main():
     search_parser.add_argument(
         "--center-entities",
         required=False,
-        help="中心实体列表（JSON 数组或逗号分隔）",
+        help="Central entities (JSON array or comma-separated)",
     )
 
     argv = normalize_global_project_root(sys.argv[1:])
@@ -1509,7 +1511,7 @@ def main():
                     "chunk_type": "scene",
                     "parent_chunk_id": parent_chunk_id,
                     "chunk_id": chunk_id,
-                    "source_file": f"正文/第{args.chapter:04d}章.md#scene_{int(scene_index)}",
+                    "source_file": f"{project_path(config.project_root, f'正文/第{args.chapter:04d}章.md').relative_to(config.project_root).as_posix()}#scene_{int(scene_index)}",
                 }
             )
 
@@ -1572,7 +1574,7 @@ def main():
             emit_success(payload, message="search_results")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

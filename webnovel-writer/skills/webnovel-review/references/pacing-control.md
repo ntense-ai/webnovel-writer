@@ -11,7 +11,7 @@ This file supports pacing review and padding diagnosis. Claude already knows nar
 
 ## Information-density standards
 
-**Core metric**: advance at least one substantive plot point per 1,000 Chinese characters.
+**Core metric**: advance at least one substantive plot point per 1,000 English words.
 
 A **substantive plot point** means:
 - ✅ Protagonist gains new information/clue/ability
@@ -43,7 +43,7 @@ A **substantive plot point** means:
 
 ## Chapter-structure templates
 
-**Standard chapter (3,000–5,000 Chinese characters)**:
+**Standard chapter (3,000–5,000 English words)**:
 ```
 Opening 300–500 characters: connect to previous chapter + establish scene
 Setup 800–1,200 characters: introduce this chapter's core conflict

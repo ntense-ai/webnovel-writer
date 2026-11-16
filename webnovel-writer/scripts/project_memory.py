@@ -24,9 +24,9 @@ def _load_json_required(path: Path) -> Dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise ValueError(f"JSON 解析失败: {path}: {exc}") from exc
+        raise ValueError(f"Failed to parse JSON: {path}: {exc}") from exc
     if not isinstance(data, dict):
-        raise ValueError(f"JSON 顶层必须是 object: {path}")
+        raise ValueError(f"JSON root must be an object: {path}")
     return data
 
 
@@ -60,12 +60,12 @@ def add_pattern(
     payload = _load_json_required(memory_path)
     patterns = payload.setdefault("patterns", [])
     if not isinstance(patterns, list):
-        raise ValueError(f"patterns 必须是数组: {memory_path}")
+        raise ValueError(f"patterns must be an array: {memory_path}")
 
     pattern_type = (pattern_type or "other").strip() or "other"
     description = (description or "").strip()
     if not description:
-        raise ValueError("description 不能为空")
+        raise ValueError("description cannot be empty")
 
     for item in patterns:
         if not isinstance(item, dict):
@@ -97,7 +97,7 @@ def main() -> None:
     parser.add_argument("--project-root", required=True)
     sub = parser.add_subparsers(dest="command", required=True)
 
-    add = sub.add_parser("add-pattern", help="追加一条项目经验记忆")
+    add = sub.add_parser("add-pattern", help="Append a project writing pattern")
     add.add_argument("--pattern-type", default="other")
     add.add_argument("--description", required=True)
     add.add_argument("--category", default="")

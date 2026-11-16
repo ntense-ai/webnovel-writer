@@ -49,7 +49,7 @@ Examples (literal supported genre inputs):
 
 ## Genre Template Outputs
 
-When a project is initialized, the selected genre template is automatically inserted into the reference-genre-template section (`参考题材模板`) of `设定集/世界观.md`.
+When a project is initialized, the selected genre template is automatically inserted into the reference-genre-template section (`参考题材模板`) of `settings/worldbuilding.md`.
 
 The system also includes six fine-tuned genre configuration directories (`genres/`) with more detailed writing guidance for specific genres:
 

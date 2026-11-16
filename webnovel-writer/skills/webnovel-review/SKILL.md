@@ -7,6 +7,12 @@ argument-hint: "[chapter number or range, e.g. 5 or 1-5]"
 
 # Quality Review Skill
 
+## Project paths and output language
+
+Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+
 ## Goals
 
 - Resolve the actual book project root and dispatch the unified `reviewer` to perform a structured review and persist it.
@@ -28,6 +34,7 @@ argument-hint: "[chapter number or range, e.g. 5 or 1-5]"
 export WORKSPACE_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 export SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
 export PROJECT_ROOT="$(python "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" where)"
+export REVIEWS_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --directory reviews)"
 ```
 
 `PROJECT_ROOT` must contain `.webnovel/state.json`; otherwise block.
@@ -97,7 +104,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rev
   --chapter {chapter_num} \
   --review-results "${PROJECT_ROOT}/.webnovel/tmp/review_results.json" \
   --metrics-out "${PROJECT_ROOT}/.webnovel/tmp/review_metrics.json" \
-  --report-file "审查报告/第{chapter_num}章审查报告.md" \
+  --report-file "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path "reviews/chapter-{chapter_num}-review.md")" \
   --save-metrics
 ```
 
@@ -106,7 +113,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rev
 ### Step 7: Write the compatibility review record
 
 ```bash
-python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" update-state -- --add-review "{chapter_num}-{chapter_num}" "审查报告/第{chapter_num}章审查报告.md"
+python "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" update-state -- --add-review "{chapter_num}-{chapter_num}" "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path "reviews/chapter-{chapter_num}-review.md")"
 ```
 
 This is a compatibility projection / read model, not the post-writing source of truth.

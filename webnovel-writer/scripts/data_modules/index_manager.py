@@ -720,7 +720,7 @@ def main():
     from .cli_args import normalize_global_project_root, load_json_arg
 
     parser = argparse.ArgumentParser(description="Index Manager CLI (v5.4)")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -751,14 +751,14 @@ def main():
     process_parser.add_argument("--title", required=True)
     process_parser.add_argument("--location", required=True)
     process_parser.add_argument("--word-count", type=int, required=True)
-    process_parser.add_argument("--entities", required=True, help="JSON 格式的实体列表")
-    process_parser.add_argument("--scenes", required=True, help="JSON 格式的场景列表")
+    process_parser.add_argument("--entities", required=True, help="Entity list as JSON")
+    process_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
 
     # ==================== v5.1 引入命令 ====================
 
     # 获取实体
     get_entity_parser = subparsers.add_parser("get-entity")
-    get_entity_parser.add_argument("--id", required=True, help="实体 ID")
+    get_entity_parser.add_argument("--id", required=True, help="Entity ID")
 
     # 获取核心实体
     subparsers.add_parser("get-core-entities")
@@ -769,23 +769,23 @@ def main():
     # 按类型获取实体
     type_parser = subparsers.add_parser("get-entities-by-type")
     type_parser.add_argument(
-        "--type", required=True, help="实体类型 (角色/地点/物品/势力/招式)"
+        "--type", required=True, help="Entity type (character/location/item/faction/technique; legacy type values supported)"
     )
     type_parser.add_argument("--include-archived", action="store_true")
 
     # 按别名查找实体
     alias_parser = subparsers.add_parser("get-by-alias")
-    alias_parser.add_argument("--alias", required=True, help="别名")
+    alias_parser.add_argument("--alias", required=True, help="Alias")
 
     # 获取实体别名
     aliases_parser = subparsers.add_parser("get-aliases")
-    aliases_parser.add_argument("--entity", required=True, help="实体 ID")
+    aliases_parser.add_argument("--entity", required=True, help="Entity ID")
 
     # 注册别名
     reg_alias_parser = subparsers.add_parser("register-alias")
     reg_alias_parser.add_argument("--alias", required=True)
     reg_alias_parser.add_argument("--entity", required=True)
-    reg_alias_parser.add_argument("--type", required=True, help="实体类型")
+    reg_alias_parser.add_argument("--type", required=True, help="Entity type")
 
     # 获取实体关系
     rel_parser = subparsers.add_parser("get-relationships")
@@ -804,7 +804,7 @@ def main():
 
     # 获取关系图谱
     rel_graph_parser = subparsers.add_parser("get-relationship-graph")
-    rel_graph_parser.add_argument("--center", required=True, help="中心实体 ID")
+    rel_graph_parser.add_argument("--center", required=True, help="Central entity ID")
     rel_graph_parser.add_argument("--depth", type=int, default=2)
     rel_graph_parser.add_argument("--chapter", type=int, default=None)
     rel_graph_parser.add_argument("--top-edges", type=int, default=50)
@@ -812,15 +812,15 @@ def main():
 
     # 获取关系时间线
     rel_timeline_parser = subparsers.add_parser("get-relationship-timeline")
-    rel_timeline_parser.add_argument("--a", required=True, help="实体 A")
-    rel_timeline_parser.add_argument("--b", required=True, help="实体 B")
+    rel_timeline_parser.add_argument("--a", required=True, help="Entity A")
+    rel_timeline_parser.add_argument("--b", required=True, help="Entity B")
     rel_timeline_parser.add_argument("--from-chapter", type=int, default=None)
     rel_timeline_parser.add_argument("--to-chapter", type=int, default=None)
     rel_timeline_parser.add_argument("--limit", type=int, default=100)
 
     # 写入关系事件
     rel_event_record_parser = subparsers.add_parser("record-relationship-event")
-    rel_event_record_parser.add_argument("--data", required=True, help="JSON 格式的关系事件数据")
+    rel_event_record_parser.add_argument("--data", required=True, help="Relationship event data as JSON")
 
     # 获取状态变化
     changes_parser = subparsers.add_parser("get-state-changes")
@@ -830,17 +830,17 @@ def main():
     # 写入实体
     upsert_entity_parser = subparsers.add_parser("upsert-entity")
     upsert_entity_parser.add_argument(
-        "--data", required=True, help="JSON 格式的实体数据"
+        "--data", required=True, help="Entity data as JSON"
     )
 
     # 写入关系
     upsert_rel_parser = subparsers.add_parser("upsert-relationship")
-    upsert_rel_parser.add_argument("--data", required=True, help="JSON 格式的关系数据")
+    upsert_rel_parser.add_argument("--data", required=True, help="Relationship data as JSON")
 
     # 写入状态变化
     state_change_parser = subparsers.add_parser("record-state-change")
     state_change_parser.add_argument(
-        "--data", required=True, help="JSON 格式的状态变化数据"
+        "--data", required=True, help="State change data as JSON"
     )
 
     # ==================== v5.4 新增命令 ====================
@@ -859,7 +859,7 @@ def main():
     list_invalid_parser.add_argument("--status", choices=["pending", "confirmed"], default=None)
 
     review_save_parser = subparsers.add_parser("save-review-metrics")
-    review_save_parser.add_argument("--data", required=True, help="JSON 格式的审查指标数据")
+    review_save_parser.add_argument("--data", required=True, help="Review metrics as JSON")
 
     review_recent_parser = subparsers.add_parser("get-recent-review-metrics")
     review_recent_parser.add_argument("--limit", type=int, default=5)
@@ -868,7 +868,7 @@ def main():
     review_trend_parser.add_argument("--last-n", type=int, default=5)
 
     checklist_score_save_parser = subparsers.add_parser("save-writing-checklist-score")
-    checklist_score_save_parser.add_argument("--data", required=True, help="JSON 格式的写作清单评分数据")
+    checklist_score_save_parser.add_argument("--data", required=True, help="Writing checklist scores as JSON")
 
     checklist_score_get_parser = subparsers.add_parser("get-writing-checklist-score")
     checklist_score_get_parser.add_argument("--chapter", type=int, required=True)
@@ -933,12 +933,12 @@ def main():
     # 创建Override Contract
     create_override_parser = subparsers.add_parser("create-override-contract")
     create_override_parser.add_argument(
-        "--data", required=True, help="JSON 格式的Override Contract数据"
+        "--data", required=True, help="Override Contract data as JSON"
     )
 
     # 创建债务
     create_debt_parser = subparsers.add_parser("create-debt")
-    create_debt_parser.add_argument("--data", required=True, help="JSON 格式的债务数据")
+    create_debt_parser.add_argument("--data", required=True, help="Debt data as JSON")
 
     # 标记Override已偿还
     fulfill_override_parser = subparsers.add_parser("fulfill-override")
@@ -947,7 +947,7 @@ def main():
     # 保存章节追读力元数据
     save_rp_parser = subparsers.add_parser("save-chapter-reading-power")
     save_rp_parser.add_argument(
-        "--data", required=True, help="JSON 格式的章节追读力元数据"
+        "--data", required=True, help="Chapter reader-retention metadata as JSON"
     )
 
     argv = normalize_global_project_root(sys.argv[1:])
@@ -1011,7 +1011,7 @@ def main():
         if chapter:
             emit_success(chapter, message="chapter")
         else:
-            emit_error("NOT_FOUND", f"未找到章节: {args.chapter}")
+            emit_error("NOT_FOUND", f"Chapter not found: {args.chapter}")
 
     elif args.command == "recent-appearances":
         appearances = manager.get_recent_appearances(args.limit)
@@ -1045,7 +1045,7 @@ def main():
         if entity:
             emit_success(entity, message="entity")
         else:
-            emit_error("NOT_FOUND", f"未找到实体: {args.id}")
+            emit_error("NOT_FOUND", f"Entity not found: {args.id}")
 
     elif args.command == "get-core-entities":
         entities = manager.get_core_entities()
@@ -1056,7 +1056,7 @@ def main():
         if protagonist:
             emit_success(protagonist, message="protagonist")
         else:
-            emit_error("NOT_FOUND", "未设置主角")
+            emit_error("NOT_FOUND", "No protagonist configured")
 
     elif args.command == "get-entities-by-type":
         entities = manager.get_entities_by_type(args.type, args.include_archived)
@@ -1067,14 +1067,14 @@ def main():
         if entities:
             emit_success(entities, message="entities_by_alias")
         else:
-            emit_error("NOT_FOUND", f"未找到别名: {args.alias}")
+            emit_error("NOT_FOUND", f"Alias not found: {args.alias}")
 
     elif args.command == "get-aliases":
         aliases = manager.get_entity_aliases(args.entity)
         if aliases:
             emit_success({"entity": args.entity, "aliases": aliases}, message="aliases")
         else:
-            emit_error("NOT_FOUND", f"{args.entity} 没有别名")
+            emit_error("NOT_FOUND", f"{args.entity} has no aliases")
 
     elif args.command == "register-alias":
         success = manager.register_alias(args.alias, args.entity, args.type)
@@ -1084,7 +1084,7 @@ def main():
                 message="alias_registered",
             )
         else:
-            emit_error("ALIAS_EXISTS", f"别名已存在或注册失败: {args.alias}")
+            emit_error("ALIAS_EXISTS", f"Alias already exists or registration failed: {args.alias}")
 
     elif args.command == "get-relationships":
         rels = manager.get_entity_relationships(args.entity, args.direction)
@@ -1130,7 +1130,7 @@ def main():
         try:
             data = load_json_arg(args.data, base_dir=json_base_dir)
         except (TypeError, ValueError, json.JSONDecodeError):
-            emit_error("INVALID_RELATIONSHIP_EVENT", "关系事件 JSON 无效")
+            emit_error("INVALID_RELATIONSHIP_EVENT", "Invalid relationship event JSON")
         else:
             event = RelationshipEventMeta(
                 from_entity=data.get("from_entity", ""),
@@ -1149,7 +1149,7 @@ def main():
             if event_id > 0:
                 emit_success({"id": event_id}, message="relationship_event_recorded")
             else:
-                emit_error("INVALID_RELATIONSHIP_EVENT", "关系事件参数无效，未写入")
+                emit_error("INVALID_RELATIONSHIP_EVENT", "Invalid relationship event parameters; nothing written")
 
     elif args.command == "upsert-entity":
         data = load_json_arg(args.data, base_dir=json_base_dir)
@@ -1213,7 +1213,7 @@ def main():
         if ok:
             emit_success({"id": args.id, "action": args.action}, message="invalid_resolved")
         else:
-            emit_error("INVALID_ACTION", f"无法处理 action: {args.action}")
+            emit_error("INVALID_ACTION", f"Cannot process action: {args.action}")
 
     elif args.command == "list-invalid":
         rows = manager.list_invalid_facts(args.status)
@@ -1271,7 +1271,7 @@ def main():
         if score:
             emit_success(score, message="writing_checklist_score")
         else:
-            emit_error("NOT_FOUND", f"未找到第 {args.chapter} 章的写作清单评分")
+            emit_error("NOT_FOUND", f"No writing checklist scores found for chapter {args.chapter}")
 
     elif args.command == "get-recent-writing-checklist-scores":
         scores = manager.get_recent_writing_checklist_scores(args.limit)
@@ -1296,7 +1296,7 @@ def main():
         if record:
             emit_success(record, message="chapter_reading_power")
         else:
-            emit_error("NOT_FOUND", f"未找到第 {args.chapter} 章的追读力元数据")
+            emit_error("NOT_FOUND", f"No reader-retention metadata found for chapter {args.chapter}")
 
     elif args.command == "get-pattern-usage-stats":
         stats = manager.get_pattern_usage_stats(args.last_n)
@@ -1376,7 +1376,7 @@ def main():
         if success:
             emit_success({"id": args.contract_id}, message="override_fulfilled")
         else:
-            emit_error("NOT_FOUND", f"未找到 Override Contract #{args.contract_id}")
+            emit_error("NOT_FOUND", f"Override Contract not found #{args.contract_id}")
 
     elif args.command == "save-chapter-reading-power":
         data = load_json_arg(args.data, base_dir=json_base_dir)
@@ -1396,7 +1396,7 @@ def main():
         emit_success({"chapter": meta.chapter}, message="reading_power_saved")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

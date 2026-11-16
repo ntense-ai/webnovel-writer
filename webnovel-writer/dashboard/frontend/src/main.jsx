@@ -16,7 +16,7 @@ function LoadingScreen() {
         <div className="loading-screen">
             <div className="loading-card">
                 <div className="section-label">LOADING</div>
-                <p>正在加载 Dashboard…</p>
+                <p>Loading Dashboard…</p>
             </div>
         </div>
     )

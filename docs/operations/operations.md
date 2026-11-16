@@ -52,10 +52,10 @@ project-root/
 │   ├── reviews/
 │   ├── commits/
 │   └── events/
-├── 正文/                  # Chapter prose
-├── 大纲/                  # Master and volume outlines
-├── 设定集/                # Worldbuilding, characters, power system
-└── 审查报告/              # Review outputs
+├── chapters/                  # Chapter prose
+├── outlines/                  # Master and volume outlines
+├── settings/                # Worldbuilding, characters, power system
+└── reviews/              # Review outputs
 ```
 
 ### Plugin Directory

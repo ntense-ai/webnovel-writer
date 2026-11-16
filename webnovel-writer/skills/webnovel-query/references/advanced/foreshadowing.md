@@ -49,7 +49,7 @@ Urgency = (elapsed chapters / target chapters) × tier weight
 
 | Work length | Shallow | Medium | Deep |
 |---------|------|------|------|
-| Short (100,000 Chinese characters) | 5–10 threads | 2–3 threads | 1 thread |
+| Short (100,000 English words) | 5–10 threads | 2–3 threads | 1 thread |
 | Medium (500,000 characters) | 20–30 threads | 5–10 threads | 2–3 threads |
 | Long (2 million+ characters) | 50+ threads | 20+ threads | 5–10 threads |
 

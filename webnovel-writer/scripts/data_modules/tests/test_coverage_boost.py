@@ -540,13 +540,13 @@ def test_webnovel_cmd_use_with_workspace_root(monkeypatch, tmp_path, capsys):
 
 def test_webnovel_run_script_missing_script():
     module = _load_webnovel_module()
-    with pytest.raises(FileNotFoundError, match="未找到脚本"):
+    with pytest.raises(FileNotFoundError, match="Script not found"):
         module._run_script("nonexistent_script_xyz.py", [])
 
 
 def test_webnovel_run_data_module_no_main():
     module = _load_webnovel_module()
-    with pytest.raises(RuntimeError, match="缺少可调用的 main"):
+    with pytest.raises(RuntimeError, match="has no callable main"):
         module._run_data_module("schemas", [])  # schemas 没有 main()
 
 

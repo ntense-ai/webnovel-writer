@@ -9,8 +9,8 @@ Initialize a novel project, generating its directory structure, setting template
 Outputs:
 
 - `.webnovel/state.json` (runtime state)
-- `设定集/` (worldbuilding, power system, protagonist profile, special-ability design, antagonist design, etc.)
-- `大纲/总纲.md`、`大纲/爽点规划.md`
+- `settings/` (worldbuilding, power system, protagonist profile, special-ability design, antagonist design, etc.)
+- `outlines/master-outline.md`、`outlines/payoff-plan.md`
 - `.env.example` (RAG configuration template)
 
 ### `/webnovel-plan [volume]`

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from runtime_compat import enable_windows_utf8_stdio
+from project_paths import project_path
 
 
 def _ensure_scripts_path() -> None:
@@ -33,32 +34,32 @@ def _resolve_report_path(project_root: Path, report_file: str) -> Path:
     root = project_root.expanduser().resolve()
     report_path = Path(report_file).expanduser()
     if not report_path.is_absolute():
-        report_path = root / report_path
+        report_path = project_path(root, report_path)
     report_path = report_path.resolve()
     try:
         report_path.relative_to(root)
     except ValueError as exc:
-        raise ValueError("report-file 必须位于 project_root 目录内") from exc
+        raise ValueError("report-file must be within project_root") from exc
     return report_path
 
 
 def _format_issue(issue: Dict[str, Any], index: int) -> List[str]:
-    description = str(issue.get("description") or "未填写问题描述")
+    description = str(issue.get("description") or "No issue description provided")
     severity = str(issue.get("severity") or "medium")
     category = str(issue.get("category") or "other")
-    location = str(issue.get("location") or "未标注位置")
-    evidence = str(issue.get("evidence") or "未提供证据")
-    fix_hint = str(issue.get("fix_hint") or "未提供修复方向")
-    blocking = "是" if issue.get("blocking") else "否"
+    location = str(issue.get("location") or "Location not specified")
+    evidence = str(issue.get("evidence") or "No evidence provided")
+    fix_hint = str(issue.get("fix_hint") or "No fix direction provided")
+    blocking = "yes" if issue.get("blocking") else "no"
 
     return [
         f"{index}. **{description}**",
-        f"   - 严重级别：{severity}",
-        f"   - 分类：{category}",
-        f"   - 位置：{location}",
-        f"   - 阻断：{blocking}",
-        f"   - 证据：{evidence}",
-        f"   - 修复方向：{fix_hint}",
+        f"   - Severity: {severity}",
+        f"   - Category: {category}",
+        f"   - Location: {location}",
+        f"   - Blocking: {blocking}",
+        f"   - Evidence: {evidence}",
+        f"   - Fix direction: {fix_hint}",
     ]
 
 
@@ -71,53 +72,53 @@ def render_review_report(payload: Dict[str, Any]) -> str:
     severity_counts = metrics.get("severity_counts", {})
 
     lines: List[str] = [
-        f"# 第{payload['chapter']}章审查报告",
+        f"# Chapter {payload['chapter']} Review Report",
         "",
         render_review_author_view(payload).rstrip(),
         "",
-        "## 总览",
+        "## Overview",
         "",
-        f"- 问题数：{result.get('issues_count', 0)}",
-        f"- 阻断数：{result.get('blocking_count', 0)}",
-        f"- 结论：{'需修复后重审' if result.get('has_blocking') else '无阻断问题'}",
+        f"- Issues: {result.get('issues_count', 0)}",
+        f"- Blocking issues: {result.get('blocking_count', 0)}",
+        f"- Verdict: {'Fix and review again' if result.get('has_blocking') else 'No blocking issues'}",
     ]
     summary = str(result.get("summary") or "").strip()
     if summary:
-        lines.append(f"- 摘要：{summary}")
+        lines.append(f"- Summary: {summary}")
     if severity_counts:
         ordered = [
             f"{level}={severity_counts.get(level, 0)}"
             for level in ("critical", "high", "medium", "low")
         ]
-        lines.append(f"- 严重级别统计：{', '.join(ordered)}")
+        lines.append(f"- Severity counts: {', '.join(ordered)}")
 
-    lines.extend(["", "## 阻断问题", ""])
+    lines.extend(["", "## Blocking Issues", ""])
     if blocking_issues:
         for index, issue in enumerate(blocking_issues, start=1):
             lines.extend(_format_issue(issue, index))
             lines.append("")
     else:
-        lines.append("无。")
+        lines.append("None.")
         lines.append("")
 
-    lines.extend(["## 其他问题", ""])
+    lines.extend(["## Other Issues", ""])
     if non_blocking_issues:
         for index, issue in enumerate(non_blocking_issues, start=1):
             lines.extend(_format_issue(issue, index))
             lines.append("")
     else:
-        lines.append("无。")
+        lines.append("None.")
         lines.append("")
 
-    lines.extend(["## 修复方向", ""])
+    lines.extend(["## Fix Directions", ""])
     if issues:
         ordered_issues = [*blocking_issues, *non_blocking_issues]
         for index, issue in enumerate(ordered_issues, start=1):
-            description = str(issue.get("description") or "未填写问题描述")
-            fix_hint = str(issue.get("fix_hint") or "未提供修复方向")
-            lines.append(f"{index}. {description}：{fix_hint}")
+            description = str(issue.get("description") or "No issue description provided")
+            fix_hint = str(issue.get("fix_hint") or "No fix direction provided")
+            lines.append(f"{index}. {description}: {fix_hint}")
     else:
-        lines.append("暂无需要修复的问题。")
+        lines.append("No issues need fixing.")
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -153,6 +154,8 @@ def build_review_artifacts(
     raw = json.loads(review_results_path.read_text(encoding="utf-8"))
     result = parse_review_output(chapter=chapter, raw=raw)
     anti_patterns_added = append_ai_flavor_anti_patterns(project_root, result)
+    if report_file:
+        report_file = _resolve_report_path(project_root, report_file).relative_to(project_root.resolve()).as_posix()
     metrics = result.to_metrics_dict(report_file=report_file)
     normalized_review = result.to_dict()
     review_results_path.parent.mkdir(parents=True, exist_ok=True)
@@ -177,7 +180,7 @@ def main() -> None:
     parser.add_argument("--metrics-out", default="")
     parser.add_argument("--report-file", default="")
     parser.add_argument("--save-metrics", action="store_true",
-                        help="直接写入 index.db，省去单独调用 save-review-metrics")
+                        help="Write directly to index.db without a separate save-review-metrics call")
 
     args = parser.parse_args()
     project_root = Path(args.project_root)

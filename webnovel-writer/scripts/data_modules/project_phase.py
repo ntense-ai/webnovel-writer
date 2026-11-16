@@ -8,6 +8,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from project_paths import project_dir, project_path
+
+
 try:
     from chapter_outline_loader import volume_num_for_chapter_from_state
     from chapter_paths import find_chapter_file, volume_num_for_chapter
@@ -42,6 +45,7 @@ PHASES = (
     PHASE_PROJECTION_FAILED,
 )
 
+# Logical requirements retain legacy aliases; project_path resolves the actual layout.
 INIT_REQUIRED_DIRS = (
     ".webnovel",
     ".webnovel/backups",
@@ -223,16 +227,16 @@ def _latest_story_system_chapter(project_root: Path) -> int:
 
 
 def _latest_draft_chapter(project_root: Path) -> int:
-    chapters_dir = project_root / "正文"
+    chapters_dir = project_dir(project_root, "chapters")
     if not chapters_dir.is_dir():
         return 0
     chapters: list[int] = []
-    for path in chapters_dir.rglob("第*章*.md"):
-        match = re.search(r"第0*(\d+)章", path.name)
+    for path in chapters_dir.rglob("*.md"):
+        match = re.search(r"^(?:第0*(\d+)章|chapter-0*(\d+)(?:[-.]|$))", path.name, re.IGNORECASE)
         if not match:
             continue
         try:
-            chapters.append(int(match.group(1)))
+            chapters.append(int(match.group(1) or match.group(2)))
         except ValueError:
             continue
     return max(chapters or [0])
@@ -297,11 +301,11 @@ def missing_commit_artifacts(project_root: Path) -> tuple[str, ...]:
 
 
 def missing_init_dirs(project_root: Path) -> tuple[str, ...]:
-    return tuple(rel for rel in INIT_REQUIRED_DIRS if not (project_root / rel).is_dir())
+    return tuple(str(project_path(project_root, rel).relative_to(project_root)) for rel in INIT_REQUIRED_DIRS if not project_path(project_root, rel).is_dir())
 
 
 def missing_init_files(project_root: Path) -> tuple[str, ...]:
-    return tuple(rel for rel in INIT_REQUIRED_FILES if not (project_root / rel).is_file())
+    return tuple(str(project_path(project_root, rel).relative_to(project_root)) for rel in INIT_REQUIRED_FILES if not project_path(project_root, rel).is_file())
 
 
 def has_projection_blocker(commit: ChapterCommitInfo | None) -> bool:
@@ -375,7 +379,7 @@ def resolve_project_phase(project_root: str | Path | None, chapter: int | None =
         phase = PHASE_DRAFT_IN_PROGRESS
     elif not contract_missing:
         phase = PHASE_CHAPTER_CONTRACT_READY
-    elif (root / ".story-system" / "MASTER_SETTING.json").is_file() or any((root / "大纲").glob("第*卷*大纲.md")):
+    elif (root / ".story-system" / "MASTER_SETTING.json").is_file() or any(project_dir(root, "outlines").glob("第*卷*大纲.md")) or any(project_dir(root, "outlines").glob("volume-*-outline.md")):
         phase = PHASE_PLAN_IN_PROGRESS
     else:
         phase = PHASE_INIT_READY

@@ -51,7 +51,20 @@ _RAG_TRIGGER_KEYWORDS = (
     "势力",
     "真相",
     "来历",
+    "relationship", "relationships", "feud", "feuds", "conflict", "conflicts",
+    "enemy", "enemies", "hostility", "alliance", "alliances", "mentor", "mentors",
+    "identity", "identities", "clue", "clues", "foreshadowing", "payoff", "payoffs",
+    "location", "locations", "faction", "factions", "truth", "origin", "origins",
 )
+
+
+def _contains_keyword(text: str, keywords: tuple[str, ...]) -> bool:
+    """Match English whole words case-insensitively, retaining CJK substrings."""
+    return any(
+        bool(re.search(r"(?<!\w)" + re.escape(keyword) + r"(?!\w)", text, re.IGNORECASE))
+        if keyword.isascii() else keyword in text
+        for keyword in keywords
+    )
 
 
 def find_project_root(start_path: Path | None = None) -> Path:
@@ -75,7 +88,7 @@ def _load_summary_file(project_root: Path, chapter_num: int) -> str:
         return ""
 
     text = summary_path.read_text(encoding="utf-8")
-    summary_match = re.search(r"##\s*剧情摘要\s*\r?\n(.+?)(?=\r?\n##|$)", text, re.DOTALL)
+    summary_match = re.search(r"##[ \t]*(?:剧情摘要|Plot summary|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", text, re.DOTALL | re.IGNORECASE)
     if summary_match:
         return summary_match.group(1).strip()
     return ""
@@ -89,29 +102,29 @@ def extract_chapter_summary(project_root: Path, chapter_num: int) -> str:
 
     chapter_file = find_chapter_file(project_root, chapter_num)
     if not chapter_file or not chapter_file.exists():
-        return f"⚠️ 第{chapter_num}章文件不存在"
+        return f"⚠️ Chapter {chapter_num} file not found"
 
     content = chapter_file.read_text(encoding="utf-8")
 
-    summary_match = re.search(r"##\s*本章摘要\s*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL)
+    summary_match = re.search(r"##[ \t]*(?:本章摘要|Chapter summary|Summary)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
     if summary_match:
         return summary_match.group(1).strip()
 
-    stats_match = re.search(r"##\s*本章统计\s*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL)
+    stats_match = re.search(r"##[ \t]*(?:本章统计|Chapter statistics|Statistics)[ \t]*\r?\n(.+?)(?=\r?\n##|$)", content, re.DOTALL | re.IGNORECASE)
     if stats_match:
-        return f"[无摘要，仅统计]\n{stats_match.group(1).strip()}"
+        return f"[No summary; statistics only]\n{stats_match.group(1).strip()}"
 
     lines = content.split("\n")
     text_lines = [line for line in lines if not line.startswith("#") and line.strip()]
     text = "\n".join(text_lines)[:500]
-    return f"[自动截取前500字]\n{text}..."
+    return f"[Automatically excerpted first 500 characters]\n{text}..."
 
 
 def extract_state_summary(project_root: Path) -> str:
     """Extract key fields from `.webnovel/state.json`."""
     state_file = project_root / ".webnovel" / "state.json"
     if not state_file.exists():
-        return "⚠️ state.json 不存在"
+        return "⚠️ state.json not found"
 
     state = json.loads(state_file.read_text(encoding="utf-8"))
     summary_parts: List[str] = []
@@ -119,17 +132,17 @@ def extract_state_summary(project_root: Path) -> str:
     if "progress" in state:
         progress = state["progress"]
         summary_parts.append(
-            f"**进度**: 第{progress.get('current_chapter', '?')}章 / {progress.get('total_words', '?')}字"
+            f"**Progress**: Chapter {progress.get('current_chapter', '?')} / {progress.get('total_words', '?')} words"
         )
 
     if "protagonist_state" in state:
         ps = state["protagonist_state"]
         power = ps.get("power", {})
-        summary_parts.append(f"**主角实力**: {power.get('realm', '?')} {power.get('layer', '?')}层")
-        summary_parts.append(f"**当前位置**: {ps.get('location', '?')}")
+        summary_parts.append(f"**Protagonist power**: {power.get('realm', '?')} Layer {power.get('layer', '?')}")
+        summary_parts.append(f"**Current location**: {ps.get('location', '?')}")
         golden_finger = ps.get("golden_finger", {})
         summary_parts.append(
-            f"**金手指**: {golden_finger.get('name', '?')} Lv.{golden_finger.get('level', '?')}"
+            f"**Special advantage**: {golden_finger.get('name', '?')} Lv.{golden_finger.get('level', '?')}"
         )
 
     if "strand_tracker" in state:
@@ -144,7 +157,7 @@ def extract_state_summary(project_root: Path) -> str:
                 strand = row.get("strand") or row.get("dominant") or "unknown"
                 items.append(f"Ch{chapter}:{strand}")
             if items:
-                summary_parts.append(f"**近5章Strand**: {', '.join(items)}")
+                summary_parts.append(f"**Strands in the last 5 chapters**: {', '.join(items)}")
 
     plot_threads = state.get("plot_threads", {}) if isinstance(state.get("plot_threads"), dict) else {}
     foreshadowing = plot_threads.get("foreshadowing", [])
@@ -153,10 +166,10 @@ def extract_state_summary(project_root: Path) -> str:
         urgent = [row for row in active if row.get("urgency", 0) > 50]
         if urgent:
             urgent_list = [
-                f"{row.get('content', '?')[:30]}... (紧急度:{row.get('urgency')})"
+                f"{row.get('content', '?')[:30]}... (urgency:{row.get('urgency')})"
                 for row in urgent[:3]
             ]
-            summary_parts.append(f"**紧急伏笔**: {'; '.join(urgent_list)}")
+            summary_parts.append(f"**Urgent foreshadowing**: {'; '.join(urgent_list)}")
 
     return "\n".join(summary_parts)
 
@@ -175,20 +188,21 @@ def _build_rag_query(outline: str, chapter_num: int, min_chars: int, max_chars: 
     if not plain or len(plain) < min_chars:
         return ""
 
-    if not any(keyword in plain for keyword in _RAG_TRIGGER_KEYWORDS):
+    if not _contains_keyword(plain, _RAG_TRIGGER_KEYWORDS):
         return ""
 
-    if "关系" in plain or "师徒" in plain or "敌对" in plain or "同盟" in plain:
-        topic = "人物关系与动机"
-    elif "地点" in plain or "势力" in plain:
-        topic = "地点势力与场景约束"
-    elif "伏笔" in plain or "线索" in plain or "回收" in plain:
-        topic = "伏笔与线索"
+    if _contains_keyword(plain, ("关系", "师徒", "敌对", "同盟", "relationship", "relationships",
+                                 "mentor", "mentors", "enemy", "enemies", "hostility", "alliance", "alliances")):
+        topic = "Character relationships and motivations"
+    elif _contains_keyword(plain, ("地点", "势力", "location", "locations", "faction", "factions")):
+        topic = "Locations, factions, and scene constraints"
+    elif _contains_keyword(plain, ("伏笔", "线索", "回收", "foreshadowing", "clue", "clues", "payoff", "payoffs")):
+        topic = "Foreshadowing and clues"
     else:
-        topic = "剧情关键线索"
+        topic = "Key plot evidence"
 
     clean_max = max(40, int(max_chars))
-    return f"第{chapter_num}章 {topic}：{plain[:clean_max]}"
+    return f"Chapter {chapter_num} {topic}: {plain[:clean_max]}"
 
 
 def _search_with_rag(
@@ -325,7 +339,7 @@ def build_chapter_context_payload(project_root: Path, chapter_num: int) -> Dict[
     prev_summaries = []
     for prev_ch in range(max(1, chapter_num - 2), chapter_num):
         summary = extract_chapter_summary(project_root, prev_ch)
-        prev_summaries.append(f"### 第{prev_ch}章摘要\n{summary}")
+        prev_summaries.append(f"### Chapter {prev_ch} summary\n{summary}")
 
     state_summary = extract_state_summary(project_root)
     contract_context = _load_contract_context(project_root, chapter_num)
@@ -360,11 +374,11 @@ def _render_text(payload: Dict[str, Any]) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="提取章节创作所需的精简上下文")
-    parser.add_argument("--chapter", type=int, required=True, help="目标章节号")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser = argparse.ArgumentParser(description="Extract compact context for chapter drafting")
+    parser.add_argument("--chapter", type=int, required=True, help="Target chapter number")
+    parser.add_argument("--project-root", type=str, help="Project root")
     parser.add_argument("--format", choices=["json"], default="json",
-                        help="输出格式（始终 JSON，text 渲染由 context-agent 负责）")
+                        help="Output format (always JSON; context-agent renders text)")
 
     args = parser.parse_args()
 
@@ -378,7 +392,7 @@ def main():
         print(json.dumps(payload, ensure_ascii=False, indent=2))
 
     except Exception as exc:
-        print(f"❌ 错误: {exc}", file=sys.stderr)
+        print(f"❌ Error: {exc}", file=sys.stderr)
         sys.exit(1)
 
 

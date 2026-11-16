@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from project_paths import project_dir, project_path
+
 try:
     from chapter_paths import find_chapter_file
 except ImportError:  # pragma: no cover
@@ -62,9 +64,9 @@ def run_precommit_gate(project_root: Path, chapter: int) -> dict:
             issue(
                 "chapter_file_missing",
                 message=f"chapter {chapter} file missing",
-                path=str(project_root / "正文"),
+                path=str(project_dir(project_root, "chapters")),
                 impact="没有可提交的正文文件。",
-                repair="先完成正文起草并保存到 正文/。",
+                repair=f"Finish drafting and save the chapter in {project_dir(project_root, 'chapters').name}/.",
             )
         )
     elif not chapter_file.read_text(encoding="utf-8").strip():

@@ -49,7 +49,7 @@ Chinese column names, enum values, filenames, and retrieval queries below are li
 
 ### 2. Long Text
 
-- Prefer no more than 200 Chinese characters per field.
+- Keep each field concise (legacy Chinese entries target at most 200 characters). English additions should use short, focused sentences.
 - Split longer material into:
   - `核心摘要`
   - `详细展开`
@@ -58,7 +58,7 @@ Chinese column names, enum values, filenames, and retrieval queries below are li
 
 ### 3. Instructions
 
-- Write `大模型指令` as direct, actionable Chinese imperatives.
+- For English additions, write `大模型指令` as direct, actionable English imperatives while preserving the column name. Existing rows remain Chinese source material; translate retrieved guidance into natural English when presenting it to English-language users.
 - Prioritize what to check, what to avoid, and how to adjudicate.
 - Avoid vague wording such as "write better" or "pay attention to prose quality."
 

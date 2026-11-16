@@ -1,5 +1,7 @@
 # Webnovel Writer Story System Pro Max Architecture Retrofit Specification
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Date: 2026-04-12
 > Status: Draft v1
 > Goal: Add genre reasoning, multi-table aggregation, and persistent Master/Chapter overrides without breaking existing `reference_search.py` and CSV retrieval contracts.

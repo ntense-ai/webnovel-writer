@@ -2,7 +2,7 @@
 
 **Using the DeepSeek Harness writing workspace (v8)? [🌐 Product website](https://lingfengqaq.github.io/webnovel-writer/) · [📖 Beginner tutorial](https://lingfengqaq.github.io/webnovel-writer/docs/beginner.html) · [Installation guide](https://lingfengqaq.github.io/webnovel-writer/docs/install.html)**
 
-This `ntense` branch is the English-documentation fork of the Claude Code edition (v6), maintained in `ezhomelabs/webnovel-writer`. Use the branch-pinned Quick Start below, not the upstream/default-branch installer. The v8 links above refer to the separate upstream product, not this fork.
+This `ntense` branch is the English-first fork of the Claude Code edition (v6), maintained in `ezhomelabs/webnovel-writer`. Use the branch-pinned Quick Start below, not the upstream/default-branch installer. The v8 links above refer to the separate upstream product, not this fork.
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-6.2.1-brightgreen.svg)](.claude-plugin/marketplace.json)
@@ -22,7 +22,7 @@ In short, this is a consistency system for long-running serial fiction, not a on
 >
 > | Branch | Version | Status |
 > |---|---|---|
-> | `ntense` (this fork) | v6 · English Claude Code plugin | English documentation and prompts, with fork-specific installation below |
+> | `ntense` (this fork) | v6 · English Claude Code plugin | English defaults, legacy-project compatibility, and portable host adapters |
 > | `master` (upstream) | v6 · Claude Code plugin | Maintenance mode (critical bugs only); Claude Code users should use this edition |
 > | `v7` | v7 · Multi-host CLI rewrite | Frozen and unreleased; retained as a development archive |
 > | [v8](https://github.com/lingfengQAQ/webnovel-writer/tree/v8) | v8 · Writing workspace based on [DeepSeek Harness](https://www.deepseek.com/harness/) | Stable release; [product website and tutorials](https://lingfengqaq.github.io/webnovel-writer/) |
@@ -53,6 +53,23 @@ This system turns those constraints into steps Claude Code executes automaticall
 | Project learning | `/webnovel-learn` | Save effective techniques from this book in project long-term memory |
 | Visual dashboard | `/webnovel-dashboard` | Browse project state, entity graphs, chapters, and reader-retention data read-only |
 | Project health check | `/webnovel-doctor` | Phase-aware checks of directories, files, databases, RAG, dependencies, and Dashboard artifacts |
+
+## English projects and other hosts
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`, with English
+starter files, prompts, CLI reports, and dashboard labels. Existing Chinese book
+layouts remain readable and are not automatically renamed. Internal legacy schema
+values and compatibility fixtures are retained; these are not translated in place.
+English prose uses word counts rather than character counts. See the
+[English compatibility guide](docs/english-compatibility.md) for filenames,
+reference retrieval, and preserved internal identifiers.
+
+For **Codex and Antigravity**, see the [project-local skill adapters](integrations/README.md).
+These reuse the engine without changing the Claude Code plugin. The adapter
+layout was informed by [ezhomelabs/antigravity-webnovel-writer](https://github.com/ezhomelabs/antigravity-webnovel-writer/); see its [design credit](integrations/README.md#design-references). They are portable
+skills, not native hook/plugin parity. Mandatory independent review still requires
+real host subagent support; unsupported gated workflows stop rather than pretend
+to have completed review. Host/model writing quality needs separate validation.
 
 ## System Overview
 
@@ -125,13 +142,23 @@ Initialization creates a book project directory containing:
 project-root/
 ├── .story-system/        # Contracts, chapter commits, and event audits
 ├── .webnovel/            # State, indexes, summaries, backups, and long-term memory
-├── 正文/                  # Chapter text
-├── 大纲/                  # Master, volume, timeline, and chapter outlines
-├── 设定集/                # Worldbuilding, characters, power systems, and other settings
-└── 审查报告/              # Chapter review reports
+├── chapters/             # Chapter text
+├── outlines/             # Master, volume, timeline, and chapter outlines
+├── settings/             # Worldbuilding, characters, power systems, and other settings
+└── reviews/              # Chapter review reports
 ```
 
-The Chinese directory names above are runtime path conventions and remain unchanged.
+New projects use the English directory names shown above. Existing books using `正文/`, `大纲/`, `设定集/`, and `审查报告/` remain supported: tools resolve their actual directories and do not rename files or create parallel copies. The corresponding pairs are `chapters` / `正文`, `outlines` / `大纲`, `settings` / `设定集`, and `reviews` / `审查报告`.
+
+New books also use English filenames, for example `outlines/master-outline.md`, `settings/worldbuilding.md`, `chapters/chapter-0001.md`, and `reviews/chapter-1-review.md`. Existing filenames such as `总纲.md`, `世界观.md`, and `第0001章.md` remain supported without renaming. Generated prose and author-facing reports default to English unless requested otherwise.
+
+Inspect a book's resolved directories with:
+
+```bash
+python "<CLAUDE_PLUGIN_ROOT>/scripts/project_paths.py" --project-root "<BOOK_PROJECT_ROOT>"
+```
+
+Use those returned paths for an existing project rather than manually substituting English names. If both forms of a directory exist, do not merge or overwrite them automatically; inspect the contents first.
 
 ### 4. Configure RAG
 
@@ -161,7 +188,7 @@ The system also works without an embedding key: it automatically falls back to B
 /webnovel-plan 1      # Plan volume 1
 /webnovel-write 1     # Write chapter 1
 /webnovel-review 1-5  # Review chapters 1–5
-/webnovel-query 伏笔  # Query project foreshadowing state
+/webnovel-query foreshadowing  # Query project foreshadowing state
 ```
 
 ### 6. Open the Dashboard
@@ -224,7 +251,7 @@ See the [genre template guide](docs/guides/genres.md) for the complete list.
 | `/webnovel-plan` | `/webnovel-plan 1` | Generate volume outlines, timelines, and chapter outlines |
 | `/webnovel-write` | `/webnovel-write 45` | Write and commit a specified chapter |
 | `/webnovel-review` | `/webnovel-review 1-5` | Review a range of chapters |
-| `/webnovel-query` | `/webnovel-query 萧炎` | Query characters, foreshadowing, state, and other information |
+| `/webnovel-query` | `/webnovel-query Alex` | Query characters, foreshadowing, state, and other information |
 | `/webnovel-learn` | `/webnovel-learn "This hook design works well"` | Record project experience in memory |
 | `/webnovel-dashboard` | `/webnovel-dashboard` | Launch the read-only visual dashboard |
 | `/webnovel-doctor` | `/webnovel-doctor --chapter 12` | Read-only health checks for project files, databases, RAG, and dependencies |

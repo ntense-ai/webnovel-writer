@@ -1,5 +1,7 @@
 # Init→Plan→Write Pipeline Integrity Remediation Plan
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix seven user-facing breaks across init→plan→write→plan→write, ensuring genre flows from init to the reasoning layer, story-system runs at the right time, and cross-volume planning incorporates existing writing.

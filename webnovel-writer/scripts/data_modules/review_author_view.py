@@ -36,13 +36,13 @@ def _issue_priority(issue: dict[str, Any]) -> tuple[int, int]:
 
 
 def _action_from_issue(issue: dict[str, Any]) -> str:
-    description = str(issue.get("description") or "未填写问题描述").strip()
+    description = str(issue.get("description") or "No issue description provided").strip()
     fix_hint = str(issue.get("fix_hint") or "").strip()
     location = str(issue.get("location") or "").strip()
 
-    prefix = f"{location}：" if location else ""
+    prefix = f"{location}: " if location else ""
     if fix_hint:
-        return f"{prefix}{description}。建议：{fix_hint}"
+        return f"{prefix}{description}. Suggestion: {fix_hint}"
     return f"{prefix}{description}"
 
 
@@ -57,23 +57,23 @@ def build_review_author_view(payload: dict[str, Any]) -> ReviewAuthorView:
         source = blocking_issues or sorted_issues
         actions = tuple(_action_from_issue(issue) for issue in source[:MAX_ACTIONS])
         return ReviewAuthorView(
-            verdict="⛔必须先改",
+            verdict="⛔ Fix before continuing",
             status="must_fix",
-            actions=actions or ("先处理阻断问题，再继续写下一章。",),
+            actions=actions or ("Resolve blocking issues before writing the next chapter.",),
         )
 
     if sorted_issues:
         actions = tuple(_action_from_issue(issue) for issue in sorted_issues[:MAX_ACTIONS])
         return ReviewAuthorView(
-            verdict="⚠️建议改",
+            verdict="⚠️ Changes recommended",
             status="suggest_fix",
             actions=actions,
         )
 
     summary = str(result.get("summary") or "").strip()
-    action = summary if summary else "本章没有发现阻断问题，可以继续下一步。"
+    action = summary if summary else "No blocking issues were found. You can continue."
     return ReviewAuthorView(
-        verdict="✅可以继续",
+        verdict="✅ Ready to continue",
         status="can_continue",
         actions=(action,),
     )
@@ -82,11 +82,11 @@ def build_review_author_view(payload: dict[str, Any]) -> ReviewAuthorView:
 def render_review_author_view(payload: dict[str, Any]) -> str:
     view = build_review_author_view(payload)
     lines = [
-        "## 作者视图",
+        "## Author view",
         "",
-        f"本章结论：{view.verdict}",
+        f"Chapter verdict: {view.verdict}",
         "",
-        "最值得处理的 1-3 件事：",
+        "Top 1–3 issues to address:",
     ]
     lines.extend(f"- {action}" for action in view.actions[:MAX_ACTIONS])
     return "\n".join(lines).rstrip() + "\n"

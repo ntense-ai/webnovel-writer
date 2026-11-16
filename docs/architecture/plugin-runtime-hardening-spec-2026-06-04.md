@@ -1,5 +1,7 @@
 # Plugin Runtime Hardening Spec
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Date: 2026-06-04
 > Status: Draft v1
 > Scope: Consolidate plugin structure, runtime reliability, workflow orchestration, doctor diagnostics, hook state awareness, evaluations, and release governance in `webnovel-writer`, based on research into high-quality Claude Code plugins

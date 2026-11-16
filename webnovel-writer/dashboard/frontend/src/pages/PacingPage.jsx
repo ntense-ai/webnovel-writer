@@ -222,30 +222,30 @@ export default function PacingPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>节奏雷达</h2>
-                <Badge tone="amber">{windowPayload.total || 0} 章数据</Badge>
+                <h2>Pacing</h2>
+                <Badge tone="amber">{windowPayload.total || 0} chapters</Badge>
             </header>
 
             <div className="stat-grid">
                 <StatCard
-                    label="当前窗口"
+                    label="Current window"
                     value={currentStart && currentEnd ? `${currentStart} - ${currentEnd}` : '—'}
-                    sub="默认最近 50 章"
+                    sub="Last 50 chapters by default"
                 />
                 <StatCard
-                    label="平均钩子强度"
+                    label="Average hook strength"
                     value={hookAverage ? formatShortNumber(hookAverage) : '—'}
-                    sub="映射 weak=1 / medium=3 / strong=5"
+                    sub="Scale: weak=1 / medium=3 / strong=5"
                 />
                 <StatCard
-                    label="过渡章"
+                    label="Transition chapters"
                     value={String(transitionCount)}
-                    sub="当前窗口内标记为 transition 的章节"
+                    sub="Chapters marked transition in this window"
                 />
                 <StatCard
-                    label="总字数"
+                    label="Total characters"
                     value={formatNumber(allChapters.reduce((sum, item) => sum + Number(item.word_count || 0), 0))}
-                    sub={`最新章节 ${formatChapterLabel(windowPayload.latest_chapter)}`}
+                    sub={`Latest chapter ${formatChapterLabel(windowPayload.latest_chapter)}`}
                 />
             </div>
 
@@ -253,10 +253,10 @@ export default function PacingPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">HOOK TREND</div>
-                        <div className="card-title">钩子强度走势</div>
+                        <div className="card-title">Hook Strength Trend</div>
                     </div>
                     <Badge tone="green">
-                        {currentStart && currentEnd ? `${formatChapterLabel(currentStart)} - ${formatChapterLabel(currentEnd)}` : '最近窗口'}
+                        {currentStart && currentEnd ? `${formatChapterLabel(currentStart)} - ${formatChapterLabel(currentEnd)}` : 'Recent window'}
                     </Badge>
                 </div>
                 {items.length ? (
@@ -276,7 +276,7 @@ export default function PacingPage() {
                     </>
                 ) : (
                     <div className="empty-state">
-                        <p>暂无钩子强度数据</p>
+                        <p>No hook strength data</p>
                     </div>
                 )}
             </article>
@@ -286,15 +286,15 @@ export default function PacingPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">STRAND STACK</div>
-                            <div className="card-title">Strand 分布（逐章）</div>
+                            <div className="card-title">Strand Distribution by Chapter</div>
                         </div>
-                        <Badge tone="purple">堆叠柱状图</Badge>
+                        <Badge tone="purple">Stacked bars</Badge>
                     </div>
                     {items.length ? (
                         <ChartWrapper option={buildStrandStackOption(items)} />
                     ) : (
                         <div className="empty-state">
-                            <p>暂无 Strand 数据</p>
+                            <p>No strand data</p>
                         </div>
                     )}
                 </article>
@@ -303,15 +303,15 @@ export default function PacingPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">WORD BOXPLOT</div>
-                            <div className="card-title">章节字数分布</div>
+                            <div className="card-title">Chapter Length Distribution</div>
                         </div>
-                        <Badge tone="blue">按卷分组</Badge>
+                        <Badge tone="blue">Grouped by volume</Badge>
                     </div>
                     {groups.length ? (
                         <ChartWrapper option={buildWordBoxOption(groups)} />
                     ) : (
                         <div className="empty-state">
-                            <p>暂无章节字数数据</p>
+                            <p>No chapter length data</p>
                         </div>
                     )}
                 </article>

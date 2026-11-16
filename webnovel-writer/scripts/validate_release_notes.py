@@ -15,13 +15,16 @@ import sync_plugin_version
 ROOT = Path(__file__).resolve().parent.parent.parent
 VERSION_RE = sync_plugin_version.VERSION_PATTERN
 REQUIRED_RELEASE_HEADINGS = (
-    "## 发版范围",
-    "## 给作者看的变化",
-    "## 是否需要改旧项目",
-    "## 给维护者",
-    "## 验证",
+    "## Release Scope",
+    "## Changes for Authors",
+    "## Do Existing Projects Need Changes?",
+    "## For Maintainers",
+    "## Verification",
 )
-AUTHOR_WORDS = ("作者", "写章", "网文", "故事", "正文")
+LEGACY_RELEASE_HEADINGS = (
+    "## 发版范围", "## 给作者看的变化", "## 是否需要改旧项目", "## 给维护者", "## 验证",
+)
+AUTHOR_WORDS = ("author", "chapter", "webnovel", "story", "prose", "作者", "写章", "网文", "故事", "正文")
 
 
 def _issue(code: str, *, message: str, path: str = "", repair: str = "") -> dict[str, str]:
@@ -99,7 +102,7 @@ def validate_release_notes(
     issues: list[dict[str, str]] = []
 
     if not VERSION_RE.fullmatch(target_version):
-        issues.append(_issue("version.invalid", message=f"invalid version: {target_version}", repair="使用 X.Y.Z 版本号。"))
+        issues.append(_issue("version.invalid", message=f"invalid version: {target_version}", repair="Use an X.Y.Z version number."))
 
     release_path = repo_root / "releases" / f"v{target_version}.md"
     release_text, release_error = _load_text(release_path)
@@ -109,7 +112,7 @@ def validate_release_notes(
                 "release_note.missing",
                 message=f"release note {release_path.name} {release_error}",
                 path=str(release_path),
-                repair="新增 releases/vX.Y.Z.md，并覆盖上个 tag 到本次发布的全部变化。",
+                repair="Add releases/vX.Y.Z.md covering all changes since the previous tag.",
             )
         )
     else:
@@ -120,17 +123,17 @@ def validate_release_notes(
                     "release_note.title",
                     message=f"release note title must start with {expected_title!r}",
                     path=str(release_path),
-                    repair="标题使用 '# vX.Y.Z - 一句中文用户收益'。",
+                    repair="Use '# vX.Y.Z - A one-sentence user benefit' as the title.",
                 )
             )
-        for heading in REQUIRED_RELEASE_HEADINGS:
-            if heading not in release_text:
+        for heading, legacy in zip(REQUIRED_RELEASE_HEADINGS, LEGACY_RELEASE_HEADINGS):
+            if heading not in release_text and legacy not in release_text:
                 issues.append(
                     _issue(
                         "release_note.heading",
                         message=f"missing heading: {heading}",
                         path=str(release_path),
-                        repair="使用 releases/README.md 中的固定模板。",
+                        repair="Use the standard template in releases/README.md.",
                     )
                 )
         if previous and previous not in release_text:
@@ -139,16 +142,16 @@ def validate_release_notes(
                     "release_note.range",
                     message=f"previous tag {previous} not mentioned",
                     path=str(release_path),
-                    repair="在“发版范围”中写明从上个正式 tag 到本次发布的范围。",
+                    repair="State the range from the previous stable tag to this release in Release Scope.",
                 )
             )
-        if not any(word in release_text for word in AUTHOR_WORDS):
+        if not any(word in release_text.casefold() for word in AUTHOR_WORDS):
             issues.append(
                 _issue(
                     "release_note.audience",
                     message="release note does not look author-facing",
                     path=str(release_path),
-                    repair="发布说明顶部必须使用中文网文作者能理解的场景语言。",
+                    repair="Open the release notes with practical language that webnovel authors understand.",
                 )
             )
 
@@ -160,7 +163,7 @@ def validate_release_notes(
                 "changelog.missing",
                 message=f"CHANGELOG.md {changelog_error}",
                 path=str(changelog_path),
-                repair="新增 CHANGELOG.md，记录每个正式版本的用户可感知变化。",
+                repair="Add CHANGELOG.md with user-visible changes for each stable version.",
             )
         )
     else:
@@ -171,7 +174,7 @@ def validate_release_notes(
                     "changelog.version",
                     message=f"CHANGELOG.md missing v{target_version}",
                     path=str(changelog_path),
-                    repair="在 CHANGELOG.md 中新增当前版本小节。",
+                    repair="Add a section for the current version to CHANGELOG.md.",
                 )
             )
         if previous and current_changelog_section and previous not in current_changelog_section:
@@ -180,7 +183,7 @@ def validate_release_notes(
                     "changelog.range",
                     message=f"CHANGELOG.md does not mention previous tag {previous}",
                     path=str(changelog_path),
-                    repair="在当前版本小节写明发版范围。",
+                    repair="State the release scope in the current version section.",
                 )
             )
 
@@ -216,9 +219,9 @@ def format_report(report: dict[str, Any], output_format: str = "text") -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate author-facing release notes and changelog")
-    parser.add_argument("--root", default="", help="仓库根目录，默认自动推断")
-    parser.add_argument("--version", default="", help="目标版本；默认读取 plugin.json")
-    parser.add_argument("--previous-tag", default="", help="上一个正式 tag；默认从 git tag 推断")
+    parser.add_argument("--root", default="", help="Repository root; inferred automatically by default")
+    parser.add_argument("--version", default="", help="Target version; read from plugin.json by default")
+    parser.add_argument("--previous-tag", default="", help="Previous stable tag; inferred from git tags by default")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()
 

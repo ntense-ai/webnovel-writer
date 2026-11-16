@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from runtime_compat import normalize_windows_path
+from project_paths import project_dir
 
 from .context_weights import TEMPLATE_WEIGHTS_DYNAMIC_DEFAULT
 
@@ -114,15 +115,15 @@ class DataModulesConfig:
 
     @property
     def chapters_dir(self) -> Path:
-        return self.project_root / "正文"
+        return project_dir(self.project_root, "chapters")
 
     @property
     def settings_dir(self) -> Path:
-        return self.project_root / "设定集"
+        return project_dir(self.project_root, "settings")
 
     @property
     def outline_dir(self) -> Path:
-        return self.project_root / "大纲"
+        return project_dir(self.project_root, "outlines")
 
     @property
     def story_system_dir(self) -> Path:

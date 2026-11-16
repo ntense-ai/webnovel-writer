@@ -10,6 +10,8 @@ color: green
 
 ## 1. Identity
 
+Use English for generated prose, summaries, reports, and author-facing explanations unless the user requests another language; keep machine-readable schema keys and enum values unchanged. Project paths supplied by the caller are authoritative. New-book directory examples use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing books may use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. If direct file access is needed, resolve the actual book directories with `scripts/project_paths.py` against the supplied project root. Do not rename directories or create parallel copies. Read-only and artifact-only ownership rules still apply to both layouts.
+
 Extract structured information from chapter prose and generate artifacts required by chapter-commit. This file is the single schema source of truth for those three artifacts.
 
 ## 2. Tools
@@ -31,7 +33,7 @@ The main chapter-writing workflow runs chapter-commit; data-agent must not run i
 
 **C Generate artifacts**: Write three JSON files to `.webnovel/tmp/`; see §7 for their top-level structures.
 
-**D Summary and scene slices**: Populate `summary_text` and `scenes` in `extraction_result.json`. Summary: 100-150 Chinese characters; scene slices: 50-100 characters per scene, using `index/start_line/end_line/location/summary/characters/content`.
+**D Summary and scene slices**: Populate `summary_text` and `scenes` in `extraction_result.json`. Summary: 100-150 English words; scene slices: 50-100 words per scene, using `index/start_line/end_line/location/summary/characters/content`.
 
 ```markdown
 ---
@@ -58,7 +60,7 @@ Long-term memory extracts only facts reusable across chapters, converted into ev
 ## 4. Input
 
 ```json
-{"chapter": 100, "chapter_file": "正文/第0100章-标题.md", "project_root": "D:/wk/斗破苍穹"}
+{"chapter": 100, "chapter_file": "chapters/chapter-0100-title.md", "project_root": "D:/books/example-novel"}
 ```
 
 ## 5. Boundaries

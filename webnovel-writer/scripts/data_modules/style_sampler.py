@@ -325,7 +325,7 @@ def main():
     from .index_manager import IndexManager
 
     parser = argparse.ArgumentParser(description="Style Sampler CLI")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -334,18 +334,18 @@ def main():
 
     # 列出样本
     list_parser = subparsers.add_parser("list")
-    list_parser.add_argument("--type", help="按类型过滤")
+    list_parser.add_argument("--type", help="Filter by type")
     list_parser.add_argument("--limit", type=int, default=10)
 
     # 提取样本
     extract_parser = subparsers.add_parser("extract")
     extract_parser.add_argument("--chapter", type=int, required=True)
     extract_parser.add_argument("--score", type=float, required=True)
-    extract_parser.add_argument("--scenes", required=True, help="JSON 格式的场景列表")
+    extract_parser.add_argument("--scenes", required=True, help="Scene list as JSON")
 
     # 选择样本
     select_parser = subparsers.add_parser("select")
-    select_parser.add_argument("--outline", required=True, help="章节大纲")
+    select_parser.add_argument("--outline", required=True, help="Chapter outline")
     select_parser.add_argument("--max", type=int, default=3)
 
     argv = normalize_global_project_root(sys.argv[1:])
@@ -428,7 +428,7 @@ def main():
         emit_success([s.__dict__ for s in samples], message="selected")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

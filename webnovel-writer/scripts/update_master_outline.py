@@ -6,6 +6,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+
+from project_paths import project_dir, project_path
 from typing import Any
 
 from runtime_compat import enable_windows_utf8_stdio
@@ -36,16 +38,16 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _require_current_volume_artifacts(project_root: Path, volume: int) -> list[str]:
     missing: list[str] = []
-    outline_dir = project_root / "大纲"
+    outline_dir = project_dir(project_root, "大纲")
     for pattern in REQUIRED_VOLUME_ARTIFACTS:
-        path = outline_dir / pattern.format(volume=volume)
+        path = project_path(project_root, Path("outlines") / pattern.format(volume=volume))
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             missing.append(path.relative_to(project_root).as_posix())
     if missing:
         raise MasterOutlineSyncError(
             "current volume planning artifacts are incomplete: " + ", ".join(missing)
         )
-    return [f.format(volume=volume) for f in REQUIRED_VOLUME_ARTIFACTS]
+    return [project_path(project_root, Path("outlines") / f.format(volume=volume)).name for f in REQUIRED_VOLUME_ARTIFACTS]
 
 
 def _resolve_writeback_source(
@@ -54,11 +56,11 @@ def _resolve_writeback_source(
     volume: int,
     writeback_file: str | Path | None,
 ) -> Path:
-    expected = (outline_dir / f"第{volume}卷-总纲写回.json").resolve()
+    expected = project_path(project_root, f"outlines/第{volume}卷-总纲写回.json").resolve()
     if writeback_file:
         candidate = Path(writeback_file)
         if not candidate.is_absolute():
-            candidate = project_root / candidate
+            candidate = project_path(project_root, candidate)
         candidate = candidate.resolve()
         if candidate != expected:
             raise MasterOutlineSyncError(
@@ -113,7 +115,7 @@ def _normalize_anchor(payload: dict[str, Any], expected_volume: int) -> dict[str
 
 def _update_volume_table(text: str, anchor: dict[str, str]) -> tuple[str, bool]:
     lines = text.splitlines()
-    header_idx = next((i for i, line in enumerate(lines) if line.strip().startswith("| 卷号")), None)
+    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| 卷号", "| volume"))), None)
     new_row = _render_row(
         [
             anchor["volume"],
@@ -126,8 +128,8 @@ def _update_volume_table(text: str, anchor: dict[str, str]) -> tuple[str, bool]:
     if header_idx is None:
         addition = [
             "",
-            "## 卷划分",
-            "| 卷号 | 卷名 | 章节范围 | 核心冲突 | 卷末高潮 |",
+            "## Volume Plan",
+            "| Volume | Title | Chapters | Core Conflict | Ending Climax |",
             "|------|------|----------|----------|----------|",
             new_row,
         ]
@@ -161,8 +163,8 @@ def _update_volume_table(text: str, anchor: dict[str, str]) -> tuple[str, bool]:
 def _structured_writeback_items(payload: dict[str, Any]) -> list[dict[str, str]]:
     items: list[dict[str, str]] = []
     for field, default_level in (
-        ("foreshadow_writeback", "伏笔"),
-        ("open_loop_writeback", "持续开放环"),
+        ("foreshadow_writeback", "foreshadowing"),
+        ("open_loop_writeback", "open loop"),
     ):
         raw_items = payload.get(field, [])
         if raw_items is None:
@@ -191,13 +193,13 @@ def _append_foreshadow_rows(text: str, items: list[dict[str, str]]) -> tuple[str
         return text, 0
 
     lines = text.splitlines()
-    header_idx = next((i for i, line in enumerate(lines) if line.strip().startswith("| 伏笔内容")), None)
+    header_idx = next((i for i, line in enumerate(lines) if line.strip().casefold().startswith(("| 伏笔内容", "| foreshadowing"))), None)
     if header_idx is None:
         lines.extend(
             [
                 "",
-                "## 伏笔表",
-                "| 伏笔内容 | 埋设章 | 回收章 | 层级 |",
+                "## Foreshadowing",
+                "| Foreshadowing | Planted Chapter | Payoff Chapter | Level |",
                 "|----------|--------|--------|------|",
             ]
         )
@@ -249,10 +251,10 @@ def sync_master_outline(
 
     _require_current_volume_artifacts(root, volume)
 
-    outline_dir = root / "大纲"
-    master_path = outline_dir / "总纲.md"
+    outline_dir = project_dir(root, "大纲")
+    master_path = project_path(root, "outlines/master-outline.md")
     if not master_path.is_file():
-        raise MasterOutlineSyncError("missing master outline: 大纲/总纲.md")
+        raise MasterOutlineSyncError(f"missing master outline: {master_path.relative_to(root).as_posix()}")
 
     source_path = _resolve_writeback_source(root, outline_dir, volume, writeback_file)
     payload = _read_json(source_path)
@@ -277,10 +279,10 @@ def sync_master_outline(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Sync minimal next-volume anchors into 大纲/总纲.md")
+    parser = argparse.ArgumentParser(description="Sync next-volume anchors into outlines/master-outline.md (legacy projects supported)")
     parser.add_argument("--project-root", required=True)
-    parser.add_argument("--volume", type=int, required=True, help="当前已完成规划的卷号")
-    parser.add_argument("--writeback-file", default="", help="显式结构化写回 JSON；默认 大纲/第N卷-总纲写回.json")
+    parser.add_argument("--volume", type=int, required=True, help="Number of the volume whose planning is complete")
+    parser.add_argument("--writeback-file", default="", help="Structured writeback JSON; defaults to the active outlines directory")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     args = parser.parse_args()
 

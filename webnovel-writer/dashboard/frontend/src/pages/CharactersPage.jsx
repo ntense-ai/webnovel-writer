@@ -11,15 +11,16 @@ import ChartWrapper from '../components/ChartWrapper.jsx'
 import DataTable from '../components/DataTable.jsx'
 import { formatChapterLabel, formatJSONText } from '../lib/format.js'
 import { getLatestChapter } from '../lib/story.js'
+import { entityTypeLabel } from '../lib/entityTypes.js'
 
 const TYPE_COLORS = {
-    角色: '#26a8ff',
-    势力: '#7f5af0',
-    地点: '#2ec27e',
-    法宝: '#f5a524',
+    Character: '#26a8ff',
+    Faction: '#7f5af0',
+    Location: '#2ec27e',
+    Artifact: '#f5a524',
 }
 
-const CATEGORY_NAMES = ['角色', '势力', '地点', '其他']
+const CATEGORY_NAMES = ['Character', 'Faction', 'Location', 'Other']
 
 function parsePositiveChapter(value) {
     const number = Number(value)
@@ -27,10 +28,8 @@ function parsePositiveChapter(value) {
 }
 
 function resolveCategory(type) {
-    if (type === '角色') return '角色'
-    if (type === '势力') return '势力'
-    if (type === '地点') return '地点'
-    return '其他'
+    const label = entityTypeLabel(type)
+    return CATEGORY_NAMES.includes(label) ? label : 'Other'
 }
 
 function buildGraphData(entities, relationships, events, currentChapter) {
@@ -102,7 +101,7 @@ function buildGraphData(entities, relationships, events, currentChapter) {
         .map(row => ({
             source: row.from_entity,
             target: row.to_entity,
-            name: row.description || row.event_type || row.type || '关联',
+            name: row.description || row.event_type || row.type || 'Association',
             lineStyle: {
                 color: '#8f7f5c',
                 width: 2,
@@ -123,9 +122,9 @@ function buildGraphOption(data) {
         tooltip: {
             formatter: params => {
                 if (params.dataType === 'edge') {
-                    return params.data?.name || '关系'
+                    return params.data?.name || 'Relationship'
                 }
-                return `${params.data?.name || '实体'}<br/>${params.data?.type || '未知类型'}`
+                return `${params.data?.name || 'Entity'}<br/>${entityTypeLabel(params.data?.type)}`
             },
         },
         legend: {
@@ -179,7 +178,7 @@ function TypeFilter({ types, value, onChange }) {
                 className={`filter-btn ${value === '' ? 'active' : ''}`.trim()}
                 onClick={() => onChange('')}
             >
-                全部
+                All
             </button>
             {types.map(type => (
                 <button
@@ -188,7 +187,7 @@ function TypeFilter({ types, value, onChange }) {
                     className={`filter-btn ${value === type ? 'active' : ''}`.trim()}
                     onClick={() => onChange(type)}
                 >
-                    {type}
+                    {entityTypeLabel(type)}
                 </button>
             ))}
         </div>
@@ -199,7 +198,7 @@ function EntityListTable({ rows, selectedId, onSelect }) {
     if (!rows.length) {
         return (
             <div className="empty-state">
-                <p>暂无实体数据</p>
+                <p>No entities</p>
             </div>
         )
     }
@@ -209,11 +208,11 @@ function EntityListTable({ rows, selectedId, onSelect }) {
             <table className="data-table entity-table">
                 <thead>
                     <tr>
-                        <th>名称</th>
-                        <th>类型</th>
-                        <th>层级</th>
-                        <th>首现</th>
-                        <th>末现</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Tier</th>
+                        <th>First seen</th>
+                        <th>Last seen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -227,7 +226,7 @@ function EntityListTable({ rows, selectedId, onSelect }) {
                                 {entity.canonical_name}
                             </td>
                             <td>
-                                <Badge tone="blue">{entity.type || '未知'}</Badge>
+                                <Badge tone="blue">{entityTypeLabel(entity.type)}</Badge>
                             </td>
                             <td>{entity.tier || '—'}</td>
                             <td>{formatChapterLabel(entity.first_appearance)}</td>
@@ -343,8 +342,8 @@ export default function CharactersPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>角色图鉴</h2>
-                <Badge tone="green">{filteredEntities.length} / {entities.length} 个实体</Badge>
+                <h2>Characters</h2>
+                <Badge tone="green">{filteredEntities.length} / {entities.length} entities</Badge>
             </header>
 
             <TypeFilter types={types} value={typeFilter} onChange={setTypeFilter} />
@@ -355,14 +354,14 @@ export default function CharactersPage() {
                     className={`tab-btn ${tab === 'list' ? 'active' : ''}`.trim()}
                     onClick={() => setTab('list')}
                 >
-                    实体列表
+                    Entity List
                 </button>
                 <button
                     type="button"
                     className={`tab-btn ${tab === 'graph' ? 'active' : ''}`.trim()}
                     onClick={() => setTab('graph')}
                 >
-                    关系图谱
+                    Relationship Graph
                 </button>
             </div>
 
@@ -373,9 +372,9 @@ export default function CharactersPage() {
                             <div className="card-header">
                                 <div>
                                     <div className="section-label">ENTITY INDEX</div>
-                                    <div className="card-title">实体列表</div>
+                                    <div className="card-title">Entity List</div>
                                 </div>
-                                <Badge tone="cyan">{typeFilter || '全部类型'}</Badge>
+                                <Badge tone="cyan">{typeFilter ? entityTypeLabel(typeFilter) : 'All types'}</Badge>
                             </div>
                             <EntityListTable
                                 rows={filteredEntities}
@@ -390,27 +389,27 @@ export default function CharactersPage() {
                             <div className="card-header">
                                 <div>
                                     <div className="section-label">ENTITY DETAIL</div>
-                                    <div className="card-title">{selected?.canonical_name || '未选择实体'}</div>
+                                    <div className="card-title">{selected?.canonical_name || 'No entity selected'}</div>
                                 </div>
                                 {selected?.tier ? <Badge tone="purple">{selected.tier}</Badge> : null}
                             </div>
                             {selected ? (
                                 <div className="entity-detail">
-                                    <p><strong>类型：</strong>{selected.type || '未知'}</p>
+                                    <p><strong>Type：</strong>{entityTypeLabel(selected.type)}</p>
                                     <p><strong>ID：</strong><code>{selected.id}</code></p>
-                                    <p><strong>首现：</strong>{formatChapterLabel(selected.first_appearance)}</p>
-                                    <p><strong>末现：</strong>{formatChapterLabel(selected.last_appearance)}</p>
+                                    <p><strong>First seen：</strong>{formatChapterLabel(selected.first_appearance)}</p>
+                                    <p><strong>Last seen：</strong>{formatChapterLabel(selected.last_appearance)}</p>
                                     {selected.desc ? <p className="entity-desc">{selected.desc}</p> : null}
                                     {selected.current_json ? (
                                         <div className="entity-current-block">
-                                            <div className="mini-label">当前状态</div>
+                                            <div className="mini-label">Current state</div>
                                             <pre className="code-block">{formatJSONText(selected.current_json)}</pre>
                                         </div>
                                     ) : null}
                                 </div>
                             ) : (
                                 <div className="empty-state compact">
-                                    <p>从左侧选择一个实体查看详情</p>
+                                    <p>Select an entity on the left to view details</p>
                                 </div>
                             )}
 
@@ -419,28 +418,28 @@ export default function CharactersPage() {
                             <div className="card-header compact-header">
                                 <div>
                                     <div className="section-label">STATE CHANGES</div>
-                                    <div className="card-title">状态变化历史</div>
+                                    <div className="card-title">State Change History</div>
                                 </div>
-                                <Badge tone="amber">{changes.length} 条</Badge>
+                                <Badge tone="amber">{changes.length} records</Badge>
                             </div>
                             <DataTable
                                 columns={[
                                     {
                                         key: 'chapter',
-                                        label: '章',
+                                        label: 'Chapter',
                                         render: row => formatChapterLabel(row.chapter),
                                     },
-                                    { key: 'field', label: '字段' },
+                                    { key: 'field', label: 'Field' },
                                     {
                                         key: 'change',
-                                        label: '变化',
+                                        label: 'Change',
                                         render: row => `${row.old_value ?? '—'} → ${row.new_value ?? '—'}`,
                                     },
                                 ]}
                                 rows={changes}
                                 rowKey={(row, index) => `${row.entity_id || 'entity'}-${row.chapter || 0}-${index}`}
                                 pageSize={6}
-                                emptyText="暂无状态变化记录"
+                                emptyText="No state changes"
                                 minWidth={420}
                             />
                         </article>
@@ -451,9 +450,9 @@ export default function CharactersPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">RELATION GRAPH</div>
-                            <div className="card-title">关系图谱</div>
+                            <div className="card-title">Relationship Graph</div>
                         </div>
-                        <Badge tone="blue">ECharts graph · 力导向 · 时间轴</Badge>
+                        <Badge tone="blue">ECharts graph · Force-directed · Timeline</Badge>
                     </div>
 
                     <div className="graph-toolbar">
@@ -471,9 +470,9 @@ export default function CharactersPage() {
                                 setPlaying(true)
                             }}
                         >
-                            {playing ? '暂停' : '播放'}
+                            {playing ? 'Pause' : 'Play'}
                         </button>
-                        <span className="range-label">第 1 章</span>
+                        <span className="range-label">Chapter 1</span>
                         <input
                             className="timeline-slider"
                             type="range"
@@ -489,8 +488,8 @@ export default function CharactersPage() {
                         />
                         <span className="range-label">{formatChapterLabel(latestChapter)}</span>
                         <Badge tone="blue">{formatChapterLabel(graphChapter)}</Badge>
-                        <Badge tone="green">{graphData.nodes.length} 节点</Badge>
-                        <Badge tone="purple">{graphData.links.length} 关系</Badge>
+                        <Badge tone="green">{graphData.nodes.length} nodes</Badge>
+                        <Badge tone="purple">{graphData.links.length} Relationship</Badge>
                     </div>
 
                     {graphData.nodes.length ? (
@@ -501,7 +500,7 @@ export default function CharactersPage() {
                         />
                     ) : (
                         <div className="empty-state">
-                            <p>当前章节窗口没有可视化关系</p>
+                            <p>No relationships in this chapter window</p>
                         </div>
                     )}
                 </article>

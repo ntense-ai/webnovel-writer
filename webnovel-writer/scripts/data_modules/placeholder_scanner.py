@@ -8,6 +8,9 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
+from project_paths import project_dir, project_path
+
+
 
 PLACEHOLDER_PATTERNS = [
     re.compile(r"\[待[^\]]*\]"),
@@ -33,7 +36,7 @@ def _scan_file(path: Path, project_root: Path) -> List[Dict[str, Any]]:
                         "line": line_no,
                         "pattern": match.group(0),
                         "context": line.strip(),
-                        "suggested_fill_phase": "plan" if rel.startswith("大纲/") else "setting_update",
+                        "suggested_fill_phase": "plan" if rel.startswith(("outlines/", "大纲/")) else "setting_update",
                     }
                 )
     return results
@@ -42,8 +45,8 @@ def _scan_file(path: Path, project_root: Path) -> List[Dict[str, Any]]:
 def scan_placeholders(project_root: str | Path) -> List[Dict[str, Any]]:
     root = Path(project_root).expanduser().resolve()
     targets: List[Path] = []
-    for dirname in ("大纲", "设定集"):
-        base = root / dirname
+    for dirname in ("outlines", "settings"):
+        base = project_dir(root, dirname)
         if base.is_dir():
             targets.extend(sorted(base.rglob("*.md")))
 

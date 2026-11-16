@@ -12,7 +12,7 @@ export default function DataTable({
     rows,
     rowKey = 'id',
     pageSize = 8,
-    emptyText = '暂无数据',
+    emptyText = 'No data',
     minWidth = 640,
 }) {
     const [page, setPage] = useState(1)
@@ -72,10 +72,10 @@ export default function DataTable({
                         onClick={() => setPage(current => Math.max(1, current - 1))}
                         disabled={safePage <= 1}
                     >
-                        上一页
+                        Previous
                     </button>
                     <span className="page-info">
-                        第 {safePage}/{totalPages} 页 · 共 {rows.length} 条
+                        Page {safePage}/{totalPages} · {rows.length} records
                     </span>
                     <button
                         className="page-btn"
@@ -83,7 +83,7 @@ export default function DataTable({
                         onClick={() => setPage(current => Math.min(totalPages, current + 1))}
                         disabled={safePage >= totalPages}
                     >
-                        下一页
+                        Next
                     </button>
                 </div>
             ) : null}

@@ -13,12 +13,12 @@ import {
 } from './icons.jsx'
 
 const NAV_ITEMS = [
-    { to: '/', label: '总览', icon: ChartBarIcon, end: true },
-    { to: '/characters', label: '角色图鉴', icon: UsersIcon },
-    { to: '/pacing', label: '节奏雷达', icon: TrendingUpIcon },
-    { to: '/foreshadowing', label: '伏笔追踪', icon: BookmarkIcon },
-    { to: '/files', label: '文档浏览', icon: FolderIcon },
-    { to: '/system', label: '系统状态', icon: SlidersIcon },
+    { to: '/', label: 'Overview', icon: ChartBarIcon, end: true },
+    { to: '/characters', label: 'Characters', icon: UsersIcon },
+    { to: '/pacing', label: 'Pacing', icon: TrendingUpIcon },
+    { to: '/foreshadowing', label: 'Foreshadowing', icon: BookmarkIcon },
+    { to: '/files', label: 'Files', icon: FolderIcon },
+    { to: '/system', label: 'System', icon: SlidersIcon },
 ]
 
 export default function App() {
@@ -55,7 +55,7 @@ export default function App() {
         }
     }, [])
 
-    const title = projectInfo?.project_info?.title || '未加载项目'
+    const title = projectInfo?.project_info?.title || 'No project loaded'
 
     return (
         <div className="app-layout">
@@ -86,7 +86,7 @@ export default function App() {
                     <span className="icon">
                         {connected ? <WifiIcon /> : <WifiOffIcon />}
                     </span>
-                    {connected ? '实时同步中' : '实时连接断开'}
+                    {connected ? 'Live updates' : 'Live connection lost'}
                 </div>
             </aside>
 

@@ -39,6 +39,10 @@ def normalize_genre_token(token: str) -> str:
     value = str(token or "").strip()
     if not value:
         return ""
+    # Established Markdown profile keys must not be remapped through the
+    # new user-facing taxonomy aliases (xuanhuan is not xianxia here).
+    if value.lower() in {*GENRE_PROFILE_KEY_ALIASES.values(), "xuanhuan", "game-lit", "history-travel", "general"}:
+        return value.lower()
     return normalize_genre_label_for_profile(value)
 
 

@@ -418,7 +418,7 @@ class StateManager:
                 return {"saved": True, "sqlite_sync_ok": sqlite_sync_ok}
 
         except filelock.Timeout:
-            raise RuntimeError("无法获取 state.json 文件锁，请稍后重试")
+            raise RuntimeError("Cannot acquire the state.json lock; try again later")
 
     def _sync_to_sqlite(self) -> bool:
         """同步待处理数据到 SQLite（v5.1 引入，v5.4 沿用）"""
@@ -683,7 +683,7 @@ class StateManager:
         valid_statuses = set(self.CHAPTER_STATUS_ORDER + [self.REJECTED_CHAPTER_STATUS])
         if status not in valid_statuses:
             raise ValueError(
-                f"无效状态: {status}，有效值: {self.CHAPTER_STATUS_ORDER + [self.REJECTED_CHAPTER_STATUS]}"
+                f"Invalid status: {status}, valid values: {self.CHAPTER_STATUS_ORDER + [self.REJECTED_CHAPTER_STATUS]}"
             )
 
         current = self.get_chapter_status(chapter)
@@ -692,7 +692,7 @@ class StateManager:
             new_idx = self._chapter_status_rank(status)
             if new_idx < current_idx:
                 raise ValueError(
-                    f"章节 {chapter} 状态不可回退: {current} -> {status}"
+                    f"Chapter {chapter} status cannot move backward: {current} -> {status}"
                 )
             if new_idx == current_idx:
                 return  # 幂等
@@ -1101,11 +1101,11 @@ class StateManager:
                 self._state.setdefault("disambiguation_warnings", []).append(record)
                 self._pending_disambiguation_warnings.append(record)
                 chosen_part = f" → {chosen_id}" if chosen_id else ""
-                warnings.append(f"消歧警告: {mention}{chosen_part} (confidence: {confidence:.2f})")
+                warnings.append(f"Disambiguation warning: {mention}{chosen_part} (confidence: {confidence:.2f})")
             else:
                 self._state.setdefault("disambiguation_pending", []).append(record)
                 self._pending_disambiguation_pending.append(record)
-                warnings.append(f"消歧需人工确认: {mention} (confidence: {confidence:.2f})")
+                warnings.append(f"Disambiguation requires manual confirmation: {mention} (confidence: {confidence:.2f})")
 
         return warnings
 
@@ -1157,7 +1157,7 @@ class StateManager:
                     last_appearance=chapter
                 )
                 if not self.add_entity(new_entity):
-                    warnings.append(f"实体已存在: {entity_id}")
+                    warnings.append(f"Entity already exists: {entity_id}")
                 # v5.1 引入: 缓存用于 SQLite 同步
                 self._pending_sqlite_data["entities_new"].append(entity)
 
@@ -1348,7 +1348,7 @@ def main():
     from .index_manager import IndexManager
 
     parser = argparse.ArgumentParser(description="State Manager CLI (v5.4)")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
@@ -1361,13 +1361,13 @@ def main():
 
     # 列出实体
     list_parser = subparsers.add_parser("list-entities")
-    list_parser.add_argument("--type", help="按类型过滤")
-    list_parser.add_argument("--tier", help="按层级过滤")
+    list_parser.add_argument("--type", help="Filter by type")
+    list_parser.add_argument("--tier", help="Filter by tier")
 
     # 处理章节结果
     process_parser = subparsers.add_parser("process-chapter")
-    process_parser.add_argument("--chapter", type=int, required=True, help="章节号")
-    process_parser.add_argument("--data", required=True, help="JSON 格式的处理结果")
+    process_parser.add_argument("--chapter", type=int, required=True, help="Chapter number")
+    process_parser.add_argument("--data", required=True, help="Processing result as JSON")
 
     # 查询章节状态
     status_get_parser = subparsers.add_parser("get-chapter-status")
@@ -1396,7 +1396,7 @@ def main():
             print_error(
                 "INVALID_PROJECT_ROOT",
                 str(exc),
-                suggestion="请传入包含 .webnovel/state.json 的书项目根目录，或先通过 webnovel.py 解析 project_root。",
+                suggestion="Pass a book project root containing .webnovel/state.json, or resolve project_root with webnovel.py first.",
                 )
             raise SystemExit(1) from exc
         config = DataModulesConfig.from_project_root(resolved_root)
@@ -1442,7 +1442,7 @@ def main():
         if entity:
             emit_success(entity, message="entity")
         else:
-            emit_error("NOT_FOUND", f"未找到实体: {args.id}")
+            emit_error("NOT_FOUND", f"Entity not found: {args.id}")
 
     elif args.command == "list-entities":
         if args.type:
@@ -1469,9 +1469,9 @@ def main():
         if validated is None:
             err = format_validation_error(last_exc) if last_exc else {
                 "code": "SCHEMA_VALIDATION_FAILED",
-                "message": "数据结构校验失败",
+                "message": "Data structure validation failed",
                 "details": {"errors": []},
-                "suggestion": "请检查 data-agent 输出字段是否完整且类型正确",
+                "suggestion": "Check that data-agent output fields are complete and correctly typed",
             }
             emit_error(err["code"], err["message"], suggestion=err.get("suggestion"))
             return
@@ -1481,8 +1481,8 @@ def main():
         if not save_result.get("sqlite_sync_ok", True):
             emit_error(
                 "SQLITE_SYNC_FAILED",
-                "章节状态已写入 state.json，但 SQLite 同步失败",
-                suggestion=f"请运行 webnovel.py projections retry --chapter {args.chapter} 补偿投影",
+                "Chapter state was written to state.json, but SQLite synchronization failed",
+                suggestion=f"Run webnovel.py projections retry --chapter {args.chapter} to repair projections",
                 chapter=args.chapter,
             )
             raise SystemExit(1)
@@ -1501,7 +1501,7 @@ def main():
                      message="chapter_status_set")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

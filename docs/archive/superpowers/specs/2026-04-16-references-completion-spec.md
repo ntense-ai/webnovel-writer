@@ -1,5 +1,7 @@
 # References Completion Spec
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Status: `implemented` (2026-04-16)
 > Dependencies: `2026-04-09-skills-restructure-and-reference-gaps.md`, `2026-04-12-story-system-evolution-spec.md`, `2026-04-14-ui-ux-pro-max-skill-architecture-research.md`
 > Companion: `references/csv/genre-canonical.md`, the authoritative genre enum

@@ -24,9 +24,9 @@ cat "${CLAUDE_PLUGIN_ROOT}/skills/webnovel-query/references/system-data-flow.md"
 ### Directory structure
 ```
 project-root/
-├── 正文/           # Chapter files
-├── 大纲/           # Volume/chapter outlines
-├── 设定集/         # Worldbuilding/power systems/character sheets
+├── chapters/           # Chapter files
+├── outlines/           # Volume/chapter outlines
+├── settings/         # Worldbuilding/power systems/character sheets
 └── .webnovel/
     ├── state.json          # Authoritative state
     ├── workflow_state.json # Workflow checkpoints

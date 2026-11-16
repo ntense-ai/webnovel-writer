@@ -669,7 +669,7 @@ def test_where_reports_empty_workspace_without_traceback(monkeypatch, tmp_path, 
 
     captured = capsys.readouterr()
     assert int(exc.value.code or 0) == 1
-    assert "还没有激活的书项目" in captured.err
+    assert "No active book project" in captured.err
     assert "Traceback" not in captured.err
 
 
@@ -692,7 +692,7 @@ def test_preflight_reports_empty_workspace_without_traceback(monkeypatch, tmp_pa
     report = json.loads(captured.out)
     assert int(exc.value.code or 0) == 1
     assert report["ok"] is False
-    assert "还没有激活的书项目" in report["project_root_error"]
+    assert "No active book project" in report["project_root_error"]
     assert "Traceback" not in captured.err
 
 
@@ -791,7 +791,7 @@ def test_review_pipeline_builds_artifacts(tmp_path):
     assert payload["metrics"]["severity_counts"]["medium"] == 1
     assert payload["metrics"]["critical_issues"] == ["时间线回跳"]
     assert payload["metrics"]["overall_score"] < 100
-    assert payload["metrics"]["report_file"] == "审查报告/第20章.md"
+    assert payload["metrics"]["report_file"] == "reviews/chapter-0020.md"
 
     persisted_review = json.loads(review_results_path.read_text(encoding="utf-8"))
     assert persisted_review["chapter"] == 20
@@ -963,7 +963,7 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
     )
 
     metrics_out = project_root / ".webnovel" / "tmp" / "review" / "metrics.json"
-    report_file = project_root / "审查报告" / "第9章审查报告.md"
+    report_file = project_root / "reviews" / "chapter-9-review.md"
 
     old_argv = sys.argv
     sys.argv = [
@@ -988,11 +988,11 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
     assert metrics_out.is_file()
     assert report_file.is_file()
     report_text = report_file.read_text(encoding="utf-8")
-    assert "# 第9章审查报告" in report_text
-    assert "## 作者视图" in report_text
-    assert "本章结论：⚠️建议改" in report_text
+    assert "# Chapter 9 Review" in report_text
+    assert "## Author view" in report_text
+    assert "Chapter verdict: ⚠️ Changes recommended" in report_text
     assert "小问题" in report_text
-    assert "## 其他问题" in report_text
+    assert "## Other Issues" in report_text
 
     persisted_review = json.loads(review_results_path.read_text(encoding="utf-8"))
     assert persisted_review["chapter"] == 9
@@ -1006,7 +1006,7 @@ def test_review_pipeline_main_creates_output_directories(tmp_path):
         row = conn.execute(
             "SELECT start_chapter, end_chapter, report_file FROM review_metrics"
         ).fetchone()
-    assert row == (9, 9, "审查报告/第9章审查报告.md")
+    assert row == (9, 9, "reviews/chapter-9-review.md")
 
 
 def test_webnovel_skill_flow_runs_story_contract_context_and_review_pipeline_with_stubbed_vector_model(

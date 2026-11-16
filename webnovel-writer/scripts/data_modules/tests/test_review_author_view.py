@@ -41,7 +41,7 @@ def test_review_author_view_marks_blocking_as_must_fix():
     )
 
     assert view.status == "must_fix"
-    assert view.verdict == "⛔必须先改"
+    assert view.verdict == "⛔ Fix before continuing"
     assert len(view.actions) == 1
     assert "时间线回跳" in view.actions[0]
     assert "补一句" in view.actions[0]
@@ -58,7 +58,7 @@ def test_review_author_view_limits_actions_to_three_and_prioritizes_severity():
     view = build_review_author_view(_payload(issues))
 
     assert view.status == "suggest_fix"
-    assert view.verdict == "⚠️建议改"
+    assert view.verdict == "⚠️ Changes recommended"
     assert len(view.actions) == 3
     assert "严重但非阻断" in view.actions[0]
     assert "高优先级" in view.actions[1]
@@ -69,7 +69,7 @@ def test_review_author_view_allows_clean_chapter_to_continue():
     view = build_review_author_view(_payload([], summary="整体可继续"))
 
     assert view.status == "can_continue"
-    assert view.verdict == "✅可以继续"
+    assert view.verdict == "✅ Ready to continue"
     assert view.actions == ("整体可继续",)
 
 
@@ -87,6 +87,6 @@ def test_review_author_view_render_has_author_section():
         )
     )
 
-    assert rendered.startswith("## 作者视图")
-    assert "本章结论：⚠️建议改" in rendered
+    assert rendered.startswith("## Author view")
+    assert "Chapter verdict: ⚠️ Changes recommended" in rendered
     assert "人物动机不清" in rendered

@@ -78,27 +78,27 @@ def cmd_get_timeline(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="MemoryContract CLI")
-    parser.add_argument("--project-root", required=True, help="项目根目录")
+    parser.add_argument("--project-root", required=True, help="Project root")
     sub = parser.add_subparsers(dest="command")
 
-    p_load = sub.add_parser("load-context", help="加载章节上下文基础包")
+    p_load = sub.add_parser("load-context", help="Load chapter context")
     p_load.add_argument("--chapter", type=int, required=True)
 
-    p_entity = sub.add_parser("query-entity", help="查询实体快照")
-    p_entity.add_argument("--id", required=True, help="实体 ID")
+    p_entity = sub.add_parser("query-entity", help="Query an entity snapshot")
+    p_entity.add_argument("--id", required=True, help="Entity ID")
 
-    p_rules = sub.add_parser("query-rules", help="查询世界规则")
-    p_rules.add_argument("--domain", default="", help="按 domain 过滤")
+    p_rules = sub.add_parser("query-rules", help="Query world rules")
+    p_rules.add_argument("--domain", default="", help="Filter by domain")
 
-    p_summary = sub.add_parser("read-summary", help="读取章节摘要")
+    p_summary = sub.add_parser("read-summary", help="Read chapter summary")
     p_summary.add_argument("--chapter", type=int, required=True)
 
-    p_loops = sub.add_parser("get-open-loops", help="查询未闭合伏笔")
-    p_loops.add_argument("--status", default="active", help="状态过滤")
+    p_loops = sub.add_parser("get-open-loops", help="Query open foreshadowing threads")
+    p_loops.add_argument("--status", default="active", help="Filter by status")
 
-    p_timeline = sub.add_parser("get-timeline", help="查询时间线事件")
-    p_timeline.add_argument("--from", type=int, required=True, dest="from_ch", help="起始章节")
-    p_timeline.add_argument("--to", type=int, required=True, dest="to_ch", help="结束章节")
+    p_timeline = sub.add_parser("get-timeline", help="Query timeline events")
+    p_timeline.add_argument("--from", type=int, required=True, dest="from_ch", help="Starting chapter")
+    p_timeline.add_argument("--to", type=int, required=True, dest="to_ch", help="Ending chapter")
 
     args = parser.parse_args()
     if not args.command:

@@ -57,10 +57,10 @@ class TestSkillAndGenreFiltering:
         assert tables[0] == "场景写法"
 
     def test_nonexistent_query_returns_empty(self):
-        """--skill plan --query nonexistent → empty results, no error."""
+        """--skill plan --query qzxvplm → empty results, no error."""
         out = run_search(
             "--skill", "plan",
-            "--query", "nonexistent",
+            "--query", "qzxvplm",
         )
         assert out["status"] == "success"
         assert out["data"]["total"] == 0
@@ -245,7 +245,7 @@ class TestOutputFormat:
             "--genre", "玄幻",
         )
         row = next(r for r in out["data"]["results"] if r["编号"] == "NR-001")
-        assert row["内容摘要"] == "玄幻角色命名要保留修仙感与古风意象，避免现代日常姓名直接套入。"
+        assert row["内容摘要"] == "Fantasy names should evoke cultivation and classical culture rather than transplant everyday modern names."
 
     def test_data_envelope_fields(self):
         """Data envelope has query, skill, genre, total, results."""

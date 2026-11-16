@@ -36,20 +36,20 @@ def _resolve_project_root(cli_root: str | None) -> Path:
     if (cwd / ".webnovel" / "state.json").is_file():
         return cwd.resolve()
 
-    print("ERROR: 无法定位 PROJECT_ROOT（需要包含 .webnovel/state.json 的目录）", file=sys.stderr)
+    print("ERROR: Cannot locate PROJECT_ROOT (expected a directory containing .webnovel/state.json)", file=sys.stderr)
     sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Webnovel Dashboard Server")
-    parser.add_argument("--project-root", type=str, default=None, help="小说项目根目录")
-    parser.add_argument("--host", default="127.0.0.1", help="监听地址")
-    parser.add_argument("--port", type=int, default=8765, help="监听端口")
-    parser.add_argument("--no-browser", action="store_true", help="不自动打开浏览器")
+    parser.add_argument("--project-root", type=str, default=None, help="Novel project root directory")
+    parser.add_argument("--host", default="127.0.0.1", help="Listen address")
+    parser.add_argument("--port", type=int, default=8765, help="Listen port")
+    parser.add_argument("--no-browser", action="store_true", help="Do not open the browser automatically")
     args = parser.parse_args()
 
     project_root = _resolve_project_root(args.project_root)
-    print(f"项目路径: {project_root}")
+    print(f"Project path: {project_root}")
 
     # 延迟导入，以便先处理路径
     import uvicorn
@@ -58,8 +58,8 @@ def main():
     app = create_app(project_root)
 
     url = f"http://{args.host}:{args.port}"
-    print(f"Dashboard 启动: {url}")
-    print(f"API 文档: {url}/docs")
+    print(f"Dashboard started: {url}")
+    print(f"API docs: {url}/docs")
 
     if not args.no_browser:
         webbrowser.open(url)

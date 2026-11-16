@@ -34,7 +34,7 @@ Lin Tian looked toward the cave mouth, black mist churning within. His throat mo
 
 - **Limit strings of ellipses/exclamation marks**: do not repeatedly use combinations like `……！！！` within one chapter.
 - **Avoid essay-like explanations**: avoid formulaic structures such as “first/second/in conclusion/therefore we can see”.
-- **Use consistent proper nouns**: standardize character/faction/realm/skill names (record in `设定集/`; accepted `CHAPTER_COMMIT` later projects them into index/state/memory).
+- **Use consistent proper nouns**: standardize character/faction/realm/skill names (record in `settings/`; accepted `CHAPTER_COMMIT` later projects them into index/state/memory).
 
 ---
 
@@ -52,7 +52,7 @@ Lin Tian looked toward the cave mouth, black mist churning within. His throat mo
 2. Are there paragraphs over five lines that could be split?
 3. Does one paragraph mix dialogue from multiple characters that could be separated?
 4. Are there excessive explanatory paragraphs using a summarizing/listing voice?
-5. Are proper nouns consistent with `设定集/`?
+5. Are proper nouns consistent with `settings/`?
 6. Is any “???/placeholder prose” exposed to readers?
 7. Are scene transitions clear (blank lines/separators/transitional sentences)?
 8. Is there at least one clear advancement (information/action/turn) in the chapter?

@@ -7,9 +7,15 @@ argument-hint: "[chapter number] [--fast|--minimal]"
 
 # Chapter writing workflow
 
+## Project paths and output language
+
+Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+
 ## Goal
 
-Produce a publishable chapter at `正文/第{NNNN}章-{title}.md`. Default length is 2,000–2,500 Chinese characters; follow the user/outline if it specifies otherwise.
+Produce a publishable chapter at `chapters/chapter-{NNNN}-{title}.md`. Default length is 2,000–2,500 English words; follow the user/outline if it specifies otherwise.
 
 ## Modes
 
@@ -50,13 +56,14 @@ export SKILL_ROOT="${CLAUDE_PLUGIN_ROOT:?}/skills/webnovel-write"
 
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" preflight
 export PROJECT_ROOT="$(python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" where)"
+export REVIEWS_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --directory reviews)"
 
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" placeholder-scan --format text
 ```
 
 ### Preparation: Refresh the contract tree
 
-Read genre from the initialization configuration snapshot in `.webnovel/state.json` to refresh the contract tree; `.story-system/` contracts remain the pre-writing main-pipeline source of truth. Before calling story-system, parse the actual chapter goal from the detailed outline. Do not pass placeholder queries such as `{章纲目标}` or `第N章章纲目标`.
+Read genre from the initialization configuration snapshot in `.webnovel/state.json` to refresh the contract tree; `.story-system/` contracts remain the pre-writing main-pipeline source of truth. Before calling story-system, parse the actual chapter goal from the detailed outline. Do not pass placeholder queries such as `{chapter_outline_goal}` or `Chapter N outline goal`.
 
 ```bash
 GENRE="$(python -X utf8 -c "import json,sys; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
@@ -115,7 +122,7 @@ Insufficient context, legacy fallback, missing foreshadowing data, incomplete br
 
 ### Step 2: Draft the chapter
 
-Draft only from the brief. Do not load core-constraints/anti-ai-guide (already incorporated into the brief). Output chapter prose only, without placeholders. Where structured nodes exist, develop CBN→CPNs→CEN. Compose with native Chinese-language thinking.
+Draft only from the brief. Do not load core-constraints/anti-ai-guide (already incorporated into the brief). Output chapter prose only, without placeholders. Where structured nodes exist, develop CBN→CPNs→CEN. Compose natural English prose by default; use another language only when explicitly requested.
 
 ### Step 3: Review
 
@@ -155,7 +162,7 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" rev
   --chapter {chapter_num} \
   --review-results "${PROJECT_ROOT}/.webnovel/tmp/review_results.json" \
   --metrics-out "${PROJECT_ROOT}/.webnovel/tmp/review_metrics.json" \
-  --report-file "审查报告/第{chapter_num}章审查报告.md" \
+  --report-file "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path "reviews/chapter-{chapter_num}-review.md")" \
   --save-metrics
 ```
 

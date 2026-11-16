@@ -1,5 +1,7 @@
 # Review Critical Fixes Implementation Plan
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix critical issues cross-validated across four review reports: CLI JSON file-input boundaries, rejected-commit projections, async test configuration, KnowledgeQuery schema drift, divergent StateManager state-writing paths, vector summary coverage, review workflow documentation, and security boundaries.

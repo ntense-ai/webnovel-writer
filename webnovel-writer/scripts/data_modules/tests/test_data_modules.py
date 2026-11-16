@@ -365,8 +365,8 @@ class TestStateManager:
         assert pending.get("mention") == "宗主"
 
         # 返回值也应包含可见警告，便于 CLI/日志透出
-        assert any("消歧警告" in w for w in warnings)
-        assert any("需人工确认" in w for w in warnings)
+        assert any("Disambiguation warning" in w for w in warnings)
+        assert any("Disambiguation requires manual confirmation" in w for w in warnings)
 
 
 class TestIndexManager:

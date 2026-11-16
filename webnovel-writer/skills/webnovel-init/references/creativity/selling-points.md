@@ -237,7 +237,7 @@ Every cycle reinforces rebirth revenge
 
 ### 4.2 Stage-Level Expression
 
-| Act | Length (Chinese characters) | Selling-point expression | Rule-based horror example |
+| Act | Length (English words) | Selling-point expression | Rule-based horror example |
 |------|------|------------|-----------------|
 | **Act 1: Opening** | 0–100,000 | Establish and distinguish | Enter the rule world and demonstrate solving ability |
 | **Act 2: Development** | 100,000–500,000 | Deepen and evolve | Increasingly complex rules and harder solutions |
@@ -455,11 +455,11 @@ Introduce the novel to a stranger:
 
 - [ ] What **small innovation** separates it from similar works?
 - [ ] Is that enough for readers to **choose this book**?
-- [ ] Is it **sustainable** for 300,000+ Chinese characters?
+- [ ] Is it **sustainable** for 300,000+ English words?
 
 ### 7.4 Sustainability
 
-- [ ] Supports **300,000+ Chinese characters**?
+- [ ] Supports **300,000+ English words**?
 - [ ] Has **room to evolve** instead of repeat?
 - [ ] Has ongoing **sources of conflict**?
 
@@ -606,19 +606,19 @@ What core reading experience is promised?
 
 ### Stages
 
-**Stage 1** (0–100,000 Chinese characters)
+**Stage 1** (0–100,000 English words)
 - Setting: [Concrete location]
 - Conflict: [Connected to the selling point]
 - Expression: [How the appeal is shown]
 - Growth: [Progress toward its fulfillment]
 
-**Stage 2** (100,000–300,000 Chinese characters)
+**Stage 2** (100,000–300,000 English words)
 - Setting: [Expanded location]
 - Conflict: [Escalation]
 - Expression: [Deepening]
 - Growth: [Evolution]
 
-**Stage 3** (300,000+ Chinese characters)
+**Stage 3** (300,000+ English words)
 - Setting: [Ultimate stage]
 - Conflict: [Final confrontation]
 - Expression: [Strongest form]

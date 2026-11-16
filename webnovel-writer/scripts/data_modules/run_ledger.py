@@ -238,7 +238,7 @@ def build_write_resume_plan(
         confirmations.append(
             {
                 "code": "chapter_file_changed",
-                "message": "正文文件与上次记录不一致，需要确认沿用手改正文还是重新起草。",
+                "message": "The chapter file differs from the last record. Confirm whether to keep manual edits or draft again.",
             }
         )
     if draft_trusted and chapter_file and _latest_contract_mtime(root, chapter) > chapter_file.stat().st_mtime_ns:
@@ -246,56 +246,56 @@ def build_write_resume_plan(
         confirmations.append(
             {
                 "code": "outline_newer_than_draft",
-                "message": "章纲或合同晚于正文，需要确认沿用旧正文还是重新起草。",
+                "message": "The outline or contract is newer than the draft. Confirm whether to keep the draft or write it again.",
             }
         )
-    steps.append({"step": "draft", "action": "skip" if draft_trusted else "run", "reason": "正文可信" if draft_trusted else "正文缺失或已过期"})
+    steps.append({"step": "draft", "action": "skip" if draft_trusted else "run", "reason": "Draft is trusted" if draft_trusted else "Draft is missing or stale"})
 
     review_path = root / COMMIT_ARTIFACT_FILES[0]
     review_trusted = bool(accepted_done or (draft_trusted and review_path.is_file() and _trusted_input(review_entry, "chapter_file", chapter_file)))
-    steps.append({"step": "review", "action": "skip" if review_trusted else "run", "reason": "审查结果匹配当前正文" if review_trusted else "正文变更后需要重审"})
+    steps.append({"step": "review", "action": "skip" if review_trusted else "run", "reason": "Review matches the current draft" if review_trusted else "Draft changes require a new review"})
 
     data_paths = [root / rel for rel in COMMIT_ARTIFACT_FILES[1:]]
     data_trusted = bool(accepted_done or (review_trusted and all(path.is_file() for path in data_paths) and _trusted_input(data_entry, "chapter_file", chapter_file)))
-    steps.append({"step": "data", "action": "skip" if data_trusted else "run", "reason": "故事事实提取可信" if data_trusted else "data artifacts 缺失或过期"})
+    steps.append({"step": "data", "action": "skip" if data_trusted else "run", "reason": "Story fact extraction is trusted" if data_trusted else "Data artifacts are missing or stale"})
 
     if accepted_done:
         confirmations.append(
             {
                 "code": "chapter_already_accepted",
-                "message": "本章已 accepted；重跑前需要确认是重写正文，还是只查看状态/补跑后续步骤。",
+                "message": "This chapter is already accepted. Before rerunning, confirm whether to rewrite it or only inspect status/retry later steps.",
             }
         )
     if rejected_done:
         confirmations.append(
             {
                 "code": "chapter_commit_rejected",
-                "message": "本章事实提交未通过，需要先处理审查/大纲/消歧阻断项，再重新提交。",
+                "message": "This chapter commit was rejected. Resolve review, outline, or disambiguation blockers before resubmitting.",
             }
         )
     commit_reason = (
         f"commit status={commit_status}"
         if accepted_done
-        else "commit rejected，需要修复后重新提交"
+        else "Commit rejected; fix issues before resubmitting"
         if rejected_done
-        else "尚未生成 commit"
+        else "No commit generated yet"
     )
     steps.append({"step": "commit", "action": "skip" if accepted_done else "run", "reason": commit_reason})
 
     projection_done = bool(commit_status == "accepted" and _projection_done(root, chapter))
     projection_action = "skip" if projection_done else ("retry" if accepted_done else "run")
     projection_reason = (
-        "资料更新已完成"
+        "Reference updates are complete"
         if projection_done
-        else "commit accepted 后再更新资料"
+        else "Update references after commit acceptance"
         if not accepted_done
-        else "需要补跑资料更新"
+        else "Reference updates must be retried"
     )
     steps.append({"step": "projection", "action": projection_action, "reason": projection_reason})
 
     backup_done = _backup_exists(root, chapter)
     backup_action = "skip" if backup_done else ("retry" if commit_status == "accepted" else "run")
-    steps.append({"step": "backup", "action": backup_action, "reason": "备份已确认" if backup_done else "备份未确认"})
+    steps.append({"step": "backup", "action": backup_action, "reason": "Backup confirmed" if backup_done else "Backup not confirmed"})
 
     resume_from = "done"
     for item in steps:
@@ -336,9 +336,9 @@ def _parse_path_map(raw: str) -> dict[str, str]:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"不是合法 JSON: {exc}") from exc
+        raise ValueError(f"Invalid JSON: {exc}") from exc
     if not isinstance(payload, dict):
-        raise ValueError("必须是 JSON object")
+        raise ValueError("Expected a JSON object")
     return {str(key): str(value) for key, value in payload.items()}
 
 
@@ -348,17 +348,17 @@ def _parse_string_list(raw: str) -> list[str]:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError as exc:
-        raise ValueError(f"不是合法 JSON: {exc}") from exc
+        raise ValueError(f"Invalid JSON: {exc}") from exc
     if not isinstance(payload, list):
-        raise ValueError("必须是 JSON list")
+        raise ValueError("Expected a JSON list")
     return [str(item) for item in payload]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Record and inspect webnovel write run ledger")
-    parser.add_argument("--project-root", required=True, help="书项目根目录")
+    parser.add_argument("--project-root", required=True, help="Book project root")
     sub = parser.add_subparsers(dest="action", required=True)
-    record = sub.add_parser("record-write-step", help="记录写章步骤状态")
+    record = sub.add_parser("record-write-step", help="Record chapter-writing step status")
     record.add_argument("--chapter", type=int, required=True)
     record.add_argument("--step", choices=WRITE_STEPS, required=True)
     record.add_argument("--status", required=True)
@@ -369,7 +369,7 @@ def main() -> None:
     record.add_argument("--auto-handled-json", default="[]")
     record.add_argument("--duration-ms", type=int, default=0)
     record.add_argument("--format", choices=["json", "text"], default="json")
-    resume = sub.add_parser("write-resume", help="输出写章断点续跑建议")
+    resume = sub.add_parser("write-resume", help="Print chapter-writing resume guidance")
     resume.add_argument("--chapter", type=int, required=True)
     resume.add_argument("--mode", default="default")
     resume.add_argument("--format", choices=["json", "text"], default="json")

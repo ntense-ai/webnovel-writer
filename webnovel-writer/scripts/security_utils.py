@@ -221,7 +221,7 @@ def validate_integer_input(value: str, field_name: str) -> int:
     try:
         return int(value)
     except ValueError:
-        print(f"❌ 错误：{field_name} 必须是整数，收到: {value}", file=sys.stderr)
+        print(f"❌ Error: {field_name} must be an integer; received: {value}", file=sys.stderr)
         raise ValueError(f"Invalid integer input for {field_name}: {value}")
 
 
@@ -287,7 +287,7 @@ def git_graceful_operation(
     args: list,
     cwd: Union[str, Path],
     *,
-    fallback_msg: str = "Git 不可用，跳过版本控制操作"
+    fallback_msg: str = "Git unavailable; skipping version-control operation"
 ) -> tuple:
     """
     优雅执行 Git 操作（Git 不可用时静默降级）
@@ -327,10 +327,10 @@ def git_graceful_operation(
         )
         return result.returncode == 0, result.stdout, False
     except subprocess.TimeoutExpired:
-        print(f"⚠️  Git 操作超时: git {' '.join(args)}", file=sys.stderr)
+        print(f"⚠️  Git operation timed out: git {' '.join(args)}", file=sys.stderr)
         return False, "", False
     except OSError as e:
-        print(f"⚠️  Git 操作失败: {e}", file=sys.stderr)
+        print(f"⚠️  Git operation failed: {e}", file=sys.stderr)
         return False, "", False
 
 
@@ -340,7 +340,7 @@ def git_graceful_operation(
 
 
 class AtomicWriteError(Exception):
-    """原子写入失败异常"""
+    """Atomic write failed异常"""
     pass
 
 
@@ -418,7 +418,7 @@ def atomic_write_json(
     try:
         json_content = json.dumps(data, ensure_ascii=False, indent=indent)
     except (TypeError, ValueError) as e:
-        raise AtomicWriteError(f"JSON 序列化失败: {e}")
+        raise AtomicWriteError(f"JSON serialization failed: {e}")
 
     # 锁文件路径
     lock_path = file_path.with_suffix(file_path.suffix + '.lock')
@@ -451,7 +451,7 @@ def atomic_write_json(
                     import shutil
                     shutil.copy2(file_path, backup_path)
                 except OSError:
-                    pass  # 备份失败不阻止写入
+                    pass  # Backup failed不阻止写入
 
             # Step 4: 原子重命名（Windows 上目标被瞬时占用会 WinError 5，带退避重试）
             try:
@@ -471,7 +471,7 @@ def atomic_write_json(
                 lock.release()
 
     except Exception as e:
-        raise AtomicWriteError(f"原子写入失败: {e}")
+        raise AtomicWriteError(f"Atomic write failed: {e}")
 
     finally:
         # 清理：删除临时文件（如果仍存在说明写入失败）
@@ -510,7 +510,7 @@ def read_json_safe(
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except (json.JSONDecodeError, OSError) as e:
-        print(f"⚠️ 读取 JSON 失败 ({file_path}): {e}", file=sys.stderr)
+        print(f"⚠️ Failed to read JSON ({file_path}): {e}", file=sys.stderr)
         return default
 
 
@@ -532,16 +532,16 @@ def restore_from_backup(file_path: Union[str, Path]) -> bool:
     backup_path = file_path.with_suffix(file_path.suffix + '.bak')
 
     if not backup_path.exists():
-        print(f"⚠️ 备份文件不存在: {backup_path}", file=sys.stderr)
+        print(f"⚠️ Backup file not found: {backup_path}", file=sys.stderr)
         return False
 
     try:
         import shutil
         shutil.copy2(backup_path, file_path)
-        print(f"✅ 已从备份恢复: {file_path}")
+        print(f"✅ Restored from backup: {file_path}")
         return True
     except OSError as e:
-        print(f"❌ 恢复失败: {e}", file=sys.stderr)
+        print(f"❌ Restore failed: {e}", file=sys.stderr)
         return False
 
 
@@ -551,7 +551,7 @@ def restore_from_backup(file_path: Union[str, Path]) -> bool:
 
 def _run_self_tests():
     """运行内置安全测试"""
-    print("🔍 运行安全工具函数自检...")
+    print("🔍 Running security utility self-tests...")
 
     # Test 1: sanitize_filename
     assert sanitize_filename("../../../etc/passwd") == "passwd", "路径遍历测试失败"
@@ -559,7 +559,7 @@ def _run_self_tests():
     assert sanitize_filename("正常角色名") == "正常角色名", "中文测试失败"
     assert sanitize_filename("/tmp/../../../../../etc/hosts") == "hosts", "复杂路径遍历测试失败"
     assert sanitize_filename("test///file...name") == "file_name", "特殊字符测试失败"  # . 会被替换
-    print("  ✅ sanitize_filename: 所有测试通过")
+    print("  ✅ sanitize_filename: All tests passed")
 
     # Test 2: sanitize_commit_message
     result = sanitize_commit_message("Test\n--author='Attacker'")
@@ -570,7 +570,7 @@ def _run_self_tests():
     assert sanitize_commit_message("--amend Chapter 1") == "Chapter 1", "Git标志测试失败"  # --amend被完全移除
     assert "'" not in sanitize_commit_message("Test'message"), "引号测试失败"
     assert sanitize_commit_message("-m Test") == "m Test", "单字母标志测试失败"  # -m被移除后是"m Test"
-    print("  ✅ sanitize_commit_message: 所有测试通过")
+    print("  ✅ sanitize_commit_message: All tests passed")
 
     # Test 3: validate_integer_input
     assert validate_integer_input("123", "test") == 123, "整数验证测试失败"
@@ -579,7 +579,7 @@ def _run_self_tests():
         assert False, "应该抛出ValueError"
     except ValueError:
         pass
-    print("  ✅ validate_integer_input: 所有测试通过")
+    print("  ✅ validate_integer_input: All tests passed")
 
     # Test 4: atomic_write_json
     import tempfile as tf
@@ -610,13 +610,13 @@ def _run_self_tests():
     # 清理
     import shutil
     shutil.rmtree(test_dir)
-    print("  ✅ atomic_write_json: 所有测试通过")
+    print("  ✅ atomic_write_json: All tests passed")
     if HAS_FILELOCK:
-        print("  ℹ️  filelock 可用，已启用文件锁支持")
+        print("  ℹ️  filelock available; file locking enabled")
     else:
-        print("  ⚠️  filelock 未安装，文件锁功能不可用")
+        print("  ⚠️  filelock not installed; file locking unavailable")
 
-    print("\n✅ 所有安全工具函数测试通过！")
+    print("\n✅ All security utility tests passed!")
 
 
 if __name__ == "__main__":

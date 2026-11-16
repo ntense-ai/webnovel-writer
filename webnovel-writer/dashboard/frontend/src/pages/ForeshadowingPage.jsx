@@ -52,7 +52,7 @@ function buildGanttOption(rows, currentChapter) {
             formatter: params => {
                 const rowIndex = Array.isArray(params.value) ? params.value[0] : params.dataIndex
                 const row = rows[rowIndex]
-                if (!row) return '伏笔'
+                if (!row) return 'Foreshadowing'
                 return `${row.content}<br/>${row.statusText} · ${formatChapterLabel(row.plantedChapter)} → ${formatChapterLabel(row.targetChapter || row.resolvedChapter)}`
             },
         },
@@ -62,7 +62,7 @@ function buildGanttOption(rows, currentChapter) {
             min: minChapter,
             max: maxChapter,
             axisLabel: {
-                formatter: value => `第${value}章`,
+                formatter: value => `Chapter ${value}`,
             },
         },
         yAxis: {
@@ -117,7 +117,7 @@ function buildGanttOption(rows, currentChapter) {
                         width: 3,
                     },
                     label: {
-                        formatter: `当前 ${currentChapter} 章`,
+                        formatter: `Current: chapter ${currentChapter}`,
                         position: 'end',
                         color: '#26a8ff',
                         fontSize: 11,
@@ -179,31 +179,31 @@ export default function ForeshadowingPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>伏笔追踪</h2>
+                <h2>Foreshadowing</h2>
                 <Badge tone="cyan">{formatChapterLabel(currentChapter)}</Badge>
             </header>
 
             <div className="stat-grid">
-                <StatCard label="总伏笔" value={String(summary.total)} />
-                <StatCard label="活跃" value={String(summary.active)} tone="accent" />
-                <StatCard label="已回收" value={String(summary.resolved)} tone="accent" />
-                <StatCard label="紧急 / 超期" value={String(summary.attention)} tone="accent" />
+                <StatCard label="Total Threads" value={String(summary.total)} />
+                <StatCard label="Active" value={String(summary.active)} tone="accent" />
+                <StatCard label="Resolved" value={String(summary.resolved)} tone="accent" />
+                <StatCard label="Urgent / Overdue" value={String(summary.attention)} tone="accent" />
             </div>
 
             <div className="filter-group">
-                <button type="button" className={`filter-btn ${filter === 'all' ? 'active' : ''}`.trim()} onClick={() => setFilter('all')}>全部</button>
-                <button type="button" className={`filter-btn ${filter === 'attention' ? 'active' : ''}`.trim()} onClick={() => setFilter('attention')}>紧急</button>
-                <button type="button" className={`filter-btn ${filter === 'active' ? 'active' : ''}`.trim()} onClick={() => setFilter('active')}>活跃</button>
-                <button type="button" className={`filter-btn ${filter === 'resolved' ? 'active' : ''}`.trim()} onClick={() => setFilter('resolved')}>已回收</button>
+                <button type="button" className={`filter-btn ${filter === 'all' ? 'active' : ''}`.trim()} onClick={() => setFilter('all')}>All</button>
+                <button type="button" className={`filter-btn ${filter === 'attention' ? 'active' : ''}`.trim()} onClick={() => setFilter('attention')}>Urgent</button>
+                <button type="button" className={`filter-btn ${filter === 'active' ? 'active' : ''}`.trim()} onClick={() => setFilter('active')}>Active</button>
+                <button type="button" className={`filter-btn ${filter === 'resolved' ? 'active' : ''}`.trim()} onClick={() => setFilter('resolved')}>Resolved</button>
             </div>
 
             <article className="card">
                 <div className="card-header">
                     <div>
                         <div className="section-label">FORESHADOW GANTT</div>
-                        <div className="card-title">伏笔时间线</div>
+                        <div className="card-title">Foreshadowing Timeline</div>
                     </div>
-                    {filter === 'all' ? <Badge tone="purple">默认折叠已回收</Badge> : <Badge tone="blue">按筛选展示</Badge>}
+                    {filter === 'all' ? <Badge tone="purple">Resolved threads collapsed</Badge> : <Badge tone="blue">Filtered view</Badge>}
                 </div>
                 {chartRows.length ? (
                     <ChartWrapper
@@ -213,7 +213,7 @@ export default function ForeshadowingPage() {
                     />
                 ) : (
                     <div className="empty-state">
-                        <p>当前筛选条件下没有伏笔记录</p>
+                        <p>No foreshadowing matches this filter</p>
                     </div>
                 )}
             </article>
@@ -222,31 +222,31 @@ export default function ForeshadowingPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">FORESHADOW LIST</div>
-                        <div className="card-title">完整伏笔列表</div>
+                        <div className="card-title">All Foreshadowing</div>
                     </div>
-                    <Badge tone="amber">{tableRows.length} 条</Badge>
+                    <Badge tone="amber">{tableRows.length} records</Badge>
                 </div>
                 <DataTable
                     columns={[
-                        { key: 'content', label: '内容' },
+                        { key: 'content', label: 'Content' },
                         {
                             key: 'statusText',
-                            label: '状态',
+                            label: 'Status',
                             render: row => <Badge tone={statusTone(row.level)}>{row.statusText}</Badge>,
                         },
                         {
                             key: 'plantedChapter',
-                            label: '埋设章',
+                            label: 'Planted chapter',
                             render: row => formatChapterLabel(row.plantedChapter),
                         },
                         {
                             key: 'targetChapter',
-                            label: '目标章',
+                            label: 'Target chapter',
                             render: row => formatChapterLabel(row.targetChapter || row.resolvedChapter),
                         },
                         {
                             key: 'urgencyText',
-                            label: '紧急度',
+                            label: 'Urgency',
                             render: row => (
                                 row.urgencyText === 'resolved'
                                     ? '—'
@@ -255,14 +255,14 @@ export default function ForeshadowingPage() {
                         },
                         {
                             key: 'urgencyScore',
-                            label: '分值',
+                            label: 'Score',
                             render: row => row.urgencyScore ? formatShortNumber(row.urgencyScore) : '—',
                         },
                     ]}
                     rows={tableRows}
                     rowKey="id"
                     pageSize={10}
-                    emptyText="暂无伏笔数据"
+                    emptyText="No foreshadowing data"
                     minWidth={760}
                 />
             </article>

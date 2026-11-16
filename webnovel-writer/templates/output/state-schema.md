@@ -42,7 +42,7 @@
     "locations": []
   },
   "review_checkpoints": [
-    {"chapters": "1-5", "report": "审查报告/第1-5章审查报告.md", "reviewed_at": "2026-02-26 20:00:00"}
+    {"chapters": "1-5", "report": "reviews/chapter-1-5-review.md", "reviewed_at": "2026-02-26 20:00:00"}
   ],
   "strand_tracker": {
     "last_quest_chapter": 0,

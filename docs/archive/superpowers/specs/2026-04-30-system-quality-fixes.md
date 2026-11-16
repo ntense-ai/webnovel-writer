@@ -1,5 +1,7 @@
 # System-Level Fixes Identified by Lingshizhuang Testing
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Date: 2026-04-30
 > Scope: webnovel-writer system issues (independent of LLM capability)
 > Test basis: DeepSeek v4pro completed init / plan / write chapters 1-2 + review in `D:\wk\xiaoshuo\灵石庄`

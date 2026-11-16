@@ -102,7 +102,7 @@ class ArchiveManager:
     def load_state(self):
         """加载 state.json"""
         if not self.state_file.exists():
-            print(f"❌ state.json 不存在: {self.state_file}")
+            print(f"❌ state.json not found: {self.state_file}")
             sys.exit(1)
 
         with open(self.state_file, 'r', encoding='utf-8') as f:
@@ -112,7 +112,7 @@ class ArchiveManager:
         """保存 state.json（原子化写入）"""
         # 使用集中式原子写入（自动备份）
         atomic_write_json(self.state_file, state, use_lock=True, backup=True)
-        print(f"✅ state.json 已原子化更新")
+        print(f"✅ state.json updated atomically")
 
     def load_archive(self, archive_file):
         """加载归档文件"""
@@ -318,7 +318,7 @@ class ArchiveManager:
                             entity_id, "status", "archived"
                         )
                 except Exception as e:
-                    print(f"⚠️ 实体状态更新失败（不影响归档）: {e}")
+                    print(f"⚠️ Entity status update failed (archiving can continue): {e}")
 
         if not dry_run:
             self.save_archive(self.characters_archive, archived)
@@ -413,14 +413,14 @@ class ArchiveManager:
         trigger = self.check_trigger_conditions(state)
 
         if not force and not trigger["should_archive"]:
-            print("✅ 无需归档（触发条件未满足）")
-            print(f"   文件大小: {trigger['file_size_mb']:.2f} MB (阈值: {self.config['file_size_trigger_mb']} MB)")
-            print(f"   当前章节: {trigger['current_chapter']} (每 {self.config['chapter_trigger']} 章触发)")
+            print("✅ No archiving needed (trigger conditions not met)")
+            print(f"   File size: {trigger['file_size_mb']:.2f} MB (threshold: {self.config['file_size_trigger_mb']} MB)")
+            print(f"   Current chapter: {trigger['current_chapter']} (trigger every {self.config['chapter_trigger']} chapters)")
             return
 
-        print("🔍 开始归档检查...")
-        print(f"   文件大小: {trigger['file_size_mb']:.2f} MB")
-        print(f"   当前章节: {trigger['current_chapter']}")
+        print("🔍 Checking archive eligibility...")
+        print(f"   File size: {trigger['file_size_mb']:.2f} MB")
+        print(f"   Current chapter: {trigger['current_chapter']}")
 
         # 识别可归档数据
         inactive_chars = self.identify_inactive_characters(state)
@@ -428,31 +428,31 @@ class ArchiveManager:
         old_reviews = self.identify_old_reviews(state)
 
         # 输出统计
-        print(f"\n📊 归档统计:")
-        print(f"   不活跃角色: {len(inactive_chars)}")
-        print(f"   已回收伏笔: {len(resolved_threads)}")
-        print(f"   旧审查报告: {len(old_reviews)}")
+        print(f"\n📊 Archive Statistics:")
+        print(f"   Inactive characters: {len(inactive_chars)}")
+        print(f"   Resolved foreshadowing: {len(resolved_threads)}")
+        print(f"   Old review reports: {len(old_reviews)}")
 
         if not (inactive_chars or resolved_threads or old_reviews):
-            print("\n✅ 无需归档（无符合条件的数据）")
+            print("\n✅ No archiving needed (no eligible data)")
             return
 
         # Dry-run 模式
         if dry_run:
-            print("\n🔍 [Dry-run] 将被归档的数据:")
+            print("\n🔍 [Dry-run] Data to archive:")
             if inactive_chars:
-                print("\n   不活跃角色:")
+                print("\n   Inactive characters:")
                 for item in inactive_chars[:5]:  # 只显示前 5 个
-                    print(f"   - {item['character']['name']} (超过 {item['inactive_chapters']} 章未出场)")
+                    print(f"   - {item['character']['name']} (absent for over {item['inactive_chapters']} chapters)")
             if resolved_threads:
-                print("\n   已回收伏笔:")
+                print("\n   Resolved foreshadowing:")
                 for item in resolved_threads[:5]:
                     desc = item["thread"].get("content") or item["thread"].get("description") or ""
-                    print(f"   - {str(desc)[:30]}... (已回收 {item['chapters_since_resolved']} 章)")
+                    print(f"   - {str(desc)[:30]}... (resolved {item['chapters_since_resolved']} chapters ago)")
             if old_reviews:
-                print("\n   旧审查报告:")
+                print("\n   Old review reports:")
                 for item in old_reviews[:5]:
-                    print(f"   - Ch{item['review_chapter']} ({item['chapters_since_review']} 章前)")
+                    print(f"   - Ch{item['review_chapter']} ({item['chapters_since_review']} chapters ago)")
             return
 
         # 执行归档
@@ -465,15 +465,15 @@ class ArchiveManager:
         self.save_state(state)
 
         # 最终统计
-        print(f"\n✅ 归档完成:")
-        print(f"   角色归档: {chars_archived} → {self.characters_archive.name}")
-        print(f"   伏笔归档: {threads_archived} → {self.plot_threads_archive.name}")
-        print(f"   报告归档: {reviews_archived} → {self.reviews_archive.name}")
+        print(f"\n✅ Archiving complete:")
+        print(f"   Archived characters: {chars_archived} → {self.characters_archive.name}")
+        print(f"   Archived foreshadowing: {threads_archived} → {self.plot_threads_archive.name}")
+        print(f"   Archived reports: {reviews_archived} → {self.reviews_archive.name}")
 
         # 显示归档后的文件大小
         new_size_mb = self.state_file.stat().st_size / (1024 * 1024)
         saved_mb = trigger["file_size_mb"] - new_size_mb
-        print(f"\n💾 文件大小: {trigger['file_size_mb']:.2f} MB → {new_size_mb:.2f} MB (节省 {saved_mb:.2f} MB)")
+        print(f"\n💾 File size: {trigger['file_size_mb']:.2f} MB → {new_size_mb:.2f} MB (saved {saved_mb:.2f} MB)")
 
     def restore_character(self, name):
         """恢复归档的角色（v5.1 引入：使用 IndexManager 恢复状态）"""
@@ -487,7 +487,7 @@ class ArchiveManager:
                 break
 
         if not char_to_restore:
-            print(f"❌ 归档中未找到角色: {name}")
+            print(f"❌ Character not found in archive: {name}")
             return False
 
         restored_character = dict(char_to_restore)
@@ -499,17 +499,17 @@ class ArchiveManager:
             # 更新实体状态为 active
             self._index_manager.update_entity_field(char_id, "status", "active")
         except Exception as e:
-            print(f"❌ 实体状态恢复失败，归档已保留: {e}")
+            print(f"❌ Entity restore failed; archive preserved: {e}")
             return False
 
         archived = [char for char in archived if char.get("name") != name]
         try:
             self.save_archive(self.characters_archive, archived)
         except Exception as e:
-            print(f"❌ 归档更新失败，角色已恢复但归档未删除: {e}")
+            print(f"❌ Archive update failed; character restored but archive preserved: {e}")
             return False
 
-        print(f"✅ 角色已恢复: {name}")
+        print(f"✅ Character restored: {name}")
         return True
 
     def show_stats(self):
@@ -518,10 +518,10 @@ class ArchiveManager:
         threads = self.load_archive(self.plot_threads_archive)
         reviews = self.load_archive(self.reviews_archive)
 
-        print("📊 归档统计:")
-        print(f"   角色归档: {len(chars)}")
-        print(f"   伏笔归档: {len(threads)}")
-        print(f"   报告归档: {len(reviews)}")
+        print("📊 Archive Statistics:")
+        print(f"   Archived characters: {len(chars)}")
+        print(f"   Archived foreshadowing: {len(threads)}")
+        print(f"   Archived reports: {len(reviews)}")
 
         # 计算归档文件大小
         total_size = 0
@@ -529,22 +529,22 @@ class ArchiveManager:
             if archive_file.exists():
                 total_size += archive_file.stat().st_size
 
-        print(f"   归档大小: {total_size / 1024:.2f} KB")
+        print(f"   Archive size: {total_size / 1024:.2f} KB")
 
         # 显示 state.json 大小
         state_size_mb = self.state_file.stat().st_size / (1024 * 1024)
-        print(f"\n💾 state.json 当前大小: {state_size_mb:.2f} MB")
+        print(f"\n💾 state.json current size: {state_size_mb:.2f} MB")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="state.json 数据归档管理")
+    parser = argparse.ArgumentParser(description="state.json archive management")
 
-    parser.add_argument("--auto-check", action="store_true", help="自动归档检查")
-    parser.add_argument("--force", action="store_true", help="强制归档（忽略触发条件）")
-    parser.add_argument("--dry-run", action="store_true", help="Dry-run 模式（仅显示将被归档的数据）")
-    parser.add_argument("--restore-character", metavar="NAME", help="恢复归档的角色")
-    parser.add_argument("--stats", action="store_true", help="显示归档统计")
-    parser.add_argument("--project-root", metavar="PATH", help="项目根目录（默认为当前目录）")
+    parser.add_argument("--auto-check", action="store_true", help="Check automatic archiving")
+    parser.add_argument("--force", action="store_true", help="Force archiving (ignore trigger conditions)")
+    parser.add_argument("--dry-run", action="store_true", help="Dry run (show eligible data only)")
+    parser.add_argument("--restore-character", metavar="NAME", help="Restore an archived character")
+    parser.add_argument("--stats", action="store_true", help="Show archive statistics")
+    parser.add_argument("--project-root", metavar="PATH", help="Project root (defaults to current directory)")
 
     args = parser.parse_args()
 
@@ -552,7 +552,7 @@ def main():
     try:
         project_root = str(resolve_project_root(args.project_root) if args.project_root else resolve_project_root())
     except FileNotFoundError as exc:
-        print(f"❌ 无法定位项目根目录（需要包含 .webnovel/state.json）: {exc}", file=sys.stderr)
+        print(f"❌ Cannot locate project root (requires .webnovel/state.json): {exc}", file=sys.stderr)
         sys.exit(1)
 
     manager = ArchiveManager(project_root=project_root)

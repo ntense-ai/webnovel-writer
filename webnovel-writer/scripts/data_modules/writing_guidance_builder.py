@@ -12,68 +12,68 @@ from .genre_aliases import to_profile_key
 
 
 GENRE_GUIDANCE_TEXT: dict[str, str] = {
-    "xianxia": "题材加权：强化升级/对抗结果的可见反馈，术语解释后置。",
-    "shuangwen": "题材加权：维持高爽点密度，主爽点外叠加一个副轴反差。",
-    "urban-power": "题材加权：优先写社会反馈链（他人反应→资源变化→地位变化）。",
-    "romance": "题材加权：每章推进关系位移，避免情绪原地打转。",
-    "mystery": "题材加权：线索必须可回收，优先以规则冲突制造悬念。",
-    "rules-mystery": "题材加权：规则先于解释，代价先于胜利。",
-    "zhihu-short": "题材加权：压缩铺垫，优先反转与高强度结尾钩。",
-    "substitute": "题材加权：强化误解-拉扯-决断链路，避免重复虐点。",
-    "esports": "题材加权：每场对抗至少写清一个战术决策点与其后果。",
-    "livestream": "题材加权：强化“外部反馈→主角反制→数据变化”即时闭环。",
-    "cosmic-horror": "题材加权：恐怖来源于规则与代价，不依赖空泛惊悚形容。",
+    "xianxia": "Genre emphasis: show tangible advancement and confrontation outcomes before explaining terminology.",
+    "shuangwen": "Genre emphasis: maintain frequent payoffs and add a contrasting secondary payoff.",
+    "urban-power": "Genre emphasis: show social consequences through reactions, resource changes, and status shifts.",
+    "romance": "Genre emphasis: advance the relationship each chapter instead of repeating emotional stalemates.",
+    "mystery": "Genre emphasis: make clues pay off and use conflicting rules to create suspense.",
+    "rules-mystery": "Genre emphasis: establish rules before explanations and costs before victory.",
+    "zhihu-short": "Genre emphasis: compress setup; prioritize reversals and strong ending hooks.",
+    "substitute": "Genre emphasis: advance misunderstanding, tension, and decision without repeating emotional suffering.",
+    "esports": "Genre emphasis: show at least one tactical decision and its consequences in each contest.",
+    "livestream": "Genre emphasis: connect audience feedback, protagonist response, and measurable results immediately.",
+    "cosmic-horror": "Genre emphasis: derive horror from rules and costs rather than vague frightening adjectives.",
 }
 
 
 GENRE_METHOD_ANCHORS: dict[str, dict[str, str]] = {
     "xianxia": {
-        "pressure_source": "资源争夺/境界压制",
-        "release_target": "主角主动破局并拿到可见收益",
+        "pressure_source": "Resource competition / power-level suppression",
+        "release_target": "The protagonist actively breaks the impasse and gains tangible rewards",
     },
     "urban-power": {
-        "pressure_source": "阶层卡位/权力压制",
-        "release_target": "主角通过资源博弈拿到地位与回报",
+        "pressure_source": "Class barriers / abuse of power",
+        "release_target": "The protagonist gains status and rewards through resource negotiation",
     },
     "romance": {
-        "pressure_source": "关系误解/情感拉扯",
-        "release_target": "关系位移落地并形成下一步承诺",
+        "pressure_source": "Relationship misunderstandings / emotional tension",
+        "release_target": "A tangible relationship shift leads to a new commitment",
     },
     "mystery": {
-        "pressure_source": "线索缺失/规则冲突",
-        "release_target": "给出可验证的新线索并保留未知区",
+        "pressure_source": "Missing clues / conflicting rules",
+        "release_target": "Provide a verifiable new clue while preserving an unknown",
     },
     "rules-mystery": {
-        "pressure_source": "规则反噬/代价递增",
-        "release_target": "用代价换突破并留下更高阶规则问题",
+        "pressure_source": "Rule backlash / escalating costs",
+        "release_target": "Earn a breakthrough at a cost and raise a higher-order rule question",
     },
     "zhihu-short": {
-        "pressure_source": "信息落差/立场对撞",
-        "release_target": "反转兑现并形成高强度尾钩",
+        "pressure_source": "Information gaps / clashing positions",
+        "release_target": "Deliver the reversal and create a strong ending hook",
     },
     "substitute": {
-        "pressure_source": "身份误读/情绪对峙",
-        "release_target": "误解链推进到明确决断",
+        "pressure_source": "Mistaken identity / emotional confrontation",
+        "release_target": "Advance the misunderstanding toward a clear decision",
     },
     "esports": {
-        "pressure_source": "战术压制/节奏失衡",
-        "release_target": "关键决策生效并转化为局势优势",
+        "pressure_source": "Tactical pressure / disrupted tempo",
+        "release_target": "A key decision pays off and creates a strategic advantage",
     },
     "livestream": {
-        "pressure_source": "舆论波动/数据下滑",
-        "release_target": "当场反制形成可见数据回弹",
+        "pressure_source": "Shifting public opinion / declining metrics",
+        "release_target": "An immediate response produces a measurable recovery",
     },
     "cosmic-horror": {
-        "pressure_source": "认知失真/规则侵蚀",
-        "release_target": "以明确代价换阶段性生存窗口",
+        "pressure_source": "Distorted perception / eroding rules",
+        "release_target": "Pay a clear cost to secure temporary survival",
     },
     "history-travel": {
-        "pressure_source": "历史惯性/礼教阻力",
-        "release_target": "知识优势兑现并引发新的连锁反应",
+        "pressure_source": "Historical inertia / restrictive social norms",
+        "release_target": "Turn superior knowledge into gains and new cascading consequences",
     },
     "game-lit": {
-        "pressure_source": "系统规则限制/资源稀缺",
-        "release_target": "数值突破并暴露更高层级威胁",
+        "pressure_source": "System constraints / scarce resources",
+        "release_target": "Achieve a statistical breakthrough and expose a higher-level threat",
     },
 }
 
@@ -129,8 +129,8 @@ def build_methodology_strategy_card(
     anchor_preset = GENRE_METHOD_ANCHORS.get(
         profile_key,
         {
-            "pressure_source": "生存目标/资源竞争",
-            "release_target": "主角完成阶段目标并留下新的行动理由",
+            "pressure_source": "Survival goals / resource competition",
+            "release_target": "The protagonist completes an intermediate goal and gains a new reason to act",
         },
     )
 
@@ -143,16 +143,16 @@ def build_methodology_strategy_card(
         "emotion_anchor": {
             "pressure_source": anchor_preset["pressure_source"],
             "release_target": anchor_preset["release_target"],
-            "position_hint": "前段设压，中后段释放，避免固定字位打点",
+            "position_hint": "Establish pressure early and release it later; avoid rigid word-count beats",
         },
         "long_arc_controls": {
-            "map_transition": "阶段切换承接既有资产与关系账本，避免能力与收益归零",
-            "power_guard": "关键胜利必须给机制理由（信息/资源/代价/策略）",
-            "antagonist_model": "反派需具备目标-手段-代价三要素，避免工具人推进",
+            "map_transition": "Carry existing assets and relationships into new stages; do not reset abilities or gains",
+            "power_guard": "Explain the mechanism behind key victories: information, resources, costs, or strategy",
+            "antagonist_model": "Give antagonists goals, means, and costs rather than treating them as plot devices",
         },
         "serialization_ops": {
-            "next_reason": "章末或后段给出可复述的下一章动机句",
-            "interaction_note": "保留一个可讨论分歧点，便于连载互动反馈",
+            "next_reason": "Give a clear, repeatable reason to read the next chapter near the ending",
+            "interaction_note": "Leave one debatable point to encourage reader discussion",
         },
         "observability": {
             "next_reason_clarity": round(max(0.0, min(100.0, next_reason_clarity)), 2),
@@ -178,27 +178,27 @@ def build_methodology_guidance_items(strategy_card: Dict[str, Any]) -> List[str]
     genre_key = str(strategy_card.get("genre_profile_key") or strategy_card.get("pilot") or "general")
 
     stage_text = {
-        "build_up": "本章以铺压为主，优先做威胁与代价的可感知铺垫。",
-        "confront": "本章以正面对抗为主，确保破局路径清晰可复盘。",
-        "release": "本章以释放与余波为主，给出实质收益并引出下一问。",
-    }.get(stage, "本章保持压力-破局-余波的完整链路。")
+        "build_up": "Build pressure in this chapter by making threats and costs tangible.",
+        "confront": "Focus on direct confrontation and make the resolution understandable and traceable.",
+        "release": "Focus on release and aftermath; deliver tangible gains and raise the next question.",
+    }.get(stage, "Maintain a complete pressure, breakthrough, and aftermath sequence.")
 
     items = [
-        f"方法论策略（通用/{genre_key}）：{stage_text}",
-        "长线控制：换图承接旧资产，避免主角进入新地图后能力与资源归零。",
-        "机制控制：关键胜利必须写出机制理由与代价，不用纯光环碾压。",
+        f"Methodology strategy (general/{genre_key}): {stage_text}",
+        "Long-arc control: preserve established assets, abilities, and resources when changing settings.",
+        "Mechanism control: explain the mechanism and cost of key victories instead of relying on plot armor.",
         (
-            "连载互动：保留一个可讨论分歧点，强化下章追更动机。"
-            f"（next_reason={observability.get('next_reason_clarity')}）"
+            "Reader engagement: leave a debatable point and strengthen the reason to continue."
+            f" (next_reason={observability.get('next_reason_clarity')})"
         ),
     ]
 
     if "pattern_overuse_watch" in risk_flags:
         dominant_pattern = str(signals.get("dominant_pattern") or "").strip()
         if dominant_pattern:
-            items.append(f"风险修正：近期“{dominant_pattern}”偏高频，本章补一个异质副轴避免疲劳。")
+            items.append(f"Risk adjustment: {dominant_pattern} has appeared often; add a contrasting secondary thread to avoid fatigue.")
     if "readability_guard" in risk_flags:
-        items.append("风险修正：近期审查均分偏低，本章优先保证段落动作-结果闭环与可读性。")
+        items.append("Risk adjustment: recent review averages are low; prioritize clear action-result sequences and readability.")
 
     return items
 
@@ -220,39 +220,39 @@ def build_guidance_items(
             key=lambda row: float(row.get("overall_score", 9999)),
         )
         guidance.append(
-            f"第{chapter}章优先修复近期低分段问题：参考{worst.get('start_chapter')}-{worst.get('end_chapter')}章，强化冲突推进与结尾钩子。"
+            f"Chapter {chapter}: address recent low-scoring issues from chapters {worst.get('start_chapter')}-{worst.get('end_chapter')}; improve conflict progression and ending hooks."
         )
 
     hook_usage = reader_signal.get("hook_type_usage") or {}
     if hook_usage and hook_diversify_enabled:
         dominant_hook = max(hook_usage.items(), key=lambda kv: kv[1])[0]
         guidance.append(
-            f"近期钩子类型“{dominant_hook}”使用偏多，本章建议做钩子差异化，避免连续同构。"
+            f"The {dominant_hook} hook has been overused recently; vary this chapter to avoid repeated structures."
         )
 
     pattern_usage = reader_signal.get("pattern_usage") or {}
     if pattern_usage:
         top_pattern = max(pattern_usage.items(), key=lambda kv: kv[1])[0]
         guidance.append(
-            f"爽点模式“{top_pattern}”近期高频，本章可保留主爽点但叠加一个新爽点副轴。"
+            f"The {top_pattern} payoff pattern is frequent; retain the main payoff but add a fresh secondary payoff."
         )
 
     review_trend = reader_signal.get("review_trend") or {}
     overall_avg = review_trend.get("overall_avg")
     if isinstance(overall_avg, (int, float)) and float(overall_avg) < low_score_threshold:
         guidance.append(
-            f"最近审查均分{overall_avg:.1f}低于阈值{low_score_threshold:.1f}，建议先保稳：减少跳场、每段补动作结果闭环。"
+            f"Recent review average {overall_avg:.1f} is below {low_score_threshold:.1f}; stabilize quality with fewer scene jumps and clear action-result sequences."
         )
 
     genre = str(genre_profile.get("genre") or "").strip()
     refs = genre_profile.get("reference_hints") or []
     if genre:
-        guidance.append(f"题材锚定：按“{genre}”叙事主线推进，保持题材读者预期稳定兑现。")
+        guidance.append(f"Genre anchor: follow the {genre} narrative throughline and consistently meet reader expectations.")
     if refs:
-        guidance.append(f"题材策略可执行提示：{refs[0]}")
+        guidance.append(f"Actionable genre strategy: {refs[0]}")
 
-    guidance.append("网文节奏基线：章首300字内给出目标与阻力，章末保留未闭合问题。")
-    guidance.append("兑现密度基线：每600-900字给一次微兑现，并确保本章至少1处可量化变化。")
+    guidance.append("Serial pacing baseline: establish a goal and obstacle within the first 300 words; end with an open question.")
+    guidance.append("Payoff baseline: offer a small payoff every 600-900 words and at least one measurable change per chapter.")
 
     normalized_genre = to_profile_key(genre)
     genre_hint = GENRE_GUIDANCE_TEXT.get(normalized_genre)
@@ -261,10 +261,10 @@ def build_guidance_items(
 
     composite_hints = genre_profile.get("composite_hints") or []
     if composite_hints:
-        guidance.append(f"复合题材协同：{composite_hints[0]}")
+        guidance.append(f"Hybrid genre coordination: {composite_hints[0]}")
 
     if not guidance:
-        guidance.append("本章执行默认高可读策略：冲突前置、信息后置、段末留钩。")
+        guidance.append("Default readability strategy: introduce conflict early, explain later, and end passages with hooks.")
 
     return {
         "guidance": guidance,
@@ -322,11 +322,11 @@ def build_writing_checklist(
         span = f"{worst.get('start_chapter')}-{worst.get('end_chapter')}"
         _add_item(
             "fix_low_score_range",
-            f"修复低分区间问题（参考第{span}章）",
+            f"Address low-scoring sections (see chapters {span})",
             weight=max(default_weight, 1.4),
             required=True,
             source="reader_signal.low_score_ranges",
-            verify_hint="至少完成1处冲突升级，并在段末留下钩子。",
+            verify_hint="Escalate conflict at least once and end the passage with a hook.",
         )
 
     hook_usage = reader_signal.get("hook_type_usage") or {}
@@ -334,11 +334,11 @@ def build_writing_checklist(
         dominant_hook = max(hook_usage.items(), key=lambda kv: kv[1])[0]
         _add_item(
             "hook_diversification",
-            f"钩子差异化（避免继续单一“{dominant_hook}”）",
+            f"Vary hooks (avoid relying only on {dominant_hook})",
             weight=max(default_weight, 1.2),
             required=True,
             source="reader_signal.hook_type_usage",
-            verify_hint="结尾钩子类型与近20章主类型至少有一处差异。",
+            verify_hint="Make the ending hook differ from the dominant type in the last 20 chapters.",
         )
 
     pattern_usage = reader_signal.get("pattern_usage") or {}
@@ -346,11 +346,11 @@ def build_writing_checklist(
         top_pattern = max(pattern_usage.items(), key=lambda kv: kv[1])[0]
         _add_item(
             "coolpoint_combo",
-            f"主爽点+副爽点组合（主爽点：{top_pattern}）",
+            f"Combine primary and secondary payoffs (primary: {top_pattern})",
             weight=default_weight,
             required=False,
             source="reader_signal.pattern_usage",
-            verify_hint="新增至少1个副爽点，并与主爽点形成因果链。",
+            verify_hint="Add at least one secondary payoff causally linked to the main payoff.",
         )
 
     review_trend = reader_signal.get("review_trend") or {}
@@ -358,48 +358,48 @@ def build_writing_checklist(
     if isinstance(overall_avg, (int, float)):
         _add_item(
             "readability_loop",
-            "段落可读性闭环（动作→结果→情绪）",
+            "Readable paragraph sequence (action, result, emotion)",
             weight=max(default_weight, 1.1),
             required=True,
             source="reader_signal.review_trend",
-            verify_hint="抽查3段，均包含动作结果闭环。",
+            verify_hint="Check three paragraphs for a complete action-result sequence.",
         )
 
     genre = str(genre_profile.get("genre") or "").strip()
     if genre:
         _add_item(
             "genre_anchor_consistency",
-            f"题材锚定一致性（{genre}）",
+            f"Consistent genre anchor ({genre})",
             weight=max(default_weight, 1.1),
             required=True,
             source="genre_profile.genre",
-            verify_hint="主冲突与题材核心承诺保持一致。",
+            verify_hint="Keep the main conflict consistent with the core genre promise.",
         )
 
     if isinstance(strategy_card, dict) and strategy_card.get("enabled"):
         _add_item(
             "methodology_next_reason",
-            "方法论：下章动机需可复述（章末或后段均可）",
+            "Methodology: provide a repeatable reason to continue near the ending",
             weight=default_weight,
             required=False,
             source="methodology.next_reason",
-            verify_hint="提炼一句“为什么要点下一章”的动机句。",
+            verify_hint="Summarize in one sentence why the reader should open the next chapter.",
         )
         _add_item(
             "methodology_power_guard",
-            "方法论：越级与破局给出机制理由与代价",
+            "Methodology: explain mechanisms and costs behind breakthroughs and overcoming stronger opponents",
             weight=default_weight,
             required=False,
             source="methodology.power_guard",
-            verify_hint="至少写清1个机制理由与1个代价。"
+            verify_hint="Show at least one explanatory mechanism and one cost."
         )
         _add_item(
             "methodology_antagonist_pressure",
-            "方法论：反派行动具备目标-手段-代价",
+            "Methodology: give antagonist actions goals, means, and costs",
             weight=default_weight,
             required=False,
             source="methodology.antagonist",
-            verify_hint="反派不是工具人推进，需有可解释行动逻辑。",
+            verify_hint="Give antagonists understandable motives rather than using them as plot devices.",
         )
 
     for idx, text in enumerate(guidance_items, start=1):
@@ -414,24 +414,24 @@ def build_writing_checklist(
             weight=default_weight,
             required=False,
             source="writing_guidance.guidance_items",
-            verify_hint="完成后可在正文中定位对应段落。",
+            verify_hint="Identify the corresponding passage in the finished chapter.",
         )
 
     fallback_items = [
         (
             "opening_conflict",
-            "开篇300字内给出冲突触发",
-            "开头段出现明确目标与阻力。",
+            "Introduce a conflict trigger within the first 300 words",
+            "Show a clear goal and obstacle in the opening.",
         ),
         (
             "scene_goal_block",
-            "场景目标与阻力清晰",
-            "每个场景至少有1个可验证目标。",
+            "Make scene goals and obstacles clear",
+            "Give every scene at least one verifiable goal.",
         ),
         (
             "ending_hook",
-            "段末留钩并引出下一问",
-            "结尾出现未解问题或下一步行动。",
+            "End with a hook that raises the next question",
+            "End with an unresolved question or a next action.",
         ),
     ]
     for item_id, label, verify_hint in fallback_items:

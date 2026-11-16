@@ -189,7 +189,7 @@ def main() -> None:
     import sys
 
     parser = argparse.ArgumentParser(description="Memory Scratchpad CLI")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("stats")
@@ -202,7 +202,7 @@ def main() -> None:
 
     p_update = sub.add_parser("update")
     p_update.add_argument("--chapter", type=int, required=True)
-    p_update.add_argument("--data", required=True, help="章节结构化结果 JSON")
+    p_update.add_argument("--data", required=True, help="Structured chapter result JSON")
 
     sub.add_parser("bootstrap")
 
@@ -246,4 +246,4 @@ def main() -> None:
         print_success(result, message="memory_bootstrapped")
         return
 
-    print_error("UNKNOWN_COMMAND", "未知命令", suggestion="请查看 --help")
+    print_error("UNKNOWN_COMMAND", "Unknown command", suggestion="See --help")

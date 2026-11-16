@@ -68,7 +68,7 @@ def test_project_phase_reports_init_scaffolded_when_core_files_missing(tmp_path)
     snapshot = resolve_project_phase(tmp_path)
 
     assert snapshot.phase == PHASE_INIT_SCAFFOLDED
-    assert "大纲/总纲.md" in snapshot.missing_init_files
+    assert "outlines/master-outline.md" in snapshot.missing_init_files
     assert snapshot.blocking
 
 

@@ -1,5 +1,7 @@
 # 2026-06-10 Full-Project Audit Remediation Plan
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > **Status (closed out 2026-06-11):** This plan was curtailed by the v7 strangler-style consolidation (`docs/architecture/story-repo-spec-2026-06-10.md`).
 > - **Completed and retained**: all of Phase 0 (Tasks 1–6, manuscript safety) + Task 7. These underpin v6 user data and the v7 migration reader.
 > - **Canceled**: Tasks 8–24 (Phase 1 data pipeline), Tasks 26–27, and Tasks 29–34. Their target modules (SQLite projections, event log, v6 prompts, dashboard, CLI boilerplate) are removed wholesale in v7 rather than repaired.

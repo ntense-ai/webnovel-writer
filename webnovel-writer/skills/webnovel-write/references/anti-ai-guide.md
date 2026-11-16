@@ -29,7 +29,7 @@ After each paragraph, quickly check:
 2. **Adverbs**: did the last three action descriptions use slowly/blandly/slightly/gently? → Remove adverbs; use details from different sensory channels.
 3. **Emotion**: are you telling or showing emotion? → Replace “he felt X” with physiology + micro-action.
 4. **Dialogue**: does this line advance conflict or explain background? → Remove background exposition and add the character's real intention.
-5. **Pacing**: is the last 500 Chinese characters' rhythm uniform? → Insert a short explosive sentence, a silence, or sudden action.
+5. **Pacing**: is the last 500 English words' rhythm uniform? → Insert a short explosive sentence, a silence, or sudden action.
 
 ## Replacement quick reference
 

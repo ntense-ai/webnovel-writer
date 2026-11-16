@@ -34,11 +34,11 @@ def _render_output(format_name: str, contract: dict) -> str:
     if format_name == "markdown":
         lines = [
             "# Story System",
-            f"- 题材：{contract['master_setting']['route'].get('primary_genre', '')}",
+            f"- Genre: {contract['master_setting']['route'].get('primary_genre', '')}",
         ]
         if contract.get("chapter_brief"):
             lines.append(
-                f"- 章节焦点：{contract['chapter_brief']['override_allowed'].get('chapter_focus', '')}"
+                f"- Chapter focus: {contract['chapter_brief']['override_allowed'].get('chapter_focus', '')}"
             )
         return "\n".join(lines)
     return json.dumps(
@@ -54,7 +54,7 @@ def _render_output(format_name: str, contract: dict) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Story system seed generator")
-    parser.add_argument("query", help="题材 / 需求描述")
+    parser.add_argument("query", help="Genre / requirements")
     parser.add_argument("--project-root", default="")
     parser.add_argument("--genre", default="")
     parser.add_argument("--chapter", type=int, default=0)
@@ -96,7 +96,7 @@ def main() -> None:
         )
     if args.emit_runtime_contracts:
         if not args.chapter:
-            raise ValueError("--emit-runtime-contracts 需要 --chapter")
+            raise ValueError("--emit-runtime-contracts requires --chapter")
         volume_brief, review_contract = RuntimeContractBuilder(project_root).build_for_chapter(args.chapter)
         persist_runtime_contracts(project_root, args.chapter, volume_brief, review_contract)
 

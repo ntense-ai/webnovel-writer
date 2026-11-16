@@ -1,16 +1,16 @@
 export function formatNumber(value) {
     const number = Number(value || 0)
     if (!Number.isFinite(number)) return '—'
-    if (Math.abs(number) >= 10000) {
-        return `${new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 }).format(number / 10000)} 万`
+    if (Math.abs(number) >= 1000) {
+        return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(number / 1000)}K`
     }
-    return new Intl.NumberFormat('zh-CN').format(number)
+    return new Intl.NumberFormat('en-US').format(number)
 }
 
 export function formatShortNumber(value) {
     const number = Number(value || 0)
     if (!Number.isFinite(number)) return '—'
-    return new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 1 }).format(number)
+    return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(number)
 }
 
 export function formatPercent(value, fractionDigits = 1) {
@@ -22,14 +22,14 @@ export function formatPercent(value, fractionDigits = 1) {
 export function formatChapterLabel(chapter) {
     const number = Number(chapter || 0)
     if (!Number.isFinite(number) || number <= 0) return '—'
-    return `第 ${number} 章`
+    return `Chapter ${number}`
 }
 
 export function formatDateTime(value) {
     if (!value) return '—'
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return String(value)
-    return date.toLocaleString('zh-CN', {
+    return date.toLocaleString('en-US', {
         hour12: false,
         month: '2-digit',
         day: '2-digit',
@@ -64,13 +64,13 @@ export function average(values) {
 export function formatTableValue(value) {
     if (value === null || value === undefined || value === '') return '—'
     if (Array.isArray(value)) {
-        return value.length ? value.join('、') : '—'
+        return value.length ? value.join(', ') : '—'
     }
     if (typeof value === 'object') {
         return JSON.stringify(value, null, 2)
     }
     if (typeof value === 'boolean') {
-        return value ? '是' : '否'
+        return value ? 'Yes' : 'No'
     }
     return String(value)
 }

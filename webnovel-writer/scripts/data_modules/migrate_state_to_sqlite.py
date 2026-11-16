@@ -67,7 +67,7 @@ def migrate_state_to_sqlite(
     state_file = config.state_file
     if not state_file.exists():
         if verbose:
-            print(f"❌ state.json 不存在: {state_file}")
+            print(f"❌ state.json not found: {state_file}")
         return stats
 
     with open(state_file, 'r', encoding='utf-8') as f:
@@ -75,14 +75,14 @@ def migrate_state_to_sqlite(
 
     if verbose:
         file_size = state_file.stat().st_size / 1024
-        print(f"📄 读取 state.json ({file_size:.1f} KB)")
+        print(f"📄 Reading state.json ({file_size:.1f} KB)")
 
     # 备份
     if backup and not dry_run:
         backup_file = state_file.with_suffix(f".json.backup-{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         shutil.copy(state_file, backup_file)
         if verbose:
-            print(f"💾 已备份到: {backup_file}")
+            print(f"💾 Backed up to: {backup_file}")
 
     # 初始化 SQLStateManager
     sql_manager = SQLStateManager(config)
@@ -90,7 +90,7 @@ def migrate_state_to_sqlite(
     # 1. 迁移 entities_v3
     entities_v3 = state.get("entities_v3", {})
     if verbose:
-        print(f"\n🔄 迁移 entities_v3...")
+        print(f"\n🔄 Migrating entities_v3...")
 
     for entity_type, entities in entities_v3.items():
         if not isinstance(entities, dict):
@@ -120,20 +120,20 @@ def migrate_state_to_sqlite(
                 stats["entities"] += 1
 
                 if verbose and stats["entities"] % 50 == 0:
-                    print(f"  已迁移 {stats['entities']} 个实体...")
+                    print(f"  Migrated {stats['entities']} entities...")
 
             except Exception as e:
                 stats["errors"] += 1
                 if verbose:
-                    print(f"  ⚠️ 实体迁移失败 {entity_id}: {e}")
+                    print(f"  ⚠️ Entity migration failed {entity_id}: {e}")
 
     if verbose:
-        print(f"  ✅ 实体: {stats['entities']} 个")
+        print(f"  ✅ Entities: {stats['entities']}")
 
     # 2. 迁移 alias_index
     alias_index = state.get("alias_index", {})
     if verbose:
-        print(f"\n🔄 迁移 alias_index...")
+        print(f"\n🔄 Migrating alias_index...")
 
     for alias, entries in alias_index.items():
         if not isinstance(entries, list):
@@ -158,15 +158,15 @@ def migrate_state_to_sqlite(
             except Exception as e:
                 stats["errors"] += 1
                 if verbose:
-                    print(f"  ⚠️ 别名迁移失败 {alias}: {e}")
+                    print(f"  ⚠️ Alias migration failed {alias}: {e}")
 
     if verbose:
-        print(f"  ✅ 别名: {stats['aliases']} 个")
+        print(f"  ✅ Aliases: {stats['aliases']}")
 
     # 3. 迁移 state_changes
     state_changes = state.get("state_changes", [])
     if verbose:
-        print(f"\n🔄 迁移 state_changes...")
+        print(f"\n🔄 Migrating state_changes...")
 
     for change in state_changes:
         if not isinstance(change, dict):
@@ -193,15 +193,15 @@ def migrate_state_to_sqlite(
         except Exception as e:
             stats["errors"] += 1
             if verbose:
-                print(f"  ⚠️ 状态变化迁移失败: {e}")
+                print(f"  ⚠️ State change migration failed: {e}")
 
     if verbose:
-        print(f"  ✅ 状态变化: {stats['state_changes']} 条")
+        print(f"  ✅ State changes: {stats['state_changes']}")
 
     # 4. 迁移 structured_relationships
     relationships = state.get("structured_relationships", [])
     if verbose:
-        print(f"\n🔄 迁移 structured_relationships...")
+        print(f"\n🔄 Migrating structured_relationships...")
 
     for rel in relationships:
         if not isinstance(rel, dict):
@@ -228,18 +228,18 @@ def migrate_state_to_sqlite(
         except Exception as e:
             stats["errors"] += 1
             if verbose:
-                print(f"  ⚠️ 关系迁移失败: {e}")
+                print(f"  ⚠️ Relationship migration failed: {e}")
 
     if verbose:
-        print(f"  ✅ 关系: {stats['relationships']} 条")
+        print(f"  ✅ Relationships: {stats['relationships']}")
 
     # 5. 精简 state.json（移除已迁移字段）
     if stats["errors"]:
         if verbose:
-            print("\n⚠️ 存在迁移错误，已保留原字段")
+            print("\n⚠️ Migration errors occurred; original fields preserved")
     elif not dry_run:
         if verbose:
-            print(f"\n🔄 精简 state.json...")
+            print(f"\n🔄 Compacting state.json...")
 
         # 保留字段
         slim_state = {
@@ -262,20 +262,20 @@ def migrate_state_to_sqlite(
 
         new_size = state_file.stat().st_size / 1024
         if verbose:
-            print(f"  ✅ 精简后: {new_size:.1f} KB")
+            print(f"  ✅ After compaction: {new_size:.1f} KB")
 
     # 打印统计
     if verbose:
         print(f"\n" + "=" * 50)
-        print(f"📊 迁移统计:")
-        print(f"  实体: {stats['entities']}")
-        print(f"  别名: {stats['aliases']}")
-        print(f"  状态变化: {stats['state_changes']}")
-        print(f"  关系: {stats['relationships']}")
-        print(f"  跳过: {stats['skipped']}")
-        print(f"  错误: {stats['errors']}")
+        print(f"📊 Migration statistics:")
+        print(f"  Entities: {stats['entities']}")
+        print(f"  Aliases: {stats['aliases']}")
+        print(f"  State changes: {stats['state_changes']}")
+        print(f"  Relationships: {stats['relationships']}")
+        print(f"  Skipped: {stats['skipped']}")
+        print(f"  Errors: {stats['errors']}")
         if dry_run:
-            print(f"\n⚠️ 这是 dry-run 模式，实际未写入任何数据")
+            print(f"\n⚠️ Dry-run mode: no data was written")
 
     return stats
 
@@ -330,12 +330,12 @@ def main():
     from .cli_output import print_success, print_error
     from .index_manager import IndexManager
 
-    parser = argparse.ArgumentParser(description="迁移 state.json 到 SQLite (v5.4)")
-    parser.add_argument("--project-root", type=str, required=True, help="项目根目录")
-    parser.add_argument("--dry-run", action="store_true", help="只分析不实际写入")
-    parser.add_argument("--backup", action="store_true", default=True, help="迁移前备份")
-    parser.add_argument("--no-backup", action="store_true", help="不备份")
-    parser.add_argument("--quiet", action="store_true", help="安静模式")
+    parser = argparse.ArgumentParser(description="Migrate state.json to SQLite (v5.4)")
+    parser.add_argument("--project-root", type=str, required=True, help="Project root")
+    parser.add_argument("--dry-run", action="store_true", help="Analyze without writing changes")
+    parser.add_argument("--backup", action="store_true", default=True, help="Back up before migration")
+    parser.add_argument("--no-backup", action="store_true", help="Skip backup")
+    parser.add_argument("--quiet", action="store_true", help="Quiet mode")
 
     args = parser.parse_args()
 
@@ -356,7 +356,7 @@ def main():
             verbose=False,
         )
     except Exception as exc:
-        print_error("MIGRATE_FAILED", str(exc), suggestion="检查 state.json 与 index.db 权限")
+        print_error("MIGRATE_FAILED", str(exc), suggestion="Check permissions for state.json and index.db")
         try:
             logger.log_tool_call(tool_name, False, error_code="MIGRATE_FAILED", error_message=str(exc))
         except Exception:
@@ -364,9 +364,9 @@ def main():
         raise SystemExit(1)
 
     if stats.get("errors", 0) > 0:
-        print_error("MIGRATE_ERRORS", "迁移出现错误", details=stats)
+        print_error("MIGRATE_ERRORS", "Migration encountered errors", details=stats)
         try:
-            logger.log_tool_call(tool_name, False, error_code="MIGRATE_ERRORS", error_message="迁移出现错误")
+            logger.log_tool_call(tool_name, False, error_code="MIGRATE_ERRORS", error_message="Migration encountered errors")
         except Exception:
             pass
         raise SystemExit(1)

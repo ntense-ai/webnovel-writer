@@ -21,15 +21,15 @@ def test_init_skips_dead_templates_and_empty_libraries_for_single_protagonist(tm
         target_chapters=50,
     )
 
-    assert (project_root / "设定集" / "主角卡.md").is_file()
-    assert not (project_root / "设定集" / "主角组.md").exists()
-    assert not (project_root / "设定集" / "女主卡.md").exists()
-    assert not (project_root / "设定集" / "金手指设计.md").exists()
-    assert not (project_root / "设定集" / "复合题材-融合逻辑.md").exists()
-    assert not (project_root / "大纲" / "爽点规划.md").exists()
-    assert not (project_root / "设定集" / "角色库").exists()
-    assert not (project_root / "设定集" / "物品库").exists()
-    assert not (project_root / "设定集" / "其他设定").exists()
+    assert (project_root / "settings" / "protagonist.md").is_file()
+    assert not (project_root / "settings" / "protagonist-team.md").exists()
+    assert not (project_root / "settings" / "heroine.md").exists()
+    assert not (project_root / "settings" / "special-advantage.md").exists()
+    assert not (project_root / "settings" / "hybrid-genre.md").exists()
+    assert not (project_root / "outlines" / "payoff-plan.md").exists()
+    assert not (project_root / "settings" / "characters").exists()
+    assert not (project_root / "settings" / "items").exists()
+    assert not (project_root / "settings" / "other-settings").exists()
 
 
 def test_init_master_outline_does_not_prefill_future_volume_rows(tmp_path, monkeypatch):
@@ -46,7 +46,7 @@ def test_init_master_outline_does_not_prefill_future_volume_rows(tmp_path, monke
         target_chapters=600,
     )
 
-    summary = (project_root / "大纲" / "总纲.md").read_text(encoding="utf-8")
+    summary = (project_root / "outlines" / "master-outline.md").read_text(encoding="utf-8")
     assert "| 1 |" in summary
     assert "| 2 |" not in summary
     assert "| 20 |" not in summary
@@ -69,8 +69,8 @@ def test_init_generates_conditional_protagonist_group_and_heroine(tmp_path, monk
         target_chapters=50,
     )
 
-    assert (project_root / "设定集" / "主角组.md").is_file()
-    assert (project_root / "设定集" / "女主卡.md").is_file()
+    assert (project_root / "settings" / "protagonist-team.md").is_file()
+    assert (project_root / "settings" / "heroine.md").is_file()
 
 
 def test_init_persists_canonical_genre_and_template_tags(tmp_path, monkeypatch):
@@ -95,30 +95,25 @@ def test_init_persists_canonical_genre_and_template_tags(tmp_path, monkeypatch):
     assert project_info["genre_tags"]["format"] == ["知乎短篇"]
     assert project_info["genre_tags"]["templates"] == ["规则怪谈", "知乎短篇"]
 
-    worldview = (project_root / "设定集" / "世界观.md").read_text(encoding="utf-8")
+    worldview = (project_root / "settings" / "worldbuilding.md").read_text(encoding="utf-8")
     assert "规则怪谈" in worldview
     assert "知乎短篇" in worldview
 
 
-def test_init_rejects_english_profile_key_before_writing_state(tmp_path, monkeypatch):
+def test_init_accepts_english_genre_and_preserves_stable_schema(tmp_path, monkeypatch):
     import init_project as init_project_module
 
     monkeypatch.setattr(init_project_module, "is_git_available", lambda: False)
     project_root = tmp_path / "book"
-
-    with pytest.raises(SystemExit) as exc:
-        init_project_module.init_project(
-            str(project_root),
-            title="测试书",
-            genre="rules-mystery",
-            protagonist_name="陆鸣",
-            target_chapters=50,
-        )
-
-    message = str(exc.value)
-    assert "rules-mystery" in message
-    assert "规则怪谈" in message
-    assert not (project_root / ".webnovel" / "state.json").exists()
+    init_project_module.init_project(
+        str(project_root), title="The Rules", genre="rules horror",
+        protagonist_name="Alice", target_chapters=50,
+    )
+    state = json.loads((project_root / ".webnovel" / "state.json").read_text())
+    assert state["project_info"]["genre"] == "悬疑"
+    assert state["project_info"]["genre_label"] == "rules horror"
+    assert state["project_info"]["genre_tags"]["route"] == ["规则怪谈"]
+    assert (project_root / "settings" / "worldbuilding.md").is_file()
 
 
 def test_init_preserves_corrupt_state_json_before_rebuilding(tmp_path, monkeypatch, capsys):
@@ -142,4 +137,24 @@ def test_init_preserves_corrupt_state_json_before_rebuilding(tmp_path, monkeypat
     corrupt_copies = sorted(state_dir.glob("state.corrupt_*.json"))
     assert len(corrupt_copies) == 1
     assert corrupt_copies[0].read_text(encoding="utf-8") == corrupt_text
-    assert "原 state.json 已损坏" in capsys.readouterr().out
+    assert "Warning: damaged state.json" in capsys.readouterr().out
+
+
+def test_init_reuses_existing_legacy_directories_without_moving_user_files(tmp_path, monkeypatch):
+    import init_project as init_project_module
+
+    monkeypatch.setattr(init_project_module, "is_git_available", lambda: False)
+    project_root = tmp_path / "legacy-book"
+    for name in ("设定集", "大纲", "正文", "审查报告"):
+        (project_root / name).mkdir(parents=True)
+    existing = project_root / "设定集" / "世界观.md"
+    existing.write_text("My existing world", encoding="utf-8")
+    init_project_module.init_project(
+        str(project_root), title="Legacy book", genre="fantasy",
+        protagonist_name="Alice", target_chapters=50,
+    )
+    assert existing.read_text(encoding="utf-8") == "My existing world"
+    assert (project_root / "设定集" / "主角卡.md").is_file()
+    assert (project_root / "大纲" / "总纲.md").is_file()
+    for name in ("settings", "outlines", "chapters", "reviews"):
+        assert not (project_root / name).exists()

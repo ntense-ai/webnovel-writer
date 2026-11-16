@@ -1,5 +1,7 @@
 # Writing-Workflow Context Reduction Refactoring Plan
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Date: 2026-06-05
 > Status: Draft v3
 > Scope: Refactor prompts and reading strategies in `skills/`, `agents/`, and `references/` to reduce unnecessary main-agent context and token use

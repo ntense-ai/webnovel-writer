@@ -19,7 +19,7 @@ FORESHADOWING_BULLET_RE = re.compile(r"^\s*[-*]\s+(.+?)\s*$", re.MULTILINE)
 
 
 def _extract_chapter_from_name(name: str) -> int:
-    m = re.search(r"ch(\d{1,6})", name, re.IGNORECASE)
+    m = re.search(r"(?:ch|chapter-)(\d{1,6})", name, re.IGNORECASE)
     if m:
         return int(m.group(1))
     m = re.search(r"第\s*(\d+)\s*章", name)

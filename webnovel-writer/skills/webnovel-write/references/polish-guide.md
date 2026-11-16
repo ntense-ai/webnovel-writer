@@ -21,7 +21,7 @@ Responsibilities:
 
 ```json
 {
-  "chapter_file": "正文/第0123章-章节标题.md",
+  "chapter_file": "chapters/chapter-0123-title.md",
   "issues": [
     {"severity": "critical", "category": "setting", "location": "Paragraph 6", "description": "Realm overreach", "evidence": "A Dou Practitioner uses a Dou Master's skill", "fix_hint": "Use a skill available at the current realm", "blocking": true},
     {"severity": "high", "category": "character", "location": "Paragraph 9", "description": "Character voice mismatch", "evidence": "Xiao Yan uses formal written language", "fix_hint": "Use colloquial speech fitting the character"}
@@ -30,7 +30,7 @@ Responsibilities:
 }
 ```
 
-`chapter_file` must be the actual current chapter path; if the project has not migrated to titled filenames, `正文/第0123章.md` is also allowed. See `review-schema.md` for issue format.
+`chapter_file` must be the actual current chapter path; if the project has not migrated to titled filenames, `chapters/chapter-0123.md` is also allowed. See `review-schema.md` for issue format.
 
 ## 2. Execution order (must follow in order)
 
@@ -71,7 +71,7 @@ Responsibilities:
 
 | Metric | Below standard | Meets standard |
 |-----|-------|------|
-| Hesitation words | <0.5 per 500 Chinese characters | 1–2 per 500 |
+| Hesitation words | <0.5 per 500 English words | 1–2 per 500 |
 | Uncertain expressions | None | ≥2/chapter |
 | Short-sentence proportion | <20% | 30–50% |
 | Colloquial expressions | None per 1,000 characters | ≥2 per 1,000 |
@@ -102,7 +102,7 @@ Responsibilities:
 
 ### Layer 1: High-risk vocabulary (200+ terms, initial set)
 
-The exact Chinese detection terms below are retained intentionally: these are functional matching vocabulary for Chinese prose, not untranslated instructions. Category headings and guidance are in English.
+The exact Chinese detection terms below apply only when the user requests Chinese prose or an existing book is written in Chinese. For English prose, apply the English style principles and diagnose natural English equivalents in context; do not insert, mechanically translate, or require these legacy matching terms.
 
 #### A. Summary/conclusion terms（22）
 
@@ -184,7 +184,7 @@ The exact Chinese detection terms below are retained intentionally: these are fu
 ### Layer 3: Adjective and adverb limits
 
 - Rewrite by default when more than two consecutive adjectives modify one noun.
-- Recommended total of intensifiers (very/extremely/particularly/etc.) is at most four per 300 Chinese characters.
+- Recommended total of intensifiers (very/extremely/particularly/etc.) is at most four per 300 English words.
 - Prefer action + result + cost; reduce abstract evaluative words.
 
 ### Layer 4: Four-character clichés/idioms
@@ -206,7 +206,7 @@ The exact Chinese detection terms below are retained intentionally: these are fu
 ### Layer 6: Paragraph structure
 
 - Recommended single-sentence paragraph ratio: 25%–45% (higher in conflict chapters).
-- Recommended paragraph length: 20–100 Chinese characters; avoid consecutive large explanatory blocks.
+- Recommended paragraph length: 20–100 English words; avoid consecutive large explanatory blocks.
 - Prefer action/sound/location changes for transitions rather than “Act One/Act Two” labels.
 
 ### Layer 7: Punctuation rhythm
@@ -269,7 +269,7 @@ Repair actions by type:
 
 ### Soft (recommended)
 
-1. Enter conflict/risk/strong emotion within the first 200–400 Chinese characters.
+1. Enter conflict/risk/strong emotion within the first 200–400 English words.
 2. Include a pacing pulse in the middle (roughly every 800–1,400 characters; at least once in short chapters).
 3. Preserve an unresolved question or next-step anticipation anchor late or at the ending.
 

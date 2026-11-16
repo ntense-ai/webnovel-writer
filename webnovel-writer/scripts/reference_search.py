@@ -28,6 +28,14 @@ from genre_taxonomy import GENRE_CANONICAL, resolve_canonical_genre
 # CSV loading
 # ---------------------------------------------------------------------------
 
+# Stable internal CSV names remain valid; English callers use these public names.
+TABLE_ALIASES = {
+    "naming": "命名规则", "scenes": "场景写法", "techniques": "写作技法",
+    "tropes": "桥段套路", "pacing": "爽点与节奏", "characters": "人设与关系",
+    "powers": "金手指与设定", "genre-routing": "题材与调性推理", "adjudication": "裁决规则",
+}
+
+
 def _load_csv(path: Path) -> List[Dict[str, str]]:
     """Load a single CSV file (UTF-8 with BOM)."""
     with open(path, "r", encoding="utf-8-sig", newline="") as f:
@@ -211,7 +219,7 @@ CSV_CONFIG: Dict[str, Dict[str, Any]] = {
     },
     "裁决规则": {
         "file": "裁决规则.csv",
-        "search_cols": {"题材": 4},
+        "search_cols": {"题材": 4, "关键词": 3, "意图与同义词": 4},
         "output_cols": ["题材", "风格优先级", "爽点优先级", "节奏默认策略",
                         "毒点权重", "冲突裁决", "contract注入层", "反模式"],
         "poison_col": "",
@@ -283,7 +291,7 @@ def _bm25_score(query_terms: List[str], doc_terms: List[str],
         if tf == 0:
             # Also check substring match (important for Chinese compound words)
             for dt in tf_map:
-                if qt in dt or dt in qt:
+                if qt == dt or (re.search(r"[\u4e00-\u9fff]", qt) and (qt in dt or dt in qt)):
                     tf = max(tf, 1)
                     break
         if tf == 0:
@@ -305,7 +313,7 @@ def _compute_idf(query_terms: List[str], all_docs: List[List[str]]) -> Dict[str,
         df = 0
         for doc in all_docs:
             for dt in doc:
-                if qt in dt or dt in qt:
+                if qt == dt or (re.search(r"[\u4e00-\u9fff]", qt) and (qt in dt or dt in qt)):
                     df += 1
                     break
         # BM25 IDF: log((N - df + 0.5) / (df + 0.5) + 1)
@@ -382,7 +390,17 @@ def search(
             },
         }
 
+    table = TABLE_ALIASES.get(table, table)
     tables = load_tables(csv_dir, table=table)
+    # Legacy vocabulary is an input-only compatibility index, never prose output.
+    legacy_aliases = {}
+    alias_path = csv_dir / "legacy-search-aliases.json"
+    if alias_path.is_file() and re.search(r"[\u4e00-\u9fff]", query):
+        try:
+            legacy_aliases = json.loads(alias_path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            legacy_aliases = {}
+
     if not tables:
         return {
             "status": "success",
@@ -424,7 +442,10 @@ def search(
     for tbl_name, row in candidates:
         tbl_cfg = CSV_CONFIG.get(tbl_name)
         weights = dict(tbl_cfg["search_cols"]) if tbl_cfg else None
-        doc_terms_list.append(_build_doc_terms(row, weights))
+        terms = _build_doc_terms(row, weights)
+        if legacy_aliases:
+            terms.extend(_build_doc_terms(legacy_aliases.get(row.get("编号", ""), {}), weights))
+        doc_terms_list.append(terms)
     avg_dl = sum(len(d) for d in doc_terms_list) / len(doc_terms_list) if doc_terms_list else 1.0
     idf_map = _compute_idf(query_terms, doc_terms_list)
 
@@ -442,6 +463,10 @@ def search(
     results: List[Dict[str, Any]] = []
     for _score, tbl_name, row in top:
         results.append({
+            "id": row.get("编号", ""),
+            "table": next((key for key, value in TABLE_ALIASES.items() if value == tbl_name), tbl_name),
+            "summary": _build_summary(row, table_name=tbl_name),
+            "instruction": row.get("大模型指令", "").strip(),
             "编号": row.get("编号", ""),
             "表": tbl_name,
             "分类": row.get("分类", ""),
@@ -477,10 +502,10 @@ def main(argv: Optional[List[str]] = None) -> None:
     parser = argparse.ArgumentParser(
         description="BM25 keyword search over reference CSV files",
     )
-    parser.add_argument("--skill", required=True, help="Filter by 适用技能 column")
-    parser.add_argument("--table", default=None, help="Target specific CSV file name (without .csv)")
+    parser.add_argument("--skill", required=True, help="Filter by skill column")
+    parser.add_argument("--table", default=None, help="English table alias (naming, scenes, techniques, tropes, pacing, characters, powers, genre-routing, adjudication) or legacy CSV name")
     parser.add_argument("--query", required=True, help="BM25 search keywords")
-    parser.add_argument("--genre", default=None, help="Filter by 适用题材 column")
+    parser.add_argument("--genre", default=None, help="Filter by genre column")
     parser.add_argument("--max-results", type=int, default=5, help="Max results (default 5)")
     parser.add_argument("--csv-dir", default=None, help="Override CSV directory path")
 

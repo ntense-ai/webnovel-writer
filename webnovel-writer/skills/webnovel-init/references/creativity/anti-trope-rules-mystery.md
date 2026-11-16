@@ -186,7 +186,7 @@ Exploitable opening: {主角可以利用的漏洞/边界}
 
 ### 5.3 Complexity Control
 
-| Length (Chinese characters) | Core rules | Hidden rules | False rules |
+| Length (English words) | Core rules | Hidden rules | False rules |
 |------|-----------|-----------|---------|
 | Short: under 50,000 | 3–5 | 1–2 | 0–1 |
 | Medium: 50,000–200,000 | 5–8 | 2–3 | 1–2 |

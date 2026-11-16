@@ -25,6 +25,24 @@ GENRE_CANONICAL: set[str] = {
     "幻言", "年代", "种田", "快穿", "衍生",
 }
 
+# English UI labels resolve to the existing stable storage taxonomy.
+# Keep canonical_genre and template filenames unchanged for old project data.
+ENGLISH_GENRE_ALIASES = {
+    "urban": "都市", "contemporary": "都市", "urban fantasy": "都市异能",
+    "slice of life": "都市日常", "realistic fiction": "现实题材",
+    "xuanhuan": "玄幻", "eastern fantasy": "玄幻", "cultivation": "修仙",
+    "xianxia": "仙侠", "immortal fantasy": "仙侠", "fantasy": "奇幻",
+    "western fantasy": "西幻", "science fiction": "科幻", "sci-fi": "科幻",
+    "historical": "历史", "historical fiction": "历史", "mystery": "悬疑",
+    "suspense": "悬疑", "game": "游戏", "gaming": "游戏", "litrpg": "游戏",
+    "historical romance": "古言", "contemporary romance": "现言",
+    "fantasy romance": "幻言", "period fiction": "年代", "farming": "种田",
+    "homesteading": "种田", "quick transmigration": "快穿", "fanfiction": "衍生",
+    "fan fiction": "衍生", "system": "系统流", "system fiction": "系统流",
+    "rebirth": "重生", "rules horror": "规则怪谈", "horror": "规则怪谈",
+    "dark fantasy": "黑暗题材", "ensemble": "群像", "all": "全部",
+}
+
 _INPUT_SPLIT_RE = re.compile(r"[+＋/、,，|]+|与")
 _VALUE_SPLIT_RE = re.compile(r"[;；|]+")
 _HIGH_PRIORITY_TYPES = {"route", "platform", "canonical", "preset", "legacy"}
@@ -136,6 +154,10 @@ def _build_lookup(entries: Iterable[GenreEntry]) -> dict[str, GenreEntry]:
                     f"{existing.label!r} vs {entry.label!r}"
                 )
             lookup[key] = entry
+    for english, legacy in ENGLISH_GENRE_ALIASES.items():
+        target = lookup.get(_normalize_lookup_key(legacy))
+        if target is not None:
+            lookup.setdefault(_normalize_lookup_key(english), target)
     return lookup
 
 
@@ -180,7 +202,7 @@ def resolve_genre_input(raw_label: Optional[str], *, index_path: Optional[str] =
     resolution = GenreResolution(raw_label=raw)
     if not raw:
         return resolution
-    if raw == "全部":
+    if raw.casefold() in {"全部", "all"}:
         resolution.canonical_genre = "全部"
         resolution.matched_labels.append("全部")
         return resolution

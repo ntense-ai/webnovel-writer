@@ -58,7 +58,7 @@ If you had only ten seconds to recommend this book, what would you say?
 **Long-term potential**:
 ```
 Can the combination support:
-- A serial of 300,000+ Chinese characters?
+- A serial of 300,000+ English words?
 - Continuing escalation of conflict?
 - Character growth?
 - World expansion?
@@ -382,7 +382,7 @@ Urban rebirth + check-in system
 - **World**: [How rules are unified]
 
 ### Potential
-- **Sustainability**: [Can it support 300,000+ Chinese characters?]
+- **Sustainability**: [Can it support 300,000+ English words?]
 - **Escalation**: [How conflicts intensify]
 - **Character growth**: [Protagonist's path]
 - **World expansion**: [Later expansion]
@@ -417,7 +417,7 @@ Before submitting:
 - [ ] Opening attracts target readers?
 - [ ] World rules consistent?
 - [ ] Diverse payoffs?
-- [ ] Supports 300,000+ Chinese characters?
+- [ ] Supports 300,000+ English words?
 - [ ] Total score at least 30?
 
 ---

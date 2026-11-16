@@ -11,6 +11,8 @@ import sys
 import logging
 from pathlib import Path
 
+from project_paths import project_path
+
 from runtime_compat import enable_windows_utf8_stdio
 from typing import Any, Dict, List, Optional
 
@@ -728,7 +730,7 @@ class ContextManager:
     def _load_setting(self, keyword: str) -> str:
         settings_dir = self.config.settings_dir
         candidates = [
-            settings_dir / f"{keyword}.md",
+            project_path(self.config.project_root, f"settings/{keyword}.md"),
         ]
         for path in candidates:
             if path.exists():
@@ -792,7 +794,7 @@ def main():
     from .cli_output import print_success, print_error
 
     parser = argparse.ArgumentParser(description="Context Manager CLI")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
     parser.add_argument("--chapter", type=int, required=True)
     parser.add_argument("--template", type=str, default=ContextManager.DEFAULT_TEMPLATE)
 

@@ -15,9 +15,9 @@ This is a project data-structure reference. Claude already knows general file or
 
 ```
 project-root/
-├── 正文/           # Chapter files (第0001章.md or 第1卷/第001章-标题.md)
-├── 大纲/           # Volume/chapter/scene outlines
-├── 设定集/         # Worldbuilding/power systems/character sheets/item sheets
+├── chapters/           # Chapter files (chapter-0001.md or volume-1/chapter-0001-title.md; legacy layouts also supported)
+├── outlines/           # Volume/chapter/scene outlines
+├── settings/         # Worldbuilding/power systems/character sheets/item sheets
 └── .webnovel/
     ├── state.json          # Slim state (< 5KB): progress/protagonist/strand_tracker/disambiguation
     ├── index.db            # Main SQLite storage: entities/aliases/relationships/state changes/chapters/scenes

@@ -1,5 +1,7 @@
 # Webnovel Writer System Architecture Diagrams
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Generated: 2026-04-15
 > Scope: read/write relationships across the complete init → plan → write pipeline
 

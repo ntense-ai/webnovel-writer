@@ -7,10 +7,16 @@ argument-hint: "[book title or inspiration (optional)]"
 
 # Project Initialization (Deep Mode)
 
+## Project paths and output language
+
+Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+
 ## Goals
 
 - Collect sufficient information through structured interaction to avoid “generate first, redo later.”
-- Produce a usable skeleton: `.webnovel/state.json`, `设定集/*`, `大纲/总纲.md`, `.webnovel/idea_bank.json`, and `.story-system/MASTER_SETTING.json`.
+- Produce a usable skeleton: `.webnovel/state.json`, `settings/*`, `outlines/master-outline.md`, `.webnovel/idea_bank.json`, and `.story-system/MASTER_SETTING.json`.
 - Ensure subsequent `/webnovel-plan` and `/webnovel-write` can run directly.
 
 ## Operating principles
@@ -171,6 +177,8 @@ Do not run `webnovel.py init` until all of the following are satisfied:
 ```bash
 PROJECT_SLUG="$(python -X utf8 -c "import re,sys; title=sys.argv[1].strip(); slug=re.sub(r'[\\\\/:*?\"<>|]+','',title); slug=re.sub(r'\\s+','-',slug).strip('-'); print(('proj-' + slug) if (not slug or slug.startswith('.')) else slug)" "{title}")"
 PROJECT_ROOT="${WORKSPACE_ROOT}/${PROJECT_SLUG}"
+export SETTINGS_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --directory settings)"
+export OUTLINES_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --directory outlines)"
 echo "WORKSPACE_ROOT=${WORKSPACE_ROOT}"
 echo "PROJECT_SLUG=${PROJECT_SLUG}"
 echo "PROJECT_ROOT=${PROJECT_ROOT}"
@@ -207,7 +215,7 @@ Write `.webnovel/idea_bank.json`; its content must match the final selected plan
 
 ### 3) Patch the master outline
 
-Complete `大纲/总纲.md` with: one-sentence story, core main plot/hidden plot, creative constraints (anti-trope, hard constraints, protagonist flaw, antagonist mirror), antagonist tiers, and key gratification milestones (2–3).
+Complete `outlines/master-outline.md` with: one-sentence story, core main plot/hidden plot, creative constraints (anti-trope, hard constraints, protagonist flaw, antagonist mirror), antagonist tiers, and key gratification milestones (2–3).
 
 ### 4) Generate the pre-writing contract tree (Story System initialization)
 
@@ -224,8 +232,8 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" \
 
 ```bash
 test -f "${PROJECT_ROOT}/.webnovel/state.json"
-find "${PROJECT_ROOT}/设定集" -maxdepth 1 -type f -name "*.md"
-test -f "${PROJECT_ROOT}/大纲/总纲.md"
+find "${SETTINGS_DIR}" -maxdepth 1 -type f -name "*.md"
+test -f "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path outlines/master-outline.md)"
 test -f "${PROJECT_ROOT}/.webnovel/idea_bank.json"
 test -f "${PROJECT_ROOT}/.story-system/MASTER_SETTING.json"
 test "$(basename "${PROJECT_ROOT}")" = "${PROJECT_SLUG}"
@@ -233,9 +241,9 @@ test "$(basename "${PROJECT_ROOT}")" = "${PROJECT_SLUG}"
 
 Success criteria:
 - `state.json` exists and title/genre/target_words/target_chapters are nonempty.
-- Core setting files exist: `世界观.md`, `力量体系.md`, `主角卡.md`; do not generate `主角组.md` for a single protagonist or `女主卡.md` when `heroine_config=无女主`.
+- Core setting files exist: `worldbuilding.md`, `power-system.md`, `protagonist.md`; do not generate `protagonist-team.md` for a single protagonist or `heroine.md` when `heroine_config=无女主`.
 - By default, do not generate `金手指设计.md`, `复合题材-融合逻辑.md`, `爽点规划.md`, or empty directories; their sources of truth are the protagonist sheet, worldbuilding, and volume outline.
-- `总纲.md` has its core plot and constraint fields filled; `idea_bank.json` is written and matches the final selected plan.
+- `master-outline.md` has its core plot and constraint fields filled; `idea_bank.json` is written and matches the final selected plan.
 - `.story-system/MASTER_SETTING.json` exists and `route.primary_genre` is nonempty.
 
 ## Failure handling (minimal rollback)
@@ -288,8 +296,8 @@ Overall status: Completed / Partially completed / Needs your attention / Not com
 
 Must report:
 - Project directory, `.webnovel/state.json`, and `.webnovel/idea_bank.json`.
-- `设定集/世界观.md`, `设定集/力量体系.md`, `设定集/主角卡.md`, and `设定集/反派设计.md`.
-- `大纲/总纲.md` and `.story-system/MASTER_SETTING.json`.
+- `settings/worldbuilding.md`, `settings/power-system.md`, `settings/protagonist.md`, and `settings/antagonist.md`.
+- `outlines/master-outline.md` and `.story-system/MASTER_SETTING.json`.
 - Whether reference-work deconstruction was used, and that canon was not written before user confirmation.
 - Whether missing information affects subsequent `/webnovel-plan`.
 

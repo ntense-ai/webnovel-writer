@@ -122,7 +122,7 @@ def test_migrate_state_verbose_and_dry_run(temp_project, capsys):
     stats = migrate_state_to_sqlite(temp_project, dry_run=True, backup=False, verbose=True)
     output = capsys.readouterr().out
     assert stats["errors"] == 0
-    assert "dry-run" in output or "dry run" in output
+    assert "Dry-run mode: no data was written" in output
 
 
 def test_migrate_state_cli_main(tmp_path, monkeypatch, capsys):
@@ -213,7 +213,7 @@ def test_migrate_state_error_branches(tmp_path, monkeypatch, capsys):
     stats = migrate_state_to_sqlite(cfg, dry_run=False, backup=False, verbose=True)
     output = capsys.readouterr().out
     assert stats["errors"] >= 4
-    assert "存在迁移错误，已保留原字段" in output
+    assert "Migration errors occurred; original fields preserved" in output
 
 
 def test_migrate_cli_preserves_state_fields_on_partial_failure(tmp_path, monkeypatch, capsys):

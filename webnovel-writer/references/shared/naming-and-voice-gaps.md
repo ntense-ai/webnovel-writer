@@ -47,6 +47,8 @@ purpose: Cross-skill defect compensation for homogeneous names, converging voice
 
 ### Naming Styles by Genre
 
+Names should fit the story setting and the user's requested culture, not the language of these examples. The table illustrates Chinese-set fiction; an English-language contemporary story set elsewhere should use locally appropriate names instead.
+
 | Genre | Recommended style | Positive examples | Negative examples |
 |------|---------|------|------|
 | Xuanhuan fantasy | Two/three syllables; classical but varied | Lin Jin, Shen Yan, Gu Tingzhou | Ling Han, Ling Shuang, Ling Yue |

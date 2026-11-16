@@ -233,3 +233,37 @@ def test_relationship_graph_prefers_index_db_data():
         assert "mermaid" in graph
         assert "药老" in graph
         assert "师徒" in graph
+
+
+def test_english_health_report_preserves_legacy_analysis_labels(tmp_path, monkeypatch):
+    """English presentation must not change legacy enums or translate story content."""
+    import re
+
+    state = {
+        "project_info": {"target_words": 100000},
+        "progress": {"current_chapter": 120, "total_words": 50000},
+        "plot_threads": {"foreshadowing": [
+            {"content": "The missing key", "tier": "核心", "status": "未回收",
+             "planted_chapter": 1, "target_chapter": 10},
+            {"content": "An unexplained letter", "tier": "支线", "status": "未回收"},
+        ]},
+        "strand_tracker": {"history": [{"strand": "quest"}] * 20},
+    }
+    _write_state(tmp_path, state)
+    reporter = StatusReporter(str(tmp_path))
+    assert reporter.load_state()
+    monkeypatch.setattr(reporter, "analyze_characters", lambda: {
+        "Alex": {"status": "🔴 严重掉线", "last_appearance": 1, "absence": 119}
+    })
+    monkeypatch.setattr(reporter, "generate_relationship_graph", lambda: "graph LR\nAlex --> Sam")
+    reporter.chapters_data = [{"chapter": 1, "word_count": 2000, "cool_points": None}]
+    report = reporter.generate_report()
+    assert "Book Health Report" in report
+    assert "Severe absence" in report
+    assert "Overdue" in report
+    assert "Core" in report
+    assert "Insufficient data" in report
+    assert "Strand Weave Pacing Analysis" in report
+    assert not re.search(r"[\u4e00-\u9fff]", report)
+    assert reporter.analyze_foreshadowing()[0]["status"] == "🔴 已超期"
+    assert reporter.state["plot_threads"]["foreshadowing"][0]["tier"] == "核心"

@@ -6,7 +6,7 @@
 
 ## 1. The golden chapter structure
 
-### Standard chapter structure (3,000 Chinese characters)
+### Standard chapter structure (3,000 English words)
 ```
 Opening (300): hook readers into continuing
 Development (1,500): advance plot and create conflict
@@ -86,7 +86,7 @@ Ending (200): suspense/hook encouraging subscription to the next chapter
 
 ## 3. Chapter length control
 
-### Standard lengths (Chinese characters)
+### Standard lengths (English words)
 - **Long-form platforms such as Qidian**: 3,000/chapter (most comfortable)
 - **Short-fiction platforms (Zhihu/WeChat)**: 1,500–2,000/chapter
 - **Paid chapters**: at least 2,000 (less feels poor value to readers)
@@ -199,7 +199,7 @@ Chapter 50: antagonist's viewpoint (“Sect Leader, Lin Tian has been inside for
 ### Template A: Combat chapter
 ```markdown
 ## Chapter XX: [Title]
-**Length**: 3,000 Chinese characters
+**Length**: 3,000 English words
 **Main plot**: protagonist vs. [enemy]
 **Conflict source**: [Why fight?]
 **Battle sequence**:
@@ -216,7 +216,7 @@ Chapter 50: antagonist's viewpoint (“Sect Leader, Lin Tian has been inside for
 ### Template B: Plot chapter
 ```markdown
 ## Chapter XX: [Title]
-**Length**: 3,000 Chinese characters
+**Length**: 3,000 English words
 **Main plot**: [Which main storyline advances?]
 **Subplot**: [Which subplots are involved?]
 **New information**:
@@ -230,7 +230,7 @@ Chapter 50: antagonist's viewpoint (“Sect Leader, Lin Tian has been inside for
 ### Template C: Cultivation chapter
 ```markdown
 ## Chapter XX: Breakthrough!
-**Length**: 3,000 Chinese characters
+**Length**: 3,000 English words
 **Main plot**: protagonist breaks through to [new realm]
 **Cultivation process**:
   1. Review the current realm's bottleneck
@@ -247,7 +247,7 @@ Chapter 50: antagonist's viewpoint (“Sect Leader, Lin Tian has been inside for
 ## 8. Chapter self-check
 
 After every chapter, check:
-- [ ] **Length**: 2,000–4,000 Chinese characters? (Paid chapters at least 2,000.)
+- [ ] **Length**: 2,000–4,000 English words? (Paid chapters at least 2,000.)
 - [ ] **Opening**: sufficiently engaging in the first 300 characters?
 - [ ] **Conflict**: clear conflict or advancement?
 - [ ] **Gratification**: at least one small payoff? (Transition chapters may omit it, but not three chapters in a row.)
@@ -263,7 +263,7 @@ After every chapter, check:
 **Symptoms**: large scenery passages, internal monologue, repeated earlier content.
 **Fixes**:
 - Remove useless scenery (unless first entering a new map).
-- Keep internal monologue within 200 Chinese characters.
+- Keep internal monologue within 200 English words.
 - Do not repeat the previous chapter (except flashbacks/recollections).
 
 ### Problem 2: Too dry and information-heavy
@@ -314,9 +314,9 @@ Examples:
 - `Yao Lao | develops toward Xiao Yan | clear interest`
 - `Xiao Yan | realizes | the academy assessment is far harsher than expected`
 
-Field meanings (retain the Chinese runtime field labels):
+Field meanings (English labels are the default; the parser also accepts legacy Chinese labels):
 - `CBN` (chapter beginning node): exactly one per chapter; connects to the previous CEN.
 - `CPNs` (progression nodes): 2–4 per chapter, in chronological order.
 - `CEN` (chapter ending node): exactly one per chapter; lands on the unresolved ending question.
-- `必须覆盖节点` (must-cover nodes): at most four; recommended `CBN + CEN + 1–2 core CPNs`.
-- `本章禁区` (chapter prohibitions): at most five; hard prohibitions only.
+- `Must-cover nodes`: at most four; recommended `CBN + CEN + 1–2 core CPNs`.
+- `Chapter prohibitions`: at most five; hard prohibitions only.

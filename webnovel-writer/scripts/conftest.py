@@ -47,6 +47,9 @@ def _install_safe_tempfile() -> None:
     for name in ("TMP", "TEMP", "TMPDIR"):
         os.environ[name] = str(root)
     os.environ["WEBNOVEL_TEST_RELAX_ATOMIC_REPLACE"] = "1"
+    # Tests must not update a developer's current-book pointer or registry.
+    (root / ".claude").mkdir(exist_ok=True)
+    os.environ["WEBNOVEL_CLAUDE_HOME"] = str(root / "claude-home")
     tempfile.tempdir = str(root)
     tempfile.mkdtemp = _safe_mkdtemp
     tempfile.TemporaryDirectory = _SafeTemporaryDirectory

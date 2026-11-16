@@ -83,6 +83,9 @@ import os
 import re
 import sys
 from pathlib import Path
+
+from project_paths import project_dir
+from text_metrics import count_words
 from typing import Dict, List, Any, Tuple, Optional
 from datetime import datetime
 from collections import defaultdict
@@ -123,6 +126,21 @@ def _enable_windows_utf8_stdio() -> None:
     enable_windows_utf8_stdio(skip_in_pytest=True)
 
 
+
+def _display_label(value: Any) -> str:
+    """Render legacy analytical labels in English without mutating stored values."""
+    labels = {
+        "✅ 活跃": "✅ Active", "🟢 正常": "🟢 Normal",
+        "🟡 轻度掉线": "🟡 Mild absence", "🔴 严重掉线": "🔴 Severe absence",
+        "🟡 轻度超时": "🟡 Mildly overdue", "🔴 严重超时": "🔴 Severely overdue",
+        "🔴 已超期": "🔴 Overdue", "⚪ 数据不足": "⚪ Insufficient data",
+        "🔴 紧急": "🔴 Urgent", "🟡 警告": "🟡 Warning",
+        "核心": "Core", "支线": "Subplot", "装饰": "Decorative",
+        "数据不足": "Insufficient data", "优秀": "Excellent", "良好": "Good",
+        "及格": "Adequate", "偏低⚠️": "Low ⚠️",
+    }
+    return labels.get(str(value), str(value))
+
 class StatusReporter:
     """状态报告生成器"""
 
@@ -130,7 +148,7 @@ class StatusReporter:
         self.project_root = Path(project_root)
         self.config = get_config(self.project_root)
         self.state_file = self.project_root / ".webnovel/state.json"
-        self.chapters_dir = self.project_root / "正文"
+        self.chapters_dir = project_dir(self.project_root, "正文")
 
         self.state = None
         self.chapters_data = []
@@ -154,7 +172,7 @@ class StatusReporter:
     def load_state(self) -> bool:
         """加载 state.json"""
         if not self.state_file.exists():
-            print(f"❌ 状态文件不存在: {self.state_file}")
+            print(f"❌ State file not found: {self.state_file}")
             return False
 
         with open(self.state_file, 'r', encoding='utf-8') as f:
@@ -201,7 +219,7 @@ class StatusReporter:
             if _is_resolved_foreshadowing_status(item.get("status")):
                 continue
 
-            content = str(item.get("content") or "").strip() or "[未命名伏笔]"
+            content = str(item.get("content") or "").strip() or "[Untitled foreshadowing]"
             tier, weight = self._normalize_foreshadowing_tier(item.get("tier"))
 
             planted_chapter = self._resolve_chapter_field(
@@ -342,13 +360,13 @@ class StatusReporter:
     def scan_chapters(self):
         """扫描所有章节文件"""
         if not self.chapters_dir.exists():
-            print(f"⚠️  正文目录不存在: {self.chapters_dir}")
+            print(f"⚠️  Chapter directory not found: {self.chapters_dir}")
             return
 
         # 支持两种目录结构：
         # 1) 正文/第0001章.md
         # 2) 正文/第1卷/第001章-标题.md
-        chapter_files = sorted(self.chapters_dir.rglob("第*.md"))
+        chapter_files = sorted(self.chapters_dir.rglob("*.md"))
 
         # v5.1 引入: 从 SQLite 获取已知角色名
         known_character_names: List[str] = []
@@ -380,7 +398,7 @@ class StatusReporter:
             text = re.sub(r'```[\s\S]*?```', '', content)  # 去除代码块
             text = re.sub(r'#+ .+', '', text)  # 去除标题
             text = re.sub(r'---', '', text)  # 去除分隔线
-            word_count = len(text.strip())
+            word_count = count_words(text)
 
             # 主导 Strand / 爽点类型（优先从"本章统计"解析）
             dominant_strand = (self._extract_stats_field(content, "主导Strand") or "").lower()
@@ -572,7 +590,7 @@ class StatusReporter:
         if not history:
             return {
                 "has_data": False,
-                "message": "暂无 Strand Weave 数据"
+                "message": "No Strand Weave data yet"
             }
 
         # 统计各线占比
@@ -610,7 +628,7 @@ class StatusReporter:
                 quest_streak = 0
 
         if max_quest_streak > self.config.strand_quest_max_consecutive:
-            violations.append(f"Quest 线连续 {max_quest_streak} 章（超过 {self.config.strand_quest_max_consecutive} 章限制）")
+            violations.append(f"Quest consecutive chapters: {max_quest_streak} chapters (exceeds {self.config.strand_quest_max_consecutive} chapter limit)")
 
         # 检查 Fire 缺失超过 10 章
         fire_gap = 0
@@ -625,7 +643,7 @@ class StatusReporter:
         max_fire_gap = max(max_fire_gap, fire_gap)
 
         if max_fire_gap > self.config.strand_fire_max_gap:
-            violations.append(f"Fire 线缺失 {max_fire_gap} 章（超过 {self.config.strand_fire_max_gap} 章限制）")
+            violations.append(f"Fire missing for {max_fire_gap} chapters (exceeds {self.config.strand_fire_max_gap} chapter limit)")
 
         # 检查 Constellation 缺失超过 15 章
         const_gap = 0
@@ -640,24 +658,24 @@ class StatusReporter:
         max_const_gap = max(max_const_gap, const_gap)
 
         if max_const_gap > self.config.strand_constellation_max_gap:
-            violations.append(f"Constellation 线缺失 {max_const_gap} 章（超过 {self.config.strand_constellation_max_gap} 章限制）")
+            violations.append(f"Constellation missing for {max_const_gap} chapters (exceeds {self.config.strand_constellation_max_gap} chapter limit)")
 
         # 检查占比是否在合理范围
         cfg = self.config
         if quest_ratio < cfg.strand_quest_ratio_min:
-            violations.append(f"Quest 占比 {quest_ratio:.1f}% 偏低（目标 {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}%）")
+            violations.append(f"Quest ratio {quest_ratio:.1f}% is low (target {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}%)")
         elif quest_ratio > cfg.strand_quest_ratio_max:
-            violations.append(f"Quest 占比 {quest_ratio:.1f}% 偏高（目标 {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}%）")
+            violations.append(f"Quest ratio {quest_ratio:.1f}% is high (target {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}%)")
 
         if fire_ratio < cfg.strand_fire_ratio_min:
-            violations.append(f"Fire 占比 {fire_ratio:.1f}% 偏低（目标 {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}%）")
+            violations.append(f"Fire ratio {fire_ratio:.1f}% is low (target {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}%)")
         elif fire_ratio > cfg.strand_fire_ratio_max:
-            violations.append(f"Fire 占比 {fire_ratio:.1f}% 偏高（目标 {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}%）")
+            violations.append(f"Fire ratio {fire_ratio:.1f}% is high (target {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}%)")
 
         if constellation_ratio < cfg.strand_constellation_ratio_min:
-            violations.append(f"Constellation 占比 {constellation_ratio:.1f}% 偏低（目标 {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}%）")
+            violations.append(f"Constellation ratio {constellation_ratio:.1f}% is low (target {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}%)")
         elif constellation_ratio > cfg.strand_constellation_ratio_max:
-            violations.append(f"Constellation 占比 {constellation_ratio:.1f}% 偏高（目标 {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}%）")
+            violations.append(f"Constellation ratio {constellation_ratio:.1f}% is high (target {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}%)")
 
         return {
             "has_data": True,
@@ -669,7 +687,7 @@ class StatusReporter:
             "max_quest_streak": max_quest_streak,
             "max_fire_gap": max_fire_gap,
             "max_const_gap": max_const_gap,
-            "health": "✅ 健康" if not violations else f"⚠️ {len(violations)} 个问题"
+            "health": "✅ Healthy" if not violations else f"⚠️ {len(violations)} issues"
         }
 
     def analyze_pacing(self) -> List[Dict]:
@@ -791,7 +809,7 @@ class StatusReporter:
 
         # 兼容旧版 state.json relationships 结构
         relationships = self.state.get("relationships", {})
-        protagonist_name = self.state.get("protagonist_state", {}).get("name", "主角")
+        protagonist_name = self.state.get("protagonist_state", {}).get("name", "Protagonist")
 
         lines = ["```mermaid", "graph LR"]
 
@@ -806,14 +824,14 @@ class StatusReporter:
             # 新格式
             for ally in allies:
                 if isinstance(ally, dict):
-                    name = ally.get("name", "未知")
-                    relation = ally.get("relation", "友好")
+                    name = ally.get("name", "Unknown")
+                    relation = ally.get("relation", "Friendly")
                     lines.append(f"    {protagonist_name} -->|{relation}| {name}")
 
             for enemy in enemies:
                 if isinstance(enemy, dict):
-                    name = enemy.get("name", "未知")
-                    relation = enemy.get("relation", "敌对")
+                    name = enemy.get("name", "Unknown")
+                    relation = enemy.get("relation", "Hostile")
                     lines.append(f"    {protagonist_name} -.->|{relation}| {name}")
         else:
             # 旧格式兼容
@@ -823,10 +841,10 @@ class StatusReporter:
                     hatred = rel_data.get("hatred", 0)
 
                     if affection > 0:
-                        lines.append(f"    {protagonist_name} -->|好感度{affection}| {char_name}")
+                        lines.append(f"    {protagonist_name} -->|Affection {affection}| {char_name}")
 
                     if hatred > 0:
-                        lines.append(f"    {protagonist_name} -.->|仇恨度{hatred}| {char_name}")
+                        lines.append(f"    {protagonist_name} -.->|Hostility {hatred}| {char_name}")
 
         lines.append("```")
 
@@ -836,15 +854,15 @@ class StatusReporter:
         """生成健康报告（Markdown 格式）"""
 
         report_lines = [
-            "# 全书健康报告",
+            "# Book Health Report",
             "",
-            f"> **生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"> **Generated at**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
             "",
             "---",
             ""
         ]
 
-        # 基本数据
+        # Basic Statistics
         if focus in ["all", "basic"]:
             report_lines.extend(self._generate_basic_stats())
 
@@ -879,7 +897,7 @@ class StatusReporter:
         return "\n".join(report_lines)
 
     def _generate_memory_section(self) -> List[str]:
-        """生成长期记忆统计章节（best-effort）。"""
+        """生成Long-term Memory Statistics章节（best-effort）。"""
         try:
             from data_modules.memory.store import ScratchpadManager
         except Exception:
@@ -896,14 +914,14 @@ class StatusReporter:
             return []
 
         return [
-            "## 🧠 长期记忆统计",
+            "## 🧠 Long-term Memory Statistics",
             "",
-            f"- **总条目**: {stats.get('total', 0)}",
+            f"- **Total entries**: {stats.get('total', 0)}",
             f"- **Active**: {stats.get('active', 0)}",
             f"- **Outdated**: {stats.get('outdated', 0)}",
             f"- **Contradicted**: {stats.get('contradicted', 0)}",
             f"- **Tentative**: {stats.get('tentative', 0)}",
-            f"- **冲突键数量**: {len(conflicts)}",
+            f"- **Conflicting keys**: {len(conflicts)}",
             "",
             "---",
             "",
@@ -923,12 +941,12 @@ class StatusReporter:
         completion = (total_words / target_words * 100) if target_words > 0 else 0
 
         return [
-            "## 📊 基本数据",
+            "## 📊 Basic Statistics",
             "",
-            f"- **总章节数**: {current_chapter} 章",
-            f"- **总字数**: {total_words:,} 字",
-            f"- **平均章节字数**: {avg_words:,.0f} 字",
-            f"- **创作进度**: {completion:.1f}%（目标 {target_words:,} 字）",
+            f"- **Total chapters**: {current_chapter} chapters",
+            f"- **Total words**: {total_words:,} words",
+            f"- **Average chapter length**: {avg_words:,.0f} words",
+            f"- **Writing progress**: {completion:.1f}% (target {target_words:,} words)",
             "",
             "---",
             ""
@@ -946,13 +964,13 @@ class StatusReporter:
                   if "掉线" in data["status"]}
 
         lines = [
-            f"## ⚠️ 角色掉线（{len(dropped)}人）",
+            f"## ⚠️ Absent Characters ({len(dropped)})",
             ""
         ]
 
         if dropped:
             lines.extend([
-                "| 角色 | 最后出场 | 缺席章节 | 状态 |",
+                "| Character | Last appearance | Chapters absent | Status |",
                 "|------|---------|---------|------|"
             ])
 
@@ -960,11 +978,11 @@ class StatusReporter:
                                          key=lambda x: x[1]["absence"],
                                          reverse=True):
                 lines.append(
-                    f"| {char_name} | 第 {data['last_appearance']} 章 | "
-                    f"{data['absence']} 章 | {data['status']} |"
+                    f"| {char_name} | Chapter {data['last_appearance']} | "
+                    f"{data['absence']} chapters | {_display_label(data['status'])} |"
                 )
         else:
-            lines.append("✅ 所有角色活跃度正常")
+            lines.append("✅ All characters have normal activity")
 
         lines.extend(["", "---", ""])
 
@@ -981,29 +999,29 @@ class StatusReporter:
         unknown_items = [item for item in overdue if item["status"] == "⚪ 数据不足"]
 
         lines = [
-            f"## ⚠️ 伏笔超时（{len(overdue_items)}条）",
+            f"## ⚠️ Overdue Foreshadowing ({len(overdue_items)})",
             ""
         ]
 
         if overdue_items:
             lines.extend([
-                "| 伏笔内容 | 埋设章节 | 已过章节 | 状态 |",
+                "| Foreshadowing | Planted chapter | Chapters elapsed | Status |",
                 "|---------|---------|---------|------|"
             ])
 
             for item in sorted(overdue_items, key=lambda x: (x["elapsed"] if x["elapsed"] is not None else -1), reverse=True):
-                planted = item["planted_chapter"] if item["planted_chapter"] is not None else "未知"
-                elapsed = item["elapsed"] if item["elapsed"] is not None else "未知"
+                planted = item["planted_chapter"] if item["planted_chapter"] is not None else "Unknown"
+                elapsed = item["elapsed"] if item["elapsed"] is not None else "Unknown"
                 lines.append(
-                    f"| {item['content'][:30]}... | 第 {planted} 章 | "
-                    f"{elapsed} 章 | {item['status']} |"
+                    f"| {item['content'][:30]}... | Chapter {planted} | "
+                    f"{elapsed} chapters | {_display_label(item['status'])} |"
                 )
         else:
-            lines.append("✅ 所有伏笔进度正常")
+            lines.append("✅ All foreshadowing is on track")
 
         if unknown_items:
             lines.append("")
-            lines.append(f"⚪ 另有 {len(unknown_items)} 条伏笔缺少章节信息，无法判断是否超时")
+            lines.append(f"⚪ {len(unknown_items)} other foreshadowing entries lack chapter information; overdue status is unknown")
 
         lines.extend(["", "---", ""])
 
@@ -1021,35 +1039,35 @@ class StatusReporter:
         ]
 
         lines = [
-            f"## 🚨 伏笔紧急度排序（{len(urgent_items)}条需关注）",
+            f"## 🚨 Foreshadowing Urgency ({len(urgent_items)} need attention)",
             "",
-            "> 基于三层级系统：核心(×3) / 支线(×2) / 装饰(×1)",
-            "> 紧急度 = (已过章节 / (目标章节-埋设章节)) × 层级权重",
+            "> Three tiers: Core (×3) / Subplot (×2) / Decorative (×1)",
+            "> Urgency = (elapsed chapters / (target chapter - planted chapter)) × tier weight",
             ""
         ]
 
         unknown_items = [item for item in urgency_list if item["urgency"] is None]
         if unknown_items:
-            lines.append(f"> {len(unknown_items)} 条伏笔缺少埋设/目标章节，紧急度记为 N/A")
+            lines.append(f"> {len(unknown_items)} foreshadowing entries lack planted/target chapters; urgency is N/A")
             lines.append("")
 
         if urgency_list:
             lines.extend([
-                "| 伏笔内容 | 层级 | 埋设 | 目标 | 紧急度 | 状态 |",
+                "| Foreshadowing | Tier | Planted | Target | Urgency | Status |",
                 "|---------|------|------|------|--------|------|"
             ])
 
             for item in urgency_list[:10]:  # 只显示前10条
-                planted = f"第{item['planted_chapter']}章" if item["planted_chapter"] is not None else "未知"
-                target = f"第{item['target_chapter']}章" if item["target_chapter"] is not None else "未知"
+                planted = f"Chapter {item['planted_chapter']}" if item["planted_chapter"] is not None else "Unknown"
+                target = f"Chapter {item['target_chapter']}" if item["target_chapter"] is not None else "Unknown"
                 urgency_text = f"{item['urgency']:.2f}" if item["urgency"] is not None else "N/A"
                 lines.append(
-                    f"| {item['content'][:20]}... | {item['tier']} | "
+                    f"| {item['content'][:20]}... | {_display_label(item['tier'])} | "
                     f"{planted} | {target} | "
-                    f"{urgency_text} | {item['status']} |"
+                    f"{urgency_text} | {_display_label(item['status'])} |"
                 )
         else:
-            lines.append("✅ 暂无伏笔数据")
+            lines.append("✅ No foreshadowing data yet")
 
         lines.extend(["", "---", ""])
 
@@ -1060,60 +1078,60 @@ class StatusReporter:
         strand_data = self.analyze_strand_weave()
 
         lines = [
-            "## 🎭 Strand Weave 节奏分析",
+            "## 🎭 Strand Weave Pacing Analysis",
             ""
         ]
 
         if not strand_data.get("has_data"):
-            lines.append(f"⚠️ {strand_data.get('message', '暂无数据')}")
+            lines.append(f"⚠️ {strand_data.get('message', 'No data yet')}")
             lines.extend(["", "---", ""])
             return lines
 
         # 占比统计
         cfg = self.config
         lines.extend([
-            "### 三线占比",
+            "### Strand Ratios",
             "",
-            "| Strand | 章节数 | 占比 | 目标范围 | 状态 |",
+            "| Strand | Chapters | Ratio | Target range | Status |",
             "|--------|--------|------|----------|------|"
         ])
 
         q = strand_data["quest"]
         q_status = "✅" if cfg.strand_quest_ratio_min <= q["ratio"] <= cfg.strand_quest_ratio_max else "⚠️"
-        lines.append(f"| Quest（主线） | {q['count']} | {q['ratio']:.1f}% | {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}% | {q_status} |")
+        lines.append(f"| Quest (main plot) | {q['count']} | {q['ratio']:.1f}% | {cfg.strand_quest_ratio_min}-{cfg.strand_quest_ratio_max}% | {q_status} |")
 
         f = strand_data["fire"]
         f_status = "✅" if cfg.strand_fire_ratio_min <= f["ratio"] <= cfg.strand_fire_ratio_max else "⚠️"
-        lines.append(f"| Fire（感情） | {f['count']} | {f['ratio']:.1f}% | {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}% | {f_status} |")
+        lines.append(f"| Fire (relationships) | {f['count']} | {f['ratio']:.1f}% | {cfg.strand_fire_ratio_min}-{cfg.strand_fire_ratio_max}% | {f_status} |")
 
         c = strand_data["constellation"]
         c_status = "✅" if cfg.strand_constellation_ratio_min <= c["ratio"] <= cfg.strand_constellation_ratio_max else "⚠️"
-        lines.append(f"| Constellation（世界观） | {c['count']} | {c['ratio']:.1f}% | {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}% | {c_status} |")
+        lines.append(f"| Constellation (worldbuilding) | {c['count']} | {c['ratio']:.1f}% | {cfg.strand_constellation_ratio_min}-{cfg.strand_constellation_ratio_max}% | {c_status} |")
 
         lines.append("")
 
-        # 连续性检查
+        # Continuity Checks
         lines.extend([
-            "### 连续性检查",
+            "### Continuity Checks",
             "",
-            f"- Quest 最大连续: {strand_data['max_quest_streak']} 章（限制 ≤5）",
-            f"- Fire 最大缺失: {strand_data['max_fire_gap']} 章（限制 ≤10）",
-            f"- Constellation 最大缺失: {strand_data['max_const_gap']} 章（限制 ≤15）",
+            f"- Quest longest streak: {strand_data['max_quest_streak']} chapters (limit ≤5)",
+            f"- Fire longest gap: {strand_data['max_fire_gap']} chapters (limit ≤10)",
+            f"- Constellation longest gap: {strand_data['max_const_gap']} chapters (limit ≤15)",
             ""
         ])
 
-        # 违规清单
+        # Violations
         if strand_data["violations"]:
             lines.extend([
-                "### ⚠️ 违规清单",
+                "### ⚠️ Violations",
                 ""
             ])
             for v in strand_data["violations"]:
                 lines.append(f"- {v}")
         else:
-            lines.append("### ✅ 无违规")
+            lines.append("### ✅ No violations")
 
-        lines.extend(["", f"**综合健康度**: {strand_data['health']}", "", "---", ""])
+        lines.extend(["", f"**Overall health**: {strand_data['health']}", "", "---", ""])
 
         return lines
 
@@ -1122,7 +1140,7 @@ class StatusReporter:
         segments = self.analyze_pacing()
 
         lines = [
-            "## 📈 爽点节奏分布",
+            "## 📈 Payoff Pacing Distribution",
             "",
             "```"
         ]
@@ -1131,8 +1149,8 @@ class StatusReporter:
             words_per_point = seg["words_per_point"]
             if words_per_point is None:
                 lines.append(
-                    f"第 {seg['start']}-{seg['end']}章   ░ 数据不足"
-                    f"（缺少爽点数据 {seg['missing_chapters']} 章）"
+                    f"Chapter {seg['start']}-{seg['end']}   ░ Insufficient data"
+                    f" (missing payoff data for {seg['missing_chapters']} chapters)"
                 )
                 continue
 
@@ -1142,11 +1160,11 @@ class StatusReporter:
 
             suffix = ""
             if seg["missing_chapters"] > 0:
-                suffix = f"，缺少爽点数据 {seg['missing_chapters']} 章"
+                suffix = f", missing payoff data for {seg['missing_chapters']} chapters"
 
             lines.append(
-                f"第 {seg['start']}-{seg['end']}章   {bar} {seg['rating']}"
-                f"（{words_per_point:.0f}字/爽点，记录 {seg['cool_points']} 个爽点{suffix}）"
+                f"Chapter {seg['start']}-{seg['end']}   {bar} {_display_label(seg['rating'])}"
+                f" ({words_per_point:.0f} words/payoff, recorded {seg['cool_points']} payoffs{suffix})"
             )
 
         lines.extend(["```", "", "---", ""])
@@ -1158,7 +1176,7 @@ class StatusReporter:
         graph = self.generate_relationship_graph()
 
         lines = [
-            "## 💑 人际关系趋势",
+            "## 💑 Relationship Trends",
             "",
             graph,
             "",
@@ -1174,39 +1192,39 @@ def main():
     _enable_windows_utf8_stdio()
 
     parser = argparse.ArgumentParser(
-        description="可视化状态报告生成器",
+        description="Visual status report generator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-示例：
-  # 生成完整健康报告
+Examples:
+  # Generate a complete health report
   python status_reporter.py --output .webnovel/health_report.md
 
-  # 仅分析角色活跃度
+  # Analyze character activity only
   python status_reporter.py --focus characters
 
-  # 仅分析伏笔
+  # Analyze foreshadowing only
   python status_reporter.py --focus foreshadowing
 
-  # 仅分析爽点节奏
+  # Analyze payoff pacing only
   python status_reporter.py --focus pacing
         """
     )
 
     parser.add_argument('--output', default='.webnovel/health_report.md',
-                       help='输出文件路径')
+                       help='Output file path')
     parser.add_argument('--focus', choices=['all', 'basic', 'characters',
                                             'foreshadowing', 'urgency', 'pacing',
                                             'strand', 'relationships'],
-                       default='all', help='分析焦点（新增 urgency, strand）')
-    parser.add_argument('--project-root', default='.', help='项目根目录')
+                       default='all', help='Analysis focus, including urgency and strand')
+    parser.add_argument('--project-root', default='.', help='Project root')
 
     args = parser.parse_args()
 
-    # 解析项目根目录（允许传入“工作区根目录”，统一解析到真正的 book project_root）
+    # 解析Project root（允许传入“工作区根目录”，统一解析到真正的 book project_root）
     try:
         project_root = str(resolve_project_root(args.project_root))
     except FileNotFoundError as exc:
-        print(f"❌ 无法定位项目根目录（需要包含 .webnovel/state.json）: {exc}", file=sys.stderr)
+        print(f"❌ Cannot locate project root (requires .webnovel/state.json): {exc}", file=sys.stderr)
         sys.exit(1)
 
     # 创建报告生成器
@@ -1216,12 +1234,12 @@ def main():
     if not reporter.load_state():
         sys.exit(1)
 
-    print("📖 正在扫描章节文件...")
+    print("📖 Scanning chapter files...")
     reporter.scan_chapters()
 
-    print(f"✅ 已扫描 {len(reporter.chapters_data)} 个章节")
+    print(f"✅ Scanned {len(reporter.chapters_data)} chapters")
 
-    print("\n📊 正在分析...")
+    print("\n📊 Analyzing...")
 
     # 生成报告
     report = reporter.generate_report(args.focus)
@@ -1235,11 +1253,11 @@ def main():
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(report)
 
-    print(f"\n✅ 健康报告已生成: {output_file}")
+    print(f"\n✅ Health report generated: {output_file}")
 
     # 预览报告（前 30 行）
     print("\n" + "="*60)
-    print("📄 报告预览：\n")
+    print("📄 Report preview:\n")
     print("\n".join(report.split("\n")[:30]))
     print("\n...")
     print("="*60)

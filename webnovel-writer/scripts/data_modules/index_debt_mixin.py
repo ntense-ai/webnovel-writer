@@ -87,7 +87,7 @@ class IndexDebtMixin:
             if not row:
                 # UPSERT 后查不到记录是异常情况，不应发生
                 raise RuntimeError(
-                    f"Override Contract UPSERT 后无法获取 id: "
+                    f"Cannot retrieve ID after override contract UPSERT: "
                     f"chapter={contract.chapter}, type={contract.constraint_type}, "
                     f"id={contract.constraint_id}"
                 )

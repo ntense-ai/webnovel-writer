@@ -620,9 +620,9 @@ def test_deconstruction_agent_preserves_init_handoff_and_boundaries():
 
     for forbidden_path in (
         ".story-system/",
-        "设定集/",
-        "大纲/",
-        "正文/",
+        "settings/",
+        "outlines/",
+        "chapters/",
         ".webnovel/",
     ):
         assert forbidden_path in text
@@ -668,9 +668,9 @@ def test_webnovel_init_deconstruction_wiring_keeps_confirmation_gate():
     for forbidden_path in (
         "idea_bank.json",
         ".story-system",
-        "设定集",
-        "大纲",
-        "正文",
+        "settings",
+        "outlines",
+        "chapters",
         ".webnovel/state.json",
     ):
         assert forbidden_path in text
@@ -709,12 +709,12 @@ def test_story_system_chapter_refresh_uses_real_goal_not_placeholder_query(skill
         f"{skill_name}: story-system 未使用真实 ${{CHAPTER_GOAL}} 作为 query 实参"
     )
     # 占位 query 绝不能作为 story-system 的 positional 实参出现
-    for placeholder in ("{章纲目标}", "第N章章纲目标"):
+    for placeholder in ("{章纲目标}", "第N章章纲目标", "{chapter_outline_goal}", "Chapter N outline goal"):
         assert f'story-system "{placeholder}"' not in text, (
             f"{skill_name}: story-system 不得把占位文本 {placeholder} 当作 query"
         )
     # 必须显式声明「禁止占位 query」这一约束（断言事实存在，不锁具体措辞）
-    assert "{章纲目标}" in text and "第N章章纲目标" in text, (
+    assert "{chapter_outline_goal}" in text and "Chapter N outline goal" in text, (
         f"{skill_name}: 缺少对占位 query 的明确禁止说明"
     )
 
@@ -778,13 +778,13 @@ def test_plan_skill_covers_outline_writeback_and_state_sync_contract():
     """红线 12：plan 的节拍表/时间线/章纲节点/总纲写回 JSON/master-outline-sync/update-state。"""
     text = _read_text(SKILLS_DIR / "webnovel-plan" / "SKILL.md")
     # 节拍表 / 时间线 输出物
-    assert "大纲/第{volume_id}卷-节拍表.md" in text
-    assert "大纲/第{volume_id}卷-时间线.md" in text
+    assert "outlines/volume-{volume_id}-beats.md" in text
+    assert "outlines/volume-{volume_id}-timeline.md" in text
     # 结构化章纲节点
-    for node in ("CBN", "CPNs", "CEN", "必须覆盖节点", "本章禁区"):
+    for node in ("CBN", "CPNs", "CEN", "Must-cover nodes", "Chapter prohibitions"):
         assert node in text, f"plan 缺少结构化章纲节点标记 {node}"
     # 结构化总纲写回文件（不可从自由文本推断伏笔）
-    assert "大纲/第{volume_id}卷-总纲写回.json" in text
+    assert "outlines/volume-{volume_id}-master-outline-update.json" in text
     # 设定写回 + 状态同步命令
     cmds = _extract_cli_subcommands(text)
     assert "master-outline-sync" in cmds, "plan 缺少 master-outline-sync 写回命令"

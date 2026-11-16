@@ -45,7 +45,7 @@ export function groupChaptersByVolume(chapters, projectInfo) {
         if (!groups.has(key)) {
             groups.set(key, {
                 volume,
-                label: volume ? `卷 ${volume}` : '未分卷',
+                label: volume ? `Volume ${volume}` : 'Unassigned volume',
                 totalWords: 0,
                 chapterCount: 0,
                 values: [],

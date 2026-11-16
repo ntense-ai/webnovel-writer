@@ -101,8 +101,8 @@ def test_disambiguation_and_save_state(temp_project):
             },
         ],
     )
-    assert any("需人工确认" in w for w in warnings)
-    assert any("消歧警告" in w for w in warnings)
+    assert any("Disambiguation requires manual confirmation" in w for w in warnings)
+    assert any("Disambiguation warning" in w for w in warnings)
 
     manager.save_state()
     assert temp_project.state_file.exists()
@@ -210,8 +210,8 @@ def test_process_chapter_result_and_sqlite_sync(temp_project):
         },
     }
     warnings = manager.process_chapter_result(12, result)
-    assert any("需人工确认" in w for w in warnings)
-    assert any("消歧警告" in w for w in warnings)
+    assert any("Disambiguation requires manual confirmation" in w for w in warnings)
+    assert any("Disambiguation warning" in w for w in warnings)
 
     manager.save_state()
 
@@ -530,7 +530,7 @@ def test_record_disambiguation_and_process_chapter_existing(temp_project):
 
     manager.add_entity(EntityState(id="xiaoyan", name="萧炎", type="角色"))
     warnings = manager.process_chapter_result(2, {"entities_new": [{"id": "xiaoyan", "name": "萧炎"}]})
-    assert any("实体已存在" in w for w in warnings)
+    assert any("Entity already exists" in w for w in warnings)
 
 
 def test_sync_protagonist_from_string_and_empty_updates(temp_project):

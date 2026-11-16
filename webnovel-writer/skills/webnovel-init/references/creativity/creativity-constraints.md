@@ -174,9 +174,9 @@ Mirror conflict: Their confrontation concerns not only strength but how strength
 **Create the hook before the outline.**
 
 Before establishing the complete outline, design:
-1. One hook sentence, within 10 Chinese characters
-2. An opening scene, within 50 Chinese characters
-3. A chapter 1 cliffhanger, within 30 Chinese characters
+1. One hook sentence, within 10 English words
+2. An opening scene, within 50 English words
+3. A chapter 1 cliffhanger, within 30 English words
 
 ### 5.2 Hook Templates
 

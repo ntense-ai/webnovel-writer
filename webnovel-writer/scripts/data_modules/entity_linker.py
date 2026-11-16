@@ -84,9 +84,9 @@ class EntityLinker:
         if confidence >= self.config.extraction_confidence_high:
             return ("auto", True, None)
         elif confidence >= self.config.extraction_confidence_medium:
-            return ("warn", True, f"中置信度匹配 (confidence: {confidence:.2f})")
+            return ("warn", True, f"Medium-confidence match (confidence: {confidence:.2f})")
         else:
-            return ("manual", False, f"需人工确认 (confidence: {confidence:.2f})")
+            return ("manual", False, f"Manual confirmation required (confidence: {confidence:.2f})")
 
     def process_uncertain(
         self,
@@ -186,29 +186,29 @@ def main():
     from .index_manager import IndexManager
 
     parser = argparse.ArgumentParser(description="Entity Linker CLI (v5.4 SQLite)")
-    parser.add_argument("--project-root", type=str, help="项目根目录")
+    parser.add_argument("--project-root", type=str, help="Project root")
 
     subparsers = parser.add_subparsers(dest="command")
 
     # 注册别名
     register_parser = subparsers.add_parser("register-alias")
-    register_parser.add_argument("--entity", required=True, help="实体ID")
-    register_parser.add_argument("--alias", required=True, help="别名")
-    register_parser.add_argument("--type", default="角色", help="实体类型（默认：角色）")
+    register_parser.add_argument("--entity", required=True, help="Entity ID")
+    register_parser.add_argument("--alias", required=True, help="Alias")
+    register_parser.add_argument("--type", default="角色", help="Entity type (default: legacy character type)")
 
     # 查找别名
     lookup_parser = subparsers.add_parser("lookup")
-    lookup_parser.add_argument("--mention", required=True, help="提及文本")
-    lookup_parser.add_argument("--type", help="按类型过滤")
+    lookup_parser.add_argument("--mention", required=True, help="Mention text")
+    lookup_parser.add_argument("--type", help="Filter by type")
 
     # 查找所有匹配（一对多）
     lookup_all_parser = subparsers.add_parser("lookup-all")
-    lookup_all_parser.add_argument("--mention", required=True, help="提及文本")
+    lookup_all_parser.add_argument("--mention", required=True, help="Mention text")
 
     # 列出别名
     list_parser = subparsers.add_parser("list-aliases")
-    list_parser.add_argument("--entity", required=True, help="实体ID")
-    list_parser.add_argument("--type", help="实体类型")
+    list_parser.add_argument("--entity", required=True, help="Entity ID")
+    list_parser.add_argument("--type", help="Entity type")
 
     argv = normalize_global_project_root(sys.argv[1:])
     args = parser.parse_args(argv)
@@ -247,7 +247,7 @@ def main():
         if success:
             emit_success({"entity": args.entity, "alias": args.alias, "type": entity_type}, message="alias_registered")
         else:
-            emit_error("ALIAS_EXISTS", "注册失败或已存在")
+            emit_error("ALIAS_EXISTS", "Registration failed or already exists")
 
     elif args.command == "lookup":
         entity_type = getattr(args, "type", None)
@@ -255,7 +255,7 @@ def main():
         if entity_id:
             emit_success({"mention": args.mention, "entity": entity_id}, message="lookup")
         else:
-            emit_error("NOT_FOUND", f"未找到别名: {args.mention}")
+            emit_error("NOT_FOUND", f"Alias not found: {args.mention}")
 
     elif args.command == "lookup-all":
         matches = linker.lookup_alias_all(args.mention)
@@ -267,7 +267,7 @@ def main():
         emit_success(aliases, message="aliases")
 
     else:
-        emit_error("UNKNOWN_COMMAND", "未指定有效命令", suggestion="请查看 --help")
+        emit_error("UNKNOWN_COMMAND", "No valid command specified", suggestion="See --help")
 
 
 if __name__ == "__main__":

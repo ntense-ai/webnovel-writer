@@ -11,6 +11,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from project_paths import project_dir, project_path
+
+
 from .config import DataModulesConfig
 from .project_phase import (
     INIT_REQUIRED_DIRS,
@@ -85,8 +88,8 @@ def _read_json(path: Path) -> tuple[dict[str, Any], str]:
 
 
 def _expected_profile(snapshot: ProjectPhaseSnapshot) -> dict[str, Any]:
-    expected_files = list(INIT_REQUIRED_FILES)
-    expected_dirs = list(INIT_REQUIRED_DIRS)
+    expected_files = [_rel(Path(snapshot.project_root), project_path(snapshot.project_root, rel)) for rel in INIT_REQUIRED_FILES]
+    expected_dirs = [_rel(Path(snapshot.project_root), project_path(snapshot.project_root, rel)) for rel in INIT_REQUIRED_DIRS]
     if snapshot.phase not in {PHASE_NO_PROJECT, PHASE_INIT_SCAFFOLDED, PHASE_INIT_READY}:
         expected_files.extend(snapshot.missing_contract_files)
     if snapshot.target_chapter > 0 and snapshot.phase not in {PHASE_NO_PROJECT, PHASE_INIT_SCAFFOLDED, PHASE_INIT_READY}:
@@ -119,8 +122,8 @@ def _preflight_checks(preflight_report: dict[str, Any] | None) -> list[dict[str,
                 message=f"preflight {name} {'ok' if ok else 'failed'}",
                 path=str(item.get("path") or ""),
                 actual=str(item.get("error") or ""),
-                impact="" if ok else "统一 CLI 或项目解析可能不可用。",
-                repair="" if ok else "先修复 preflight 输出的路径或 project_root 问题。",
+                impact="" if ok else 'The unified CLI or project resolver may be unavailable.',
+                repair="" if ok else 'Fix the path or project_root issues reported by preflight.',
             )
         )
     return checks
@@ -129,7 +132,8 @@ def _preflight_checks(preflight_report: dict[str, Any] | None) -> list[dict[str,
 def _file_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -> list[dict[str, Any]]:
     checks: list[dict[str, Any]] = []
     for rel in INIT_REQUIRED_DIRS:
-        path = project_root / rel
+        path = project_path(project_root, rel)
+        rel = _rel(project_root, path)
         exists = path.is_dir()
         checks.append(
             _check(
@@ -140,12 +144,13 @@ def _file_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -> list[dic
                 path=str(path),
                 expected="directory exists",
                 actual="exists" if exists else "missing",
-                impact="" if exists else "项目骨架不完整，后续写作/备份/报告可能写入失败。",
-                repair="" if exists else "重新运行 /webnovel-init，或手动创建该目录后再运行 doctor。",
+                impact="" if exists else 'The project scaffold is incomplete. Writing, backups, or reports may fail.',
+                repair="" if exists else 'Rerun /webnovel-init, or create the directory manually and rerun doctor.',
             )
         )
     for rel in INIT_REQUIRED_FILES:
-        path = project_root / rel
+        path = project_path(project_root, rel)
+        rel = _rel(project_root, path)
         exists = path.is_file()
         checks.append(
             _check(
@@ -156,8 +161,8 @@ def _file_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -> list[dic
                 path=str(path),
                 expected="file exists",
                 actual="exists" if exists else "missing",
-                impact="" if exists else "项目初始化产物缺失，当前阶段判断和后续流程会不可靠。",
-                repair="" if exists else "使用 /webnovel-init 补齐项目骨架，或按 init_project.py 模板补齐文件。",
+                impact="" if exists else 'Required initialization files are missing. Phase detection and later workflows may be unreliable.',
+                repair="" if exists else 'Use /webnovel-init to complete the scaffold, or restore files from the init_project.py templates.',
             )
         )
 
@@ -173,8 +178,8 @@ def _file_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -> list[dic
                     path=str(path),
                     expected="file exists",
                     actual="exists" if exists else "missing",
-                    impact="" if exists else "写章上下文缺少主链合同，容易用旧 state 或旧大纲写偏。",
-                    repair="" if exists else "运行 webnovel.py story-system ... --persist --emit-runtime-contracts --chapter N。",
+                    impact="" if exists else 'The writing context lacks canonical contracts and may rely on stale state or outlines.',
+                    repair="" if exists else 'Run webnovel.py story-system ... --persist --emit-runtime-contracts --chapter N.',
                 )
             )
     return checks
@@ -210,8 +215,8 @@ def _json_checks(project_root: Path) -> list[dict[str, Any]]:
                 path=str(path),
                 expected="valid JSON object",
                 actual="ok" if not error else error,
-                impact="" if not error else "JSON 无法读取会导致 CLI、dashboard 或状态推导失败。",
-                repair="" if not error else "用 UTF-8 修复 JSON 格式；必要时从 git/backup 恢复。",
+                impact="" if not error else 'Unreadable JSON can break the CLI, dashboard, or state inference.',
+                repair="" if not error else 'Repair the UTF-8 JSON format; restore from git or a backup if needed.',
             )
         )
         if path.name == "state.json" and not error:
@@ -225,8 +230,8 @@ def _json_checks(project_root: Path) -> list[dict[str, Any]]:
                         path=str(path),
                         expected="object field",
                         actual=type(payload.get(key)).__name__,
-                        impact="" if isinstance(payload.get(key), dict) else "旧项目或手改 state 可能缺少运行时字段。",
-                        repair="" if isinstance(payload.get(key), dict) else "运行 webnovel.py init 到同一目录可增量补齐 schema。",
+                        impact="" if isinstance(payload.get(key), dict) else 'Legacy projects or manually edited state may lack runtime fields.',
+                        repair="" if isinstance(payload.get(key), dict) else 'Run webnovel.py init in the same directory to fill in missing schema fields.',
                     )
                 )
     return checks
@@ -253,8 +258,8 @@ def _sqlite_checks(project_root: Path) -> list[dict[str, Any]]:
     checks: list[dict[str, Any]] = []
     cfg = DataModulesConfig.from_project_root(project_root)
     for db_path, table, check_id, impact in (
-        (cfg.index_db, "chapters", "sqlite.index_db.chapters", "查询、关系图谱和 dashboard 章节统计会降级。"),
-        (cfg.vector_db, "vectors", "sqlite.vector_db.vectors", "RAG 向量召回不可用，会退化为关键词或空召回。"),
+        (cfg.index_db, "chapters", "sqlite.index_db.chapters", 'Queries, relationship graphs, and dashboard chapter statistics will be degraded.'),
+        (cfg.vector_db, "vectors", "sqlite.vector_db.vectors", 'RAG vector retrieval is unavailable; keyword or empty retrieval will be used.'),
     ):
         exists = db_path.is_file()
         table_ok, count, error = _sqlite_table_count(db_path, table)
@@ -269,7 +274,7 @@ def _sqlite_checks(project_root: Path) -> list[dict[str, Any]]:
                     expected=f"sqlite db with {table} table",
                     actual="missing",
                     impact=impact,
-                    repair="运行对应 index/rag 命令生成数据库；init 刚结束时可暂时忽略。",
+                    repair='Run the corresponding index/rag command to build the database. This can be deferred immediately after initialization.',
                 )
             )
             continue
@@ -283,7 +288,7 @@ def _sqlite_checks(project_root: Path) -> list[dict[str, Any]]:
                 expected=f"{table} table readable",
                 actual=f"rows={count}" if table_ok else error,
                 impact="" if table_ok else impact,
-                repair="" if table_ok else "重新运行索引/RAG 构建命令；若 sqlite 损坏，从备份恢复。",
+                repair="" if table_ok else 'Rerun the index/RAG build command. Restore corrupted SQLite databases from backup.',
             )
         )
     return checks
@@ -304,8 +309,8 @@ def _rag_checks(project_root: Path) -> list[dict[str, Any]]:
                 message=f"{key} api key configured",
                 expected="api key present in env or .env",
                 actual=f"present; model={model}; base_url={base_url}" if present else f"missing; model={model}; base_url={base_url}",
-                impact="" if present else "RAG 相关调用会不可用或降级。",
-                repair="" if present else "复制 .env.example 为 .env，并填写对应 API key；不要把真实 key 提交到仓库。",
+                impact="" if present else 'RAG calls will be unavailable or degraded.',
+                repair="" if present else 'Copy .env.example to .env and enter the required API keys. Never commit real keys.',
             )
         )
     return checks
@@ -336,8 +341,8 @@ def _projection_log_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -
                 path=str(log_path),
                 expected="projection_log.jsonl exists after projection run",
                 actual="missing",
-                impact="无法从独立执行日志定位历史 projection run；仍可兼容读取 commit 内 projection_status。",
-                repair="后续 chapter-commit 会自动双写 projection_log；旧项目可暂时忽略。",
+                impact='Independent projection history is unavailable. Embedded commit projection_status remains supported.',
+                repair='Later chapter-commit runs will write projection_log automatically. Legacy projects can defer this.',
             )
         ]
     latest = latest_projection_run(project_root, chapter=latest_commit.chapter)
@@ -351,8 +356,8 @@ def _projection_log_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -
                 path=str(log_path),
                 expected=f"run for chapter {latest_commit.chapter}",
                 actual="missing",
-                impact="最新 commit 的投影执行历史不可见。",
-                repair="后续 projection retry/replay 可补齐；当前仍兼容 commit 内 projection_status。",
+                impact='The latest commit has no visible projection execution history.',
+                repair='Projection retry/replay can fill this in later. Embedded commit projection_status remains supported.',
             )
         ]
     failed = projection_run_failed(latest)
@@ -367,8 +372,8 @@ def _projection_log_checks(project_root: Path, snapshot: ProjectPhaseSnapshot) -
             path=str(log_path),
             expected="latest run status done/skipped",
             actual=f"chapter={latest.get('chapter')} status={latest.get('status')}",
-            impact="read-model 投影失败或未完成，需要补跑。" if not status_ok else "",
-            repair="查看 projection_log.jsonl 的 writers 字段，修复后补跑 projection retry/replay。" if not status_ok else "",
+            impact='Read-model projections failed or remain incomplete and need to be rerun.' if not status_ok else "",
+            repair='Inspect the writers field in projection_log.jsonl, fix the issue, and run projection retry/replay.' if not status_ok else "",
         )
     ]
 
@@ -382,8 +387,8 @@ def _python_checks() -> list[dict[str, Any]]:
             message="python version",
             expected=">= 3.10",
             actual=platform.python_version(),
-            impact="" if sys.version_info >= (3, 10) else "运行时依赖 Python 3.10+ 语法和库行为。",
-            repair="" if sys.version_info >= (3, 10) else "切换到 Python 3.10 或更高版本。",
+            impact="" if sys.version_info >= (3, 10) else 'The runtime requires Python 3.10+ syntax and library behavior.',
+            repair="" if sys.version_info >= (3, 10) else 'Switch to Python 3.10 or newer.',
         )
     ]
     for module_name in ("aiohttp", "filelock", "pydantic"):
@@ -396,8 +401,8 @@ def _python_checks() -> list[dict[str, Any]]:
                 message=f"import {module_name}",
                 expected="module importable",
                 actual="present" if found else "missing",
-                impact="" if found else "核心数据模块可能无法运行。",
-                repair="" if found else "运行 python -m pip install -r scripts/requirements.txt。",
+                impact="" if found else 'Core data modules may not run.',
+                repair="" if found else 'Run python -m pip install -r scripts/requirements.txt.',
             )
         )
     for module_name in ("fastapi", "uvicorn", "watchdog"):
@@ -410,8 +415,8 @@ def _python_checks() -> list[dict[str, Any]]:
                 message=f"import {module_name}",
                 expected="module importable for dashboard",
                 actual="present" if found else "missing",
-                impact="" if found else "Dashboard 服务端可能无法启动。",
-                repair="" if found else "运行 python -m pip install -r dashboard/requirements.txt。",
+                impact="" if found else 'The dashboard server may not start.',
+                repair="" if found else 'Run python -m pip install -r dashboard/requirements.txt.',
             )
         )
     return checks
@@ -441,8 +446,8 @@ def _dashboard_checks(plugin_root: Path | None = None) -> list[dict[str, Any]]:
                 path=str(path),
                 expected=expected,
                 actual="exists" if exists else "missing",
-                impact="" if exists else "Dashboard 可能无法打开或发布包缺少前端产物。",
-                repair="" if exists else "按 dashboard 文档安装/构建前端，或检查发布包是否遗漏 dist。",
+                impact="" if exists else 'The dashboard may not open, or frontend artifacts may be missing from the release.',
+                repair="" if exists else 'Build the frontend following the dashboard documentation, or check that dist is included.',
             )
         )
     return checks
@@ -469,8 +474,8 @@ def build_doctor_report(
                 path=str(project_root or ""),
                 expected=".webnovel/state.json",
                 actual="missing",
-                impact="无法判断项目状态，也不能安全运行写作链路。",
-                repair="先运行 /webnovel-init，或运行 webnovel.py use <project_root> 绑定已有项目。",
+                impact='Project state cannot be determined and the writing workflow cannot run safely.',
+                repair='Run /webnovel-init, or bind an existing project with webnovel.py use <project_root>.',
             )
         )
     else:
@@ -488,8 +493,8 @@ def build_doctor_report(
                     severity="warning",
                     message="story runtime health failed",
                     actual=str(exc),
-                    impact="Story System 主链健康摘要不可用。",
-                    repair="检查 .story-system 合同与 commit JSON 是否可读。",
+                    impact='The canonical Story System health summary is unavailable.',
+                    repair='Check that .story-system contracts and commit JSON are readable.',
                 )
             )
         else:
@@ -501,8 +506,8 @@ def build_doctor_report(
                     message="story runtime health",
                     expected="mainline_ready true when writing stage",
                     actual=json.dumps(runtime_health, ensure_ascii=False),
-                    impact="" if runtime_health.get("mainline_ready") else "当前章节可能会使用 fallback source。",
-                    repair="" if runtime_health.get("mainline_ready") else "补齐 Story System 合同和 accepted commit 后再写。",
+                    impact="" if runtime_health.get("mainline_ready") else 'The current chapter may use a fallback source.',
+                    repair="" if runtime_health.get("mainline_ready") else 'Complete the Story System contracts and accepted commit before writing.',
                 )
             )
         checks.extend(_sqlite_checks(root))
@@ -536,7 +541,7 @@ def format_doctor_report(report: dict[str, Any], output_format: str = "text") ->
     status = "OK" if report.get("ok") else "ERROR"
     lines = [
         f"{status} webnovel-doctor",
-        f"project_root: {report.get('project_root') or '(未解析)'}",
+        f"project_root: {report.get('project_root') or '(Unresolved)'}",
         f"phase: {report.get('phase')}",
         f"blocking: {report.get('blocking_count')} warnings: {report.get('warning_count')}",
     ]
@@ -561,9 +566,9 @@ def format_doctor_report(report: dict[str, Any], output_format: str = "text") ->
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run read-only webnovel project doctor")
-    parser.add_argument("--project-root", default="", help="书项目根目录")
-    parser.add_argument("--chapter", type=int, default=None, help="目标章节号")
-    parser.add_argument("--deep", action="store_true", help="包含 dashboard 等较深检查")
+    parser.add_argument("--project-root", default="", help="Book project root")
+    parser.add_argument("--chapter", type=int, default=None, help="Target chapter number")
+    parser.add_argument("--deep", action="store_true", help="Include deeper checks such as the dashboard")
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args()
 

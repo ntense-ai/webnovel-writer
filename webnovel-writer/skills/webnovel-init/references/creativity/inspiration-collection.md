@@ -43,7 +43,7 @@ Examples:
 |------|---------|-----|-----|
 | **Originality** | Similarity to existing work | Ubiquitous trope | Unique |
 | **Market potential** | Audience size | Obscure niche | Broad popularity |
-| **Expandability** | Can it sustain 300,000+ Chinese characters? | Little room to develop | Broad story space |
+| **Expandability** | Can it sustain 300,000+ English words? | Little room to develop | Broad story space |
 | **Writing difficulty** | Setting/plot complexity | Extremely difficult | Easy to execute |
 | **Personal fit** | Knowledge, interests, resources | Completely unfamiliar | Well within expertise |
 

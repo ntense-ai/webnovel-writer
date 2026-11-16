@@ -63,7 +63,7 @@ def test_backup_aborts_when_git_commit_fails_without_identity(tmp_path, monkeypa
     assert manager.backup(1, "身份缺失") is False
 
     output = capsys.readouterr().out
-    assert "备份失败" in output
+    assert "Backup failed" in output
     assert _run_git(project_root, "rev-parse", "--verify", "ch0001").returncode != 0
 
 
@@ -96,7 +96,7 @@ def test_rollback_restores_files_on_current_branch_with_new_commit(tmp_path):
     assert chapter_file.read_text(encoding="utf-8") == "第一版"
     after_count = int(_run_git(project_root, "rev-list", "--count", "HEAD").stdout.strip())
     assert after_count == before_count + 1
-    assert "rollback: 恢复到 ch0001 备份点" in _run_git(project_root, "log", "-1", "--format=%s").stdout
+    assert "rollback: restore backup ch0001" in _run_git(project_root, "log", "-1", "--format=%s").stdout
 
 
 def test_local_backup_copies_manuscript_when_git_unavailable(tmp_path, monkeypatch):

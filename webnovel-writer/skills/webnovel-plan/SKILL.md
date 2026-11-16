@@ -7,6 +7,12 @@ argument-hint: "[volume number, e.g. 1]"
 
 # Outline Planning
 
+## Project paths and output language
+
+Use English for generated story content, headings, summaries, reports, and user-facing explanations unless the user explicitly requests another language. Preserve runtime schema keys, enum values, and machine-readable identifiers exactly.
+
+New books use `chapters/`, `outlines/`, `settings/`, and `reviews/`. Examples below use that layout. Before directly reading or writing an existing book, run `python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}"` and use the returned paths. Resolve a specific example file with `--path outlines/master-outline.md` (substitute its logical English path) so legacy filenames are respected; an existing book may still use `正文/`, `大纲/`, `设定集/`, and `审查报告/`. Never rename existing directories, create parallel English copies, or overwrite legacy content merely to match an example. If both aliases exist, inspect them and resolve any conflict before writing. Pass actual resolved paths to subagents.
+
 Main agent responsibility: incrementally refine volume outlines/timelines/chapter outlines from the master outline, write new settings back to the setting collection, and refresh Story System writing contracts. Do not redesign the global story or rewrite the entire master outline or setting collection.
 
 ## Operating principles
@@ -32,6 +38,7 @@ export WORKSPACE_ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 export SKILL_ROOT="${CLAUDE_PLUGIN_ROOT}/skills/webnovel-plan"
 export SCRIPTS_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
 export PROJECT_ROOT="$(python "${SCRIPTS_DIR}/webnovel.py" --project-root "${WORKSPACE_ROOT}" where)"
+export OUTLINES_DIR="$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --directory outlines)"
 
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" placeholder-scan --format text
 ```
@@ -58,8 +65,8 @@ Read each reference only when its corresponding step triggers it, preferably by 
 Search CSV creative references; do not `cat` entire tables:
 
 ```bash
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 爽点与节奏 --query "{卷级核心冲突}" --genre "${GENRE}"
-python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 桥段套路 --query "{卷级核心冲突}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 爽点与节奏 --query "{volume_core_conflict}" --genre "${GENRE}"
+python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 桥段套路 --query "{volume_core_conflict}" --genre "${GENRE}"
 python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 命名规则 --query "角色命名" --genre "${GENRE}"
 ```
 
@@ -72,13 +79,13 @@ python -X utf8 "${SCRIPTS_DIR}/reference_search.py" --skill plan --table 命名�
 cat "$PROJECT_ROOT/.webnovel/state.json"
 
 # Master outline (global blueprint); verify volume title/chapter range/core conflict/volume-ending climax; block if insufficient
-cat "$PROJECT_ROOT/大纲/总纲.md"
+cat "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path outlines/master-outline.md)"
 
 # Genre (from the init configuration snapshot; later CSV searches and decision matching depend on it); .story-system/ remains the post-writing main-pipeline source of truth
 GENRE="$(python -X utf8 -c "import json; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
 ```
 
-Read settings on demand: `设定集/世界观.md`, `设定集/力量体系.md`, `设定集/主角卡.md`, `设定集/反派设计.md`, `.webnovel/idea_bank.json`.
+Read settings on demand: `settings/worldbuilding.md`, `settings/power-system.md`, `settings/protagonist.md`, `settings/antagonist.md`, `.webnovel/idea_bank.json`.
 
 **Cross-volume state reading** (mandatory when completed volumes already exist, i.e. `.webnovel/summaries/` contains files):
 
@@ -89,8 +96,8 @@ for ch in $(seq $((START_CH - 5)) $((START_CH - 1))); do
 done
 
 # Current core-character state / core relationships / active foreshadowing (unresolved across volumes)
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-entity-state --entity "{protagonist_id}" --at-chapter {上一卷最后章}
-python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-relationships --entity "{protagonist_id}" --at-chapter {上一卷最后章}
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-entity-state --entity "{protagonist_id}" --at-chapter {previous_volume_last_chapter}
+python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" knowledge query-relationships --entity "{protagonist_id}" --at-chapter {previous_volume_last_chapter}
 python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" memory-contract get-open-loops
 ```
 
@@ -98,10 +105,10 @@ python -X utf8 "${SCRIPTS_DIR}/webnovel.py" --project-root "${PROJECT_ROOT}" mem
 
 Move the setting collection from a skeleton to a state ready for planning and writing. Fill gaps incrementally; do not clear or rewrite entire files. List conflicts and block if any are found.
 
-- `设定集/世界观.md`: world boundaries, social structure, purposes of key locations.
-- `设定集/力量体系.md`: realm chain, restrictions, costs, and cooldowns.
-- `设定集/主角卡.md`: desire, flaw, starting resources, and limitations.
-- `设定集/反派设计.md`: minor/intermediate/major antagonist tiers and mirror relationships.
+- `settings/worldbuilding.md`: world boundaries, social structure, purposes of key locations.
+- `settings/power-system.md`: realm chain, restrictions, costs, and cooldowns.
+- `settings/protagonist.md`: desire, flaw, starting resources, and limitations.
+- `settings/antagonist.md`: minor/intermediate/major antagonist tiers and mirror relationships.
 
 ### Step 3: Select the target volume and confirm scope
 
@@ -113,7 +120,7 @@ Load `${SKILL_ROOT}/../../templates/output/大纲-卷节拍表.md`.
 
 Hard requirements: fill in the midpoint reversal; if genuinely absent, write “None (reason: ...)”. Include at least three escalating crises. The new volume-ending hook must resolve into an unanswered question at the end of the final chapter.
 
-Output file: `大纲/第{volume_id}卷-节拍表.md`
+Output file: `outlines/volume-{volume_id}-beats.md`
 
 ### Step 5: Generate the volume timeline
 
@@ -121,7 +128,7 @@ Load `${SKILL_ROOT}/../../templates/output/大纲-卷时间线.md`.
 
 Hard requirements: specify the time system and this volume's duration; list countdown events, if any, and mark them D-N.
 
-Output file: `大纲/第{volume_id}卷-时间线.md`
+Output file: `outlines/volume-{volume_id}-timeline.md`
 
 ### Step 6: Generate the volume-outline skeleton
 
@@ -141,7 +148,7 @@ Batch rules: default `10 chapters/batch`; reduce to `8 chapters/batch` for compl
 
 Read `${SKILL_ROOT}/../../references/reading-power-taxonomy.md` and `${SKILL_ROOT}/references/outlining/chapter-planning.md` on demand.
 
-Each chapter must include: goal, resistance, cost, time anchor, elapsed time within the chapter, time gap from the previous chapter, countdown status, gratification beat, Strand, antagonist tier, viewpoint/protagonist, key entities, chapter changes, unresolved chapter-ending question, hook, and structured nodes `CBN`, `CPNs`, `CEN`, `必须覆盖节点` (must-cover nodes), and `本章禁区` (chapter prohibitions).
+Each chapter must include: goal, resistance, cost, time anchor, elapsed time within the chapter, time gap from the previous chapter, countdown status, gratification beat, Strand, antagonist tier, viewpoint/protagonist, key entities, chapter changes, unresolved chapter-ending question, hook, and structured nodes `CBN`, `CPNs`, `CEN`, `Must-cover nodes`, and `Chapter prohibitions`.
 
 #### Structured nodes
 
@@ -151,11 +158,11 @@ Core constraints:
 
 - Exactly one `CBN`, `2–4 CPNs`, and one `CEN` per chapter; arrange `CPNs` chronologically.
 - Adjacent chapters' `CEN -> next chapter CBN` must connect logically (except the first and final chapters).
-- At most four `必须覆盖节点`; recommended: `CBN + CEN + 1–2 core CPNs`. Optional nodes are suggestions only, not primary grounds for failure.
-- At most five `本章禁区` entries; include only hard prohibitions on what absolutely must not happen in this chapter, not style suggestions.
+- At most four `Must-cover nodes`; recommended: `CBN + CEN + 1–2 core CPNs`. Optional nodes are suggestions only, not primary grounds for failure.
+- At most five `Chapter prohibitions` entries; include only hard prohibitions on what absolutely must not happen in this chapter, not style suggestions.
 - Backward compatibility: if old project outlines lack these fields, downstream workflows run normally and skip only structured checks.
 
-Output file: `大纲/第{volume_id}卷-详细大纲.md`
+Output file: `outlines/volume-{volume_id}-outline.md`
 
 ### Step 8: Write new settings back into the existing collection
 
@@ -167,9 +174,9 @@ Hard rule: if a conflict with the master outline or existing settings is found, 
 
 ### Step 9: Validate, save, and update state
 
-Required checks: beat sheet / timeline / detailed outline all exist and are nonempty; every chapter has complete time fields; timeline is monotonically increasing; countdowns advance correctly; new settings have been written back; `BLOCKER=0`; where nodes exist, adjacent `CEN -> CBN` have no obvious logical conflicts and each chapter has at most four `必须覆盖节点`.
+Required checks: beat sheet / timeline / detailed outline all exist and are nonempty; every chapter has complete time fields; timeline is monotonically increasing; countdowns advance correctly; new settings have been written back; `BLOCKER=0`; where nodes exist, adjacent `CEN -> CBN` have no obvious logical conflicts and each chapter has at most four `Must-cover nodes`.
 
-After all checks pass, generate an explicit structured writeback file `大纲/第{volume_id}卷-总纲写回.json` (write only foreshadowing / open loops explicitly listed in the plan; never infer them from free-form volume-outline text):
+After all checks pass, generate an explicit structured writeback file `outlines/volume-{volume_id}-master-outline-update.json` (write only foreshadowing / open loops explicitly listed in the plan; never infer them from free-form volume-outline text):
 
 ```json
 {
@@ -180,7 +187,7 @@ After all checks pass, generate an explicit structured writeback file `大纲/�
     "volume_end_climax": "Next volume's ending climax"
   },
   "foreshadow_writeback": [
-    {"content": "New foreshadowing explicitly added by this volume's plan", "buried_chapter": "第10章", "payoff_chapter": "", "level": "卷级"}
+    {"content": "New foreshadowing explicitly added by this volume's plan", "buried_chapter": "Chapter 10", "payoff_chapter": "", "level": "卷级"}
   ],
   "open_loop_writeback": [
     {"content": "A question that remains open after this volume ends", "buried_chapter": "", "payoff_chapter": "", "level": "持续开放环"}
@@ -188,12 +195,12 @@ After all checks pass, generate an explicit structured writeback file `大纲/�
 }
 ```
 
-Perform minimal master-outline writeback (update only volume V+1's title / core conflict / ending climax and the foreshadowing table in `大纲/总纲.md`; do not generate the next volume's detailed outline / beat sheet / timeline / chapter outlines):
+Perform minimal master-outline writeback (update only volume V+1's title / core conflict / ending climax and the foreshadowing table in `outlines/master-outline.md`; do not generate the next volume's detailed outline / beat sheet / timeline / chapter outlines):
 
 ```bash
 python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" master-outline-sync \
   --volume {volume_id} \
-  --writeback-file "大纲/第{volume_id}卷-总纲写回.json" \
+  --writeback-file "$(python "${SCRIPTS_DIR}/project_paths.py" --project-root "${PROJECT_ROOT}" --path "outlines/volume-{volume_id}-master-outline-update.json")" \
   --format text
 ```
 
@@ -207,7 +214,7 @@ python "${SCRIPTS_DIR}/webnovel.py" --project-root "$PROJECT_ROOT" update-state 
 
 ### Step 10: Refresh Story System writing contracts (mandatory once planning reaches specific chapters)
 
-Read genre from the `state.json` initialization configuration snapshot; the pre-writing main-pipeline source of truth is the `.story-system/` contract tree. First parse the actual `CHAPTER_GOAL` from the detailed outline; never pass placeholders such as `{章纲目标}` / `第N章章纲目标`.
+Read genre from the `state.json` initialization configuration snapshot; the pre-writing main-pipeline source of truth is the `.story-system/` contract tree. First parse the actual `CHAPTER_GOAL` from the detailed outline; never pass placeholders such as `{chapter_outline_goal}` / `Chapter N outline goal`.
 
 ```bash
 GENRE="$(python -X utf8 -c "import json; s=json.load(open('${PROJECT_ROOT}/.webnovel/state.json',encoding='utf-8')); pi=s.get('project_info',{}); print(pi.get('genre') or s.get('project',{}).get('genre',''))")"
@@ -276,11 +283,11 @@ Overall status: Completed / Partially completed / Needs your attention / Not com
 ```
 
 Must report:
-- `大纲/第{volume_id}卷-节拍表.md`.
-- `大纲/第{volume_id}卷-时间线.md`.
-- `大纲/第{volume_id}卷-详细大纲.md`.
+- `outlines/volume-{volume_id}-beats.md`.
+- `outlines/volume-{volume_id}-timeline.md`.
+- `outlines/volume-{volume_id}-outline.md`.
 - Which setting files received new settings.
-- `大纲/第{volume_id}卷-总纲写回.json`.
+- `outlines/volume-{volume_id}-master-outline-update.json`.
 - Whether `master-outline-sync`, `update-state`, and Story System contract refresh completed.
 - Whether placeholder, timeline, and node-continuity checks passed.
 

@@ -1,5 +1,7 @@
 # Story Repo Format Specification (v7 Draft 0.4 · Frozen)
 
+> Historical design record: project-directory examples retain their original names. New projects use `chapters/`, `outlines/`, `settings/`, and `reviews/`; existing legacy projects remain supported without renaming. Resolve actual paths with `scripts/project_paths.py` before using these examples.
+
 > Status: 0.4. Change from 0.3: rename the umbrella directory to `定稿/` (finalized content), as chosen by the author: drafts stay in the workspace and move to finalized content after acceptance. Change from 0.2: abolish monolithic YAML data files; promises and information gaps use one Markdown file per entry with flat frontmatter (§4.3, §5). Add an error-resistant dialect (§2.2), repair cards (state 0 in §10), and the conversation-as-editor invariant (§1.9). See §14 for decisions.
 > Source: the 2026-06-10 discussion of the most appropriate architecture + Phase 0 of the strangler-style convergence plan.
 > Authority: this specification is the law for v7. Code derives from the format. If implementation conflicts with this specification, change one or the other; never silently store an extra copy in code.

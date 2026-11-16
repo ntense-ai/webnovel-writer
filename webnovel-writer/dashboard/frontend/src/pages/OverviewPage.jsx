@@ -48,7 +48,7 @@ function toneForUrgencyBadge(level) {
 }
 
 function formatRuntimeText(runtimeHealth) {
-    if (!runtimeHealth) return '运行态未加载'
+    if (!runtimeHealth) return 'Runtime data not loaded'
     const fallback = Array.isArray(runtimeHealth.fallback_sources) && runtimeHealth.fallback_sources.length
         ? runtimeHealth.fallback_sources.join(' / ')
         : 'none'
@@ -77,7 +77,7 @@ function buildReviewOption(items) {
         series: [
             {
                 type: 'line',
-                name: '审查得分',
+                name: 'Review score',
                 data: items.map(item => item.review_score ?? null),
                 symbol: 'rect',
                 symbolSize: 8,
@@ -92,7 +92,7 @@ function buildReviewOption(items) {
                     ? {
                         symbol: 'none',
                         lineStyle: { color: '#f5a524', width: 2, type: 'dashed' },
-                        label: { formatter: `均值 ${formatShortNumber(averageScore)}` },
+                        label: { formatter: `Average ${formatShortNumber(averageScore)}` },
                         data: [{ yAxis: Number(averageScore.toFixed(2)) }],
                     }
                     : undefined,
@@ -111,7 +111,7 @@ function buildVolumeOption(groups) {
         yAxis: {
             type: 'value',
             axisLabel: {
-                formatter: value => `${formatShortNumber(Number(value) / 10000)}万`,
+                formatter: value => `${formatShortNumber(Number(value) / 1000)}K`,
             },
         },
         series: [
@@ -184,17 +184,17 @@ function RecentSummaryCard({ item }) {
                 <span className="summary-chapter">{formatChapterLabel(item.chapter)}</span>
                 <div className="summary-badges">
                     <Badge tone={toneForHookStrength(item.hook_strength)}>
-                        {item.hook_strength || '无钩子'}
+                        {item.hook_strength || 'No hook'}
                     </Badge>
-                    {item.review_score ? <Badge tone="purple">{item.review_score} 分</Badge> : null}
+                    {item.review_score ? <Badge tone="purple">{item.review_score} points</Badge> : null}
                 </div>
             </div>
-            <h3>{item.title || '未命名章节'}</h3>
-            <p>{item.summary || '暂无章节概要。'}</p>
+            <h3>{item.title || 'Untitled chapter'}</h3>
+            <p>{item.summary || 'No chapter summary yet.'}</p>
             <div className="summary-meta">
-                <span>{item.location || '未记录地点'}</span>
-                <span>{formatNumber(item.word_count)} 字</span>
-                <span>{(item.characters || []).join('、') || '未记录角色'}</span>
+                <span>{item.location || 'Location not recorded'}</span>
+                <span>{formatNumber(item.word_count)} characters</span>
+                <span>{(item.characters || []).join(', ') || 'Characters not recorded'}</span>
             </div>
         </article>
     )
@@ -348,21 +348,21 @@ export default function OverviewPage() {
     return (
         <section className="dashboard-page">
             <header className="page-header">
-                <h2>总览</h2>
-                <Badge tone="blue">{info.genre || '未知题材'}</Badge>
+                <h2>Overview</h2>
+                <Badge tone="blue">{info.genre || 'Unknown genre'}</Badge>
             </header>
 
             <div className="stat-grid">
                 <StatCard
-                    label="总字数"
+                    label="Total characters"
                     value={formatNumber(totalWords)}
-                    sub={`目标 ${formatNumber(targetWords || 0)} 字 · ${formatPercent(progressPercent)}`}
+                    sub={`Target ${formatNumber(targetWords || 0)} characters · ${formatPercent(progressPercent)}`}
                     progress={progressPercent}
                 />
                 <StatCard
-                    label="当前章节"
+                    label="Current chapter"
                     value={formatChapterLabel(progress.current_chapter)}
-                    sub={`目标 ${info.target_chapters || '—'} 章 · 卷 ${progress.current_volume || '—'}`}
+                    sub={`Target ${info.target_chapters || '—'} chapters · Volume ${progress.current_volume || '—'}`}
                 />
                 <StatCard
                     label="Story Runtime"
@@ -371,14 +371,14 @@ export default function OverviewPage() {
                     tone="plain"
                 />
                 <StatCard
-                    label="审查均分"
+                    label="Average review score"
                     value={latestReviewAverage ? formatShortNumber(latestReviewAverage) : '—'}
-                    sub="最近 50 章平均"
+                    sub="Last 50 chapters"
                 />
                 <StatCard
-                    label="紧急伏笔"
+                    label="Urgent threads"
                     value={String(foreshadowSummary.attention)}
-                    sub={`总计 ${foreshadowSummary.total} 条伏笔`}
+                    sub={`Total ${foreshadowSummary.total} threads`}
                 />
             </div>
 
@@ -386,10 +386,10 @@ export default function OverviewPage() {
                 <div className="card-header">
                     <div>
                         <div className="section-label">REVIEW TREND</div>
-                        <div className="card-title">审查得分趋势</div>
+                        <div className="card-title">Review Score Trend</div>
                     </div>
                     <Badge tone="green">
-                        {currentStart && currentEnd ? `${formatChapterLabel(currentStart)} - ${formatChapterLabel(currentEnd)}` : '最近窗口'}
+                        {currentStart && currentEnd ? `${formatChapterLabel(currentStart)} - ${formatChapterLabel(currentEnd)}` : 'Recent window'}
                     </Badge>
                 </div>
                 {windowItems.length ? (
@@ -409,7 +409,7 @@ export default function OverviewPage() {
                     </>
                 ) : (
                     <div className="empty-state">
-                        <p>暂无章节趋势数据</p>
+                        <p>No chapter trend data</p>
                     </div>
                 )}
             </article>
@@ -419,15 +419,15 @@ export default function OverviewPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">WORD DISTRIBUTION</div>
-                            <div className="card-title">字数分布（按卷）</div>
+                            <div className="card-title">Character Counts by Volume</div>
                         </div>
-                        <Badge tone="purple">{volumeGroups.length} 卷</Badge>
+                        <Badge tone="purple">{volumeGroups.length} volumes</Badge>
                     </div>
                     {volumeGroups.length ? (
                         <ChartWrapper option={buildVolumeOption(volumeGroups)} />
                     ) : (
                         <div className="empty-state">
-                            <p>暂无章节字数数据</p>
+                            <p>No chapter length data</p>
                         </div>
                     )}
                 </article>
@@ -436,7 +436,7 @@ export default function OverviewPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">STRAND OVERVIEW</div>
-                            <div className="card-title">Strand Weave 整体分布</div>
+                            <div className="card-title">Overall Strand Distribution</div>
                         </div>
                         <Badge tone="purple">{projectInfo?.strand_tracker?.current_dominant || 'unknown'}</Badge>
                     </div>
@@ -444,7 +444,7 @@ export default function OverviewPage() {
                         <ChartWrapper option={buildStrandOption(strandEntries)} height={260} />
                     ) : (
                         <div className="empty-state">
-                            <p>暂无 Strand 历史</p>
+                            <p>No strand history</p>
                         </div>
                     )}
                 </article>
@@ -455,38 +455,38 @@ export default function OverviewPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">FORESHADOWING</div>
-                            <div className="card-title">紧急伏笔 Top 5</div>
+                            <div className="card-title">Top 5 Urgent Threads</div>
                         </div>
-                        <Badge tone="amber">按紧急度排序</Badge>
+                        <Badge tone="amber">Sorted by urgency</Badge>
                     </div>
                     <DataTable
                         columns={[
-                            { key: 'content', label: '内容' },
+                            { key: 'content', label: 'Content' },
                             {
                                 key: 'statusText',
-                                label: '状态',
+                                label: 'Status',
                                 render: row => <Badge tone={toneForForeshadowing(row.level)}>{row.statusText}</Badge>,
                             },
                             {
                                 key: 'plantedChapter',
-                                label: '埋设章',
+                                label: 'Planted chapter',
                                 render: row => formatChapterLabel(row.plantedChapter),
                             },
                             {
                                 key: 'targetChapter',
-                                label: '目标章',
+                                label: 'Target chapter',
                                 render: row => formatChapterLabel(row.targetChapter),
                             },
                             {
                                 key: 'urgencyText',
-                                label: '紧急度',
+                                label: 'Urgency',
                                 render: row => <Badge tone={toneForUrgencyBadge(row.urgencyText)}>{row.urgencyText}</Badge>,
                             },
                         ]}
                         rows={urgentRows}
                         rowKey="id"
                         pageSize={5}
-                        emptyText="暂无伏笔数据"
+                        emptyText="No foreshadowing data"
                         minWidth={680}
                     />
                 </article>
@@ -495,9 +495,9 @@ export default function OverviewPage() {
                     <div className="card-header">
                         <div>
                             <div className="section-label">LATEST CHAPTERS</div>
-                            <div className="card-title">最近 3 章概要</div>
+                            <div className="card-title">Latest 3 Chapter Summaries</div>
                         </div>
-                        <Badge tone="cyan">{recentSummaries.length} 条</Badge>
+                        <Badge tone="cyan">{recentSummaries.length} records</Badge>
                     </div>
                     {recentSummaries.length ? (
                         <div className="summary-card-list">
@@ -507,7 +507,7 @@ export default function OverviewPage() {
                         </div>
                     ) : (
                         <div className="empty-state">
-                            <p>暂无最新章节概要</p>
+                            <p>No recent chapter summaries</p>
                         </div>
                     )}
                 </article>
