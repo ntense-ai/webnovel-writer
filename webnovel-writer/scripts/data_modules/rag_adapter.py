@@ -22,6 +22,7 @@ import itertools
 import time
 from datetime import datetime
 
+from .unicode_tokenizer import TOKENIZER_VERSION, tokenize
 from .config import get_config
 from .api_client import get_client
 from .index_manager import IndexManager
@@ -106,8 +107,12 @@ class RAGAdapter:
 
         with self._get_conn() as conn:
             cursor = conn.cursor()
+            # Lock before inspecting the marker: concurrent opens must not mix
+            # old/new postings, and failed rebuilds must roll back as one unit.
+            cursor.execute("BEGIN IMMEDIATE")
             self._ensure_schema_meta(cursor)
             self._ensure_tables(cursor)
+            self._ensure_tokenizer_version(cursor)
             conn.commit()
 
     def _table_exists(self, cursor, table_name: str) -> bool:
@@ -496,15 +501,37 @@ class RAGAdapter:
     # ==================== BM25 index ====================
 
     def _tokenize(self, text: str) -> List[str]:
-        "Simple tokenization: Chinese by character, English by word."
-        # Chinese characters
-        chinese = re.findall(r'[\u4e00-\u9fff]+', text)
-        chinese_chars = list("".join(chinese))
+        """Use the same Unicode lexical tokenizer for documents and queries."""
+        return tokenize(text)
 
-        # English words
-        english = re.findall(r'[a-zA-Z]+', text.lower())
+    def _ensure_tokenizer_version(self, cursor) -> None:
+        """Rebuild only derived keyword data when tokenization rules change.
 
-        return chinese_chars + english
+        Stored prose, vector embeddings and metadata are authoritative and never
+        modified here. No embedding service is called. The caller owns a single
+        write transaction, so failures leave the prior index and marker intact.
+        """
+        row = cursor.execute(
+            "SELECT value FROM rag_schema_meta WHERE key = 'tokenizer_version'"
+        ).fetchone()
+        if row and row[0] == TOKENIZER_VERSION:
+            return
+        cursor.execute("DELETE FROM bm25_index")
+        cursor.execute("DELETE FROM doc_stats")
+        # A separate reader cursor streams content without buffering all books
+        # or losing its position when the write cursor updates postings.
+        reader = cursor.connection.execute("SELECT chunk_id, content FROM vectors ORDER BY chunk_id")
+        try:
+            for chunk_id, content in reader:
+                self._update_bm25_index(cursor, chunk_id, content or "")
+        finally:
+            reader.close()
+        cursor.execute(
+            """INSERT INTO rag_schema_meta(key, value, updated_at)
+               VALUES ('tokenizer_version', ?, CURRENT_TIMESTAMP)
+               ON CONFLICT(key) DO UPDATE SET value=excluded.value,
+                   updated_at=CURRENT_TIMESTAMP""", (TOKENIZER_VERSION,),
+        )
 
     def _update_bm25_index(self, cursor, chunk_id: str, content: str):
         "Update the BM25 index."

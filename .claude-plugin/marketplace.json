@@ -11,7 +11,7 @@
     {
       "name": "webnovel-writer",
       "description": "Long-form webnovel writing system (skills, agents, data pipeline, and RAG).",
-      "version": "6.3.0",
+      "version": "6.3.1",
       "author": {
         "name": "lingfengQAQ"
       },

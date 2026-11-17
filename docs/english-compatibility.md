@@ -38,3 +38,12 @@ They do not install Claude hooks or promise native host parity. Mandatory
 independent review requires actual host subagent support; unsupported gated
 workflows stop rather than inventing reviewer results. Model and host writing
 quality require separate validation.
+
+## Multilingual retrieval limits
+
+Story storage accepts Unicode. BM25 uses Unicode normalization and lexical tokens;
+CJK, kana and Hangul runs use character/bigram matching rather than a dictionary
+segmenter. There is no stemming, translation or guarantee that different-language
+queries retrieve equivalent meaning. Embedding/reranking quality depends on the
+chosen models. Graph alias extraction and writing-analysis heuristics are not
+validated equally across every language. See [index refresh details](../releases/v6.3.1.md).

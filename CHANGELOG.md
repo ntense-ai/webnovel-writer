@@ -2,6 +2,17 @@
 
 This file records the impact of each stable release on authors and maintainers. Release notes prioritize webnovel authors: explain changes to the writing experience first, then add technical details for maintainers.
 
+## v6.3.1 - Unicode-aware keyword retrieval
+
+Release range: `v6.3.0..v6.3.1` on the `ntense` fork.
+
+### Changes for Authors
+
+BM25 retrieval now indexes Unicode letters, marks and numbers instead of dropping
+many writing systems. Existing keyword indexes refresh transactionally from
+stored prose without changing embeddings or making API calls. See
+[v6.3.1 details and limits](releases/v6.3.1.md).
+
 ## v6.3.0 - English-only author workflows for new books
 
 Release range: `v6.2.1..v6.3.0` on the `ntense` fork.

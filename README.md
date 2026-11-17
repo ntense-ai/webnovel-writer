@@ -5,7 +5,7 @@
 This `ntense` branch is the English-first fork of the Claude Code edition (v6), maintained in `ezhomelabs/webnovel-writer`. Use the branch-pinned Quick Start below, not the upstream/default-branch installer. The v8 links above refer to the separate upstream product, not this fork.
 
 [![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-6.3.0-brightgreen.svg)](.claude-plugin/marketplace.json)
+[![Version](https://img.shields.io/badge/version-6.3.1-brightgreen.svg)](.claude-plugin/marketplace.json)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-purple.svg)](https://claude.ai/claude-code)
 [![Marketplace](https://img.shields.io/badge/Claude%20Code-Marketplace-black.svg)](.claude-plugin/marketplace.json)
@@ -364,7 +364,8 @@ The current release is marked `(current)`.
 
 | Version | Main changes |
 |------|----------|
-| **v6.3.0 (current)** | English-only project schemas, reference corpus, and portable Codex/Antigravity skills for new books |
+| **v6.3.1 (current)** | Unicode-aware keyword retrieval and automatic safe BM25 index refresh |
+| **v6.3.0** | English-only project schemas, reference corpus, and portable Codex/Antigravity skills for new books |
 | **v6.2.1** | Fix intermittent Windows chapter-commit access denial (WinError 5): automatically retry briefly locked data files |
 | **v6.2.0** | Clearer writing results and better recovery after failure |
 | **v6.1.0** | Runtime hardening: doctor/project-status/write-gate/projection replay, hooks, behavioral evals, and release checks |
